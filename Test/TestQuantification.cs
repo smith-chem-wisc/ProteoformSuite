@@ -260,22 +260,6 @@ namespace Test
         }
 
         [Test]
-        public void quant_pvalue_without_imputation_aka_unequal_list_lengths()
-        {
-            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1.ToString(), "", 0) };
-            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
-            try
-            {
-                e.quant.Randomization_PValue(0, shorter_list, singleton_list);
-            }
-            catch (ArgumentException ex)
-            {
-                Assert.NotNull(ex.Message);
-            }
-        }
-
-        [Test]
         public void make_multiple_biorepintensity_litss()
         {
             double proteoformMass = 1000d;
@@ -1024,7 +1008,7 @@ namespace Test
             hx.quant.logFoldChange = 8;
             hx.quant.TusherValues1.significant = false; ;
             hx.quant.intensitySum = 2;
-            List<ProteinWithGoTerms> prots = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
+            List<ProteinWithGoTerms> prots = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Nothing passing, but two things passing for each
@@ -1040,14 +1024,14 @@ namespace Test
             hx.quant.logFoldChange = 12;
             hx.quant.TusherValues1.significant = false; ;
             hx.quant.intensitySum = 2;
-            prots = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
+            prots = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Passing
             ex.quant.logFoldChange = 12;
             ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
-            prots = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
+            prots = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(1, prots.Count); // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             //Assert.True(prots.Select(p => p.Accession).Contains("T2"));
@@ -1058,6 +1042,7 @@ namespace Test
         public void get_interesting_pfs()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.significance_by_log2FC = true;
             ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
@@ -1069,7 +1054,9 @@ namespace Test
             fx.quant.Log2FoldChangeValues.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
+            List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, exps, 10, 0.5m, 1).ToList();
+            Assert.AreEqual(2, interesting.Count);
+            interesting = Sweet.lollipop.getInterestingProteoforms(null, exps, 10, 0.5m, 1).ToList(); // should take null param indicating Log2FoldChangeAnalysis
             Assert.AreEqual(2, interesting.Count);
 
             Sweet.lollipop.significance_by_permutation = true;
@@ -1085,7 +1072,7 @@ namespace Test
             fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 2;
             exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
+            interesting = Sweet.lollipop.getInterestingProteoforms(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, exps, 10, 0.5m, 1).ToList();
             Assert.AreEqual(2, interesting.Count);
         }
 
@@ -1135,7 +1122,7 @@ namespace Test
             u.family = h;
             v.family = f;
 
-            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(exps, 10, 0.5m, 1);
+            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, exps, 10, 0.5m, 1);
             Assert.AreEqual(2, fams.Count);
             Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 0).Count());
             Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 1).Count());

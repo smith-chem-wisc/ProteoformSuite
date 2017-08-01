@@ -167,7 +167,7 @@ namespace Test
             GoTermNumber g = new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
             g.by = -1;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Add(g);
-            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp(), Sweet.lollipop.TusherAnalysis1 as IGoAnalysis);
+            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp(), Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis);
         }
 
         [Test]
