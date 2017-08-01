@@ -5,12 +5,13 @@ using System.Linq;
 namespace ProteoformSuiteInternal
 {
     public class TusherValues1
+        : IStatisiticalSignificance, ITusherValues
     {
 
         #region Tusher Analysis Properties
 
-        public List<BiorepIntensity> numeratorOriginalBiorepIntensities { get; set; }
-        public List<BiorepIntensity> denominatorOriginalBiorepIntensities { get; set; }
+        public List<BiorepIntensity> numeratorOriginalIntensities { get; set; }
+        public List<BiorepIntensity> denominatorOriginalIntensities { get; set; }
         public List<BiorepIntensity> numeratorImputedIntensities { get; set; }
         public List<BiorepIntensity> denominatorImputedIntensities { get; set; }
         public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; }
@@ -33,23 +34,23 @@ namespace ProteoformSuiteInternal
             //bkgdStDev is log base 2
 
             significant = false;
-            numeratorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == numerator_condition).ToList();
-            numeratorImputedIntensities = imputedIntensities(numeratorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
-            numeratorIntensitySum = (decimal)numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
-            List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
+            numeratorOriginalIntensities = biorepIntensityList.Where(b => b.condition == numerator_condition).ToList();
+            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
+            numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
+            List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
-            denominatorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).ToList();
-            denominatorImputedIntensities = imputedIntensities(denominatorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
-            denominatorIntensitySum = (decimal)denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
-            List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
+            denominatorOriginalIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).ToList();
+            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
+            denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
+            List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
 
             allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string>(x.condition, x.biorep), x => x);
         }
 
         public void determine_proteoform_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
         {
-            List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
-            List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
+            List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
+            List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
 
             // We are using linear intensities, like in Tusher et al. (2001).
             // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.

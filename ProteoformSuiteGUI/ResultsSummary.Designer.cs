@@ -35,6 +35,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btn_save = new System.Windows.Forms.Button();
             this.rtb_summary = new System.Windows.Forms.RichTextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbx_analysis = new System.Windows.Forms.ComboBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitter1
@@ -98,12 +101,32 @@
             this.rtb_summary.TabIndex = 9;
             this.rtb_summary.Text = "";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.cmbx_analysis);
+            this.groupBox1.Location = new System.Drawing.Point(781, 7);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(256, 42);
+            this.groupBox1.TabIndex = 10;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Analysis for Cytoscape Visualization";
+            // 
+            // cmbx_analysis
+            // 
+            this.cmbx_analysis.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_analysis.FormattingEnabled = true;
+            this.cmbx_analysis.Location = new System.Drawing.Point(6, 15);
+            this.cmbx_analysis.Name = "cmbx_analysis";
+            this.cmbx_analysis.Size = new System.Drawing.Size(244, 21);
+            this.cmbx_analysis.TabIndex = 12;
+            // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1049, 847);
             this.ControlBox = false;
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.rtb_summary);
             this.Controls.Add(this.btn_save);
             this.Controls.Add(this.label1);
@@ -113,6 +136,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ResultsSummary";
             this.Text = "Results Summary";
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -126,5 +150,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_save;
         private System.Windows.Forms.RichTextBox rtb_summary;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ComboBox cmbx_analysis;
     }
 }

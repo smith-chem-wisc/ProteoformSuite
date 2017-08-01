@@ -5,6 +5,7 @@ using System.Linq;
 namespace ProteoformSuiteInternal
 {
     public class Log2FoldChangeValues
+        : IStatisiticalSignificance
     {
 
         #region Fold Change Analysis Properties

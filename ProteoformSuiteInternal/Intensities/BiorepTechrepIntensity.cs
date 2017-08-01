@@ -1,6 +1,7 @@
 ﻿namespace ProteoformSuiteInternal
 {
-    public class BiorepTechrepIntensity
+    public class BiorepTechrepIntensity :
+        IBiorepIntensity
     {
         public bool imputed { get; set; } = false;
         public string biorep { get; set; }

@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
                 writer.Write(results_dataframe());
         }
 
-        private static void save_cytoscripts(string directory, string timestamp)
+        private static void save_cytoscripts(string directory, string timestamp, IGoAnalysis analysis)
         {
             string message = "";
 
@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
                     ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
                 message += Environment.NewLine;
 
-                message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.minProteoformFoldChange, Sweet.lollipop.maxGoTermFDR, Sweet.lollipop.minProteoformIntensity).Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity).Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, "SignificantChanges_", timestamp,
                     true, 
                     true, true, 
@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
                 message += Environment.NewLine;
             }
 
-            foreach (GoTermNumber gtn in Sweet.lollipop.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).ToList())
+            foreach (GoTermNumber gtn in analysis.GoAnalysis.goTermNumbers.Where(g => g.by < (double)analysis.GoAnalysis.maxGoTermFDR).ToList())
             {
                 message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
@@ -72,13 +72,13 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public static void save_all(string directory, string timestamp)
+        public static void save_all(string directory, string timestamp, IGoAnalysis analysis)
         {
             Parallel.Invoke
             (
                 () => save_summary(Sweet.lollipop.results_folder, timestamp),
                 () => save_dataframe(Sweet.lollipop.results_folder, timestamp),
-                () => save_cytoscripts(Sweet.lollipop.results_folder, timestamp)
+                () => save_cytoscripts(Sweet.lollipop.results_folder, timestamp, analysis)
             );
         }
 
@@ -204,14 +204,36 @@ namespace ProteoformSuiteInternal
         {
             string report = "";
 
+            report += "QUANTIFICATION" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Sweet.lollipop.minBiorepsWithObservations.ToString() + " = " + Sweet.lollipop.observation_requirement + ")" + Environment.NewLine;
-            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant && Sweet.lollipop.significance_by_permutation || p.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.distributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.distributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
-            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.minProteoformFoldChange, Sweet.lollipop.maxGoTermFDR, Sweet.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
-            report += Sweet.lollipop.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
-            report += Sweet.lollipop.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine;
+            report += Environment.NewLine;
+
+            report += "TUSHER ANALYSIS (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine; ;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Environment.NewLine;
+
+            report += "TUSHER ANALYSIS (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine; ;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant).ToString() + "\tExperimental Proteoforms with Significant Change" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis2.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Environment.NewLine;
+
+            report += "LOG2 FOLD CHANGE ANALYSIS" + Environment.NewLine; ;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.Log2FoldChangeValues.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Benjimini-Hochberg Q-Value < " + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr + ")" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Environment.NewLine;
 
             // Venn Diagram of quantifiable proteoforms
@@ -261,14 +283,26 @@ namespace ProteoformSuiteInternal
 
         public static string proteins_of_significance()
         {
-            return "Identified Proteins with Significant Change: " + Environment.NewLine
-                + String.Join(Environment.NewLine, Sweet.lollipop.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            string result = "";
+            result += "Identified Proteins with Significant Change: (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "Identified Proteins with Significant Change: (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "Identified Proteins with Significant Change: (by log2 fold change analysis)" + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            return result;
         }
 
         public static string go_terms_of_significance()
         {
-            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine
-                + String.Join(Environment.NewLine, Sweet.lollipop.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            string result = "";
+            result += "GO Terms of Significance, Tusher Analysis with " + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count + " permutations (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "GO Terms of Significance, Tusher Analysis with " + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count + " permutations (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis2.GoAnalysis.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "GO Terms of Significance, Log2 Fold Change Analysis with " + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR (Benjimini-Yekeulti p-value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            return result;
         }
 
         public static string results_dataframe()
