@@ -434,9 +434,10 @@ namespace ProteoformSuiteInternal
                 {
                     t.Join();
                 }
+
                 foreach (ProteoformFamily family in running)
                 {
-                    if (!family.proteoforms.Any( p => cumulative_proteoforms.Contains(p)))
+                    if (!family.proteoforms.Any(p => cumulative_proteoforms.Contains(p)))
                     {
                         cumulative_proteoforms.AddRange(family.proteoforms);
                         Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
