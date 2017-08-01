@@ -83,12 +83,23 @@ namespace ProteoformSuiteInternal
                     {
                         Ptm[] destinationArray = new Ptm[combination_length];
                         Array.Copy(result, destinationArray, combination_length);
-                        yield return new PtmSet(destinationArray.ToList(), modification_ranks, added_ptm_penalization);
+                        if (total_represented_ptms(destinationArray) == combination_length) yield return new PtmSet(destinationArray.ToList(), modification_ranks, added_ptm_penalization);
                         prev_position = -2;
                         break;
                     }
                 }
             }
+        }
+
+        private static int total_represented_ptms(Ptm[] results)
+        {
+            UnlocalizedModification unlocalized_mod;
+            int total_represented_ptms = 0;
+            foreach (var ptm in results)
+            {
+                total_represented_ptms += (Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out unlocalized_mod)? unlocalized_mod.ptm_count : 1);
+            }
+            return total_represented_ptms;
         }
 
 
