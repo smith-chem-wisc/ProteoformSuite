@@ -43,11 +43,11 @@ namespace ProteoformSuiteInternal
 
 
         // For quantitation files
-        public int biological_replicate { get; set; } = 1;
+        public string biological_replicate { get; set; } = "1";
 
-        //public int fraction { get; set; } = 1;
+        public string fraction { get; set; } = "1";
 
-        public int technical_replicate { get; set; } = 1;
+        public string technical_replicate { get; set; } = "1";
 
         public string lt_condition { get; set; } = "lt_condition";
 

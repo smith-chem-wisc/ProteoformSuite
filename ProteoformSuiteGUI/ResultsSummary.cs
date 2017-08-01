@@ -43,18 +43,36 @@ namespace ProteoformSuiteGUI
         public void InitializeParameterSet()
         {
             tb_summarySaveFolder.Text = Sweet.lollipop.results_folder;
+            cmbx_analysis.Items.Clear();
+            cmbx_analysis.Items.AddRange(new string[]
+            {
+                "Tusher Analysis (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)",
+                "Tusher Analysis (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)",
+                "Log2 Fold Change Analysis (" + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR)"
+            });
+            cmbx_analysis.SelectedIndex = 1;
         }
 
         public void ClearListsTablesFigures(bool x)
         {
             rtb_summary.Text = "";
             tb_summarySaveFolder.Text = "";
-            Sweet.lollipop.results_folder = "";
+            //Sweet.lollipop.results_folder = "";
         }
 
         public void FillTablesAndCharts()
         {
             create_summary();
+        }
+
+        public IGoAnalysis get_go_analysis()
+        {
+            return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
+        }
+
+        public ITusherAnalysis get_tusher_analysis()
+        {
+            return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as ITusherAnalysis : null;
         }
 
         #endregion Public Methods
@@ -82,7 +100,7 @@ namespace ProteoformSuiteGUI
         {
             if (!Directory.Exists(Sweet.lollipop.results_folder)) return;
             string timestamp = Sweet.time_stamp();
-            ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
+            ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp, get_go_analysis(), get_tusher_analysis());
             ((ProteoformSweet)MdiParent).save_all_plots(Sweet.lollipop.results_folder, timestamp);
             using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
                 file.WriteLine(Sweet.save_method());

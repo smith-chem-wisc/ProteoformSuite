@@ -1,5 +1,4 @@
-﻿using Chemistry;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -396,5 +395,6 @@ namespace ProteoformSuiteGUI
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Private Methods
+
     }
 }
