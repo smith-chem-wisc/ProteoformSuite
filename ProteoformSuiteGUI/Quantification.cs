@@ -367,17 +367,17 @@ namespace ProteoformSuiteGUI
             foreach (QuantitativeProteoformValues qValue in Sweet.lollipop.qVals)
             {
                 if (get_tusher_values(qValue).significant && Sweet.lollipop.significance_by_permutation || qValue.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
-                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.Log2FoldChangeValues.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.Log2FoldChangeValues.pValue_uncorrected : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.Log2FoldChangeValues.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(qValue.Log2FoldChangeValues.pValue_uncorrected));
                 else
-                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.Log2FoldChangeValues.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.Log2FoldChangeValues.pValue_uncorrected : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.Log2FoldChangeValues.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(qValue.Log2FoldChangeValues.pValue_uncorrected));
             }
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
                 ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => plot_selection == 0 ? q.Log2FoldChangeValues.average_log2fc : (double)q.logFoldChange)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => plot_selection == 0 ? q.Log2FoldChangeValues.average_log2fc : (double)q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(plot_selection == 0 ? q.Log2FoldChangeValues.pValue_uncorrected : (double)q.pValue_randomization)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(plot_selection == 0 ? q.Log2FoldChangeValues.pValue_uncorrected : (double)q.pValue_randomization)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(q.Log2FoldChangeValues.pValue_uncorrected)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(q.Log2FoldChangeValues.pValue_uncorrected)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum > 30 ? 30 : ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum;
             }
         }
@@ -393,7 +393,6 @@ namespace ProteoformSuiteGUI
         private string[] volcano_selections = new string[]
         {
             "Fold-Change Tests Within Files (NeuCode Labeling)",
-            "Randomization Test",
         };
 
         private void cmbx_volcanoChartSelection_SelectedIndexChanged(object sender, EventArgs e)

@@ -66,9 +66,9 @@ namespace ProteoformSuiteGUI
             get { return qval.TusherValues1.scatter; }
         }
 
-        public decimal pValue
+        public double pValue
         {
-            get { return qval.pValue_randomization; }
+            get { return qval.Log2FoldChangeValues.pValue_uncorrected; }
         }
 
         public bool Significant

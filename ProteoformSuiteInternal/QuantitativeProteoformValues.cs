@@ -13,7 +13,6 @@ namespace ProteoformSuiteInternal
         public string accession { get { return proteoform.accession; } }
         public decimal logFoldChange { get; set; } = 0; // rough value
         public decimal intensitySum { get; set; } = 0; // rough value
-        public decimal pValue_randomization { get; set; } = 0; // rough value
 
         #endregion Public Properties
 
