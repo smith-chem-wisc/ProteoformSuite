@@ -30,12 +30,13 @@ namespace ProteoformSuiteInternal
                         ModificationWithMass mod = null;
                         List<PtmSet> set;
                         Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(modMass, 0), out set);
-                        if (set != null) mod = set.Where(m => m.ptm_combination.Count == 1).Select(m => m.ptm_combination.First().modification).Where(m => m.id == identifications.ModificationValue(sirIndex, siiIndex, p)).FirstOrDefault();
+                        if (set != null) mod = set.Where(m => m.ptm_combination.Count == 1).Select(m => m.ptm_combination.First().modification).Where(m => m.id == identifications.ModificationValue(sirIndex, siiIndex, p) || (m.linksToOtherDbs.ContainsKey("PSI-MOD") && m.linksToOtherDbs["PSI-MOD"].Any(a => a == identifications.ModificationAcession(sirIndex, siiIndex, p).Split(':')[1]))).FirstOrDefault();
                         if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(sirIndex, siiIndex, p), mod));
                         else
                         {
                             add_psm = false;
                             string mod_id = identifications.ModificationValue(sirIndex, siiIndex, p);
+                            if (mod_id.Length == 0) mod_id = identifications.ModificationAcession(sirIndex, siiIndex, p);
                             lock (bottom_up_PTMs_not_in_dictionary)
                             {
                                 if (!bottom_up_PTMs_not_in_dictionary.Contains(mod_id)) bottom_up_PTMs_not_in_dictionary.Add(mod_id);
