@@ -235,7 +235,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return connected_proteoforms[1] as TheoreticalProteoform != null ?
-                    ((TheoreticalProteoform)connected_proteoforms[1]).description :
+                    ((TheoreticalProteoform)connected_proteoforms[1]).ptm_description :
                     "";
             }
         }
@@ -256,7 +256,7 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical)
+        public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical, bool raw_et_histogram)
         {
             if (dgv.Columns.Count <= 0) return;
 
@@ -264,7 +264,7 @@ namespace ProteoformSuiteGUI
 
             //round table values
             dgv.Columns[nameof(DeltaMass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(PeakCenterDeltaMass)].DefaultCellStyle.Format = "0.####";
+            if(!raw_et_histogram) dgv.Columns[nameof(PeakCenterDeltaMass)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(proteoform_mass_1)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(proteoform_mass_2)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(agg_intensity_1)].DefaultCellStyle.Format = "0.##";
@@ -277,9 +277,9 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(NearbyRelationCount)].HeaderText = "Nearby Relation Count";
             dgv.Columns[nameof(Accepted)].HeaderText = "Accepted";
             dgv.Columns[nameof(PeakCenterDeltaMass)].HeaderText = "Peak Center Delta Mass";
-            dgv.Columns[nameof(PeakCenterCount)].HeaderText = "Peak Center Count";
+            if(!raw_et_histogram) dgv.Columns[nameof(PeakCenterCount)].HeaderText = "Peak Center Count";
             dgv.Columns[nameof(LysineCount)].HeaderText = "Lysine Count";
-            dgv.Columns[nameof(OutsideNoMansLand)].HeaderText = "Outside No Man's Land";
+            if (!raw_et_histogram) dgv.Columns[nameof(OutsideNoMansLand)].HeaderText = "Outside No Man's Land";
 
             //ET formatting
             dgv.Columns[nameof(PtmDescription)].HeaderText = "PTM Description";

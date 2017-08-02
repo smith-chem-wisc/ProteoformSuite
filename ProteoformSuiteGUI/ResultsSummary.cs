@@ -14,6 +14,8 @@ namespace ProteoformSuiteGUI
         public ResultsSummary()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
         }
 
         #endregion Public Constructor

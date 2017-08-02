@@ -17,6 +17,8 @@ namespace ProteoformSuiteGUI
         public NeuCodePairs()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             this.ct_IntensityRatio.MouseClick += new MouseEventHandler(ct_IntensityRatio_MouseClick);
             this.ct_LysineCount.MouseClick += new MouseEventHandler(ct_LysineCount_MouseClick);
             InitializeParameterSet();

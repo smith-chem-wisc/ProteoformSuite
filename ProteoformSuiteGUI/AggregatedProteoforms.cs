@@ -20,6 +20,8 @@ namespace ProteoformSuiteGUI
         public AggregatedProteoforms()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             InitializeParameterSet();
         }
 
