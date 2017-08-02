@@ -66,19 +66,11 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public int ExperimentalLysineCount
+        public int LysineCount
         {
             get
             {
-                return ((ProteoformRelation)display_object).connected_proteoforms[0].lysine_count;
-            }
-        }
-
-        public int TheoreticalLysineCount
-        {
-            get
-            {
-                return ((ProteoformRelation)display_object).connected_proteoforms[1].lysine_count;
+                return ((ProteoformRelation)display_object).lysine_count;
             }
         }
 
@@ -116,7 +108,8 @@ namespace ProteoformSuiteGUI
             {
                 return connected_proteoforms[0] as ExperimentalProteoform != null ?
                     ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt :
-                    Double.NaN;
+                    connected_proteoforms[0] as TopDownProteoform != null ?
+                    ((TopDownProteoform)connected_proteoforms[0]).agg_RT : 0;
             }
         }
 
@@ -134,9 +127,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return connected_proteoforms[0] as ExperimentalProteoform != null ?
-                    ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass :
-                    Double.NaN;
+                return connected_proteoforms[0].modified_mass;
             }
         }
 
@@ -164,11 +155,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return connected_proteoforms[1] as ExperimentalProteoform != null ?
-                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass :
-                    connected_proteoforms[1] as TheoreticalProteoform != null ?
-                    ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass :
-                    ((TopDownProteoform)connected_proteoforms[1]).modified_mass;
+                return connected_proteoforms[1].modified_mass;
             }
         }
 
@@ -298,8 +285,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Accepted)].HeaderText = "Accepted";
             dgv.Columns[nameof(PeakCenterDeltaMass)].HeaderText = "Peak Center Delta Mass";
             dgv.Columns[nameof(PeakCenterCount)].HeaderText = "Peak Center Count";
-            dgv.Columns[nameof(ExperimentalLysineCount)].HeaderText = "Experimental Lysine Count Multiple";
-            dgv.Columns[nameof(TheoreticalLysineCount)].HeaderText = "Theoretical Lysine Count";
+            dgv.Columns[nameof(LysineCount)].HeaderText = "Lysine Count";
             dgv.Columns[nameof(OutsideNoMansLand)].HeaderText = "Outside No Man's Land";
 
             //ET formatting
@@ -363,8 +349,7 @@ namespace ProteoformSuiteGUI
             }
 
             //making these columns invisible
-            dgv.Columns[nameof(ExperimentalLysineCount)].Visible = Sweet.lollipop.neucode_labeled;
-            dgv.Columns[nameof(TheoreticalLysineCount)].Visible = Sweet.lollipop.neucode_labeled;
+            dgv.Columns[nameof(LysineCount)].Visible = Sweet.lollipop.neucode_labeled;
         }
         #endregion
 
