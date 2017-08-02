@@ -148,7 +148,7 @@ namespace ProteoformSuiteGUI
             {
                 return e.linked_proteoform_references != null ?
                 Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.gene_name == e.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(e) &&
-                Math.Abs(t.modified_mass - e.modified_mass) < (double)Sweet.lollipop.mass_tolerance) :
+                Math.Abs(t.modified_mass - e.modified_mass) * 1e6 / e.modified_mass < (double)Sweet.lollipop.mass_tolerance) :
                 0;
             }
         }
@@ -158,7 +158,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.linked_proteoform_references != null ?
-                           e.family.theoretical_proteoforms.Where(t => t.gene_name == e.gene_name).SelectMany(t => t.psm_list).Count() :
+                           e.family.theoretical_proteoforms.Where(t => t.gene_name == e.gene_name).SelectMany(t => t.psm_list).Distinct().Count() :
                            0;
             }
         }
@@ -177,6 +177,7 @@ namespace ProteoformSuiteGUI
             //NUMBER FORMATS
             dgv.Columns[nameof(agg_mass)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(agg_intensity)].DefaultCellStyle.Format = "0.####";
+            dgv.Columns[nameof(agg_rt)].DefaultCellStyle.Format = "0.##";
 
             //HEADERS
             dgv.Columns[nameof(Accession)].HeaderText = "Experimental Proteoform ID";
@@ -195,14 +196,15 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
             dgv.Columns[nameof(manual_validation_verification)].HeaderText = "Abundant Component for Manual Validation of Identification Verification";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
-            dgv.Columns[nameof(theoretical_accession)].HeaderText = "Theoretical Accession";
-            dgv.Columns[nameof(fragment)].HeaderText = "Fragment";
+
 
             //VISIBILITY
             dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled;
             dgv.Columns[nameof(etd_relations)].Visible = false;
             dgv.Columns[nameof(other_topdown)].Visible = false;
             dgv.Columns[nameof(bottomup_PSMs)].Visible = false;
+            dgv.Columns[nameof(theoretical_accession)].Visible = false;
+            dgv.Columns[nameof(fragment)].Visible = false;
         }
 
         public static void FormatIdentifiedProteoformTable(DataGridView dgv)
