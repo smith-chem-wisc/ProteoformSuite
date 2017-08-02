@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
                 writer.Write(results_dataframe());
         }
 
-        private static void save_cytoscripts(string directory, string timestamp, IGoAnalysis go_analysis, ITusherAnalysis tusher_analysis)
+        private static void save_cytoscripts(string directory, string timestamp, IGoAnalysis go_analysis, TusherAnalysis tusher_analysis)
         {
             string message = "";
 
@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public static void save_all(string directory, string timestamp, IGoAnalysis go_analysis, ITusherAnalysis tusher_analysis)
+        public static void save_all(string directory, string timestamp, IGoAnalysis go_analysis, TusherAnalysis tusher_analysis)
         {
             Parallel.Invoke
             (
@@ -213,7 +213,7 @@ namespace ProteoformSuiteInternal
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
-            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Environment.NewLine;
@@ -223,7 +223,7 @@ namespace ProteoformSuiteInternal
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues2.significant).ToString() + "\tExperimental Proteoforms with Significant Change" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
-            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis2 as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis2 as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis2.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Environment.NewLine;

@@ -6,33 +6,8 @@ using System.Threading.Tasks;
 namespace ProteoformSuiteInternal
 {
     public class TusherAnalysis1
-        : ITusherAnalysis, IGoAnalysis
+        : TusherAnalysis
     {
-
-        #region Public Properties
-
-        public List<decimal> sortedProteoformRelativeDifferences { get; set; } = new List<decimal>(); // real relative differences for each selected proteoform; sorted
-        public List<List<decimal>> permutedRelativeDifferences { get; set; } = new List<List<decimal>>(); // relative differences for each proteoform for each balanced permutation
-        public List<List<decimal>> sortedPermutedRelativeDifferences { get; set; } = new List<List<decimal>>(); // sorted relative differences for each balanced permutation
-        public List<decimal> avgSortedPermutationRelativeDifferences { get; set; } = new List<decimal>(); // average relative difference across sorted values for each balanced permutation
-        public List<decimal> flattenedPermutedRelativeDifferences { get; set; } = new List<decimal>(); // all relative differences from permutations
-        public decimal minimumPassingNegativeTestStatistic { get; set; } // the first NEGATIVE relative difference from a selected proteoform that exceeded the offset BELOW the expected relative differences (avg sorted permuted); everything equal to or BELOW this value is considered significant
-        public decimal minimumPassingPositiveTestStatisitic { get; set; } // the first POSITIVE relative difference from a selected proteoform that exceeded the offset ABOVE the expected relative differences (avg sorted permuted); everything equal to or ABOVE this value is considered significant
-        public double relativeDifferenceFDR { get; set; } // average # of permuted relative differences that pass minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic, divided by the number of selected proteoforms that passed
-        public List<ProteinWithGoTerms> inducedOrRepressedProteins { get; set; } = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
-        public GoAnalysis GoAnalysis { get; set; } = new GoAnalysis();
-        public QuantitativeDistributions QuantitativeDistributions { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Constructor
-
-        public TusherAnalysis1()
-        {
-            this.QuantitativeDistributions = new QuantitativeDistributions(this as ITusherAnalysis);
-        }
-
-        #endregion Public Constructor
 
         #region Public Methods
 
@@ -50,7 +25,7 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
-                eP.quant.TusherValues1.determine_proteoform_statistics(eP.biorepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange);
+                eP.quant.TusherValues1.determine_proteoform_statistics(induced_condition, sKnot_minFoldChange);
                 eP.quant.determine_statistics();
             }
         }
@@ -138,7 +113,7 @@ namespace ProteoformSuiteInternal
         /// n_1, *s_2*, n_3, *s_4*
         /// n_1, n_2, *s_3*, *s_4*
         /// 
-        public List<List<decimal>> compute_balanced_biorep_permutation_relativeDifferences(Dictionary<string, List<string>> conditionsBioReps, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
+        public List<List<TusherStatistic>> compute_balanced_biorep_permutation_relativeDifferences(Dictionary<string, List<string>> conditionsBioReps, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
         {
             if (!conditionsBioReps.All(x => x.Value.OrderBy(y => y).SequenceEqual(conditionsBioReps.First().Value.OrderBy(z => z))))
                 throw new ArgumentException("Error: Permutation analysis doesn't currently handle unbalanced experimental designs.");
@@ -151,31 +126,29 @@ namespace ProteoformSuiteInternal
             List<Tuple<string, string>> all = allInduced.Concat(allUninduced).ToList();
             List<IEnumerable<Tuple<string, string>>> permutations = ExtensionMethods.Combinations(all, allInduced.Count).ToList();
             List<IEnumerable<Tuple<string, string>>> balanced_permutations_induced = permutations.Where(p =>
-                !p.SequenceEqual(allInduced) // not the original set
-                && bioreps.All(rep => p.Any(x => x.Item2 == rep)) // all bioreps are represented
-                && p.Count(x => x.Item1 != induced_condition) == allInduced.Count / 2) // there should be n/2 (int division) from the uninduced set to satisfy balanced and nearly balanced permutations
-                .ToList();
+                bioreps.All(rep => p.Count(x => x.Item2 == rep) == allInduced.Count(x => x.Item2 == rep)) // all bioreps are represented for balanced permutations
+                ).ToList();
 
-            List<List<decimal>> permutedRelativeDifferences = new List<List<decimal>>(); // each internal list is sorted
+            List<List<TusherStatistic>> permutedRelativeDifferences = new List<List<TusherStatistic>>(); // each internal list is sorted
             foreach (IEnumerable<Tuple<string, string>> induced in balanced_permutations_induced)
             {
-                List<decimal> relativeDifferences = new List<decimal>();
+                List<TusherStatistic> relativeDifferences = new List<TusherStatistic>();
                 foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
                 {
-                    List<BiorepIntensity> induced_intensities = induced.Select(x => pf.quant.TusherValues1.allIntensities[x]).ToList();
-                    List<BiorepIntensity> uninduced_intensities = pf.quant.TusherValues1.allIntensities.Values.Except(induced_intensities).ToList();
-                    relativeDifferences.Add(pf.quant.TusherValues1.getSingleTestStatistic(induced_intensities, uninduced_intensities, pf.quant.TusherValues1.StdDev(induced_intensities, uninduced_intensities), sKnot_minFoldChange));
+                    List<IBiorepIntensity> induced_intensities = induced.Select(x => pf.quant.TusherValues1.allIntensities[x]).ToList<IBiorepIntensity>();
+                    List<IBiorepIntensity> uninduced_intensities = pf.quant.TusherValues1.allIntensities.Values.Except(induced_intensities).ToList();
+                    relativeDifferences.Add(new TusherStatistic(pf.quant.TusherValues1.getSingleTestStatistic(induced_intensities, uninduced_intensities, pf.quant.TusherValues1.StdDev(induced_intensities, uninduced_intensities), sKnot_minFoldChange), pf.quant.TusherValues1.getSingleFoldChange(induced_intensities, uninduced_intensities)));
                 }
                 permutedRelativeDifferences.Add(relativeDifferences);
             }
             return permutedRelativeDifferences;
         }
 
-        public void computeSortedRelativeDifferences(List<ExperimentalProteoform> satisfactoryProteoforms, List<List<decimal>> permutedRelativeDifferences)
+        public void computeSortedRelativeDifferences(List<ExperimentalProteoform> satisfactoryProteoforms, List<List<TusherStatistic>> permutedRelativeDifferences)
         {
-            sortedProteoformRelativeDifferences = satisfactoryProteoforms.Select(eP => eP.quant.TusherValues1.relative_difference).OrderBy(reldiff => reldiff).ToList();
-            sortedPermutedRelativeDifferences = permutedRelativeDifferences.Select(list => list.OrderBy(reldiff => reldiff).ToList()).ToList();
-            avgSortedPermutationRelativeDifferences = Enumerable.Range(0, sortedProteoformRelativeDifferences.Count).Select(i => sortedPermutedRelativeDifferences.Average(sorted => sorted[i])).OrderBy(x => x).ToList();
+            sortedProteoformRelativeDifferences = satisfactoryProteoforms.Select(eP => eP.quant.TusherValues1.tusher_statistic).OrderBy(x => x.relative_difference).ToList();
+            sortedPermutedRelativeDifferences = permutedRelativeDifferences.Select(list => list.OrderBy(x => x.relative_difference).ToList()).ToList();
+            avgSortedPermutationRelativeDifferences = Enumerable.Range(0, sortedProteoformRelativeDifferences.Count).Select(i => sortedPermutedRelativeDifferences.Average(sorted => sorted[i].relative_difference)).OrderBy(x => x).ToList();
             int ct = 0;
             foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => eP.quant.TusherValues1.relative_difference).ToList())
             {
@@ -210,7 +183,7 @@ namespace ProteoformSuiteInternal
         /// Offset from the line where the proteoform test statistsic is equal to the average permuted test statistic: d(i) = dE(i). This is used as a threshold for significance for positive or negative test statistics. 
         /// </param>
         /// <returns></returns>
-        public double computeRelativeDifferenceFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, decimal significanceTestStatOffset)
+        public double computeRelativeDifferenceFDR(List<decimal> sortedAvgPermutationTestStatistics, List<TusherStatistic> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, List<TusherStatistic> permutedTestStatistics, decimal significanceTestStatOffset)
         {
             minimumPassingNegativeTestStatistic = Decimal.MinValue;
             minimumPassingPositiveTestStatisitic = Decimal.MaxValue;
@@ -219,33 +192,36 @@ namespace ProteoformSuiteInternal
             {
                 decimal lower_threshold = sortedAvgPermutationTestStatistics[i] - significanceTestStatOffset;
                 decimal higher_threshold = sortedAvgPermutationTestStatistics[i] + significanceTestStatOffset;
-                if (sortedProteoformTestStatistics[i] < lower_threshold && sortedProteoformTestStatistics[i] <= 0)
-                    minimumPassingNegativeTestStatistic = sortedProteoformTestStatistics[i]; // last one below
-                if (sortedProteoformTestStatistics[i] > higher_threshold && sortedProteoformTestStatistics[i] >= 0)
+                if (sortedProteoformTestStatistics[i].relative_difference < lower_threshold && sortedProteoformTestStatistics[i].relative_difference <= 0)
+                    minimumPassingNegativeTestStatistic = sortedProteoformTestStatistics[i].relative_difference; // last one below
+                if (sortedProteoformTestStatistics[i].relative_difference > higher_threshold && sortedProteoformTestStatistics[i].relative_difference >= 0)
                 {
-                    minimumPassingPositiveTestStatisitic = sortedProteoformTestStatistics[i]; //first one above
+                    minimumPassingPositiveTestStatisitic = sortedProteoformTestStatistics[i].relative_difference; //first one above
                     break;
                 }
             }
 
-            double avgFalsePermutedPassingProteoforms = (double)permutedTestStatistics.Count(v => v <= minimumPassingNegativeTestStatistic && v <= 0 || minimumPassingPositiveTestStatisitic <= v && v >= 0) / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
+            IEnumerable<TusherStatistic> permutedPassingProteoforms = permutedTestStatistics.Where(v =>
+                (v.relative_difference <= minimumPassingNegativeTestStatistic && v.relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= v.relative_difference && v.relative_difference >= 0)
+                && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
+            double avgPermutedPassingProteoforms = (double)permutedPassingProteoforms.Count() / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
 
             int totalPassingProteoforms = 0;
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                decimal test_statistic = pf.quant.TusherValues1.relative_difference;
-                pf.quant.TusherValues1.significant = test_statistic <= minimumPassingNegativeTestStatistic && test_statistic <= 0 || minimumPassingPositiveTestStatisitic <= test_statistic && test_statistic >= 0;
-                totalPassingProteoforms += Convert.ToInt32(pf.quant.TusherValues1.significant);
+                pf.quant.TusherValues2.significant = (pf.quant.TusherValues2.relative_difference <= minimumPassingNegativeTestStatistic && pf.quant.TusherValues2.relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= pf.quant.TusherValues2.relative_difference && pf.quant.TusherValues2.relative_difference >= 0)
+                    && (!Sweet.lollipop.useFoldChangeCutoff || pf.quant.TusherValues2.fold_change > Sweet.lollipop.foldChangeCutoff);
+                totalPassingProteoforms += Convert.ToInt32(pf.quant.TusherValues2.significant);
             }
 
             if (totalPassingProteoforms == 0)
                 return Double.NaN;
 
-            double fdr = (double)avgFalsePermutedPassingProteoforms / (double)totalPassingProteoforms;
+            double fdr = (double)avgPermutedPassingProteoforms / (double)totalPassingProteoforms;
             return fdr;
         }
 
-        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, List<decimal> sortedProteoformTestStatistics)
+        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<TusherStatistic> permutedTestStatistics, List<TusherStatistic> sortedProteoformTestStatistics)
         {
             Parallel.ForEach(satisfactoryProteoforms, eP =>
             {
@@ -253,13 +229,13 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        public void reestablishSignficance(IGoAnalysis analysis)
+        public override void reestablishSignficance(IGoAnalysis analysis)
         {
             if (!Sweet.lollipop.useLocalFdrCutoff)
                 relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, Sweet.lollipop.satisfactoryProteoforms, flattenedPermutedRelativeDifferences, Sweet.lollipop.offsetTestStatistics);
             else
                 Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues1.significant = eP.quant.TusherValues1.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
-            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(this as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity);
+            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(this as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity);
             analysis.GoAnalysis.GO_analysis(inducedOrRepressedProteins);
         }
 

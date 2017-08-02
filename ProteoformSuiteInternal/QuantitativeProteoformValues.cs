@@ -75,15 +75,19 @@ namespace ProteoformSuiteInternal
         /// <param name="satisfactoryProteoformsCount"></param>
         /// <param name="sortedProteoformTestStatistics"></param>
         /// <returns></returns>
-        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<decimal> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
+        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<TusherStatistic> permutedTestStatistics, int satisfactoryProteoformsCount, List<TusherStatistic> sortedProteoformTestStatistics)
         {
             decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
 
-            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v <= minimumNegativePassingTestStatistic && v <= 0 || minimumPositivePassingTestStatistic <= v && v >= 0);
+            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v =>
+                (v.relative_difference <= minimumNegativePassingTestStatistic && v.relative_difference <= 0 || minimumPositivePassingTestStatistic <= v.relative_difference && v.relative_difference >= 0)
+                && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
             decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
-            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat <= minimumNegativePassingTestStatistic && stat <= 0 || minimumPositivePassingTestStatistic <= stat && stat >= 0);
+            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => 
+                (stat.relative_difference <= minimumNegativePassingTestStatistic && stat.relative_difference <= 0 || minimumPositivePassingTestStatistic <= stat.relative_difference && stat.relative_difference >= 0)
+                && (!Sweet.lollipop.useFoldChangeCutoff || stat.fold_change > Sweet.lollipop.foldChangeCutoff));
 
             decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
             return fdr;

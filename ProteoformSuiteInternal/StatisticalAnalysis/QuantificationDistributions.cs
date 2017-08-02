@@ -9,7 +9,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Fields
 
-        public ITusherAnalysis analysis;
+        public TusherAnalysis analysis;
 
         // Histograms
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>(); // all intensities
@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructor
 
-        public QuantitativeDistributions(ITusherAnalysis analysis)
+        public QuantitativeDistributions(TusherAnalysis analysis)
         {
             this.analysis = analysis;
         }
