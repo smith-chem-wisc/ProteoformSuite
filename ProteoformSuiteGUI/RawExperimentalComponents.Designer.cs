@@ -116,14 +116,13 @@ namespace ProteoformSuiteGUI
             // 
             this.bt_recalculate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.bt_recalculate.AutoSize = true;
             this.bt_recalculate.Location = new System.Drawing.Point(191, 109);
             this.bt_recalculate.Name = "bt_recalculate";
             this.bt_recalculate.Size = new System.Drawing.Size(177, 104);
             this.bt_recalculate.TabIndex = 1;
+            this.bt_recalculate.Text = "Read Raw Components and\r\nCollapse Deconvolution Artifacts";
             this.bt_recalculate.UseVisualStyleBackColor = true;
             this.bt_recalculate.Click += new System.EventHandler(this.bt_recalculate_Click);
-            this.bt_recalculate.Text = "Read Raw Components and" + Environment.NewLine + "Collapse Deconvolution Artifacts";
             // 
             // groupBox1
             // 
@@ -203,10 +202,8 @@ namespace ProteoformSuiteGUI
             // RawExperimentalComponents
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1125, 579);
-            this.AutoScroll = true;
-            this.AutoScrollMinSize = this.ClientSize;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

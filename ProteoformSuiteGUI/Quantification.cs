@@ -18,6 +18,8 @@ namespace ProteoformSuiteGUI
         public Quantification()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
         }
 
         #endregion Constructor

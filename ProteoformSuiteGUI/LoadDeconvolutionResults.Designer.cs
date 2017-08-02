@@ -1005,8 +1005,6 @@
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
-            this.AutoScroll = true;
-            this.AutoScrollMinSize = this.ClientSize;
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer3);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

@@ -157,9 +157,6 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer8);
-            this.splitContainer3.Panel2.Controls.Add(this.ckbx_OxidMeth);
-            this.splitContainer3.Panel2.Controls.Add(this.ckbx_Carbam);
-            this.splitContainer3.Panel2.Controls.Add(this.ckbx_Meth_Cleaved);
             this.splitContainer3.Size = new System.Drawing.Size(495, 737);
             this.splitContainer3.SplitterDistance = 327;
             this.splitContainer3.TabIndex = 54;
@@ -317,7 +314,10 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.cb_limitLargePtmSets);
+            this.groupBox3.Controls.Add(this.ckbx_OxidMeth);
             this.groupBox3.Controls.Add(this.nUD_MinPeptideLength);
+            this.groupBox3.Controls.Add(this.ckbx_Meth_Cleaved);
+            this.groupBox3.Controls.Add(this.ckbx_Carbam);
             this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.tb_modTypesToExclude);
             this.groupBox3.Controls.Add(this.nUD_MaxPTMs);
@@ -329,9 +329,9 @@
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox3.Location = new System.Drawing.Point(0, 121);
+            this.groupBox3.Location = new System.Drawing.Point(0, 96);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(260, 259);
+            this.groupBox3.Size = new System.Drawing.Size(260, 310);
             this.groupBox3.TabIndex = 49;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
@@ -341,7 +341,7 @@
             this.cb_limitLargePtmSets.AutoSize = true;
             this.cb_limitLargePtmSets.Checked = true;
             this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(14, 204);
+            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(14, 263);
             this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
             this.cb_limitLargePtmSets.Size = new System.Drawing.Size(191, 17);
             this.cb_limitLargePtmSets.TabIndex = 51;
@@ -351,7 +351,7 @@
             // 
             // nUD_MinPeptideLength
             // 
-            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(16, 50);
+            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(16, 109);
             this.nUD_MinPeptideLength.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MinPeptideLength.Name = "nUD_MinPeptideLength";
             this.nUD_MinPeptideLength.Size = new System.Drawing.Size(48, 20);
@@ -366,7 +366,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 161);
+            this.label7.Location = new System.Drawing.Point(12, 220);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(149, 13);
@@ -375,7 +375,7 @@
             // 
             // tb_modTypesToExclude
             // 
-            this.tb_modTypesToExclude.Location = new System.Drawing.Point(14, 176);
+            this.tb_modTypesToExclude.Location = new System.Drawing.Point(14, 235);
             this.tb_modTypesToExclude.Margin = new System.Windows.Forms.Padding(2);
             this.tb_modTypesToExclude.Name = "tb_modTypesToExclude";
             this.tb_modTypesToExclude.Size = new System.Drawing.Size(202, 20);
@@ -384,7 +384,7 @@
             // 
             // nUD_MaxPTMs
             // 
-            this.nUD_MaxPTMs.Location = new System.Drawing.Point(15, 134);
+            this.nUD_MaxPTMs.Location = new System.Drawing.Point(15, 193);
             this.nUD_MaxPTMs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MaxPTMs.Maximum = new decimal(new int[] {
             5,
@@ -404,7 +404,7 @@
             // btn_Make_Databases
             // 
             this.btn_Make_Databases.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btn_Make_Databases.Location = new System.Drawing.Point(3, 234);
+            this.btn_Make_Databases.Location = new System.Drawing.Point(3, 285);
             this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(254, 22);
@@ -416,7 +416,7 @@
             // ckbx_combineIdenticalSequences
             // 
             this.ckbx_combineIdenticalSequences.AutoSize = true;
-            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(16, 79);
+            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(16, 138);
             this.ckbx_combineIdenticalSequences.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineIdenticalSequences.Name = "ckbx_combineIdenticalSequences";
             this.ckbx_combineIdenticalSequences.Size = new System.Drawing.Size(203, 17);
@@ -428,7 +428,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(69, 53);
+            this.label4.Location = new System.Drawing.Point(69, 112);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(136, 13);
@@ -438,7 +438,7 @@
             // ckbx_combineTheoreticalsByMass
             // 
             this.ckbx_combineTheoreticalsByMass.AutoSize = true;
-            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(16, 102);
+            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(16, 161);
             this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
             this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
@@ -449,7 +449,7 @@
             // 
             // nUD_NumDecoyDBs
             // 
-            this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(16, 24);
+            this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(16, 83);
             this.nUD_NumDecoyDBs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_NumDecoyDBs.Name = "nUD_NumDecoyDBs";
             this.nUD_NumDecoyDBs.Size = new System.Drawing.Size(48, 20);
@@ -464,7 +464,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(69, 27);
+            this.label2.Location = new System.Drawing.Point(69, 86);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(144, 13);
@@ -474,7 +474,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(68, 138);
+            this.label1.Location = new System.Drawing.Point(68, 197);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(164, 13);
@@ -491,7 +491,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(260, 121);
+            this.groupBox1.Size = new System.Drawing.Size(260, 96);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lysine Isotope Composition";
@@ -681,7 +681,7 @@
             this.ckbx_OxidMeth.AutoSize = true;
             this.ckbx_OxidMeth.Checked = true;
             this.ckbx_OxidMeth.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_OxidMeth.Location = new System.Drawing.Point(-268, 41);
+            this.ckbx_OxidMeth.Location = new System.Drawing.Point(16, 41);
             this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
             this.ckbx_OxidMeth.Size = new System.Drawing.Size(162, 17);
@@ -695,7 +695,7 @@
             this.ckbx_Carbam.AutoSize = true;
             this.ckbx_Carbam.Checked = true;
             this.ckbx_Carbam.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Carbam.Location = new System.Drawing.Point(-268, 66);
+            this.ckbx_Carbam.Location = new System.Drawing.Point(16, 19);
             this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Carbam.Name = "ckbx_Carbam";
             this.ckbx_Carbam.Size = new System.Drawing.Size(157, 17);
@@ -709,7 +709,7 @@
             this.ckbx_Meth_Cleaved.AutoSize = true;
             this.ckbx_Meth_Cleaved.Checked = true;
             this.ckbx_Meth_Cleaved.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(-268, 92);
+            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(16, 62);
             this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
             this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
@@ -774,8 +774,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1362, 741);
-            this.AutoScroll = true;
-            this.AutoScrollMinSize = this.ClientSize;
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -789,7 +787,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
-            this.splitContainer3.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);

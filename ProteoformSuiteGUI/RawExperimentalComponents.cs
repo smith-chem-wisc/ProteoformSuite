@@ -15,6 +15,8 @@ namespace ProteoformSuiteGUI
         public RawExperimentalComponents()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
         }
 
         #endregion Public Constructor

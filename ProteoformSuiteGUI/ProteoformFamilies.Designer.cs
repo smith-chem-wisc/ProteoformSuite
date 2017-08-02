@@ -378,6 +378,7 @@
             this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(17, 390);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
+            this.rtb_proteoformFamilyResults.ReadOnly = true;
             this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
             this.rtb_proteoformFamilyResults.Text = "";
@@ -638,8 +639,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 890);
-            this.AutoScroll = true;
-            this.AutoScrollMinSize = this.ClientSize;
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
