@@ -416,10 +416,10 @@ namespace ProteoformSuiteGUI
 
         #region Relative Difference Chart Methods     
 
-        private ITusherAnalysis get_tusher_analysis()
+        private TusherAnalysis get_tusher_analysis()
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
-            ITusherAnalysis tusher = selection < 3 ? Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis : Sweet.lollipop.TusherAnalysis2 as ITusherAnalysis;
+            TusherAnalysis tusher = selection < 3 ? Sweet.lollipop.TusherAnalysis1 as TusherAnalysis : Sweet.lollipop.TusherAnalysis2 as TusherAnalysis;
             return tusher;
         }
 
@@ -526,7 +526,7 @@ namespace ProteoformSuiteGUI
             for (int i = 0; i < get_tusher_analysis().sortedProteoformRelativeDifferences.Count; i++)
             {
                 decimal avg = get_tusher_analysis().avgSortedPermutationRelativeDifferences[i];
-                foreach (decimal relativedifference in get_tusher_analysis().sortedPermutedRelativeDifferences.Select(sorted => sorted[i]))
+                foreach (decimal relativedifference in get_tusher_analysis().sortedPermutedRelativeDifferences.Select(sorted => sorted[i].relative_difference))
                 {
                     if (relativedifference <= get_tusher_analysis().minimumPassingNegativeTestStatistic && relativedifference <= 0 || get_tusher_analysis().minimumPassingPositiveTestStatisitic <= relativedifference && relativedifference >= 0)
                         ct_relativeDifference.Series["Passing Permuted"].Points.AddXY(avg, relativedifference);
@@ -662,7 +662,7 @@ namespace ProteoformSuiteGUI
         private void nud_localFdrCutoff_ValueChanged(object sender, EventArgs e)
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
-            ITusherAnalysis tusher_analysis = selection < 3 ? Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis : Sweet.lollipop.TusherAnalysis2 as ITusherAnalysis;
+            TusherAnalysis tusher_analysis = selection < 3 ? Sweet.lollipop.TusherAnalysis1 as TusherAnalysis : Sweet.lollipop.TusherAnalysis2 as TusherAnalysis;
 
             Sweet.lollipop.localFdrCutoff = nud_localFdrCutoff.Value;
             tusher_analysis.reestablishSignficance(get_go_analysis());
@@ -692,6 +692,20 @@ namespace ProteoformSuiteGUI
                 cb_significanceByPermutation.Checked = !cb_significanceByFoldChange.Checked;
                 plots();
             }
+        }
+
+        private void cb_useFoldChangeCutoff_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.useFoldChangeCutoff = cb_useFoldChangeCutoff.Checked;
+            get_tusher_analysis().reestablishSignficance(get_go_analysis());
+            plots();
+        }
+
+        private void nud_foldChangeCutoff_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.foldChangeCutoff = nud_foldChangeCutoff.Value;
+            get_tusher_analysis().reestablishSignficance(get_go_analysis());
+            plots();
         }
 
         #endregion Significance Checkbox Methods
@@ -824,7 +838,7 @@ namespace ProteoformSuiteGUI
             g.GoAnalysis.maxGoTermFDR = nud_FDR.Value;
             g.GoAnalysis.minProteoformFoldChange = nud_ratio.Value;
             g.GoAnalysis.minProteoformIntensity = nud_intensity.Value;
-            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(get_tusher_analysis() as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
+            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(get_tusher_analysis() as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
             g.GoAnalysis.GO_analysis(g.inducedOrRepressedProteins);
             fillGoTermsTable();
         }
@@ -835,7 +849,7 @@ namespace ProteoformSuiteGUI
             g.GoAnalysis.maxGoTermFDR = nud_FDR.Value;
             g.GoAnalysis.minProteoformFoldChange = nud_ratio.Value;
             g.GoAnalysis.minProteoformIntensity = nud_intensity.Value;
-            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(get_tusher_analysis() as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
+            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(get_tusher_analysis() as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
             g.GoAnalysis.GO_analysis(g.inducedOrRepressedProteins);
             fillGoTermsTable();
         }
@@ -965,7 +979,7 @@ namespace ProteoformSuiteGUI
 
         private void btn_buildFamiliesWithSignificantChange_Click(object sender, EventArgs e)
         {
-            List<ProteoformFamily> families = Sweet.lollipop.getInterestingFamilies(get_tusher_analysis() as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, get_go_analysis().GoAnalysis.minProteoformFoldChange, get_go_analysis().GoAnalysis.maxGoTermFDR, get_go_analysis().GoAnalysis.minProteoformIntensity).Distinct().ToList();
+            List<ProteoformFamily> families = Sweet.lollipop.getInterestingFamilies(get_tusher_analysis() as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, get_go_analysis().GoAnalysis.minProteoformFoldChange, get_go_analysis().GoAnalysis.maxGoTermFDR, get_go_analysis().GoAnalysis.minProteoformIntensity).Distinct().ToList();
             string time_stamp = Sweet.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(families, Sweet.lollipop.target_proteoform_community.families,

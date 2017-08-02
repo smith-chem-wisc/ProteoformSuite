@@ -72,9 +72,9 @@ namespace ProteoformSuiteGUI
             return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
         }
 
-        public ITusherAnalysis get_tusher_analysis()
+        public TusherAnalysis get_tusher_analysis()
         {
-            return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as ITusherAnalysis : null;
+            return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as TusherAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as TusherAnalysis : null;
         }
 
         #endregion Public Methods

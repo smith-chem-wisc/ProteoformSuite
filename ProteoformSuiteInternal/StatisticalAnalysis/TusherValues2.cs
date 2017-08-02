@@ -5,7 +5,7 @@ using System.Linq;
 namespace ProteoformSuiteInternal
 {
     public class TusherValues2
-        : IStatisiticalSignificance, ITusherValues
+        : TusherValues
     {
 
         #region Tusher Analysis Properties
@@ -15,14 +15,6 @@ namespace ProteoformSuiteInternal
         public List<BiorepTechrepIntensity> numeratorImputedIntensities { get; set; }
         public List<BiorepTechrepIntensity> denominatorImputedIntensities { get; set; }
         public Dictionary<Tuple<string, string, string>, BiorepTechrepIntensity> allIntensities { get; set; }
-
-        public decimal numeratorIntensitySum { get; set; } = 0;
-        public decimal denominatorIntensitySum { get; set; } = 0;
-        public decimal scatter { get; set; } = 0;
-        public bool significant { get; set; } = false;
-        public decimal relative_difference { get; set; }
-        public decimal correspondingAvgSortedRelDiff { get; set; }
-        public decimal roughSignificanceFDR { get; set; } = 0;
 
         #endregion Tusher Analysis Properties
 
@@ -56,9 +48,11 @@ namespace ProteoformSuiteInternal
             // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
             // Therefore, the right-skewed intensity distributions is okay for this test.
             scatter = StdDev(allNumeratorIntensities, allDenominatorIntensities);
-            List<BiorepTechrepIntensity> induced = allIntensities.Where(kv => kv.Key.Item1 == induced_condition).Select(kv => kv.Value).ToList();
-            List<BiorepTechrepIntensity> uninduced = allIntensities.Where(kv => kv.Key.Item1 != induced_condition).Select(kv => kv.Value).ToList();
+            List<IBiorepIntensity> induced = allIntensities.Where(kv => kv.Key.Item1 == induced_condition).Select(kv => kv.Value).ToList<IBiorepIntensity>();
+            List<IBiorepIntensity> uninduced = allIntensities.Where(kv => kv.Key.Item1 != induced_condition).Select(kv => kv.Value).ToList<IBiorepIntensity>();
             relative_difference = getSingleTestStatistic(induced, uninduced, scatter, sKnot);
+            fold_change = getSingleFoldChange(induced, uninduced);
+            tusher_statistic = new TusherStatistic(relative_difference, fold_change);
         }
 
         /// <summary>
@@ -85,50 +79,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Methods
-
-        #region Relative Difference Methods
-
-        /// <summary>
-        /// Calculates the pooled standard deviation across unlogged intensities for the two conditions for this proteoform.
-        /// This is known as the "scatter s(i)" in the Tusher et al. paper.
-        /// </summary>
-        /// <param name="allInduced"></param>
-        /// <param name="allUninduced"></param>
-        /// <returns></returns>
-        public decimal StdDev(IEnumerable<BiorepTechrepIntensity> allInduced, IEnumerable<BiorepTechrepIntensity> allUninduced)
-        {
-            int numerator_count = allInduced.Count();
-            int denominator_count = allUninduced.Count();
-            if ((numerator_count + denominator_count) == 2)
-                return 1000000m;
-
-            decimal a = (decimal)((1d / (double)numerator_count + 1d / (double)denominator_count) / ((double)numerator_count + (double)denominator_count - 2d));
-            double avgNumerator = allInduced.Average(x => x.intensity_sum);
-            double avgDenominator = allUninduced.Average(x => x.intensity_sum);
-            decimal numeratorSumSquares = allInduced.Sum(n => (decimal)Math.Pow(n.intensity_sum - avgNumerator, 2d));
-            decimal denominatorSumSquares = allUninduced.Sum(d => (decimal)Math.Pow(d.intensity_sum - avgDenominator, 2d));
-            decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
-            return stdev;
-        }
-
-        /// <summary>
-        /// This is the relative difference from Tusher, et al. (2001) using unlogged intensity values
-        /// d(i) = { Average(measurement x from state I) - Average(measurement x from state U) } / { (pooled std dev from I and U) - s_knot }
-        /// </summary>
-        /// <param name="allInduced"></param>
-        /// <param name="allUninduced"></param>
-        /// <param name="pooledStdDev"></param>
-        /// <param name="sKnot">
-        /// A constant intended to "minimize the coefficient of variation"
-        /// </param>
-        /// <returns></returns>
-        public decimal getSingleTestStatistic(List<BiorepTechrepIntensity> allInduced, List<BiorepTechrepIntensity> allUninduced, decimal pooledStdDev, decimal sKnot)
-        {
-            double t = (allInduced.Average(l => l.intensity_sum) - allUninduced.Average(h => h.intensity_sum)) / ((double)(pooledStdDev + sKnot));
-            return (decimal)t;
-        }
-
-        #endregion Relative Difference Methods
 
     }
 }
