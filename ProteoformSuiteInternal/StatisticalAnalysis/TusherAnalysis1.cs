@@ -54,10 +54,10 @@ namespace ProteoformSuiteInternal
             // Zero-center the intensities for each proteoform
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                double avg_biorepintensity = pf.quant.TusherValues1.allIntensities.Values.Average(b => b.intensity_sum); // row average (for this proteoform)
+                pf.quant.TusherValues1.normalization_subtractand = pf.quant.TusherValues1.allIntensities.Values.Average(b => b.intensity_sum); // row average (for this proteoform)
                 foreach (BiorepIntensity b in pf.quant.TusherValues1.allIntensities.Values)
                 {
-                    b.intensity_sum = b.intensity_sum - avg_biorepintensity;
+                    b.intensity_sum = b.intensity_sum - pf.quant.TusherValues1.normalization_subtractand;
                 }
             }
         }
@@ -202,16 +202,16 @@ namespace ProteoformSuiteInternal
             }
 
             IEnumerable<TusherStatistic> permutedPassingProteoforms = permutedTestStatistics.Where(v =>
-                (v.relative_difference <= minimumPassingNegativeTestStatistic && v.relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= v.relative_difference && v.relative_difference >= 0)
+                (v.relative_difference < minimumPassingNegativeTestStatistic && v.relative_difference <= 0 || minimumPassingPositiveTestStatisitic < v.relative_difference && v.relative_difference >= 0)
                 && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
             double avgPermutedPassingProteoforms = (double)permutedPassingProteoforms.Count() / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
 
             int totalPassingProteoforms = 0;
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                pf.quant.TusherValues2.significant = (pf.quant.TusherValues2.relative_difference <= minimumPassingNegativeTestStatistic && pf.quant.TusherValues2.relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= pf.quant.TusherValues2.relative_difference && pf.quant.TusherValues2.relative_difference >= 0)
-                    && (!Sweet.lollipop.useFoldChangeCutoff || pf.quant.TusherValues2.fold_change > Sweet.lollipop.foldChangeCutoff);
-                totalPassingProteoforms += Convert.ToInt32(pf.quant.TusherValues2.significant);
+                pf.quant.TusherValues1.significant = (pf.quant.TusherValues1.relative_difference <= minimumPassingNegativeTestStatistic && pf.quant.TusherValues1.relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= pf.quant.TusherValues1.relative_difference && pf.quant.TusherValues1.relative_difference >= 0)
+                    && (!Sweet.lollipop.useFoldChangeCutoff || pf.quant.TusherValues1.fold_change > Sweet.lollipop.foldChangeCutoff);
+                totalPassingProteoforms += Convert.ToInt32(pf.quant.TusherValues1.significant);
             }
 
             if (totalPassingProteoforms == 0)

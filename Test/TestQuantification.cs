@@ -222,10 +222,15 @@ namespace Test
             Dictionary<string, List<string>> cbr = new Dictionary<string, List<string>> { { "n", new List<string> { 1.ToString(), 2.ToString(), 3.ToString() } }, { "s", new List<string> { 1.ToString(), 2.ToString(), 3.ToString() } } };
             List<ExperimentalProteoform> satisfy = new List<ExperimentalProteoform> { e };
             List<List<TusherStatistic>> perms = Sweet.lollipop.TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
-            Assert.AreEqual(3, perms.Count);
+            Assert.AreEqual(8, perms.Count);
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -0.7185m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 0.7185m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 0.6867m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -0.6867m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 0.6247m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -0.6247m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -20.7143m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 20.7143m));
         }
 
         [Test]
@@ -248,13 +253,23 @@ namespace Test
             Dictionary<string, List<string>> cbr = new Dictionary<string, List<string>> { { "n", new List<string> { 1.ToString(), 2.ToString(), 3.ToString(), 4.ToString() } }, { "s", new List<string> { 1.ToString(), 2.ToString(), 3.ToString(), 4.ToString() } } };
             List<ExperimentalProteoform> satisfy = new List<ExperimentalProteoform> { e };
             List<List<TusherStatistic>> perms = Sweet.lollipop.TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
-            Assert.AreEqual(6, perms.Count);
+            Assert.AreEqual(16, perms.Count);
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 20.6704m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -20.6704m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 0.0585m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -0.0585m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -0.0351m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 0.0351m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -0.0585m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 0.0585m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 1.4336m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -1.4336m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 1.3968m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -1.3968m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -1.1900m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 1.1900m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == -1.3253m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v.relative_difference, 4) == 1.3253m));
         }
 
         [Test]
@@ -1256,11 +1271,11 @@ namespace Test
             Assert.AreEqual(5.77, Math.Round(Sweet.lollipop.TusherAnalysis1.sortedProteoformRelativeDifferences.Max(x => x.relative_difference), 2));
 
             //averages across sorted permutations
-            Assert.AreEqual(3, Sweet.lollipop.TusherAnalysis1.permutedRelativeDifferences.Count);
-            Assert.AreEqual(300, Sweet.lollipop.TusherAnalysis1.flattenedPermutedRelativeDifferences.Count);
+            Assert.AreEqual(8, Sweet.lollipop.TusherAnalysis1.permutedRelativeDifferences.Count);
+            Assert.AreEqual(800, Sweet.lollipop.TusherAnalysis1.flattenedPermutedRelativeDifferences.Count);
             Assert.AreEqual(100, Sweet.lollipop.TusherAnalysis1.avgSortedPermutationRelativeDifferences.Count);
-            Assert.AreEqual(-3.14, Math.Round(Sweet.lollipop.TusherAnalysis1.avgSortedPermutationRelativeDifferences.Min(), 2));
-            Assert.AreEqual(1.17, Math.Round(Sweet.lollipop.TusherAnalysis1.avgSortedPermutationRelativeDifferences.Max(), 2));
+            Assert.AreEqual(-2.60, Math.Round(Sweet.lollipop.TusherAnalysis1.avgSortedPermutationRelativeDifferences.Min(), 2));
+            Assert.AreEqual(2.60, Math.Round(Sweet.lollipop.TusherAnalysis1.avgSortedPermutationRelativeDifferences.Max(), 2));
 
             Assert.AreEqual(Decimal.MinValue, Math.Round(Sweet.lollipop.TusherAnalysis1.minimumPassingNegativeTestStatistic, 2));
             Assert.AreEqual(5.77, Math.Round(Sweet.lollipop.TusherAnalysis1.minimumPassingPositiveTestStatisitic, 2));
@@ -1270,8 +1285,8 @@ namespace Test
             //change up a parameter and reevaluate
             Sweet.lollipop.offsetTestStatistics = 0.5m;
             Sweet.lollipop.TusherAnalysis1.reestablishSignficance(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis);
-            Assert.AreEqual(11, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant));
-            Assert.AreEqual(0.2121, Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4));
+            Assert.AreEqual(9, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant));
+            Assert.AreEqual(0.25, Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4));
 
             //rough test of quant summary
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);

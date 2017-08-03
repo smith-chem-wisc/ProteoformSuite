@@ -141,7 +141,7 @@ namespace Test
         public void results_summary_doesnt_crash_without_initializing()
         {
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
-            Assert.True(ResultsSummaryGenerator.results_dataframe().Length > 0);
+            Assert.True(ResultsSummaryGenerator.results_dataframe(new TusherAnalysis1()).Length > 0);
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace Test
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f };
-            string[] lines = ResultsSummaryGenerator.results_dataframe().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] lines = ResultsSummaryGenerator.results_dataframe(Sweet.lollipop.TusherAnalysis1).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             Assert.True(lines.Any(a => a.Contains("E1")));
         }
@@ -198,8 +198,8 @@ namespace Test
                 {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1) },
                 {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1) },
             };
-            Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, false).Contains("NaN"));
-            Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Contains("NaN"));
+            Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, false).Contains("NaN"));
+            Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Contains("NaN"));
             e.quant.TusherValues1.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
             {
                 {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(true, 1.ToString(), "n", 1) },
@@ -209,11 +209,11 @@ namespace Test
                 {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1) },
                 {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1) },
             };
-            string[] line = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Split('\n')[1].Split('\t');
+            string[] line = ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Split('\n')[1].Split('\t');
             Assert.True(line.First() == e.accession);
             Assert.True(line[1] == "NaN" && line[2] == "NaN" && line[3] == "NaN" && line[4] != "NaN" && line[5] != "NaN" && line[6] != "NaN");
 
-            ResultsSummaryGenerator.save_biological_replicate_intensities(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, false, new List<ExperimentalProteoform> { e });
+            ResultsSummaryGenerator.save_biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1, Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, false, new List<ExperimentalProteoform> { e });
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt")));
         }
 

@@ -128,7 +128,6 @@
     <Compile Include="Intensities\IBiorepIntensity.cs" />
     <Compile Include="StatisticalAnalysis\IGoAnalysis.cs" />
     <Compile Include="StatisticalAnalysis\IStatisiticalSignificance.cs" />
-    <Compile Include="StatisticalAnalysis\ITusherValues.cs" />
     <Compile Include="StatisticalAnalysis\Log2FoldChangeAnalysis.cs" />
     <Compile Include="StatisticalAnalysis\Log2FoldChangeValues.cs" />
     <Compile Include="Lollipop.cs" />
@@ -144,7 +143,7 @@
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="StatisticalAnalysis\QuantificationDistributions.cs" />
-    <Compile Include="QuantitativeProteoformValues.cs" />
+    <Compile Include="StatisticalAnalysis\QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />
     <Compile Include="SafeRandom.cs" />
     <Compile Include="StatisticalAnalysis\TusherAnalysis.cs" />
