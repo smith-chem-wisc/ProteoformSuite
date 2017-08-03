@@ -215,10 +215,11 @@ namespace ProteoformSuiteGUI
 
         private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
         {
-            IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
-                Sweet.lollipop.ee_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) :
-                ExtensionMethods.filter(Sweet.lollipop.ee_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)), tb_relationTableFilter.Text);
-            DisplayUtility.FillDataGridView(dgv_EE_Relations, selected_peaks);
+            List<DisplayProteoformRelation> display_relations = Sweet.lollipop.ee_relations.Select(p => new DisplayProteoformRelation(p)).ToList();
+            IEnumerable<object> selected_relations = tb_relationTableFilter.Text == "" ?
+                display_relations :
+                ExtensionMethods.filter(display_relations, tb_relationTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_EE_Relations, selected_relations.OfType<DisplayProteoformRelation>());
             DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true, false);
         }
 

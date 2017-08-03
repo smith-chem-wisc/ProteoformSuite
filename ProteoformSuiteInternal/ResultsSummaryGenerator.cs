@@ -340,7 +340,7 @@ namespace ProteoformSuiteInternal
                     e.linked_proteoform_references.Last().gene_name.ordered_locus,
                     e.linked_proteoform_references.Last().gene_name.primary,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).fragment,
-                    String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
+                    String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)),
                     e.modified_mass - e.linked_proteoform_references.Last().modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
