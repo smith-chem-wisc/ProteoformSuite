@@ -221,22 +221,26 @@ namespace ProteoformSuiteGUI
             nud_ratio.ValueChanged += new EventHandler(updateGoTermsTable);
             nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
 
-            nud_minObservations.Minimum = 1;
-            nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
-            if (Sweet.lollipop.minBiorepsWithObservations == new Lollipop().minBiorepsWithObservations) // check that the default has not been changed (haven't loaded presets)
-                nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
-            else
-                nud_minObservations.Value = Sweet.lollipop.minBiorepsWithObservations;
-            Sweet.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
-
             cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
             cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
-            if (Sweet.lollipop.observation_requirement == new Lollipop().observation_requirement) // check that the default has not been changed (haven't loaded presets)
-                cmbx_observationsTypeRequired.SelectedIndex = 0;
-            else
-                cmbx_observationsTypeRequired.SelectedIndex = Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement);
+            cmbx_observationsTypeRequired.SelectedIndex = Sweet.lollipop.observation_requirement == new Lollipop().observation_requirement ? // check that the default has not been changed (haven't loaded presets)
+                0 :
+                Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement);
             Sweet.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
             cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
+
+            nud_minObservations.Minimum = 1;
+            if (Sweet.lollipop.minBiorepsWithObservations == new Lollipop().minBiorepsWithObservations) // check that the default has not been changed (haven't loaded presets)
+            {
+                nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
+                nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
+            }
+            else
+            {
+                set_nud_minObs_maximum();
+                nud_minObservations.Value = Sweet.lollipop.minBiorepsWithObservations;
+            }
+            Sweet.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
 
             nud_Offset.ValueChanged -= nud_Offset_ValueChanged;
             nud_Offset.Value = Sweet.lollipop.offsetTestStatistics;
@@ -329,6 +333,12 @@ namespace ProteoformSuiteGUI
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            set_nud_minObs_maximum();
+           nud_minObservations.Value = nud_minObservations.Maximum;
+        }
+
+        private void set_nud_minObs_maximum()
+        {
             if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
                 nud_minObservations.Maximum = Sweet.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
             else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement) < 3)
@@ -338,7 +348,6 @@ namespace ProteoformSuiteGUI
             else
                 nud_minObservations.Maximum = Math.Min(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
                     Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
-            nud_minObservations.Value = nud_minObservations.Maximum;
         }
 
         private void nud_minObservations_ValueChanged(object sender, EventArgs e)

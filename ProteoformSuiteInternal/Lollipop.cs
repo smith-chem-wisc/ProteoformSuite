@@ -724,7 +724,11 @@ namespace ProteoformSuiteInternal
                 0;
 
             countOfBioRepsInOneCondition = conditionsBioReps.Min(kv => kv.Value.Count);
-            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
+            minBiorepsWithObservations = minBiorepsWithObservations > 0 ? 
+                minBiorepsWithObservations : // keep presets (default is -1, which should be erased)
+                    countOfBioRepsInOneCondition > 0 ? 
+                        countOfBioRepsInOneCondition : 
+                        1;
 
             //getBiorepsFractionsList
             List<string> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
@@ -751,7 +755,7 @@ namespace ProteoformSuiteInternal
             "Minimum Biorep+Techreps with Observations From Each Condition",
         };
         public string observation_requirement = observation_requirement_possibilities[0];
-        public int minBiorepsWithObservations = 1;
+        public int minBiorepsWithObservations = -1;
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
         public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>(); // quantitative values associated with each selected proteoform
         public bool significance_by_log2FC = false;
