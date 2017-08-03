@@ -483,7 +483,7 @@ namespace Test
                 sortedProteoformTestStatistics.Add(new TusherStatistic(stat, stat));
                 List<TusherStatistic> pts = new List<TusherStatistic>();
 
-                for (int j = -2; j <= 2; j++)
+                for (int j = -3; j <= 3; j++)
                 {
                     if (j != 0)
                         pts.Add(new TusherStatistic(j, Math.Abs(j) + 1));
@@ -493,17 +493,17 @@ namespace Test
 
             // 10 experimental proteoforms
             // test statistics: { 5, 2.5, 1.25 ..., 1 }
-            // permuted test statistics for each: {-2, -1, 1, 2}
+            // permuted test statistics for each: {-3, -2, -1, 1, 2, 3}
             // lower threshold is -2; upper threshold is 2
-            // 2 permuted test statistics pass each of 10 times (5 and 2.5), therefore 20 permuted test statistics pass
-            // estimated passing false proteoforms = 20 permuted test statistics pass / 40 total test statistics * 10 proteoforms = 5 proteoforms
+            // 2 permuted test statistics pass each of 10 times (-2 and 2), therefore 20 permuted test statistics pass
+            // estimated passing false proteoforms = 20 permuted test statistics pass / 60 total test statistics * 10 proteoforms = 3.333 proteoforms
             // 2 proteoform test statistic passes
-            // FDR = 50 / 2 = 25
-            Assert.AreEqual(2.5m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
+            // FDR = 33 / 2 = 16.666
+            Assert.AreEqual(1.67m, Math.Round(QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics), 2));
 
             Sweet.lollipop.useFoldChangeCutoff = true;
             Sweet.lollipop.foldChangeCutoff = 2.51m;
-            Assert.AreEqual(5m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
+            Assert.AreEqual(3.33m, Math.Round(QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics), 2));
         }
 
         [Test]
@@ -511,9 +511,10 @@ namespace Test
         {
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
 
+            Random random = new Random(1);
             for (int i = 0; i < 100000; i++)
             {
-                briList.Add(new BiorepIntensity(true, 1.ToString(), "key", QuantitativeProteoformValues.imputed_intensity(20m, 1m))); // based on log 2 intensities
+                briList.Add(new BiorepIntensity(true, 1.ToString(), "key", QuantitativeProteoformValues.imputed_intensity(20m, 1m, true, random))); // based on log 2 intensities
             }
 
             List<double> allIntensity = briList.Select(b => b.intensity_sum).ToList();
@@ -522,14 +523,14 @@ namespace Test
             double log_stdev = Math.Sqrt(log_sum / (allIntensity.Count - 1));
 
             Assert.AreEqual(20d, Math.Round(log_average, 2));
-            Assert.AreEqual(1.00d, Math.Round(log_stdev, 2));
+            Assert.AreEqual(1.0d, Math.Round(log_stdev, 1));
         }
 
         [Test]
         public void test_imputedIntensities()
         {
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
-            List<BiorepIntensity> imputed = TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() });
+            List<BiorepIntensity> imputed = TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }, false, new Random());
             //we started with no real observations but there were three observed bioreps in the experiment. Therefore, we need 0 imputed bioreps.
             Assert.AreEqual(3, imputed.Count(b => b.imputed));
             Assert.AreEqual("light", imputed[0].condition);
@@ -539,7 +540,7 @@ namespace Test
 
             imputed.Clear();
             briList.Add(new BiorepIntensity(false, 0.ToString(), "light", 1000d));
-            imputed.AddRange(TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }));
+            imputed.AddRange(TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }, false, new Random()));
 
             Assert.AreEqual(2, imputed.Count(b => b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
             Assert.AreEqual(0, imputed.Count(b => !b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
@@ -554,7 +555,7 @@ namespace Test
             briList.Add(new BiorepIntensity(false, 0.ToString(), "light", 1000d));
             briList.Add(new BiorepIntensity(false, 1.ToString(), "light", 2000d));
             briList.Add(new BiorepIntensity(false, 2.ToString(), "light", 3000d));
-            imputed.AddRange(TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }));
+            imputed.AddRange(TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }, false, new Random()));
 
             Assert.AreEqual(0, imputed.Count(b => b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
             Assert.AreEqual(0, imputed.Count(b => !b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
@@ -586,7 +587,7 @@ namespace Test
 
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
             QuantitativeDistributions distributions = new QuantitativeDistributions(new TusherAnalysis1() as TusherAnalysis);
-            List<decimal> rounded_intensities = distributions.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
+            List<decimal> rounded_intensities = distributions.define_rounded_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
 
             //12 intensity values, bundled in twos; therefore 6 rounded values
             Assert.AreEqual(12, rounded_intensities.Count);
@@ -619,16 +620,16 @@ namespace Test
 
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
             QuantitativeDistributions distributions = new QuantitativeDistributions(new TusherAnalysis1() as TusherAnalysis);
-            List<decimal> rounded_intensities = distributions.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
+            List<decimal> rounded_intensities = distributions.define_rounded_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
             distributions.get_gaussian_area(histogram);
 
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
             distributions.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
             Assert.AreEqual(0.4m, distributions.allObservedGaussianArea);
-            Assert.AreEqual(1.2m, distributions.allObservedAverageIntensity);
-            Assert.AreEqual(0.082m, Math.Round(distributions.allObservedStDev, 3));
-            Assert.AreEqual(1.95m, Math.Round(distributions.allObservedGaussianHeight, 2));
+            Assert.AreEqual(1.185, distributions.allObservedAverageIntensity);
+            Assert.AreEqual(0.085m, Math.Round(distributions.allObservedStDev, 3));
+            Assert.AreEqual(1.87m, Math.Round(distributions.allObservedGaussianHeight, 2));
 
             //The rest of the calculations should be based off of selected, so setting those to zero
             distributions.allObservedGaussianArea = 0;
@@ -639,21 +640,21 @@ namespace Test
             //SELECTED INTENSITIES
             distributions.defineSelectObservedIntensityDistribution(exps, histogram);
             Assert.AreEqual(0.4m, distributions.selectGaussianArea);
-            Assert.AreEqual(1.2m, distributions.selectAverageIntensity);
-            Assert.AreEqual(0.082m, Math.Round(distributions.selectStDev, 3));
-            Assert.AreEqual(1.95m, Math.Round(distributions.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            Assert.AreEqual(1.185m, distributions.selectAverageIntensity);
+            Assert.AreEqual(0.085m, Math.Round(distributions.selectStDev, 3));
+            Assert.AreEqual(1.87m, Math.Round(distributions.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
 
             //SELECTED BACKGROUND
             Dictionary<string, List<string>> qBioFractions = e.biorepIntensityList.Select(b => b.biorep).Distinct().ToDictionary(b => b, b => new List<string>());
             distributions.defineBackgroundIntensityDistribution(qBioFractions, exps, e.biorepIntensityList.Select(b => b.condition).Distinct().Count(), -2, 0.5m);
-            Assert.AreEqual(1.04m, Math.Round(distributions.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.041m, Math.Round(distributions.bkgdStDev, 3));
+            Assert.AreEqual(1.01m, Math.Round(distributions.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.043m, Math.Round(distributions.bkgdStDev, 3));
             Assert.AreEqual(0, Math.Round(distributions.bkgdGaussianHeight, 2));
 
             //unlabeled works similarly
             distributions.defineBackgroundIntensityDistribution(qBioFractions, exps, e.biorepIntensityList.Select(b => b.condition).Distinct().Count(), -2, 0.5m);
-            Assert.AreEqual(1.04m, Math.Round(distributions.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.041m, Math.Round(distributions.bkgdStDev, 3));
+            Assert.AreEqual(1.01m, Math.Round(distributions.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.043m, Math.Round(distributions.bkgdStDev, 3));
             Assert.AreEqual(0, Math.Round(distributions.bkgdGaussianHeight, 2));
         }
 

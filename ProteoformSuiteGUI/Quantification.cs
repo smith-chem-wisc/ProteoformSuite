@@ -267,6 +267,10 @@ namespace ProteoformSuiteGUI
             rb_allTheoreticalProteins.Checked = get_go_analysis().GoAnalysis.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             rb_allTheoreticalProteins.Enabled = true;
 
+            cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed;
+            nud_foldChangeCutoff.Enabled = Sweet.lollipop.useFoldChangeCutoff;
+            nud_randomSeed.Enabled = Sweet.lollipop.useRandomSeed;
+
             rb_quantifiedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
             rb_detectedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
             rb_customBackgroundSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
@@ -371,6 +375,17 @@ namespace ProteoformSuiteGUI
             {
                 ResultsSummaryGenerator.save_biological_replicate_intensities(get_tusher_analysis(), result.FileName, false, rb_saveBftIntensities.Checked, Sweet.lollipop.satisfactoryProteoforms);
             }
+        }
+
+        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
+        {
+            nud_randomSeed.Enabled = cb_useRandomSeed.Checked;
+            Sweet.lollipop.useRandomSeed = cb_useRandomSeed.Checked;
+        }
+
+        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.randomSeed = Convert.ToInt32(nud_randomSeed.Value);
         }
 
         #endregion Quantification Private Methods
@@ -718,6 +733,7 @@ namespace ProteoformSuiteGUI
 
         private void cb_useFoldChangeCutoff_CheckedChanged(object sender, EventArgs e)
         {
+            nud_foldChangeCutoff.Enabled = cb_useFoldChangeCutoff.Checked;
             Sweet.lollipop.useFoldChangeCutoff = cb_useFoldChangeCutoff.Checked;
             get_tusher_analysis().reestablishSignficance(get_go_analysis());
             plots();

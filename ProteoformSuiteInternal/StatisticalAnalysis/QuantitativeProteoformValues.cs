@@ -51,13 +51,13 @@ namespace ProteoformSuiteInternal
         /// <param name="avgLog2Intensity"></param>
         /// <param name="stdevLog2Intensity"></param>
         /// <returns></returns>
-        public static double imputed_intensity(decimal avgLog2Intensity, decimal stdevLog2Intensity)
+        public static double imputed_intensity(decimal avgLog2Intensity, decimal stdevLog2Intensity, bool useRandomSeed, Random seeded)
         {
             //bkgdAverageIntensity is coming in as a log 2 number
             //bkgdStDev is coming in as a log 2 number
 
-            double u1 = ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
-            double u2 = ExtensionMethods.RandomNumber();
+            double u1 = useRandomSeed && seeded != null ? seeded.NextDouble() : ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
+            double u2 = useRandomSeed && seeded != null ? seeded.NextDouble() : ExtensionMethods.RandomNumber();
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1) -- normal(mean,variance)
             double intensity = Math.Pow(2, (double)avgLog2Intensity + (double)stdevLog2Intensity * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
             return intensity;

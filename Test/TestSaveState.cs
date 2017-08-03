@@ -140,6 +140,7 @@ namespace Test
         [Test]
         public void results_summary_doesnt_crash_without_initializing()
         {
+            Sweet.lollipop = new Lollipop();
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
             Assert.True(ResultsSummaryGenerator.results_dataframe(new TusherAnalysis1()).Length > 0);
         }
@@ -147,6 +148,7 @@ namespace Test
         [Test]
         public void results_dataframe_with_something()
         {
+            Sweet.lollipop = new Lollipop();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             e.linked_proteoform_references = new List<Proteoform>(new List<Proteoform> { ConstructorsForTesting.make_a_theoretical() });
             e.ptm_set = e.linked_proteoform_references.Last().ptm_set;
