@@ -54,10 +54,10 @@ namespace ProteoformSuiteInternal
             // Zero-center the intensities for each proteoform
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                double avg_biorepintensity = pf.quant.TusherValues2.allIntensities.Values.Average(b => b.intensity_sum); // row average (for this proteoform)
+                pf.quant.TusherValues2.normalization_subtractand = pf.quant.TusherValues2.allIntensities.Values.Average(b => b.intensity_sum); // row average (for this proteoform)
                 foreach (BiorepTechrepIntensity b in pf.quant.TusherValues2.allIntensities.Values)
                 {
-                    b.intensity_sum = b.intensity_sum - avg_biorepintensity;
+                    b.intensity_sum = b.intensity_sum - pf.quant.TusherValues2.normalization_subtractand;
                 }
             }
         }
@@ -158,7 +158,7 @@ namespace ProteoformSuiteInternal
             }
 
             IEnumerable<TusherStatistic> permutedPassingProteoforms = permutedTestStatistics.Where(v => 
-                (v.relative_difference <= minimumPassingNegativeTestStatistic && v.relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= v.relative_difference && v.relative_difference >= 0)
+                (v.relative_difference < minimumPassingNegativeTestStatistic && v.relative_difference <= 0 || minimumPassingPositiveTestStatisitic < v.relative_difference && v.relative_difference >= 0)
                 && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
             double avgPermutedPassingProteoforms = (double)permutedPassingProteoforms.Count() / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
 

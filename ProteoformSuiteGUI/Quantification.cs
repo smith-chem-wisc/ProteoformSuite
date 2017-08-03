@@ -34,7 +34,6 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             ClearListsTablesFigures(true);
-            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
             Sweet.lollipop.quantify();
             Sweet.lollipop.Log2FoldChangeAnalysis.calculate_log2fc_statistics();
             get_go_analysis().GoAnalysis.GO_analysis(Sweet.lollipop.significance_by_log2FC ? Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins : get_go_analysis().inducedOrRepressedProteins);
@@ -90,7 +89,8 @@ namespace ProteoformSuiteGUI
         public void FillTablesAndCharts()
         {
             plots();
-            DisplayUtility.FillDataGridView(dgv_quantification_results, Sweet.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q)));
+            TusherAnalysis analysis = get_tusher_analysis();
+            DisplayUtility.FillDataGridView(dgv_quantification_results, Sweet.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q, analysis)));
             DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
             tb_avgIntensity.Text = Math.Round(get_tusher_analysis().QuantitativeDistributions.selectAverageIntensity, 1).ToString();
             tb_stdevIntensity.Text = Math.Round(get_tusher_analysis().QuantitativeDistributions.selectStDev, 3).ToString();
@@ -106,6 +106,8 @@ namespace ProteoformSuiteGUI
                 cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
             cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
 
+            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
+
             string[] relative_difference_selections = new string[]
             {
                 "Observed vs. Expected (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)",
@@ -118,7 +120,7 @@ namespace ProteoformSuiteGUI
 
             cmbx_relativeDifferenceChartSelection.Items.Clear();
             cmbx_relativeDifferenceChartSelection.Items.AddRange(relative_difference_selections);
-            cmbx_relativeDifferenceChartSelection.SelectedIndex = 3; //start with obs vs exp
+            cmbx_relativeDifferenceChartSelection.SelectedIndex = selection;
         }
 
         public void InitializeParameterSet()
@@ -171,7 +173,7 @@ namespace ProteoformSuiteGUI
 
             cmbx_relativeDifferenceChartSelection.Items.AddRange(relative_difference_selections);
             cmbx_relativeDifferenceChartSelection.SelectedIndexChanged -= cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
-            cmbx_relativeDifferenceChartSelection.SelectedIndex = 0; //start with obs vs exp
+            cmbx_relativeDifferenceChartSelection.SelectedIndex = 3; //start with obs vs exp
             cmbx_relativeDifferenceChartSelection.SelectedIndexChanged += cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
 
             cmbx_intensityDistributionChartSelection.Items.AddRange(biorepintensity_selections);
@@ -187,6 +189,10 @@ namespace ProteoformSuiteGUI
             cb_significanceByPermutation.CheckedChanged -= cb_significanceByPermutation_CheckedChanged;
             cb_significanceByPermutation.Checked = Sweet.lollipop.significance_by_permutation;
             cb_significanceByPermutation.CheckedChanged += cb_significanceByPermutation_CheckedChanged;
+
+            nud_foldChangeCutoff.ValueChanged -= nud_foldChangeCutoff_ValueChanged;
+            nud_foldChangeCutoff.Value = Sweet.lollipop.foldChangeCutoff;
+            nud_foldChangeCutoff.ValueChanged += nud_foldChangeCutoff_ValueChanged;
 
             nud_benjiHochFDR.ValueChanged -= nud_benjiHochFDR_ValueChanged;
             nud_benjiHochFDR.Value = (decimal)Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr;
@@ -217,12 +223,18 @@ namespace ProteoformSuiteGUI
 
             nud_minObservations.Minimum = 1;
             nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
-            nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
+            if (Sweet.lollipop.minBiorepsWithObservations == new Lollipop().minBiorepsWithObservations) // check that the default has not been changed (haven't loaded presets)
+                nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
+            else
+                nud_minObservations.Value = Sweet.lollipop.minBiorepsWithObservations;
             Sweet.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
 
             cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
             cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
-            cmbx_observationsTypeRequired.SelectedIndex = 0;
+            if (Sweet.lollipop.observation_requirement == new Lollipop().observation_requirement) // check that the default has not been changed (haven't loaded presets)
+                cmbx_observationsTypeRequired.SelectedIndex = 0;
+            else
+                cmbx_observationsTypeRequired.SelectedIndex = Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement);
             Sweet.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
             cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
 
@@ -339,7 +351,7 @@ namespace ProteoformSuiteGUI
             SaveFileDialog result = new SaveFileDialog();
             if (result.ShowDialog() == DialogResult.OK)
             {
-                ResultsSummaryGenerator.save_biological_replicate_intensities(result.FileName, true, rb_saveBftIntensities.Checked, Sweet.lollipop.satisfactoryProteoforms);
+                ResultsSummaryGenerator.save_biological_replicate_intensities(get_tusher_analysis(), result.FileName, true, rb_saveBftIntensities.Checked, Sweet.lollipop.satisfactoryProteoforms);
             }
         }
 
@@ -348,7 +360,7 @@ namespace ProteoformSuiteGUI
             SaveFileDialog result = new SaveFileDialog();
             if (result.ShowDialog() == DialogResult.OK)
             {
-                ResultsSummaryGenerator.save_biological_replicate_intensities(result.FileName, false, rb_saveBftIntensities.Checked, Sweet.lollipop.satisfactoryProteoforms);
+                ResultsSummaryGenerator.save_biological_replicate_intensities(get_tusher_analysis(), result.FileName, false, rb_saveBftIntensities.Checked, Sweet.lollipop.satisfactoryProteoforms);
             }
         }
 
@@ -423,10 +435,10 @@ namespace ProteoformSuiteGUI
             return tusher;
         }
 
-        private ITusherValues get_tusher_values(QuantitativeProteoformValues q)
+        private TusherValues get_tusher_values(QuantitativeProteoformValues q)
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
-            ITusherValues tusher = selection < 3 ? q.TusherValues1 as ITusherValues : q.TusherValues2 as ITusherValues;
+            TusherValues tusher = selection < 3 ? q.TusherValues1 as TusherValues : q.TusherValues2 as TusherValues;
             return tusher;
         }
 
@@ -526,16 +538,16 @@ namespace ProteoformSuiteGUI
             for (int i = 0; i < get_tusher_analysis().sortedProteoformRelativeDifferences.Count; i++)
             {
                 decimal avg = get_tusher_analysis().avgSortedPermutationRelativeDifferences[i];
-                foreach (decimal relativedifference in get_tusher_analysis().sortedPermutedRelativeDifferences.Select(sorted => sorted[i].relative_difference))
+                foreach (TusherStatistic stat in get_tusher_analysis().sortedPermutedRelativeDifferences.Select(sorted => sorted[i]))
                 {
-                    if (relativedifference <= get_tusher_analysis().minimumPassingNegativeTestStatistic && relativedifference <= 0 || get_tusher_analysis().minimumPassingPositiveTestStatisitic <= relativedifference && relativedifference >= 0)
-                        ct_relativeDifference.Series["Passing Permuted"].Points.AddXY(avg, relativedifference);
+                    if ((stat.relative_difference < get_tusher_analysis().minimumPassingNegativeTestStatistic && stat.relative_difference <= 0 || get_tusher_analysis().minimumPassingPositiveTestStatisitic < stat.relative_difference && stat.relative_difference >= 0) && (!Sweet.lollipop.useFoldChangeCutoff || stat.fold_change > Sweet.lollipop.foldChangeCutoff))
+                        ct_relativeDifference.Series["Passing Permuted"].Points.AddXY(avg, stat.relative_difference);
                     else
-                        ct_relativeDifference.Series["Permuted"].Points.AddXY(avg, relativedifference);
+                        ct_relativeDifference.Series["Permuted"].Points.AddXY(avg, stat.relative_difference);
                     if (Math.Ceiling(Math.Abs(avg)) > max_test_stat_unit)
                         max_test_stat_unit = (int)Math.Ceiling(Math.Abs(avg));
-                    if (Math.Ceiling(Math.Abs(relativedifference)) > max_test_stat_unit)
-                        max_test_stat_unit = (int)Math.Ceiling(Math.Abs(relativedifference));
+                    if (Math.Ceiling(Math.Abs(stat.relative_difference)) > max_test_stat_unit)
+                        max_test_stat_unit = (int)Math.Ceiling(Math.Abs(stat.relative_difference));
                 }
             }
 
@@ -563,9 +575,10 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_relativeDifferenceChartSelection_SelectedIndexChanged(object sender, EventArgs e)
         {
+            get_tusher_analysis().reestablishSignficance(get_go_analysis());
             plots();
             plotBiorepIntensities();
-
+            tb_FDR.Text = Math.Round(get_tusher_analysis().relativeDifferenceFDR, 4).ToString();
         }
 
         private void plotObservedRelativeDifferenceVsFdr()

@@ -82,6 +82,8 @@
             this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
             this.splitContainer9 = new System.Windows.Forms.SplitContainer();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.nud_foldChangeCutoff = new System.Windows.Forms.NumericUpDown();
+            this.cb_useFoldChangeCutoff = new System.Windows.Forms.CheckBox();
             this.cb_significanceByPermutation = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.cmbx_inducedCondition = new System.Windows.Forms.ComboBox();
@@ -142,8 +144,6 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.nud_foldChangeCutoff = new System.Windows.Forms.NumericUpDown();
-            this.cb_useFoldChangeCutoff = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -192,6 +192,7 @@
             this.splitContainer9.Panel2.SuspendLayout();
             this.splitContainer9.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeCutoff)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).BeginInit();
@@ -223,7 +224,6 @@
             this.splitContainer14.Panel2.SuspendLayout();
             this.splitContainer14.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeCutoff)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -835,6 +835,46 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Significance FDR Via Permutation";
             // 
+            // nud_foldChangeCutoff
+            // 
+            this.nud_foldChangeCutoff.DecimalPlaces = 1;
+            this.nud_foldChangeCutoff.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nud_foldChangeCutoff.Location = new System.Drawing.Point(159, 84);
+            this.nud_foldChangeCutoff.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nud_foldChangeCutoff.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_foldChangeCutoff.Name = "nud_foldChangeCutoff";
+            this.nud_foldChangeCutoff.Size = new System.Drawing.Size(69, 20);
+            this.nud_foldChangeCutoff.TabIndex = 17;
+            this.nud_foldChangeCutoff.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_foldChangeCutoff.ValueChanged += new System.EventHandler(this.nud_foldChangeCutoff_ValueChanged);
+            // 
+            // cb_useFoldChangeCutoff
+            // 
+            this.cb_useFoldChangeCutoff.AutoSize = true;
+            this.cb_useFoldChangeCutoff.Location = new System.Drawing.Point(11, 86);
+            this.cb_useFoldChangeCutoff.Name = "cb_useFoldChangeCutoff";
+            this.cb_useFoldChangeCutoff.Size = new System.Drawing.Size(142, 17);
+            this.cb_useFoldChangeCutoff.TabIndex = 16;
+            this.cb_useFoldChangeCutoff.Text = "Use Fold Change Cutoff:";
+            this.cb_useFoldChangeCutoff.UseVisualStyleBackColor = true;
+            this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_useFoldChangeCutoff_CheckedChanged);
+            // 
             // cb_significanceByPermutation
             // 
             this.cb_significanceByPermutation.AutoSize = true;
@@ -1337,7 +1377,7 @@
             // btn_buildFamiliesWithSignificantChange
             // 
             this.btn_buildFamiliesWithSignificantChange.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_buildFamiliesWithSignificantChange.Location = new System.Drawing.Point(4, 207);
+            this.btn_buildFamiliesWithSignificantChange.Location = new System.Drawing.Point(4, 148);
             this.btn_buildFamiliesWithSignificantChange.Name = "btn_buildFamiliesWithSignificantChange";
             this.btn_buildFamiliesWithSignificantChange.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFamiliesWithSignificantChange.TabIndex = 85;
@@ -1348,7 +1388,7 @@
             // btn_buildFamiliesAllGO
             // 
             this.btn_buildFamiliesAllGO.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(4, 274);
+            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(4, 219);
             this.btn_buildFamiliesAllGO.Name = "btn_buildFamiliesAllGO";
             this.btn_buildFamiliesAllGO.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFamiliesAllGO.TabIndex = 84;
@@ -1362,7 +1402,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(68, 127);
+            this.cb_geneCentric.Location = new System.Drawing.Point(65, 84);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 100;
@@ -1373,7 +1413,7 @@
             // btn_buildFromSelectedGoTerms
             // 
             this.btn_buildFromSelectedGoTerms.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(4, 303);
+            this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(4, 248);
             this.btn_buildFromSelectedGoTerms.Name = "btn_buildFromSelectedGoTerms";
             this.btn_buildFromSelectedGoTerms.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFromSelectedGoTerms.TabIndex = 81;
@@ -1385,7 +1425,7 @@
             // 
             this.lb_timeStamp.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lb_timeStamp.AutoSize = true;
-            this.lb_timeStamp.Location = new System.Drawing.Point(22, 83);
+            this.lb_timeStamp.Location = new System.Drawing.Point(24, 61);
             this.lb_timeStamp.Name = "lb_timeStamp";
             this.lb_timeStamp.Size = new System.Drawing.Size(127, 13);
             this.lb_timeStamp.TabIndex = 71;
@@ -1394,7 +1434,7 @@
             // tb_recentTimeStamp
             // 
             this.tb_recentTimeStamp.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.tb_recentTimeStamp.Location = new System.Drawing.Point(157, 80);
+            this.tb_recentTimeStamp.Location = new System.Drawing.Point(159, 58);
             this.tb_recentTimeStamp.Name = "tb_recentTimeStamp";
             this.tb_recentTimeStamp.ReadOnly = true;
             this.tb_recentTimeStamp.Size = new System.Drawing.Size(100, 20);
@@ -1403,7 +1443,7 @@
             // btn_buildSelectedQuantFamilies
             // 
             this.btn_buildSelectedQuantFamilies.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_buildSelectedQuantFamilies.Location = new System.Drawing.Point(4, 235);
+            this.btn_buildSelectedQuantFamilies.Location = new System.Drawing.Point(4, 176);
             this.btn_buildSelectedQuantFamilies.Name = "btn_buildSelectedQuantFamilies";
             this.btn_buildSelectedQuantFamilies.Size = new System.Drawing.Size(255, 23);
             this.btn_buildSelectedQuantFamilies.TabIndex = 69;
@@ -1414,7 +1454,7 @@
             // btn_buildAllFamilies
             // 
             this.btn_buildAllFamilies.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_buildAllFamilies.Location = new System.Drawing.Point(4, 181);
+            this.btn_buildAllFamilies.Location = new System.Drawing.Point(4, 122);
             this.btn_buildAllFamilies.Name = "btn_buildAllFamilies";
             this.btn_buildAllFamilies.Size = new System.Drawing.Size(255, 23);
             this.btn_buildAllFamilies.TabIndex = 68;
@@ -1426,7 +1466,7 @@
             // 
             this.label_tempFileFolder.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label_tempFileFolder.AutoSize = true;
-            this.label_tempFileFolder.Location = new System.Drawing.Point(15, 24);
+            this.label_tempFileFolder.Location = new System.Drawing.Point(15, 6);
             this.label_tempFileFolder.Name = "label_tempFileFolder";
             this.label_tempFileFolder.Size = new System.Drawing.Size(109, 13);
             this.label_tempFileFolder.TabIndex = 67;
@@ -1435,7 +1475,7 @@
             // tb_familyBuildFolder
             // 
             this.tb_familyBuildFolder.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.tb_familyBuildFolder.Location = new System.Drawing.Point(157, 21);
+            this.tb_familyBuildFolder.Location = new System.Drawing.Point(157, 3);
             this.tb_familyBuildFolder.Name = "tb_familyBuildFolder";
             this.tb_familyBuildFolder.Size = new System.Drawing.Size(100, 20);
             this.tb_familyBuildFolder.TabIndex = 66;
@@ -1444,7 +1484,7 @@
             // btn_browseTempFolder
             // 
             this.btn_browseTempFolder.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_browseTempFolder.Location = new System.Drawing.Point(157, 51);
+            this.btn_browseTempFolder.Location = new System.Drawing.Point(157, 29);
             this.btn_browseTempFolder.Name = "btn_browseTempFolder";
             this.btn_browseTempFolder.Size = new System.Drawing.Size(100, 23);
             this.btn_browseTempFolder.TabIndex = 65;
@@ -1456,7 +1496,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.SystemColors.Control;
-            this.label7.Location = new System.Drawing.Point(81, 101);
+            this.label7.Location = new System.Drawing.Point(-3, 121);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(117, 13);
@@ -1467,9 +1507,9 @@
             // 
             this.cmbx_nodeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabel.FormattingEnabled = true;
-            this.cmbx_nodeLabel.Location = new System.Drawing.Point(4, 95);
+            this.cmbx_nodeLabel.Location = new System.Drawing.Point(0, 137);
             this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
-            this.cmbx_nodeLabel.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_nodeLabel.Size = new System.Drawing.Size(200, 21);
             this.cmbx_nodeLabel.TabIndex = 101;
             this.cmbx_nodeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -1477,7 +1517,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.BackColor = System.Drawing.SystemColors.Control;
-            this.label14.Location = new System.Drawing.Point(81, 151);
+            this.label14.Location = new System.Drawing.Point(0, 201);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(62, 13);
@@ -1488,9 +1528,9 @@
             // 
             this.cmbx_geneLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_geneLabel.FormattingEnabled = true;
-            this.cmbx_geneLabel.Location = new System.Drawing.Point(4, 148);
+            this.cmbx_geneLabel.Location = new System.Drawing.Point(0, 217);
             this.cmbx_geneLabel.Name = "cmbx_geneLabel";
-            this.cmbx_geneLabel.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_geneLabel.Size = new System.Drawing.Size(200, 21);
             this.cmbx_geneLabel.TabIndex = 93;
             this.cmbx_geneLabel.SelectedIndexChanged += new System.EventHandler(this.cmbx_geneLabel_SelectedIndexChanged);
             this.cmbx_geneLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
@@ -1499,7 +1539,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.BackColor = System.Drawing.SystemColors.Control;
-            this.label11.Location = new System.Drawing.Point(81, 127);
+            this.label11.Location = new System.Drawing.Point(-2, 161);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(116, 13);
@@ -1510,9 +1550,9 @@
             // 
             this.cmbx_edgeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_edgeLabel.FormattingEnabled = true;
-            this.cmbx_edgeLabel.Location = new System.Drawing.Point(4, 121);
+            this.cmbx_edgeLabel.Location = new System.Drawing.Point(0, 177);
             this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
-            this.cmbx_edgeLabel.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_edgeLabel.Size = new System.Drawing.Size(200, 21);
             this.cmbx_edgeLabel.TabIndex = 98;
             this.cmbx_edgeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -1520,7 +1560,7 @@
             // 
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(0, 190);
+            this.groupBox5.Location = new System.Drawing.Point(1, 244);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(200, 68);
             this.groupBox5.TabIndex = 97;
@@ -1551,7 +1591,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.BackColor = System.Drawing.SystemColors.Control;
-            this.label8.Location = new System.Drawing.Point(81, 73);
+            this.label8.Location = new System.Drawing.Point(-3, 81);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(116, 13);
@@ -1562,7 +1602,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.SystemColors.Control;
-            this.label9.Location = new System.Drawing.Point(83, 51);
+            this.label9.Location = new System.Drawing.Point(2, 41);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(68, 13);
@@ -1572,7 +1612,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(83, 23);
+            this.label10.Location = new System.Drawing.Point(2, 1);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(102, 13);
@@ -1583,9 +1623,9 @@
             // 
             this.cmbx_nodeLabelPositioning.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabelPositioning.FormattingEnabled = true;
-            this.cmbx_nodeLabelPositioning.Location = new System.Drawing.Point(4, 67);
+            this.cmbx_nodeLabelPositioning.Location = new System.Drawing.Point(0, 97);
             this.cmbx_nodeLabelPositioning.Name = "cmbx_nodeLabelPositioning";
-            this.cmbx_nodeLabelPositioning.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_nodeLabelPositioning.Size = new System.Drawing.Size(200, 21);
             this.cmbx_nodeLabelPositioning.TabIndex = 91;
             this.cmbx_nodeLabelPositioning.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -1593,9 +1633,9 @@
             // 
             this.cmbx_nodeLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLayout.FormattingEnabled = true;
-            this.cmbx_nodeLayout.Location = new System.Drawing.Point(4, 40);
+            this.cmbx_nodeLayout.Location = new System.Drawing.Point(0, 57);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
-            this.cmbx_nodeLayout.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_nodeLayout.Size = new System.Drawing.Size(200, 21);
             this.cmbx_nodeLayout.TabIndex = 90;
             this.cmbx_nodeLayout.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -1603,51 +1643,11 @@
             // 
             this.cmbx_colorScheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_colorScheme.FormattingEnabled = true;
-            this.cmbx_colorScheme.Location = new System.Drawing.Point(4, 13);
+            this.cmbx_colorScheme.Location = new System.Drawing.Point(0, 19);
             this.cmbx_colorScheme.Name = "cmbx_colorScheme";
-            this.cmbx_colorScheme.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_colorScheme.Size = new System.Drawing.Size(200, 21);
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
-            // 
-            // nud_foldChangeCutoff
-            // 
-            this.nud_foldChangeCutoff.DecimalPlaces = 1;
-            this.nud_foldChangeCutoff.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.nud_foldChangeCutoff.Location = new System.Drawing.Point(159, 84);
-            this.nud_foldChangeCutoff.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nud_foldChangeCutoff.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_foldChangeCutoff.Name = "nud_foldChangeCutoff";
-            this.nud_foldChangeCutoff.Size = new System.Drawing.Size(69, 20);
-            this.nud_foldChangeCutoff.TabIndex = 17;
-            this.nud_foldChangeCutoff.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_foldChangeCutoff.ValueChanged += new System.EventHandler(this.nud_foldChangeCutoff_ValueChanged);
-            // 
-            // cb_useFoldChangeCutoff
-            // 
-            this.cb_useFoldChangeCutoff.AutoSize = true;
-            this.cb_useFoldChangeCutoff.Location = new System.Drawing.Point(11, 86);
-            this.cb_useFoldChangeCutoff.Name = "cb_useFoldChangeCutoff";
-            this.cb_useFoldChangeCutoff.Size = new System.Drawing.Size(142, 17);
-            this.cb_useFoldChangeCutoff.TabIndex = 16;
-            this.cb_useFoldChangeCutoff.Text = "Use Fold Change Cutoff:";
-            this.cb_useFoldChangeCutoff.UseVisualStyleBackColor = true;
-            this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_useFoldChangeCutoff_CheckedChanged);
             // 
             // Quantification
             // 
@@ -1712,6 +1712,7 @@
             this.splitContainer9.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeCutoff)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).EndInit();
@@ -1748,7 +1749,6 @@
             this.splitContainer14.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeCutoff)).EndInit();
             this.ResumeLayout(false);
 
         }

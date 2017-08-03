@@ -7,6 +7,7 @@ namespace ProteoformSuiteInternal
     public class TusherValues
         : IStatisiticalSignificance
     {
+
         #region Public Properties        
 
         public decimal numeratorIntensitySum { get; set; } = 0;
@@ -18,6 +19,7 @@ namespace ProteoformSuiteInternal
         public TusherStatistic tusher_statistic { get; set; }
         public decimal correspondingAvgSortedRelDiff { get; set; }
         public decimal roughSignificanceFDR { get; set; } = 0;
+        public double normalization_subtractand { get; set; } = 0;
 
         #endregion Public Properties
 
@@ -65,10 +67,10 @@ namespace ProteoformSuiteInternal
 
         public decimal getSingleFoldChange(List<IBiorepIntensity> allInduced, List<IBiorepIntensity> allUninduced)
         {
-            double i = allInduced.Sum(x => x.intensity_sum);
-            double u = allUninduced.Sum(x => x.intensity_sum);
+            double i = allInduced.Sum(x => x.intensity_sum + normalization_subtractand);
+            double u = allUninduced.Sum(x => x.intensity_sum + normalization_subtractand);
             double max_sum = Math.Max(i, u);
-            double min_sum = Math.Max(i, u);
+            double min_sum = Math.Min(i, u);
             if (min_sum == 0) return 1000000m;
             return (decimal)max_sum / (decimal)min_sum;
         }

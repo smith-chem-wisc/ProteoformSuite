@@ -81,7 +81,7 @@ namespace ProteoformSuiteInternal
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
 
             int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v =>
-                (v.relative_difference <= minimumNegativePassingTestStatistic && v.relative_difference <= 0 || minimumPositivePassingTestStatistic <= v.relative_difference && v.relative_difference >= 0)
+                (v.relative_difference < minimumNegativePassingTestStatistic && v.relative_difference <= 0 || minimumPositivePassingTestStatistic < v.relative_difference && v.relative_difference >= 0)
                 && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
             decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
