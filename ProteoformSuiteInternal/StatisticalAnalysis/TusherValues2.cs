@@ -20,19 +20,19 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void impute_biorep_intensities(List<BiorepTechrepIntensity> intensities, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
+        public void impute_biorep_intensities(List<BiorepTechrepIntensity> intensities, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot, bool useRandomSeed, Random seeded)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
 
             significant = false;
             numeratorOriginalIntensities = intensities.Where(b => b.condition == numerator_condition).Select(x => new BiorepTechrepIntensity(x.imputed, x.biorep, x.condition, x.techrep, x.intensity_sum)).ToList(); // normalized, so create new objects
-            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
+            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition], Sweet.lollipop.useRandomSeed, seeded);
             numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
             denominatorOriginalIntensities = intensities.Where(b => b.condition == denominator_condition).Select(x => new BiorepTechrepIntensity(x.imputed, x.biorep, x.condition, x.techrep, x.intensity_sum)).ToList(); // normalized, so create new objects
-            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
+            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition], Sweet.lollipop.useRandomSeed, seeded);
             denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
 
@@ -64,7 +64,7 @@ namespace ProteoformSuiteInternal
         /// <param name="condition"></param>
         /// <param name="bioreps"></param>
         /// <returns></returns>
-        public static List<BiorepTechrepIntensity> imputedIntensities(List<BiorepTechrepIntensity> observedBioreps, IEnumerable<InputFile> files, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<string> bioreps)
+        public static List<BiorepTechrepIntensity> imputedIntensities(List<BiorepTechrepIntensity> observedBioreps, IEnumerable<InputFile> files, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<string> bioreps, bool useRandomSeed, Random seeded)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
             return (
                 from x in bt
                 where !observedBioreps.Any(k => k.condition == condition && k.biorep == x.Item1 && k.techrep == x.Item2)
-                select new BiorepTechrepIntensity(true, x.Item1, condition, x.Item2, QuantitativeProteoformValues.imputed_intensity(bkgdAverageIntensity, bkgdStDev)))
+                select new BiorepTechrepIntensity(true, x.Item1, condition, x.Item2, QuantitativeProteoformValues.imputed_intensity(bkgdAverageIntensity, bkgdStDev, useRandomSeed, seeded)))
                 .ToList();
         }
 

@@ -144,6 +144,8 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
+            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
+            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -224,6 +226,7 @@
             this.splitContainer14.Panel2.SuspendLayout();
             this.splitContainer14.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -408,13 +411,15 @@
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_proteoformIntensities);
             this.splitContainer5.Size = new System.Drawing.Size(484, 491);
-            this.splitContainer5.SplitterDistance = 102;
+            this.splitContainer5.SplitterDistance = 126;
             this.splitContainer5.TabIndex = 0;
             // 
             // gb_quantDataDisplaySelection
             // 
             this.gb_quantDataDisplaySelection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.gb_quantDataDisplaySelection.Controls.Add(this.nud_randomSeed);
             this.gb_quantDataDisplaySelection.Controls.Add(this.label18);
+            this.gb_quantDataDisplaySelection.Controls.Add(this.cb_useRandomSeed);
             this.gb_quantDataDisplaySelection.Controls.Add(this.cmbx_intensityDistributionChartSelection);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_stdevIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_avgIntensity);
@@ -429,7 +434,7 @@
             this.gb_quantDataDisplaySelection.Margin = new System.Windows.Forms.Padding(2);
             this.gb_quantDataDisplaySelection.Name = "gb_quantDataDisplaySelection";
             this.gb_quantDataDisplaySelection.Padding = new System.Windows.Forms.Padding(2);
-            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 102);
+            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 126);
             this.gb_quantDataDisplaySelection.TabIndex = 20;
             this.gb_quantDataDisplaySelection.TabStop = false;
             this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
@@ -438,7 +443,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(15, 48);
+            this.label18.Location = new System.Drawing.Point(229, 23);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(176, 13);
             this.label18.TabIndex = 14;
@@ -448,7 +453,7 @@
             // 
             this.cmbx_intensityDistributionChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_intensityDistributionChartSelection.FormattingEnabled = true;
-            this.cmbx_intensityDistributionChartSelection.Location = new System.Drawing.Point(18, 66);
+            this.cmbx_intensityDistributionChartSelection.Location = new System.Drawing.Point(232, 41);
             this.cmbx_intensityDistributionChartSelection.Name = "cmbx_intensityDistributionChartSelection";
             this.cmbx_intensityDistributionChartSelection.Size = new System.Drawing.Size(246, 21);
             this.cmbx_intensityDistributionChartSelection.TabIndex = 13;
@@ -457,7 +462,7 @@
             // 
             // tb_stdevIntensity
             // 
-            this.tb_stdevIntensity.Location = new System.Drawing.Point(397, 17);
+            this.tb_stdevIntensity.Location = new System.Drawing.Point(127, 44);
             this.tb_stdevIntensity.Name = "tb_stdevIntensity";
             this.tb_stdevIntensity.ReadOnly = true;
             this.tb_stdevIntensity.Size = new System.Drawing.Size(82, 20);
@@ -465,16 +470,16 @@
             // 
             // tb_avgIntensity
             // 
-            this.tb_avgIntensity.Location = new System.Drawing.Point(186, 17);
+            this.tb_avgIntensity.Location = new System.Drawing.Point(127, 19);
             this.tb_avgIntensity.Name = "tb_avgIntensity";
             this.tb_avgIntensity.ReadOnly = true;
-            this.tb_avgIntensity.Size = new System.Drawing.Size(78, 20);
+            this.tb_avgIntensity.Size = new System.Drawing.Size(82, 20);
             this.tb_avgIntensity.TabIndex = 10;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(270, 20);
+            this.label16.Location = new System.Drawing.Point(5, 51);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(121, 13);
             this.label16.TabIndex = 9;
@@ -483,16 +488,16 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(82, 20);
+            this.label17.Location = new System.Drawing.Point(5, 26);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(98, 13);
+            this.label17.Size = new System.Drawing.Size(116, 13);
             this.label17.TabIndex = 8;
-            this.label17.Text = "Avg. Log2 Intensity";
+            this.label17.Text = "Average Log2 Intensity";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(333, 52);
+            this.label5.Location = new System.Drawing.Point(58, 72);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 7;
@@ -501,7 +506,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(340, 78);
+            this.label4.Location = new System.Drawing.Point(65, 98);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 6;
@@ -515,7 +520,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdWidth.Location = new System.Drawing.Point(402, 48);
+            this.nud_bkgdWidth.Location = new System.Drawing.Point(127, 70);
             this.nud_bkgdWidth.Maximum = new decimal(new int[] {
             1,
             0,
@@ -544,7 +549,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(402, 74);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(127, 96);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -584,7 +589,7 @@
             series2.Name = "Series2";
             this.ct_proteoformIntensities.Series.Add(series1);
             this.ct_proteoformIntensities.Series.Add(series2);
-            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 385);
+            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 361);
             this.ct_proteoformIntensities.TabIndex = 25;
             this.ct_proteoformIntensities.Text = "log2_intensity";
             this.ct_proteoformIntensities.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_proteoformIntensities_MouseClick);
@@ -1649,6 +1654,40 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
+            // nud_randomSeed
+            // 
+            this.nud_randomSeed.Location = new System.Drawing.Point(351, 78);
+            this.nud_randomSeed.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Name = "nud_randomSeed";
+            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
+            this.nud_randomSeed.TabIndex = 19;
+            this.nud_randomSeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
+            // 
+            // cb_useRandomSeed
+            // 
+            this.cb_useRandomSeed.AutoSize = true;
+            this.cb_useRandomSeed.Location = new System.Drawing.Point(232, 79);
+            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
+            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
+            this.cb_useRandomSeed.TabIndex = 18;
+            this.cb_useRandomSeed.Text = "Use Random Seed:";
+            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
+            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1749,6 +1788,7 @@
             this.splitContainer14.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1859,5 +1899,7 @@
         private System.Windows.Forms.NumericUpDown nud_benjiHochFDR;
         private System.Windows.Forms.NumericUpDown nud_foldChangeCutoff;
         private System.Windows.Forms.CheckBox cb_useFoldChangeCutoff;
+        private System.Windows.Forms.NumericUpDown nud_randomSeed;
+        private System.Windows.Forms.CheckBox cb_useRandomSeed;
     }
 }

@@ -764,6 +764,8 @@ namespace ProteoformSuiteInternal
         // Imputation
         public decimal backgroundShift = -1.8m;
         public decimal backgroundWidth = 0.5m;
+        public bool useRandomSeed = false;
+        public int randomSeed = 1;
 
         // Log2FC statistics
         public Log2FoldChangeAnalysis Log2FoldChangeAnalysis = new Log2FoldChangeAnalysis();
@@ -777,6 +779,7 @@ namespace ProteoformSuiteInternal
         public decimal sKnot_minFoldChange = 1m; // this is used in the original paper to correct for artificially high relative differences calculated at low intensities. Mass spec intensities are high enough in general that this is not a problem, so this is not customized by the user.
         public bool useFoldChangeCutoff = false;
         public decimal foldChangeCutoff = 1.5m;
+        public Random seeded;
 
         // "Local FDR" calculated using the relative difference of each proteoform as both minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic. This is an unofficial extension of the statisitical analysis above.
         public bool useLocalFdrCutoff = false;
@@ -791,6 +794,9 @@ namespace ProteoformSuiteInternal
             IEnumerable<string> ltconditions = ltConditionsBioReps.Keys;
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
+
+            if (useRandomSeed)
+                seeded = new Random(randomSeed);
 
             computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
