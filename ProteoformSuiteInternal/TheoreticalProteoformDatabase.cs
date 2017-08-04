@@ -107,13 +107,8 @@ namespace ProteoformSuiteInternal
             process_decoys(expanded_proteins, variableModifications);
 
             if (Sweet.lollipop.combine_theoretical_proteoforms_byMass)
-            {
-                Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms);
-                foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
-                {
-                   community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
-                }
-            }
+                Parallel.ForEach(new ProteoformCommunity[] { Sweet.lollipop.target_proteoform_community }.Concat(Sweet.lollipop.decoy_proteoform_communities.Values), community => 
+                    community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms));
         }
 
         //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
