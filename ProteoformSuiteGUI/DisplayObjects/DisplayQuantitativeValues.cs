@@ -43,12 +43,12 @@ namespace ProteoformSuiteGUI
 
         public decimal NumeratorIntensitySum
         {
-            get { return qval.numeratorIntensitySum; }
+            get { return qval.TusherValues1.numeratorIntensitySum; }
         }
         
         public decimal DenominatorIntensitySum
         {
-            get { return qval.denominatorIntensitySum; }
+            get { return qval.TusherValues1.denominatorIntensitySum; }
         }
 
         public decimal IntensitySum
@@ -63,27 +63,27 @@ namespace ProteoformSuiteGUI
 
         public decimal Scatter_linear
         {
-            get { return qval.scatter; }
+            get { return qval.TusherValues1.scatter; }
         }
 
-        public decimal pValue
+        public double pValue
         {
-            get { return qval.pValue; }
+            get { return qval.Log2FoldChangeValues.pValue_uncorrected; }
         }
 
         public bool Significant
         {
-            get { return qval.significant; }
+            get { return qval.TusherValues1.significant; }
         }
 
         public decimal TestStatistic_linear
         {
-            get { return qval.relative_difference; }
+            get { return qval.TusherValues1.relative_difference; }
         }
 
         public decimal AvgPermutedTestStatistic
         {
-            get { return qval.correspondingAvgSortedRelDiff; }
+            get { return qval.TusherValues1.correspondingAvgSortedRelDiff; }
         }
 
         public string manual_validation_quant

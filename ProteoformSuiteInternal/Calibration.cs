@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
         public int numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
         private IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
 
-        public bool Run_TdMzCal(InputFile file, List<TopDownHit> identifications, bool td_file, int bio_rep, int fraction, int tech_rep)
+        public bool Run_TdMzCal(InputFile file, List<TopDownHit> identifications, bool td_file, string bio_rep, string fraction, string tech_rep)
         {
 
             if (identifications.Count < 5) return false;
@@ -54,7 +54,7 @@ namespace ProteoformSuiteInternal
             return true;
         }
 
-        private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, bool td_file, int bio_rep, int fraction, int tech_rep)
+        private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, bool td_file, string bio_rep, string fraction, string tech_rep)
         {
             var rnd = new Random();
 
@@ -83,7 +83,7 @@ namespace ProteoformSuiteInternal
         }
 
 
-        public void CalibrateHitsAndComponents(CalibrationFunction bestCf, bool td_file, int bio_rep, int fraction, int tech_rep)
+        public void CalibrateHitsAndComponents(CalibrationFunction bestCf, bool td_file, string bio_rep, string fraction, string tech_rep)
         {
             foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.biological_replicate == bio_rep && h.fraction == fraction && (!td_file || h.technical_replicate == tech_rep)))
             {
@@ -112,7 +112,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private void CalibrateLinear(bool td_file, int bio_rep, int fraction, int tech_rep, List<LabeledMs1DataPoint> res)
+        private void CalibrateLinear(bool td_file, string bio_rep, string fraction, string tech_rep, List<LabeledMs1DataPoint> res)
         {
             var rnd = new Random();
 
@@ -178,7 +178,7 @@ namespace ProteoformSuiteInternal
             CalibrateHitsAndComponents(bestMS1predictor, td_file, bio_rep, fraction, tech_rep);
         }
 
-        private DataPointAquisitionResults GetDataPoints(List<TopDownHit> identifications, bool td_file, int bio_rep, int fraction, int tech_rep)
+        private DataPointAquisitionResults GetDataPoints(List<TopDownHit> identifications, bool td_file, string bio_rep, string fraction, string tech_rep)
         {
             DataPointAquisitionResults res = new DataPointAquisitionResults()
             {

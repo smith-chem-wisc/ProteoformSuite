@@ -21,13 +21,13 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
 
-            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
-            listForPosition1.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, ModificationSites.K, 2, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition1.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 2, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
 
             List<Modification> listForPosition2 = new List<Modification>();
 
-            listForPosition2.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, ModificationSites.K, 3, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
-            listForPosition2.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, ModificationSites.K, 4, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition2.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 3, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition2.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 4, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -60,13 +60,13 @@ namespace Test
 
             List<Modification> listForPosition1 = new List<Modification>();
 
-            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1.1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
-            listForPosition1.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, ModificationSites.K, 2.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1.1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition1.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 2.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
 
             List<Modification> listForPosition2 = new List<Modification>();
 
-            listForPosition2.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, ModificationSites.K, 3.001, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
-            listForPosition2.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, ModificationSites.K, 4.0001, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition2.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 3.001, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition2.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 4.0001, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -100,15 +100,15 @@ namespace Test
             ModificationMotif.TryGetMotif("K", out motif);
 
             List<Modification> listForPosition1 = new List<Modification>();
-            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition2 = new List<Modification>();
-            listForPosition2.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition2.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition3 = new List<Modification>();
-            listForPosition3.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition3.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition4 = new List<Modification>();
-            listForPosition4.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition4.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition5 = new List<Modification>();
-            listForPosition5.Add(new ModificationWithMass("description5", new Tuple<string, string>("", ""), motif, ModificationSites.K, 100, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition5.Add(new ModificationWithMass("description5", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 100, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -141,16 +141,16 @@ namespace Test
             ModificationMotif.TryGetMotif("K", out motif);
 
             List<Modification> listForPosition1 = new List<Modification>();
-            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition1.Add(new ModificationWithMass("description1", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition2 = new List<Modification>();
-            listForPosition2.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition2.Add(new ModificationWithMass("description2", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition3 = new List<Modification>();
-            listForPosition3.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition3.Add(new ModificationWithMass("description3", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition4 = new List<Modification>();
-            listForPosition4.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition4.Add(new ModificationWithMass("description4", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
             List<Modification> listForPosition5 = new List<Modification>();
-            listForPosition5.Add(new ModificationWithMass("description5", new Tuple<string, string>("", ""), motif, ModificationSites.K, 100, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
-            listForPosition5.Add(new ModificationWithMass("description6", new Tuple<string, string>("", ""), motif, ModificationSites.K, 200, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition5.Add(new ModificationWithMass("description5", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 100, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
+            listForPosition5.Add(new ModificationWithMass("description6", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 200, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), ""));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);

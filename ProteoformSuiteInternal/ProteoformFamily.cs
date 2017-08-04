@@ -129,7 +129,7 @@ namespace ProteoformSuiteInternal
 
         #endregion Public Methods
 
-        #region Private Methods
+         #region Private Methods
 
         private List<Proteoform> construct_family(List<Proteoform> seed)
         {

@@ -18,7 +18,6 @@ namespace ProteoformSuiteGUI
         #region Private Field
 
         private RelationUtility relationUtility;
-        private List<DisplayProteoformRelation> displayRelations = new List<DisplayProteoformRelation>();
 
         #endregion Private Field
 
@@ -28,6 +27,8 @@ namespace ProteoformSuiteGUI
         {
             this.relationUtility = new RelationUtility();
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             this.dgv_EE_Peaks.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             this.ct_EE_Histogram.MouseClick += new MouseEventHandler(ct_EE_Histogram_MouseClick);
             this.ct_EE_peakList.MouseClick += new MouseEventHandler(ct_EE_peakList_MouseClick);
@@ -69,9 +70,12 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.DataSource = null;
             dgv_EE_Relations.Rows.Clear();
             dgv_EE_Peaks.Rows.Clear();
+            cb_automate_peak_acceptance.Checked = false;
+            tb_max_accepted_fdr.Clear();
             tb_peakTableFilter.Clear();
             tb_relationTableFilter.Clear();
-            cb_automate_peak_acceptance.Checked = false;
+            tb_totalAcceptedEERelations.Clear();
+            tb_TotalEEPeaks.Clear();
 
             if (clear_following)
             {
@@ -91,7 +95,7 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.CurrentCellDirtyStateChanged -= EE_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             DisplayUtility.FillDataGridView(dgv_EE_Peaks, Sweet.lollipop.ee_peaks.OrderByDescending(p => p.peak_relation_group_count).Select(p => new DisplayDeltaMassPeak(p)));
             DisplayUtility.FillDataGridView(dgv_EE_Relations, Sweet.lollipop.ee_relations.Select(r => new DisplayProteoformRelation(r)));
-            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true, false);
             DisplayDeltaMassPeak.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
@@ -219,10 +223,10 @@ namespace ProteoformSuiteGUI
         private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
         {
             IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
-                displayRelations :
-                ExtensionMethods.filter(displayRelations.ToList(), tb_relationTableFilter.Text);
+                Sweet.lollipop.ee_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) :
+                ExtensionMethods.filter(Sweet.lollipop.ee_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)), tb_relationTableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_EE_Relations, selected_peaks);
-            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true, false);
         }
 
         private void GraphEERelations()

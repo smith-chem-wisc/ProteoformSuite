@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
                 writer.Write(results_dataframe());
         }
 
-        private static void save_cytoscripts(string directory, string timestamp)
+        private static void save_cytoscripts(string directory, string timestamp, IGoAnalysis go_analysis, ITusherAnalysis tusher_analysis)
         {
             string message = "";
 
@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
                     ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
                 message += Environment.NewLine;
 
-                message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.minProteoformFoldChange, Sweet.lollipop.maxGoTermFDR, Sweet.lollipop.minProteoformIntensity).Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.getInterestingFamilies(tusher_analysis, Sweet.lollipop.satisfactoryProteoforms, go_analysis.GoAnalysis.minProteoformFoldChange, go_analysis.GoAnalysis.maxGoTermFDR, go_analysis.GoAnalysis.minProteoformIntensity).Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, "SignificantChanges_", timestamp,
                     true, 
                     true, true, 
@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
                 message += Environment.NewLine;
             }
 
-            foreach (GoTermNumber gtn in Sweet.lollipop.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).ToList())
+            foreach (GoTermNumber gtn in go_analysis.GoAnalysis.goTermNumbers.Where(g => g.by < (double)go_analysis.GoAnalysis.maxGoTermFDR).ToList())
             {
                 message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
@@ -72,13 +72,13 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public static void save_all(string directory, string timestamp)
+        public static void save_all(string directory, string timestamp, IGoAnalysis go_analysis, ITusherAnalysis tusher_analysis)
         {
             Parallel.Invoke
             (
                 () => save_summary(Sweet.lollipop.results_folder, timestamp),
                 () => save_dataframe(Sweet.lollipop.results_folder, timestamp),
-                () => save_cytoscripts(Sweet.lollipop.results_folder, timestamp)
+                () => save_cytoscripts(Sweet.lollipop.results_folder, timestamp, go_analysis, tusher_analysis)
             );
         }
 
@@ -92,10 +92,10 @@ namespace ProteoformSuiteInternal
                 loaded_files_report();
         }
 
-        public static void save_biological_replicate_intensities(string filename, bool include_imputation, List<ExperimentalProteoform> proteoforms)
+        public static void save_biological_replicate_intensities(string filename, bool include_imputation, bool use_bft, List<ExperimentalProteoform> proteoforms)
         {
             using (StreamWriter writer = new StreamWriter(filename))
-                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.conditionsBioReps, include_imputation));
+                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation, use_bft));
         }
 
         public static string actions()
@@ -204,42 +204,66 @@ namespace ProteoformSuiteInternal
         {
             string report = "";
 
+            report += "QUANTIFICATION" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Sweet.lollipop.minBiorepsWithObservations.ToString() + " = " + Sweet.lollipop.observation_requirement + ")" + Environment.NewLine;
-            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
-            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.minProteoformFoldChange, Sweet.lollipop.maxGoTermFDR, Sweet.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
-            report += Sweet.lollipop.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
-            report += Sweet.lollipop.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine;
+            report += Environment.NewLine;
+
+            report += "TUSHER ANALYSIS (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine; ;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Environment.NewLine;
+
+            report += "TUSHER ANALYSIS (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine; ;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues2.significant).ToString() + "\tExperimental Proteoforms with Significant Change" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis2 as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.TusherAnalysis2.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Environment.NewLine;
+
+            report += "LOG2 FOLD CHANGE ANALYSIS" + Environment.NewLine; ;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.Log2FoldChangeValues.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Benjimini-Hochberg Q-Value < " + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr + ")" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Sweet.lollipop.getInterestingFamilies(null, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Environment.NewLine;
 
             // Venn Diagram of quantifiable proteoforms
             List<string> conditions = Sweet.lollipop.ltConditionsBioReps.Keys.Concat(Sweet.lollipop.hvConditionsBioReps.Keys).Distinct().ToList();
             foreach (string condition in conditions)
             {
-                Sweet.lollipop.ltConditionsBioReps.TryGetValue(condition, out List<int> ltbioreps);
-                Sweet.lollipop.hvConditionsBioReps.TryGetValue(condition, out List<int> hvbioreps);
-                List<int> combined_bioreps = ltbioreps == null && hvbioreps == null ?
-                    new List<int>() :
-                    ltbioreps == null ? hvbioreps.Distinct().ToList() :
-                    hvbioreps == null ? ltbioreps.Distinct().ToList() :
-                        ltbioreps.Concat(hvbioreps).Distinct().ToList();
+                Sweet.lollipop.ltConditionsBioReps.TryGetValue(condition, out List<string> ltbioreps);
+                Sweet.lollipop.hvConditionsBioReps.TryGetValue(condition, out List<string> hvbioreps);
+                string[] combined_bioreps = ltbioreps == null && hvbioreps == null ?
+                    new string[0] :
+                    ltbioreps == null ? hvbioreps.Distinct().ToArray() :
+                    hvbioreps == null ? ltbioreps.Distinct().ToArray() :
+                        ltbioreps.Concat(hvbioreps)
+                        .Distinct()
+                        .ToArray();
 
-                report += combined_bioreps.Count.ToString() + "\tBiological Replicates for " + condition + Environment.NewLine;
+                report += combined_bioreps.Length.ToString() + "\tBiological Replicates for " + condition + Environment.NewLine;
 
-                for (int start = 0; start < combined_bioreps.Count; start++)
+                for (int start = 0; start < combined_bioreps.Length; start++)
                 {
                     int exp_prots_with_these_bioreps = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]));
                     int exp_prots_with_these_bioreps_exclusive = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == 1);
                     report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicate #" + combined_bioreps[start].ToString() + Environment.NewLine;
                     report += exp_prots_with_these_bioreps_exclusive + "\tExperimental Proteoforms Observed Exclusively in " + condition + ", Biological Replicate #" + combined_bioreps[start].ToString() + Environment.NewLine;
 
-                    for (int end = start; end < combined_bioreps.Count; end++)
+                    for (int end = start; end < combined_bioreps.Length; end++)
                     {
                         for (int between = end; between > start; between--)
                         {
-                            List<int> bioreps_of_interest = new List<int> { start }.Concat(Enumerable.Range(between, end - between + 1)).Distinct().Select(idx => combined_bioreps[idx]).ToList();
+                            List<string> bioreps_of_interest = new List<int> { start }.Concat(Enumerable.Range(between, end - between + 1)).Distinct().Select(idx => combined_bioreps[idx]).ToList();
                             exp_prots_with_these_bioreps = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)));
                             exp_prots_with_these_bioreps_exclusive = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == bioreps_of_interest.Distinct().Count());
                             report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicates #" + String.Join(" #", bioreps_of_interest) + Environment.NewLine;
@@ -259,14 +283,26 @@ namespace ProteoformSuiteInternal
 
         public static string proteins_of_significance()
         {
-            return "Identified Proteins with Significant Change: " + Environment.NewLine
-                + String.Join(Environment.NewLine, Sweet.lollipop.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            string result = "";
+            result += "Identified Proteins with Significant Change: (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "Identified Proteins with Significant Change: (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count + " Permutations)" + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "Identified Proteins with Significant Change: (by log2 fold change analysis)" + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            return result;
         }
 
         public static string go_terms_of_significance()
         {
-            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine
-                + String.Join(Environment.NewLine, Sweet.lollipop.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            string result = "";
+            result += "GO Terms of Significance, Tusher Analysis with " + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count + " permutations (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "GO Terms of Significance, Tusher Analysis with " + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count + " permutations (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.TusherAnalysis2.GoAnalysis.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            result += "GO Terms of Significance, Log2 Fold Change Analysis with " + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR (Benjimini-Yekeulti p-value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.goTermNumbers.Where(g => g.by < (double)Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            return result;
         }
 
         public static string results_dataframe()
@@ -287,11 +323,9 @@ namespace ProteoformSuiteInternal
             results.Columns.Add((Sweet.lollipop.denominator_condition == "" ? "Condition #2" : Sweet.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add("Statistically Significant", typeof(bool));
 
-            foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(e => e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0
-                && 
-                
-                e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
-                .OrderByDescending(e => e.quant.significant ? 1 : 0)
+            foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+                .Where(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0 && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
+                .OrderByDescending(e => (Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : e.quant.TusherValues1.significant) ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
@@ -308,9 +342,9 @@ namespace ProteoformSuiteInternal
                     e.modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
-                    e.quant.numeratorIntensitySum,
-                    e.quant.denominatorIntensitySum,
-                    e.quant.significant
+                    e.quant.TusherValues1.numeratorIntensitySum,
+                    e.quant.TusherValues1.denominatorIntensitySum,
+                    Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : e.quant.TusherValues1.significant
                 );
             }
             foreach (TopDownProteoform td in Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.linked_proteoform_references != null))
@@ -349,15 +383,27 @@ namespace ProteoformSuiteInternal
             return result_string.ToString();
         }
 
-        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, Dictionary<string, List<int>> conditionsBioReps, bool include_imputation)
+        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation, bool use_bft)
         {
             DataTable results = new DataTable();
             results.Columns.Add("Proteoform ID", typeof(string));
-            foreach (KeyValuePair<string, List<int>> condition_bioreps in conditionsBioReps)
+            foreach (KeyValuePair<string, List<string>> condition_bioreps in conditionsBioReps)
             {
-                foreach (int biorep in condition_bioreps.Value)
+                foreach (string biorep in condition_bioreps.Value)
                 {
-                    results.Columns.Add(condition_bioreps.Key + "_" + biorep.ToString(), typeof(double));
+                    if (use_bft)
+                    {
+                        HashSet<Tuple<string, string>> frac_tech = new HashSet<Tuple<string, string>>();
+                        frac_tech = new HashSet<Tuple<string, string>>(input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep).Select(f => new Tuple<string, string>(f.fraction, f.technical_replicate)));
+                        foreach (Tuple<string, string> ft in frac_tech)
+                        {
+                            results.Columns.Add(condition_bioreps.Key + "_" + biorep + "_" + ft.Item1 + "_" + ft.Item2, typeof(double));
+                        }
+                    }
+                    else
+                    {
+                        results.Columns.Add(condition_bioreps.Key + "_" + biorep, typeof(double));
+                    }
                 }
             }
 
@@ -365,13 +411,25 @@ namespace ProteoformSuiteInternal
             {
                 DataRow row = results.NewRow();
                 row["Proteoform ID"] = pf.accession;
-                foreach (KeyValuePair<string, List<int>> condition_bioreps in conditionsBioReps)
+                foreach (KeyValuePair<string, List<string>> condition_bioreps in conditionsBioReps)
                 {
-                    foreach (int biorep in condition_bioreps.Value)
+                    foreach (string biorep in condition_bioreps.Value)
                     {
-                        BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, int>(condition_bioreps.Key, biorep)];
-                        double value = !br.imputed || include_imputation ? br.intensity : double.NaN;
-                        row[condition_bioreps.Key + "_" + biorep.ToString()] = value;
+                        if (use_bft)
+                        {
+                            foreach (InputFile f in input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep))
+                            {
+                                pf.quant.Log2FoldChangeValues.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
+                                double value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
+                                row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;
+                            }
+                        }
+                        else
+                        {
+                            pf.quant.TusherValues1.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
+                            double value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
+                            row[condition_bioreps.Key + "_" + biorep] = value;
+                        }
                     }
                 }
                 results.Rows.Add(row);

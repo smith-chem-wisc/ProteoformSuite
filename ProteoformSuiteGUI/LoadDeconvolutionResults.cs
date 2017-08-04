@@ -18,6 +18,8 @@ namespace ProteoformSuiteGUI
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             populate_file_lists();
         }
 
@@ -287,6 +289,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }
+
         #endregion ADD BUTTONS Private Methods
 
         #region CLEAR BUTTONS Private Methods
@@ -539,5 +542,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Cell Validation Methods
+
     }
 }

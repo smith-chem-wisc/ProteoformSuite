@@ -176,7 +176,7 @@ namespace Test
             //need to make decon error top "deconvolution error"
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("S", out motif);
-            ModificationWithMass m = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, ModificationSites.K, -1.0023, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Deconvolution Error");
+            ModificationWithMass m = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -1.0023, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Deconvolution Error");
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(-1, m) });
             Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(set);
@@ -184,7 +184,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.Add(-1.0, new List<PtmSet>() { set });
 
             //need missing error
-            ModificationWithMass m2 = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, ModificationSites.K, -87.03, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Missing");
+            ModificationWithMass m2 = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -87.03, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Missing");
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m2);
             PtmSet set2 = new PtmSet(new List<Ptm> { new Ptm(-1, m2) });
             Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(set2);

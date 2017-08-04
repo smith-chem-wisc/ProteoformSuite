@@ -31,7 +31,7 @@ namespace Test
         {
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
-            ModificationWithMass m = new ModificationWithMass("oxidation", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMass m = new ModificationWithMass("oxidation", new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
 
             Proteoform p = ConstructorsForTesting.make_a_theoretical();
             ProteoformFamily f = new ProteoformFamily(p);
@@ -64,7 +64,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "unmodified".ToUpper();
-            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("N/A", mod_title), motif, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("N/A", mod_title), motif, TerminusLocalization.NPep, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
 
             Proteoform p = ConstructorsForTesting.make_a_theoretical();
             ProteoformFamily f = new ProteoformFamily(p);
@@ -107,7 +107,7 @@ namespace Test
             Assert.True(node_table.Contains("ACC_1_999.99_Da_10to20_50_min Unmodified"));
             Assert.True(node_table.Contains("999.99"));
 
-            t.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, ModificationSites.Any, 42.02, null, null, null, null)) });
+            t.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f },
               false,
               CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
@@ -139,8 +139,8 @@ namespace Test
             e.relationships.Add(et);
             t.relationships.Add(et);
             e.agg_intensity = 999.99;
-            e.quant.numeratorIntensitySum = 444.44m;
-            e.quant.denominatorIntensitySum = 333.33m;
+            e.quant.TusherValues1.numeratorIntensitySum = 444.44m;
+            e.quant.TusherValues1.denominatorIntensitySum = 333.33m;
             e.quant.intensitySum = 777.77m;
             List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(e) };
             f.First().construct_family();
@@ -183,8 +183,8 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0, TestContext.CurrentContext.TestDirectory);
             e.agg_intensity = 999.99;
-            e.quant.numeratorIntensitySum = 444.44m;
-            e.quant.denominatorIntensitySum = 333.33m;
+            e.quant.TusherValues1.numeratorIntensitySum = 444.44m;
+            e.quant.TusherValues1.denominatorIntensitySum = 333.33m;
             e.quant.intensitySum = 777.77m;
             List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(e) };
             f.First().construct_family();

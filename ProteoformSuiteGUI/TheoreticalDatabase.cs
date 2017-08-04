@@ -17,6 +17,8 @@ namespace ProteoformSuiteGUI
         public TheoreticalDatabase()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
         }
 
         #endregion Public Constructor

@@ -16,7 +16,6 @@ namespace ProteoformSuiteGUI
         #region Private Fields
 
         private RelationUtility relationUtility;
-        private List<DisplayProteoformRelation> displayRelations = new List<DisplayProteoformRelation>();
         private List<ProteoformRelation> et_histogram_from_unmod = new List<ProteoformRelation>();
 
         #endregion Private Fields
@@ -27,6 +26,8 @@ namespace ProteoformSuiteGUI
         {
             relationUtility = new RelationUtility();
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
             ct_ET_Histogram.MouseClick += new MouseEventHandler(ct_ET_Histogram_MouseClick);
             ct_ET_peakList.MouseClick += new MouseEventHandler(ct_ET_peakList_MouseClick);
@@ -50,6 +51,10 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
+            if (Sweet.lollipop.et_peaks.Any(x => x.mass_shifter != "0"))
+            {
+                shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
+            }
             FillTablesAndCharts();
         }
 
@@ -59,7 +64,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_ET_Peak_List, Sweet.lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).Select(p => new DisplayDeltaMassPeak(p)).ToList());
             DisplayDeltaMassPeak.FormatPeakListGridView(dgv_ET_Peak_List, false);
             DisplayUtility.FillDataGridView(dgv_ET_Relations, Sweet.lollipop.et_relations.Select(r => new DisplayProteoformRelation(r)).ToList());
-            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, false);
             GraphETRelations();
             GraphETPeaks();
             update_figures_of_merit();
@@ -83,8 +88,11 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Relations.Rows.Clear();
             dgv_ET_Peak_List.Rows.Clear();
+            tb_IdentifiedProteoforms.Clear();
+            tb_max_accepted_fdr.Clear();
             tb_peakTableFilter.Clear();
             tb_relationTableFilter.Clear();
+            tb_TotalPeaks.Clear();
 
             if (clear_following)
             {
@@ -291,10 +299,10 @@ namespace ProteoformSuiteGUI
         private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
         {
             IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
-                displayRelations :
-                ExtensionMethods.filter(displayRelations.ToList(), tb_relationTableFilter.Text);
+                (cb_discoveryHistogram.Checked? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)))
+                : (ExtensionMethods.filter((cb_discoveryHistogram.Checked ? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p))), tb_relationTableFilter.Text));
             DisplayUtility.FillDataGridView(dgv_ET_Relations, selected_peaks);
-            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, cb_discoveryHistogram.Checked);
         }
 
         private void GraphETRelations()
@@ -369,7 +377,7 @@ namespace ProteoformSuiteGUI
                 if (et_histogram_from_unmod.Count == 0)
                 {
                     ProteoformCommunity community = new ProteoformCommunity();
-                    et_histogram_from_unmod = community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).Select(t => new Proteoform(t.accession, t.unmodified_mass, t.lysine_count, t.is_target)).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, Environment.CurrentDirectory, false);
+                    et_histogram_from_unmod = community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, Environment.CurrentDirectory, false);
                 }
                 DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", true);
 
@@ -378,8 +386,7 @@ namespace ProteoformSuiteGUI
                 tb_relationTableFilter.Text = "";
                 tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
-                displayRelations = et_histogram_from_unmod.Select(r => new DisplayProteoformRelation(r)).ToList();
-                DisplayUtility.FillDataGridView(dgv_ET_Relations, displayRelations);
+                DisplayUtility.FillDataGridView(dgv_ET_Relations, et_histogram_from_unmod.Select(r => new DisplayProteoformRelation(r)));
 
                 // Get rid of the stripline by default
                 cb_Graph_lowerThreshold.Checked = false;

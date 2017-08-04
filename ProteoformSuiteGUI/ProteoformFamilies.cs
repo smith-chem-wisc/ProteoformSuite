@@ -1,5 +1,4 @@
-﻿using Chemistry;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,6 +18,8 @@ namespace ProteoformSuiteGUI
         {
             InitializeComponent();
             InitializeParameterSet();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
         }
 
         #endregion
@@ -256,7 +257,7 @@ namespace ProteoformSuiteGUI
                 if (selected_family.relations.Count > 0)
                 {
                     DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.relations.Select(r => new DisplayProteoformRelation(r)));
-                    DisplayProteoformRelation.FormatRelationsGridView(dgv_proteoform_family_members, false, false);
+                    DisplayProteoformRelation.FormatRelationsGridView(dgv_proteoform_family_members, false, false, false);
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
@@ -425,5 +426,6 @@ namespace ProteoformSuiteGUI
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Private Methods
+
     }
 }

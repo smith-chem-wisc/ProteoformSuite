@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    public class Component : IBiorepable
+    public class Component : IFileIntensity
     {
 
         #region Private Fields
@@ -237,5 +237,6 @@ namespace ProteoformSuiteInternal
             return this;
         }
         #endregion Public Methods
+
     }
 }
