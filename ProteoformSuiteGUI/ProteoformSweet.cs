@@ -363,8 +363,7 @@ namespace ProteoformSuiteGUI
             DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                writer.SaveToExcel(saveExcelDialog.FileName);
-                MessageBox.Show("Successfully exported table.");
+                MessageBox.Show(writer.SaveToExcel(saveExcelDialog.FileName));
             }
             else return;
         }

@@ -18,6 +18,8 @@ namespace ProteoformSuiteGUI
         public Quantification()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
         }
 
         #endregion Constructor
@@ -63,6 +65,9 @@ namespace ProteoformSuiteGUI
             dgv_quantification_results.DataSource = null;
             dgv_goAnalysis.Rows.Clear();
             dgv_quantification_results.Rows.Clear();
+            tb_avgIntensity.Clear();
+            tb_FDR.Clear();
+            tb_stdevIntensity.Clear();
 
             if (clear_following)
             {

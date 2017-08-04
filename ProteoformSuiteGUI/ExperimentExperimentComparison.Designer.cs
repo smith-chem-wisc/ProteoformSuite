@@ -168,6 +168,11 @@
             // nUD_PeakWidthBase
             // 
             this.nUD_PeakWidthBase.DecimalPlaces = 4;
+            this.nUD_PeakWidthBase.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            196608});
             this.nUD_PeakWidthBase.Location = new System.Drawing.Point(52, 33);
             this.nUD_PeakWidthBase.Name = "nUD_PeakWidthBase";
             this.nUD_PeakWidthBase.Size = new System.Drawing.Size(120, 20);
@@ -232,6 +237,7 @@
             // 
             this.tb_TotalEEPeaks.Location = new System.Drawing.Point(305, 8);
             this.tb_TotalEEPeaks.Name = "tb_TotalEEPeaks";
+            this.tb_TotalEEPeaks.ReadOnly = true;
             this.tb_TotalEEPeaks.Size = new System.Drawing.Size(82, 20);
             this.tb_TotalEEPeaks.TabIndex = 13;
             // 
@@ -327,6 +333,7 @@
             // 
             this.tb_totalAcceptedEERelations.Location = new System.Drawing.Point(149, 8);
             this.tb_totalAcceptedEERelations.Name = "tb_totalAcceptedEERelations";
+            this.tb_totalAcceptedEERelations.ReadOnly = true;
             this.tb_totalAcceptedEERelations.Size = new System.Drawing.Size(65, 20);
             this.tb_totalAcceptedEERelations.TabIndex = 19;
             // 

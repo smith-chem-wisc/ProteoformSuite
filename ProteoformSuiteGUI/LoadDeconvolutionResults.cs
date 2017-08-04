@@ -17,6 +17,8 @@ namespace ProteoformSuiteGUI
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             populate_file_lists();
         }
 
