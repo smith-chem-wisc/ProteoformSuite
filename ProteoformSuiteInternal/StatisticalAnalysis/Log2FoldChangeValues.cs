@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
                 Tuple<InputFile, string> x = new Tuple<InputFile, string>(bft.input_file, bft.input_file.lt_condition != bft.condition ? bft.input_file.lt_condition : bft.input_file.hv_condition);
                 decimal avglog2i = (decimal)fileCondition_avgLog2I[x];
                 decimal stdevlog2i = (decimal)fileCondition_stdevLog2I[x];
-                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, true, QuantitativeProteoformValues.imputed_intensity(avglog2i + Sweet.lollipop.backgroundShift * stdevlog2i, stdevlog2i * Sweet.lollipop.backgroundWidth)));
+                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, true, QuantitativeProteoformValues.imputed_intensity(avglog2i + Sweet.lollipop.backgroundShift * stdevlog2i, stdevlog2i * Sweet.lollipop.backgroundWidth, Sweet.lollipop.useRandomSeed, Sweet.lollipop.seeded)));
             }
             return imputed_values;
         }

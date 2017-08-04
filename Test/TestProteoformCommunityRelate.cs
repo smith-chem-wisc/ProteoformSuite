@@ -177,9 +177,9 @@ namespace Test
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
             Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0], ProteoformComparison.ExperimentalExperimental));
             Assert.AreNotEqual(test_community.experimental_proteoforms[0].lysine_count, test_community.experimental_proteoforms[1].lysine_count);
-            Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[1], ProteoformComparison.ExperimentalExperimental));
+            //Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[1], ProteoformComparison.ExperimentalExperimental)); // this is taken care of in relate, now
             Assert.True(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2], ProteoformComparison.ExperimentalExperimental));
-            Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[3], ProteoformComparison.ExperimentalExperimental));
+            //Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[3], ProteoformComparison.ExperimentalExperimental)); // this is taken care of in relate, now
             Assert.AreEqual(2, unequal_relations.Count); //only 2 relations are > 3 lysines apart
 
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
