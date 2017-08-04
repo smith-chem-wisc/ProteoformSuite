@@ -198,7 +198,7 @@ namespace Test
 
             Sweet.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
             Sweet.lollipop.mod_rank_sum_threshold = 2;
-            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new PtmCombos().generate_all_ptmsets(1, Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Sweet.lollipop.modification_ranks, 1);
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Sweet.lollipop.modification_ranks, 1);
             Sweet.lollipop.theoretical_database.all_mods_with_mass = Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
 

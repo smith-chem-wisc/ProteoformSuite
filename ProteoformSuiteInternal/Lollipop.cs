@@ -531,7 +531,7 @@ namespace ProteoformSuiteInternal
         public bool neucode_light_lysine = true;
         public bool neucode_heavy_lysine = false;
         public int max_ptms = 4;
-        public int decoy_databases = 1;
+        public int decoy_databases = 10;
         public int min_peptide_length = 7;
         public double ptmset_mass_tolerance = 0.00001;
         public bool combine_identical_sequences = true;
