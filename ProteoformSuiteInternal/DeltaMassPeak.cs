@@ -99,9 +99,16 @@ namespace ProteoformSuiteInternal
 
         public int count_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? DeltaMass - Sweet.lollipop.peak_width_base_et / 2 : DeltaMass - Sweet.lollipop.peak_width_base_ee / 2;
-            double upper_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? DeltaMass + Sweet.lollipop.peak_width_base_et / 2 : DeltaMass + Sweet.lollipop.peak_width_base_ee / 2;
+            double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? 
+                DeltaMass - Sweet.lollipop.peak_width_base_et / 2 : 
+                DeltaMass - Sweet.lollipop.peak_width_base_ee / 2;
+
+            double upper_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? 
+                DeltaMass + Sweet.lollipop.peak_width_base_et / 2 : 
+                DeltaMass + Sweet.lollipop.peak_width_base_ee / 2;
+
             List<ProteoformRelation> decoys_in_peaks = all_relations.Where(relation => relation.DeltaMass >= lower_limit_of_peak_width && relation.DeltaMass <= upper_limit_of_peak_width).ToList();
+
             foreach (ProteoformRelation r in decoys_in_peaks)
             {
                 lock (r)

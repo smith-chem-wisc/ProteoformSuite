@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public static class PtmCombos
+    public class PtmCombos
     {
         // LOCALIZED MODIFICATION COMBINATIONS
         //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy
         //given a maximum number of ptms allowed on a theoretical protein
         //Includes an empty combination with no PTMs
-        public static List<PtmSet> get_combinations(IDictionary<int, List<Modification>> ptm_data, int num_ptms_needed, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
+        public List<PtmSet> get_combinations(IDictionary<int, List<Modification>> ptm_data, int num_ptms_needed, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
         {
             List<Ptm> all_ptms = (
                 from position in ptm_data.Keys
@@ -44,7 +44,7 @@ namespace ProteoformSuiteInternal
 
         //For each length up to the maximum number of ptms (or the max number of modifications in this list),
         //generate all the combinations, with the shortest combinations first, and with the modifications at the first positions first
-        private static List<PtmSet> all_unique_positional_combinations(List<Ptm> all_ptms, int max_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
+        private List<PtmSet> all_unique_positional_combinations(List<Ptm> all_ptms, int max_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
         {
             max_length = Math.Min(max_length, all_ptms.Count);
             List<PtmSet> combos = new List<PtmSet>(
@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
         }
 
         //Generates all combinations of a certain length with unique positions
-        private static IEnumerable<PtmSet> unique_positional_combinations(List<Ptm> all_ptms, int combination_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
+        private IEnumerable<PtmSet> unique_positional_combinations(List<Ptm> all_ptms, int combination_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             Ptm[] result = new Ptm[combination_length];
             int prev_position = -2;
@@ -93,7 +93,7 @@ namespace ProteoformSuiteInternal
 
 
         // UNLOCALIZED MODIFICATION COMBINATIONS
-        public static List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<ModificationWithMass> mods, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
+        public List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<ModificationWithMass> mods, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             List<PtmSet> sets = new List<PtmSet>();
             List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new Ptm[] { new Ptm() }).ToList();
@@ -106,7 +106,7 @@ namespace ProteoformSuiteInternal
         }
 
         //Generates all the combinations of a certain length, except duplicates
-        private static IEnumerable<PtmSet> combinations(List<Ptm> all_ptms, int combination_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
+        private IEnumerable<PtmSet> combinations(List<Ptm> all_ptms, int combination_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             Ptm[] result = new Ptm[combination_length];
             Stack<int> stack = new Stack<int>();
