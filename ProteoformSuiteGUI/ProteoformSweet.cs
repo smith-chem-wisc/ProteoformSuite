@@ -224,6 +224,9 @@ namespace ProteoformSuiteGUI
                 DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
                 if (d4 == DialogResult.Cancel) return false;
                 Sweet.open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes);
+                loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
+                if (loadDeconvolutionResults.ReadyToRunTheGamut())
+                    loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                 return true;
             }
             return false;
@@ -323,11 +326,14 @@ namespace ProteoformSuiteGUI
             }
 
             // Save the results
+            resultsSummary.InitializeParameterSet();
             if (Sweet.lollipop.results_folder != "")
             {
                 string timestamp = Sweet.time_stamp();
-                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
+                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp, resultsSummary.get_go_analysis(), resultsSummary.get_tusher_analysis());
                 save_all_plots(Sweet.lollipop.results_folder, timestamp);
+                using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
+                    file.WriteLine(Sweet.save_method());
             }
 
             //Program ran successfully
@@ -372,8 +378,7 @@ namespace ProteoformSuiteGUI
             DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                writer.SaveToExcel(saveExcelDialog.FileName);
-                MessageBox.Show("Successfully exported table.");
+                MessageBox.Show(writer.SaveToExcel(saveExcelDialog.FileName));
             }
             else return;
         }

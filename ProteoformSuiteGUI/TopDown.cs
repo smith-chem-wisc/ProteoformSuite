@@ -143,7 +143,7 @@ namespace ProteoformSuiteGUI
                 if (p.relationships != null)
                     {
                         DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships.Select(r => new DisplayProteoformRelation(r)));  //show T-TD and E-TD relations
-                        DisplayProteoformRelation.FormatRelationsGridView(dgv_TD_family, false, false);
+                        DisplayProteoformRelation.FormatRelationsGridView(dgv_TD_family, false, false, false);
                     }
                     get_proteoform_sequence(p);
             }

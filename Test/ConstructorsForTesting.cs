@@ -45,7 +45,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "oxidation";
-            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct( 0, 0, "")}, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
             return new TheoreticalProteoform("T1", "T1_1", new List<ProteinWithGoTerms> { p1 }, 100, 0, set, true, false, new Dictionary<InputFile, Protein[]>());
@@ -56,7 +56,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "oxidation";
-            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
             return new TheoreticalProteoform(a, d, new List<ProteinWithGoTerms> { p }, mass, 0, set, true, false, dict);
@@ -67,7 +67,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "oxidation";
-            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, TerminusLocalization.NPep, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
             return new TheoreticalProteoform(a, d, new List<ProteinWithGoTerms> { p1 }, mass, 0, set, true, false, dict);
@@ -76,7 +76,7 @@ namespace Test
         public static TheoreticalProteoform make_a_theoretical(string a, double mass, int lysine_count)
         {
 
-            ModificationWithMass unmodification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, null, null, null);
+            ModificationWithMass unmodification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, TerminusLocalization.Any, 0, null, null, null, null);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm>());
             return new TheoreticalProteoform(a, "", new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
@@ -93,6 +93,7 @@ namespace Test
         {
             ExperimentalProteoform e = new ExperimentalProteoform(accession, new Component(), is_target);
             e.modified_mass = modified_mass;
+            e.agg_mass = modified_mass;
             e.lysine_count = lysine_count;
             e.accepted = true;
             return e;
@@ -128,13 +129,13 @@ namespace Test
 
 
         //INPUT FILE
-        public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, int biorep, int fraction, int techrep) // for neucode files. here both conditions are present in one file
+        public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, string biorep, string fraction, string techrep) // for neucode files. here both conditions are present in one file
         {
             InputFile f = new InputFile(complete_path, label, purpose);
             f.lt_condition = lt_con;
             f.hv_condition = hv_con;
             f.biological_replicate = biorep;
-            //f.fraction = fraction;
+            f.fraction = fraction;
             f.technical_replicate = techrep;
             return f;
         }
@@ -145,7 +146,7 @@ namespace Test
         {
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
-            ModificationWithMass m = new ModificationWithMass(id, new Tuple<string, string>("", ""), motif, ModificationSites.K, mass, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMass m = new ModificationWithMass(id, new Tuple<string, string>("", ""), motif, TerminusLocalization.NPep, mass, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             return m;
         }
 

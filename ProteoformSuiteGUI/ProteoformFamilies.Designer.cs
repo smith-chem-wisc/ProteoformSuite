@@ -341,6 +341,7 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
+            this.splitContainer3.Panel2.AutoScroll = true;
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -393,6 +394,7 @@
             this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(-3, 303);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
+            this.rtb_proteoformFamilyResults.ReadOnly = true;
             this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
             this.rtb_proteoformFamilyResults.Text = "";

@@ -41,13 +41,12 @@ namespace ProteoformSuiteInternal
 
         public Labeling label { get; set; }
 
-
         // For quantitation files or calibration
-        public int biological_replicate { get; set; } = 1;
+        public string biological_replicate { get; set; } = "";
 
-        public int fraction { get; set; } = 0;
+        public string fraction { get; set; } = "";
 
-        public int technical_replicate { get; set; } = 1;
+        public string technical_replicate { get; set; } = "";
 
         public string lt_condition { get; set; } = "lt_condition";
 

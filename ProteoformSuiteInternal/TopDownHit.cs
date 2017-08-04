@@ -29,9 +29,9 @@ namespace ProteoformSuiteInternal
         public string pfr { get; set; }
 
         //for mass calibration
-        public int biological_replicate { get; set; } = 0;
-        public int technical_replicate { get; set; } = 0;
-        public int fraction { get; set; } = 0;
+        public string biological_replicate { get; set; } = "";
+        public string technical_replicate { get; set; } = "";
+        public string fraction { get; set; } = "";
         public double mz { get; set; }
         public int charge { get; set; }
         public double ms1_retention_time { get; set; }

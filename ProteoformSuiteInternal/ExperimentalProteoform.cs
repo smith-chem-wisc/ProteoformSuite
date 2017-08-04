@@ -33,7 +33,11 @@ namespace ProteoformSuiteInternal
 
         public List<Component> hv_quant_components { get; set; } = new List<Component>();
 
-        public List<BiorepIntensity> biorepIntensityList { get; set; } = new List<BiorepIntensity>(); //(bool light = true, int biorep, double intensity)
+        public List<BiorepIntensity> biorepIntensityList { get; set; } = new List<BiorepIntensity>();
+
+        public List<BiorepTechrepIntensity> biorepTechrepIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
+
+        public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>(); 
 
         public QuantitativeProteoformValues quant { get; set; }
 
@@ -175,10 +179,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (Component c in Sweet.lollipop.remaining_verification_components)
             {
-                if (includes_neucode_component(c, this, true))
-                    lt_verification_components.Add(c);
-                if (Sweet.lollipop.neucode_labeled && includes_neucode_component(c, this, false))
-                    hv_verification_components.Add(c);
+                consider_neucode_component(c, lt_verification_components, hv_verification_components);
             }
         }
 
@@ -186,16 +187,19 @@ namespace ProteoformSuiteInternal
         {
             foreach (Component c in Sweet.lollipop.remaining_quantification_components)
             {
-                if (includes_neucode_component(c, this, true))
-                    lt_quant_components.Add(c);
-                if (includes_neucode_component(c, this, false))
-                    hv_quant_components.Add(c);
+                consider_neucode_component(c, lt_quant_components, hv_quant_components);
             }
+        }
 
-            //lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
-            ////ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
-            //hv_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, false)));
-            ////ep.getBiorepAndFractionIntensities(true); //split hv components by biorep and fraction
+        private void consider_neucode_component(Component c, List<Component> lt_components, List<Component> hv_components)
+        {
+            bool lt_includes = includes_neucode_component(c, this, true);
+            bool hv_includes = Sweet.lollipop.neucode_labeled && includes_neucode_component(c, this, false);
+
+            if (lt_includes)
+                lt_components.Add(c);
+            if (hv_includes)
+                hv_components.Add(c);
         }
 
         public void calculate_properties()
@@ -221,10 +225,9 @@ namespace ProteoformSuiteInternal
 
         public bool includes_neucode_component(Component candidate, ExperimentalProteoform root, bool light)
         {
-            double corrected_mass = light ?
-                root.agg_mass :
-                root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-            return tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate.weighted_monoisotopic_mass, corrected_mass);
+            double lt_corrected_mass = root.agg_mass;
+            double hv_corrected_mass = root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
+            return tolerable_rt(candidate, root.agg_rt) && tolerable_neucode_mass(candidate, lt_corrected_mass, hv_corrected_mass, light);
         }
 
         #endregion Aggregation Public Methods
@@ -258,28 +261,65 @@ namespace ProteoformSuiteInternal
             return false;
         }
 
+        private bool tolerable_neucode_mass(Component candidate, double lt_corrected_mass, double hv_corrected_mass, bool light)
+        {
+            foreach (int missed_mono_count in Sweet.lollipop.missed_monoisotopics_range)
+            {
+                double shift = missed_mono_count * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+                double lt_shifted_mass = lt_corrected_mass + shift;
+                double lt_mass_tolerance = lt_shifted_mass / 1000000d * Sweet.lollipop.mass_tolerance;
+                double lt_low = lt_shifted_mass - lt_mass_tolerance;
+                double lt_high = lt_shifted_mass + lt_mass_tolerance;
+
+                double hv_shifted_mass = hv_corrected_mass + shift;
+                double hv_mass_tolerance = hv_shifted_mass / 1000000d * Sweet.lollipop.mass_tolerance;
+                double hv_low = hv_shifted_mass - hv_mass_tolerance;
+                double hv_high = hv_shifted_mass + hv_mass_tolerance;
+
+                if (Sweet.lollipop.neucode_labeled && lt_high > hv_low)
+                {
+                    double center = (lt_high + hv_low) / 2d;
+                    lt_high = center;
+                    hv_low = center;
+                }
+
+                bool lt_tolerable_mass = candidate.weighted_monoisotopic_mass >= lt_low && candidate.weighted_monoisotopic_mass < lt_high;
+                bool hv_tolerable_mass = candidate.weighted_monoisotopic_mass >= hv_low && candidate.weighted_monoisotopic_mass < hv_high;
+                if (lt_tolerable_mass && light || hv_tolerable_mass && !light)
+                    return true; //Return a true result immediately; acts as an OR between these conditions
+            }
+            return false;
+        }
+
         #endregion Aggregation Private Methods
 
         #region Quantitation Public Method
 
         public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
-            where T : IBiorepable
+            where T : IFileIntensity
         {
             quant = new QuantitativeProteoformValues(this); //Reset quantitation if starting over from biorep requirements
 
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
+            List<BiorepTechrepIntensity> biotechIntensityList = new List<BiorepTechrepIntensity>();
+            List<BiorepFractionTechrepIntensity> bftIntensityList = new List<BiorepFractionTechrepIntensity>();
 
             foreach (string condition in ltConditionStrings.Concat(hvConditionStrings).Distinct().ToList())
             {
                 List<T> quants_from_condition = lt_quant_components.Where(c => c.input_file.lt_condition == condition).Concat(hv_quant_components.Where(c => c.input_file.hv_condition == condition)).ToList();
-                List<int> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
-                foreach (int b in bioreps)
-                {
-                    biorepIntensityList.Add(new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
-                }
+                List<InputFile> files = quants_from_condition.Select(x => x.input_file).ToList();
+                List<string> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
+                biorepIntensityList.AddRange(bioreps.Select(b => new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum))));
+                List<Tuple<string, string, string>> bfts = quants_from_condition.Select(c => new Tuple<string, string, string>(c.input_file.biological_replicate, c.input_file.fraction, c.input_file.technical_replicate)).Distinct().ToList();
+                bftIntensityList.AddRange(bfts.Select(x => new BiorepFractionTechrepIntensity(files.FirstOrDefault(f => f.biological_replicate == x.Item1 && f.fraction == x.Item2 && f.technical_replicate == x.Item3), condition, false, quants_from_condition.Where(q => q.input_file.biological_replicate == x.Item1 && q.input_file.fraction == x.Item2 && q.input_file.technical_replicate == x.Item3).Sum(q => q.intensity_sum))));
+                List<Tuple<string, string>> biotechs = quants_from_condition.Select(c => new Tuple<string, string>(c.input_file.biological_replicate, c.input_file.technical_replicate)).Distinct().ToList();
+                biotechIntensityList.AddRange(biotechs.Select(x => new BiorepTechrepIntensity(false, x.Item1, condition, x.Item2, quants_from_condition.Where(c => c.input_file.biological_replicate == x.Item1 && c.input_file.technical_replicate == x.Item2).Sum(asdf => asdf.intensity_sum))));
             }
 
             this.biorepIntensityList = biorepIntensityList;
+            this.biorepTechrepIntensityList = biotechIntensityList;
+            this.bftIntensityList = bftIntensityList;
             return biorepIntensityList;
         }
 

@@ -19,6 +19,7 @@ namespace ProteoformSuiteInternal
 
             foreach (DataGridView dgv in dgvs.Where(d => d.DataSource != null))
             {
+                if (dgv.DataSource == null || dgv.Columns.Count == 0 || dgv.Rows.Count == 0) continue;
                 DataTable dt = new DataTable();
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
@@ -65,10 +66,17 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public void SaveToExcel(string filename)
+        public string SaveToExcel(string filename)
         {
             if (workbook.Worksheets.Count > 0)
+            {
                 workbook.SaveAs(filename);
+                return "Successfully exported table.";
+            }
+            else
+            {
+                return "There were no tables to export.";
+            }
         }
     }
 }
