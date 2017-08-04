@@ -36,7 +36,7 @@ namespace ProteoformSuiteInternal
 
         public void compute_ptm_rank_sum(Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)
         {
-            ptm_rank_sum = ptm_combination.Sum(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks[ptm.modification.monoisotopicMass])
+            ptm_rank_sum = ptm_combination.Sum(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks.TryGetValue(ptm.modification.monoisotopicMass, out int rank) ? rank : Sweet.lollipop.mod_rank_sum_threshold)
                 + additional_ptm_penalization_factor * (ptm_combination.Count - 1) // penalize additional PTMs
                 - ptm_combination.Count(ptm => Sweet.lollipop.theoretical_database.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
         }
