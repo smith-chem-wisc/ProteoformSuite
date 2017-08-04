@@ -43,7 +43,10 @@
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
+            this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
+            this.ckbx_Meth_Cleaved = new System.Windows.Forms.CheckBox();
+            this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.tb_modTypesToExclude = new System.Windows.Forms.TextBox();
             this.nUD_MaxPTMs = new System.Windows.Forms.NumericUpDown();
@@ -71,9 +74,6 @@
             this.tb_modTableFilter = new System.Windows.Forms.TextBox();
             this.btn_loadModNames = new System.Windows.Forms.Button();
             this.btn_saveModNames = new System.Windows.Forms.Button();
-            this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
-            this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
-            this.ckbx_Meth_Cleaved = new System.Windows.Forms.CheckBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
@@ -349,6 +349,20 @@
             this.cb_limitLargePtmSets.UseVisualStyleBackColor = true;
             this.cb_limitLargePtmSets.CheckedChanged += new System.EventHandler(this.cb_limitLargePtmSets_CheckedChanged);
             // 
+            // ckbx_OxidMeth
+            // 
+            this.ckbx_OxidMeth.AutoSize = true;
+            this.ckbx_OxidMeth.Checked = true;
+            this.ckbx_OxidMeth.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ckbx_OxidMeth.Location = new System.Drawing.Point(16, 41);
+            this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
+            this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
+            this.ckbx_OxidMeth.Size = new System.Drawing.Size(162, 17);
+            this.ckbx_OxidMeth.TabIndex = 2;
+            this.ckbx_OxidMeth.Text = "Variable Oxidized Methionine";
+            this.ckbx_OxidMeth.UseVisualStyleBackColor = true;
+            this.ckbx_OxidMeth.CheckedChanged += new System.EventHandler(this.ckbx_OxidMeth_CheckedChanged);
+            // 
             // nUD_MinPeptideLength
             // 
             this.nUD_MinPeptideLength.Location = new System.Drawing.Point(16, 109);
@@ -362,6 +376,34 @@
             0,
             0});
             this.nUD_MinPeptideLength.ValueChanged += new System.EventHandler(this.nUD_MinPeptideLength_ValueChanged);
+            // 
+            // ckbx_Meth_Cleaved
+            // 
+            this.ckbx_Meth_Cleaved.AutoSize = true;
+            this.ckbx_Meth_Cleaved.Checked = true;
+            this.ckbx_Meth_Cleaved.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(16, 62);
+            this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
+            this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
+            this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
+            this.ckbx_Meth_Cleaved.TabIndex = 4;
+            this.ckbx_Meth_Cleaved.Text = "Cleaved N-Methionine";
+            this.ckbx_Meth_Cleaved.UseVisualStyleBackColor = true;
+            this.ckbx_Meth_Cleaved.CheckedChanged += new System.EventHandler(this.ckbx_Meth_Cleaved_CheckedChanged);
+            // 
+            // ckbx_Carbam
+            // 
+            this.ckbx_Carbam.AutoSize = true;
+            this.ckbx_Carbam.Checked = true;
+            this.ckbx_Carbam.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ckbx_Carbam.Location = new System.Drawing.Point(16, 19);
+            this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
+            this.ckbx_Carbam.Name = "ckbx_Carbam";
+            this.ckbx_Carbam.Size = new System.Drawing.Size(157, 17);
+            this.ckbx_Carbam.TabIndex = 3;
+            this.ckbx_Carbam.Text = "Fixed Carbamidomethylation";
+            this.ckbx_Carbam.UseVisualStyleBackColor = true;
+            this.ckbx_Carbam.CheckedChanged += new System.EventHandler(this.ckbx_Carbam_CheckedChanged);
             // 
             // label7
             // 
@@ -675,48 +717,6 @@
             this.btn_saveModNames.Text = "Save Modification Names";
             this.btn_saveModNames.UseVisualStyleBackColor = true;
             this.btn_saveModNames.Click += new System.EventHandler(this.btn_saveModNames_Click);
-            // 
-            // ckbx_OxidMeth
-            // 
-            this.ckbx_OxidMeth.AutoSize = true;
-            this.ckbx_OxidMeth.Checked = true;
-            this.ckbx_OxidMeth.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_OxidMeth.Location = new System.Drawing.Point(16, 41);
-            this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
-            this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
-            this.ckbx_OxidMeth.Size = new System.Drawing.Size(162, 17);
-            this.ckbx_OxidMeth.TabIndex = 2;
-            this.ckbx_OxidMeth.Text = "Variable Oxidized Methionine";
-            this.ckbx_OxidMeth.UseVisualStyleBackColor = true;
-            this.ckbx_OxidMeth.CheckedChanged += new System.EventHandler(this.ckbx_OxidMeth_CheckedChanged);
-            // 
-            // ckbx_Carbam
-            // 
-            this.ckbx_Carbam.AutoSize = true;
-            this.ckbx_Carbam.Checked = true;
-            this.ckbx_Carbam.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Carbam.Location = new System.Drawing.Point(16, 19);
-            this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
-            this.ckbx_Carbam.Name = "ckbx_Carbam";
-            this.ckbx_Carbam.Size = new System.Drawing.Size(157, 17);
-            this.ckbx_Carbam.TabIndex = 3;
-            this.ckbx_Carbam.Text = "Fixed Carbamidomethylation";
-            this.ckbx_Carbam.UseVisualStyleBackColor = true;
-            this.ckbx_Carbam.CheckedChanged += new System.EventHandler(this.ckbx_Carbam_CheckedChanged);
-            // 
-            // ckbx_Meth_Cleaved
-            // 
-            this.ckbx_Meth_Cleaved.AutoSize = true;
-            this.ckbx_Meth_Cleaved.Checked = true;
-            this.ckbx_Meth_Cleaved.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(16, 62);
-            this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
-            this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
-            this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
-            this.ckbx_Meth_Cleaved.TabIndex = 4;
-            this.ckbx_Meth_Cleaved.Text = "Cleaved N-Methionine";
-            this.ckbx_Meth_Cleaved.UseVisualStyleBackColor = true;
-            this.ckbx_Meth_Cleaved.CheckedChanged += new System.EventHandler(this.ckbx_Meth_Cleaved_CheckedChanged);
             // 
             // splitContainer2
             // 

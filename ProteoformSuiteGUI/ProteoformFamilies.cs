@@ -102,6 +102,8 @@ namespace ProteoformSuiteGUI
             dgv_main.Rows.Clear();
             dgv_proteoform_family_members.DataSource = null;
             dgv_proteoform_family_members.Rows.Clear();
+            tb_tableFilter.Clear();
+            rtb_proteoformFamilyResults.Clear();
 
             if (clear_following)
             {

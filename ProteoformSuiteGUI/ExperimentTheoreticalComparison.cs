@@ -89,6 +89,11 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Relations.Rows.Clear();
             dgv_ET_Peak_List.Rows.Clear();
+            tb_IdentifiedProteoforms.Clear();
+            tb_max_accepted_fdr.Clear();
+            tb_peakTableFilter.Clear();
+            tb_relationTableFilter.Clear();
+            tb_TotalPeaks.Clear();
 
             if (clear_following)
             {
