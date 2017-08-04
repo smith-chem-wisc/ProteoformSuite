@@ -54,7 +54,9 @@
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
+            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.label18 = new System.Windows.Forms.Label();
+            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             this.cmbx_intensityDistributionChartSelection = new System.Windows.Forms.ComboBox();
             this.tb_stdevIntensity = new System.Windows.Forms.TextBox();
             this.tb_avgIntensity = new System.Windows.Forms.TextBox();
@@ -144,8 +146,6 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
-            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -167,6 +167,7 @@
             this.splitContainer5.Panel2.SuspendLayout();
             this.splitContainer5.SuspendLayout();
             this.gb_quantDataDisplaySelection.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).BeginInit();
@@ -226,7 +227,6 @@
             this.splitContainer14.Panel2.SuspendLayout();
             this.splitContainer14.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -440,6 +440,29 @@
             this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
     "sity std. dev.)";
             // 
+            // nud_randomSeed
+            // 
+            this.nud_randomSeed.Location = new System.Drawing.Point(351, 78);
+            this.nud_randomSeed.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Name = "nud_randomSeed";
+            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
+            this.nud_randomSeed.TabIndex = 19;
+            this.nud_randomSeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
+            // 
             // label18
             // 
             this.label18.AutoSize = true;
@@ -448,6 +471,17 @@
             this.label18.Size = new System.Drawing.Size(176, 13);
             this.label18.TabIndex = 14;
             this.label18.Text = "Intensity Distribution Chart Selection";
+            // 
+            // cb_useRandomSeed
+            // 
+            this.cb_useRandomSeed.AutoSize = true;
+            this.cb_useRandomSeed.Location = new System.Drawing.Point(232, 79);
+            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
+            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
+            this.cb_useRandomSeed.TabIndex = 18;
+            this.cb_useRandomSeed.Text = "Use Random Seed:";
+            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
+            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
             // 
             // cmbx_intensityDistributionChartSelection
             // 
@@ -1654,40 +1688,6 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
-            // nud_randomSeed
-            // 
-            this.nud_randomSeed.Location = new System.Drawing.Point(351, 78);
-            this.nud_randomSeed.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Name = "nud_randomSeed";
-            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
-            this.nud_randomSeed.TabIndex = 19;
-            this.nud_randomSeed.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
-            // 
-            // cb_useRandomSeed
-            // 
-            this.cb_useRandomSeed.AutoSize = true;
-            this.cb_useRandomSeed.Location = new System.Drawing.Point(232, 79);
-            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
-            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
-            this.cb_useRandomSeed.TabIndex = 18;
-            this.cb_useRandomSeed.Text = "Use Random Seed:";
-            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
-            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
-            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1722,6 +1722,7 @@
             this.splitContainer5.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).EndInit();
@@ -1788,7 +1789,6 @@
             this.splitContainer14.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             this.ResumeLayout(false);
 
         }

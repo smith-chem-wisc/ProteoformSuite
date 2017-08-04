@@ -503,6 +503,11 @@ namespace ProteoformSuiteGUI
         {
             if (dgv.Rows[e.RowIndex].IsNewRow)
                 return;
+            if (e.FormattedValue.ToString() == "")
+            {
+                e.Cancel = true;
+                MessageBox.Show("Please enter text for each label.");
+            }
             if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 1))
             {
                 e.Cancel = true;
