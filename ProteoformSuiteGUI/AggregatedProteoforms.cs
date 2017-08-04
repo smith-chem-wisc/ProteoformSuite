@@ -20,6 +20,8 @@ namespace ProteoformSuiteGUI
         public AggregatedProteoforms()
         {
             InitializeComponent();
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = this.ClientSize;
             InitializeParameterSet();
         }
 
@@ -210,6 +212,10 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.clear_aggregation();
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
+            dgv_AggregatedProteoforms.DataSource = null;
+            dgv_AggregatedProteoforms.Rows.Clear();
+            tb_tableFilter.Clear();
+            tb_totalAggregatedProteoforms.Clear();
         }
 
         #endregion Public Methods
