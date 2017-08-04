@@ -80,7 +80,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.biological_replicate, nameof(file.fraction), file.fraction.ToString(), value.ToString());
+                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction.ToString(), value.ToString());
                 file.fraction = value;
             }
         }
@@ -93,7 +93,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.biological_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
+                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
                 file.technical_replicate = value;
             }
         }
