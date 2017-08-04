@@ -503,7 +503,7 @@ namespace ProteoformSuiteGUI
         {
             if (dgv.Rows[e.RowIndex].IsNewRow)
                 return;
-            if (e.FormattedValue.ToString() == "")
+            if (e.FormattedValue.ToString() == "" && dgv.IsCurrentCellInEditMode)
             {
                 e.Cancel = true;
                 MessageBox.Show("Please enter text for each label.");
