@@ -8,11 +8,12 @@ namespace ProteoformSuiteGUI
 
         #region Public Constructors
 
-        public DisplayQuantitativeValues(QuantitativeProteoformValues q)
+        public DisplayQuantitativeValues(QuantitativeProteoformValues q, TusherAnalysis analysis)
             : base(q)
         {
             proteoform = q.proteoform;
             qval = q;
+            this.analysis = analysis;
         }
 
         #endregion
@@ -21,6 +22,7 @@ namespace ProteoformSuiteGUI
 
         private Proteoform proteoform;
         private QuantitativeProteoformValues qval;
+        private TusherAnalysis analysis;
 
         #endregion
 
@@ -43,12 +45,12 @@ namespace ProteoformSuiteGUI
 
         public decimal NumeratorIntensitySum
         {
-            get { return qval.TusherValues1.numeratorIntensitySum; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.numeratorIntensitySum : qval.TusherValues2.numeratorIntensitySum; }
         }
         
         public decimal DenominatorIntensitySum
         {
-            get { return qval.TusherValues1.denominatorIntensitySum; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.denominatorIntensitySum : qval.TusherValues2.denominatorIntensitySum; }
         }
 
         public decimal IntensitySum
@@ -63,7 +65,7 @@ namespace ProteoformSuiteGUI
 
         public decimal Scatter_linear
         {
-            get { return qval.TusherValues1.scatter; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.scatter : qval.TusherValues2.scatter; }
         }
 
         public double pValue
@@ -73,17 +75,17 @@ namespace ProteoformSuiteGUI
 
         public bool Significant
         {
-            get { return qval.TusherValues1.significant; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant : qval.TusherValues2.significant; }
         }
 
-        public decimal TestStatistic_linear
+        public decimal RelativeDifference
         {
-            get { return qval.TusherValues1.relative_difference; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.relative_difference : qval.TusherValues2.relative_difference; }
         }
 
         public decimal AvgPermutedTestStatistic
         {
-            get { return qval.TusherValues1.correspondingAvgSortedRelDiff; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.correspondingAvgSortedRelDiff : qval.TusherValues2.correspondingAvgSortedRelDiff; }
         }
 
         public string manual_validation_quant
@@ -108,7 +110,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(IntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(LogFoldChange)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(pValue)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(TestStatistic_linear)].DefaultCellStyle.Format = "0.#####";
+            dgv.Columns[nameof(RelativeDifference)].DefaultCellStyle.Format = "0.#####";
             dgv.Columns[nameof(AvgPermutedTestStatistic)].DefaultCellStyle.Format = "0.#####";
 
             //HEADERS
@@ -118,7 +120,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(IntensitySum)].HeaderText = "Intensity Sum";
             dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
-            dgv.Columns[nameof(TestStatistic_linear)].HeaderText = "Student's t-Test Statistic (Linear Intensities)";
+            dgv.Columns[nameof(RelativeDifference)].HeaderText = "Student's t-Test Statistic (Linear Intensities)";
             dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
         }
