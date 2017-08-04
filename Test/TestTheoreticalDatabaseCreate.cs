@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
 
 namespace Test
@@ -300,6 +301,20 @@ namespace Test
             Sweet.lollipop.modification_ranks = mods.DistinctBy(m => m.monoisotopicMass).ToDictionary(m => m.monoisotopicMass, m => -1);
             tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods.OfType<ModificationWithMass>());
             tpd.amend_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
+        }
+
+        [Test]
+        public void parallel_enter_theoreticals_doesnt_crash()
+        {
+            TheoreticalProteoformDatabase db = new TheoreticalProteoformDatabase();
+            db.populate_aa_mass_dictionary();
+            List<ModificationWithMass> var = new List<ModificationWithMass>();
+            List<TheoreticalProteoform> ts = new List<TheoreticalProteoform>();
+            ProteinWithGoTerms p = ConstructorsForTesting.make_a_theoretical().ExpandedProteinList.First();
+            Parallel.Invoke(
+                () => db.EnterTheoreticalProteformFamily("SEQ", p, p.OneBasedPossibleLocalizedModifications, p.Accession, ts, 1, var),
+                () => db.EnterTheoreticalProteformFamily("SEQ", p, p.OneBasedPossibleLocalizedModifications, p.Accession, ts, 1, var)
+            );
         }
     }
 }

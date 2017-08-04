@@ -99,7 +99,7 @@ namespace ProteoformSuiteInternal
             possible_ptmset_dictionary = make_ptmset_dictionary();
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+            populate_aa_mass_dictionary();
             if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
@@ -271,6 +271,54 @@ namespace ProteoformSuiteInternal
                 || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0);
         }
 
+                public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<ModificationWithMass> variableModifications)
+        {
+            //Calculate the properties of this sequence
+            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
+            int lysine_count = seq.Split('K').Length - 1;
+            bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
+
+            //Figure out the possible ptm sets
+            Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.ToDictionary(kv => kv.Key, kv => new List<Modification>(kv.Value));
+            foreach (ModificationWithMass m in variableModifications)
+            {
+                for (int i = 1; i <= prot.BaseSequence.Length; i++)
+                {
+                    if (prot.BaseSequence[i - 1].ToString() == m.motif.Motif)
+                    {
+                        if (!possibleLocalizedMods.TryGetValue(i, out List<Modification> a)) possibleLocalizedMods.Add(i, new List<Modification> { m });
+                        else a.Add(m);
+                    }
+                }
+            }
+
+            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
+
+            //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
+            int ptm_set_counter = 1;
+            foreach (PtmSet ptm_set in unique_ptm_groups)
+            {
+                lock (theoretical_proteoforms) theoretical_proteoforms.Add(
+                    new TheoreticalProteoform(
+                        accession + "_P" + ptm_set_counter.ToString(),
+                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                        new ProteinWithGoTerms[] { prot },
+                        unmodified_mass,
+                        lysine_count,
+                        ptm_set,
+                        decoy_number < 0,
+                        check_contaminants,
+                        theoretical_proteins)
+                    );
+                ptm_set_counter++;
+            }
+        }
+
+        public void populate_aa_mass_dictionary()
+        {
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+        }
+
         #endregion Public Methods
 
         #region Unlocalized Mods Public Methods
@@ -374,7 +422,7 @@ namespace ProteoformSuiteInternal
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
+            Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
 
@@ -394,7 +442,7 @@ namespace ProteoformSuiteInternal
                 {
                     string hunk = giantProtein.Substring(prevLength, p.BaseSequence.Length);
                     prevLength += p.BaseSequence.Length;
-                    EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
+                    EnterTheoreticalProteformFamily(hunk, p, p.OneBasedPossibleLocalizedModifications, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
                 });
 
                 lock (Sweet.lollipop.decoy_proteoform_communities)
@@ -405,49 +453,6 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
                 }
             });
-        }
-
-        private void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<ModificationWithMass> variableModifications)
-        {
-            //Calculate the properties of this sequence
-            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
-            int lysine_count = seq.Split('K').Length - 1;
-            bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
-
-            //Figure out the possible ptm sets
-            Dictionary<int, List<Modification>> possibleLocalizedMods = new Dictionary<int, List<Modification>>(prot.OneBasedPossibleLocalizedModifications);
-            foreach (ModificationWithMass m in variableModifications)
-            {
-                for (int i = 1; i <= prot.BaseSequence.Length; i++)
-                {
-                    if (prot.BaseSequence[i - 1].ToString() == m.motif.Motif)
-                    {
-                        if (!possibleLocalizedMods.TryGetValue(i, out List<Modification> a)) possibleLocalizedMods.Add(i, new List<Modification> { m });
-                        else a.Add(m);
-                    }
-                }
-            }
-
-            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
-
-            //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
-            int ptm_set_counter = 1;
-            foreach (PtmSet ptm_set in unique_ptm_groups)
-            {
-                lock (theoretical_proteoforms) theoretical_proteoforms.Add(
-                    new TheoreticalProteoform(
-                        accession + "_P" + ptm_set_counter.ToString(),
-                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
-                        new ProteinWithGoTerms[] { prot },
-                        unmodified_mass,
-                        lysine_count,
-                        ptm_set,
-                        decoy_number < 0,
-                        check_contaminants,
-                        theoretical_proteins)
-                    );
-                ptm_set_counter++;
-            }
         }
 
         private string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
