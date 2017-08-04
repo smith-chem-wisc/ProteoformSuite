@@ -265,7 +265,7 @@ namespace ProteoformSuiteInternal
         {
             Stack<ProteoformFamily> remaining = new Stack<ProteoformFamily>(families);
             List<ProteoformFamily> running = new List<ProteoformFamily>();
-            List<Proteoform> cumulative_proteoforms = new List<Proteoform>();
+            HashSet<Proteoform> cumulative_proteoforms = new HashSet<Proteoform>();
             List<Thread> active = new List<Thread>();
             while (remaining.Count > 0 || active.Count > 0)
             {
@@ -287,7 +287,10 @@ namespace ProteoformSuiteInternal
                 {
                     if (!family.proteoforms.Any(p => cumulative_proteoforms.Contains(p)))
                     {
-                        cumulative_proteoforms.AddRange(family.proteoforms);
+                        foreach (Proteoform p in family.proteoforms)
+                        {
+                            cumulative_proteoforms.Add(p);
+                        }
                         Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
                         yield return family;
                     }
