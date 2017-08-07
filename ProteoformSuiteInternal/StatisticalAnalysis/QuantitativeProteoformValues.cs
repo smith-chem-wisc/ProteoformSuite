@@ -51,13 +51,13 @@ namespace ProteoformSuiteInternal
         /// <param name="avgLog2Intensity"></param>
         /// <param name="stdevLog2Intensity"></param>
         /// <returns></returns>
-        public static double imputed_intensity(decimal avgLog2Intensity, decimal stdevLog2Intensity)
+        public static double imputed_intensity(decimal avgLog2Intensity, decimal stdevLog2Intensity, bool useRandomSeed, Random seeded)
         {
             //bkgdAverageIntensity is coming in as a log 2 number
             //bkgdStDev is coming in as a log 2 number
 
-            double u1 = ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
-            double u2 = ExtensionMethods.RandomNumber();
+            double u1 = useRandomSeed && seeded != null ? seeded.NextDouble() : ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
+            double u2 = useRandomSeed && seeded != null ? seeded.NextDouble() : ExtensionMethods.RandomNumber();
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1) -- normal(mean,variance)
             double intensity = Math.Pow(2, (double)avgLog2Intensity + (double)stdevLog2Intensity * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
             return intensity;
@@ -75,15 +75,19 @@ namespace ProteoformSuiteInternal
         /// <param name="satisfactoryProteoformsCount"></param>
         /// <param name="sortedProteoformTestStatistics"></param>
         /// <returns></returns>
-        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<decimal> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
+        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<TusherStatistic> permutedTestStatistics, int satisfactoryProteoformsCount, List<TusherStatistic> sortedProteoformTestStatistics)
         {
             decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
 
-            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v <= minimumNegativePassingTestStatistic && v <= 0 || minimumPositivePassingTestStatistic <= v && v >= 0);
+            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v =>
+                (v.relative_difference < minimumNegativePassingTestStatistic && v.relative_difference <= 0 || minimumPositivePassingTestStatistic < v.relative_difference && v.relative_difference >= 0)
+                && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
             decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
-            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat <= minimumNegativePassingTestStatistic && stat <= 0 || minimumPositivePassingTestStatistic <= stat && stat >= 0);
+            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => 
+                (stat.relative_difference <= minimumNegativePassingTestStatistic && stat.relative_difference <= 0 || minimumPositivePassingTestStatistic <= stat.relative_difference && stat.relative_difference >= 0)
+                && (!Sweet.lollipop.useFoldChangeCutoff || stat.fold_change > Sweet.lollipop.foldChangeCutoff));
 
             decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
             return fdr;

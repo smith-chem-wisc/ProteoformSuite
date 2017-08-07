@@ -298,10 +298,10 @@ namespace ProteoformSuiteGUI
 
         private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
         {
-            IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
+            IEnumerable<object> selected_relations = tb_relationTableFilter.Text == "" ?
                 (cb_discoveryHistogram.Checked? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)))
                 : (ExtensionMethods.filter((cb_discoveryHistogram.Checked ? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p))), tb_relationTableFilter.Text));
-            DisplayUtility.FillDataGridView(dgv_ET_Relations, selected_peaks);
+            DisplayUtility.FillDataGridView(dgv_ET_Relations, selected_relations);
             DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, cb_discoveryHistogram.Checked);
         }
 

@@ -167,7 +167,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.BackColor = System.Drawing.SystemColors.Control;
-            this.label11.Location = new System.Drawing.Point(134, 167);
+            this.label11.Location = new System.Drawing.Point(4, 168);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(117, 13);
@@ -178,9 +178,9 @@
             // 
             this.cmbx_nodeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabel.FormattingEnabled = true;
-            this.cmbx_nodeLabel.Location = new System.Drawing.Point(7, 165);
+            this.cmbx_nodeLabel.Location = new System.Drawing.Point(120, 165);
             this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
-            this.cmbx_nodeLabel.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_nodeLabel.Size = new System.Drawing.Size(350, 21);
             this.cmbx_nodeLabel.TabIndex = 51;
             this.cmbx_nodeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -188,7 +188,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.BackColor = System.Drawing.SystemColors.Control;
-            this.label10.Location = new System.Drawing.Point(134, 247);
+            this.label10.Location = new System.Drawing.Point(4, 248);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(105, 13);
@@ -199,9 +199,9 @@
             // 
             this.cmbx_geneLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_geneLabel.FormattingEnabled = true;
-            this.cmbx_geneLabel.Location = new System.Drawing.Point(6, 244);
+            this.cmbx_geneLabel.Location = new System.Drawing.Point(119, 244);
             this.cmbx_geneLabel.Name = "cmbx_geneLabel";
-            this.cmbx_geneLabel.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_geneLabel.Size = new System.Drawing.Size(350, 21);
             this.cmbx_geneLabel.TabIndex = 49;
             this.cmbx_geneLabel.SelectedIndexChanged += new System.EventHandler(this.cmbx_geneLabel_SelectedIndexChanged);
             this.cmbx_geneLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
@@ -210,7 +210,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.SystemColors.Control;
-            this.label9.Location = new System.Drawing.Point(134, 195);
+            this.label9.Location = new System.Drawing.Point(4, 196);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(116, 13);
@@ -221,16 +221,16 @@
             // 
             this.cmbx_edgeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_edgeLabel.FormattingEnabled = true;
-            this.cmbx_edgeLabel.Location = new System.Drawing.Point(7, 193);
+            this.cmbx_edgeLabel.Location = new System.Drawing.Point(120, 193);
             this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
-            this.cmbx_edgeLabel.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_edgeLabel.Size = new System.Drawing.Size(350, 21);
             this.cmbx_edgeLabel.TabIndex = 47;
             this.cmbx_edgeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(134, 40);
+            this.label6.Location = new System.Drawing.Point(4, 41);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 13);
@@ -239,9 +239,9 @@
             // 
             // tb_tableFilter
             // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(7, 38);
+            this.tb_tableFilter.Location = new System.Drawing.Point(120, 38);
             this.tb_tableFilter.Name = "tb_tableFilter";
-            this.tb_tableFilter.Size = new System.Drawing.Size(121, 20);
+            this.tb_tableFilter.Size = new System.Drawing.Size(350, 20);
             this.tb_tableFilter.TabIndex = 45;
             this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
@@ -249,7 +249,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.SystemColors.Control;
-            this.label4.Location = new System.Drawing.Point(134, 140);
+            this.label4.Location = new System.Drawing.Point(4, 141);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(116, 13);
@@ -260,7 +260,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.SystemColors.Control;
-            this.label3.Location = new System.Drawing.Point(134, 113);
+            this.label3.Location = new System.Drawing.Point(4, 114);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(68, 13);
@@ -270,7 +270,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(133, 86);
+            this.label2.Location = new System.Drawing.Point(3, 87);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(102, 13);
@@ -281,9 +281,9 @@
             // 
             this.cmbx_nodeLabelPositioning.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabelPositioning.FormattingEnabled = true;
-            this.cmbx_nodeLabelPositioning.Location = new System.Drawing.Point(7, 138);
+            this.cmbx_nodeLabelPositioning.Location = new System.Drawing.Point(120, 138);
             this.cmbx_nodeLabelPositioning.Name = "cmbx_nodeLabelPositioning";
-            this.cmbx_nodeLabelPositioning.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_nodeLabelPositioning.Size = new System.Drawing.Size(350, 21);
             this.cmbx_nodeLabelPositioning.TabIndex = 38;
             this.cmbx_nodeLabelPositioning.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -291,9 +291,9 @@
             // 
             this.cmbx_nodeLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLayout.FormattingEnabled = true;
-            this.cmbx_nodeLayout.Location = new System.Drawing.Point(7, 111);
+            this.cmbx_nodeLayout.Location = new System.Drawing.Point(120, 111);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
-            this.cmbx_nodeLayout.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_nodeLayout.Size = new System.Drawing.Size(350, 21);
             this.cmbx_nodeLayout.TabIndex = 37;
             this.cmbx_nodeLayout.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
@@ -301,16 +301,16 @@
             // 
             this.cmbx_colorScheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_colorScheme.FormattingEnabled = true;
-            this.cmbx_colorScheme.Location = new System.Drawing.Point(7, 84);
+            this.cmbx_colorScheme.Location = new System.Drawing.Point(120, 84);
             this.cmbx_colorScheme.Name = "cmbx_colorScheme";
-            this.cmbx_colorScheme.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_colorScheme.Size = new System.Drawing.Size(350, 21);
             this.cmbx_colorScheme.TabIndex = 36;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // lb_dgv_selection
             // 
             this.lb_dgv_selection.AutoSize = true;
-            this.lb_dgv_selection.Location = new System.Drawing.Point(134, 12);
+            this.lb_dgv_selection.Location = new System.Drawing.Point(4, 13);
             this.lb_dgv_selection.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lb_dgv_selection.Name = "lb_dgv_selection";
             this.lb_dgv_selection.Size = new System.Drawing.Size(81, 13);
@@ -321,9 +321,9 @@
             // 
             this.cmbx_tableSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_tableSelector.FormattingEnabled = true;
-            this.cmbx_tableSelector.Location = new System.Drawing.Point(7, 10);
+            this.cmbx_tableSelector.Location = new System.Drawing.Point(120, 10);
             this.cmbx_tableSelector.Name = "cmbx_tableSelector";
-            this.cmbx_tableSelector.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_tableSelector.Size = new System.Drawing.Size(350, 21);
             this.cmbx_tableSelector.TabIndex = 5;
             this.cmbx_tableSelector.SelectedIndexChanged += new System.EventHandler(this.cmbx_tableSelector_SelectedIndexChanged);
             this.cmbx_tableSelector.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);

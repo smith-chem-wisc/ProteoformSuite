@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
 
 namespace Test
@@ -315,6 +316,7 @@ namespace Test
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.methionine_oxidation = false;
+            Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "BU_result_sliced-raw_5ppmAroundZero.mzid") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
@@ -331,11 +333,32 @@ namespace Test
             Assert.AreEqual("EGFQVADGPLYR", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count == 0).First().sequence_with_modifications);
             Assert.AreEqual(1, BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count);
             Assert.AreEqual("PTM not in database", BottomUpReader.bottom_up_PTMs_not_in_dictionary.First());
+
             //accession matches one of the accessions of proteins collapsed into theoretical proteoforms (combine identical sequences/masses)
             Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(t => t.psm_list.Count > 0));
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[0].psm_list.Count);
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[1].psm_list.Count);
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[2].psm_list.Count);
+            //should also add to decoy communities
+            Assert.AreEqual(3, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Count(t => t.psm_list.Count > 0));
+            Assert.AreEqual(2, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[0].psm_list.Count);
+            Assert.AreEqual(2, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[1].psm_list.Count);
+            Assert.AreEqual(2, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[2].psm_list.Count);
+
+        }
+
+        [Test]
+        public void parallel_enter_theoreticals_doesnt_crash()
+        {
+            TheoreticalProteoformDatabase db = new TheoreticalProteoformDatabase();
+            db.populate_aa_mass_dictionary();
+            List<ModificationWithMass> var = new List<ModificationWithMass>();
+            List<TheoreticalProteoform> ts = new List<TheoreticalProteoform>();
+            ProteinWithGoTerms p = ConstructorsForTesting.make_a_theoretical().ExpandedProteinList.First();
+            Parallel.Invoke(
+                () => db.EnterTheoreticalProteformFamily("SEQ", p, p.OneBasedPossibleLocalizedModifications, p.Accession, ts, 1, var),
+                () => db.EnterTheoreticalProteformFamily("SEQ", p, p.OneBasedPossibleLocalizedModifications, p.Accession, ts, 1, var)
+            );
         }
     }
 }
