@@ -71,7 +71,7 @@ namespace ProteoformSuiteGUI
             {
                 try
                 {
-                    return t.relationships.Sum(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().Sum(t => t.psm_list.Count));
+                    return t.relationships.Sum(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().SelectMany(t => t.psm_list).Distinct().Count());
                 }
                 catch { return 0; }
             }

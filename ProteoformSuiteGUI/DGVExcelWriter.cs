@@ -14,10 +14,10 @@ namespace ProteoformSuiteInternal
 
         public void ExportToExcel(List<DataGridView> dgvs, string sheet_prefix)
         {
-            if (dgvs == null || dgvs.Count(d => d.DataSource != null) == 0)
+            if (dgvs == null)
                 return;
 
-            foreach (DataGridView dgv in dgvs.Where(d => d.DataSource != null))
+            foreach (DataGridView dgv in dgvs)
             {
                 if (dgv.DataSource == null || dgv.Columns.Count == 0 || dgv.Rows.Count == 0) continue;
                 DataTable dt = new DataTable();
@@ -25,7 +25,6 @@ namespace ProteoformSuiteInternal
                 {
                     dt.Columns.Add(col.HeaderText);
                 }
-
 
                 foreach(DataGridViewRow row in dgv.Rows)
                 {

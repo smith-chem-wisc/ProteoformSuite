@@ -296,7 +296,6 @@
             this.dgv_loadFiles1.TabIndex = 39;
             this.dgv_loadFiles1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles1_CellFormatting);
             this.dgv_loadFiles1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_loadFiles1_CellMouseClick);
-            this.dgv_loadFiles1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgv_loadFiles1_CellValidating);
             this.dgv_loadFiles1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragDrop);
             this.dgv_loadFiles1.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragEnter);
             // 
@@ -421,7 +420,6 @@
             this.dgv_loadFiles2.TabIndex = 36;
             this.dgv_loadFiles2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles2_CellFormatting);
             this.dgv_loadFiles2.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_loadFiles2_CellMouseClick);
-            this.dgv_loadFiles2.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgv_loadFiles2_CellValidating);
             this.dgv_loadFiles2.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragDrop);
             this.dgv_loadFiles2.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragEnter);
             // 
@@ -528,7 +526,6 @@
             this.dgv_loadFiles3.TabIndex = 41;
             this.dgv_loadFiles3.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles3_CellFormatting);
             this.dgv_loadFiles3.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_loadFiles3_CellMouseClick);
-            this.dgv_loadFiles3.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgv_loadFiles3_CellValidating);
             this.dgv_loadFiles3.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragDrop);
             this.dgv_loadFiles3.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragEnter);
             // 

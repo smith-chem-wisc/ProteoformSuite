@@ -416,13 +416,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.peak_width_base_et = Convert.ToDouble(nUD_PeakWidthBase.Value);
         }
 
-
-        //Check box to allow whether theoreticals used to create ET pairs must have at least one BU PSM or have been osbsreved in TD 
-        private void cb_TDBUpsm_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.limit_theoreticals_to_BU_or_TD_observed = cb_TDBUpsm.Checked;
-        }
-
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {

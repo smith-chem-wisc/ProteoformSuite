@@ -39,7 +39,7 @@ namespace ProteoformSuiteInternal
                             if (mod_id.Length == 0) mod_id = identifications.ModificationAcession(sirIndex, siiIndex, p);
                             lock (bottom_up_PTMs_not_in_dictionary)
                             {
-                                if (!bottom_up_PTMs_not_in_dictionary.Contains(mod_id)) bottom_up_PTMs_not_in_dictionary.Add(mod_id);
+                                bottom_up_PTMs_not_in_dictionary.Add(mod_id);
                             }
                         }
                     }

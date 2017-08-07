@@ -63,6 +63,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(mz_centroid)].HeaderText = "Centroid m/z";
             dgv.Columns[nameof(calculated_mass)].HeaderText = "Calculated Mass";
             dgv.Columns[nameof(charge_count)].HeaderText = "Charge Count";
+
             dgv.AllowUserToAddRows = false;
         }
 
