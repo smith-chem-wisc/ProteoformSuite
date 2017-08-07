@@ -324,10 +324,6 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
-            ordered_components = new Component[0];
-            remaining_components.Clear();
-            remaining_verification_components.Clear();
-            vetted_proteoforms.Clear();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = neucode_labeled ?
@@ -626,10 +622,11 @@ namespace ProteoformSuiteInternal
 
         public List<TopDownProteoform> AggregateTdHits(List<TopDownHit> top_down_hits)
         {
-            //group hits into topdown proteoforms by accession/theoretical AND observed mass
+            //get topdown hits that meet criteria
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.ms2_retention_time >= min_RT_td && h.ms2_retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
 
+            //need to loop through - if 2 hits are from same MS2 and have same exact p-value, only one should be reported. Choose higher score
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
             while(unprocessed_td_hits.Count > 0)
             {
@@ -649,8 +646,8 @@ namespace ProteoformSuiteInternal
                     TopDownHit root = hits_by_pfr[0];
                     //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
                     //find topdownhits within RT tol --> first average
-                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).Select(h => h.ms2_retention_time).Average();
-                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).OrderByDescending(h => h.score).ToList();
+                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance)).Select(h => h.ms2_retention_time).Average();
+                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
                     root = hits_to_aggregate[0];
                     //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
                     TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
@@ -659,9 +656,10 @@ namespace ProteoformSuiteInternal
                     //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
                     lock (topdown_proteoforms)
                     {
-                        int count = topdown_proteoforms.Count(t => t.accession.Contains(new_pf.accession));
+                        int count = topdown_proteoforms.Count(t => t.accession == new_pf.accession);
                         if (count > 0)
                         {
+                            count++;
                             string[] old_accession = new_pf.accession.Split('_');
                             new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
                         }
@@ -961,7 +959,6 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, double, double>, double> file_mz_correction = new Dictionary<Tuple<string, double, double>, double>();
         public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public List<Component> calibration_components = new List<Component>();
-        public string[] file_descriptions;
         public List<string> filenames_did_not_calibrate = new List<string>();
 
         public void read_in_calibration_td_hits()
@@ -969,101 +966,76 @@ namespace ProteoformSuiteInternal
             td_hits_calibration.Clear();
             file_mz_correction.Clear();
             td_hit_correction.Clear();
-            calibration_components.Clear(); 
+            calibration_components.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
                 td_hits_calibration.AddRange(topdownReader.ReadTDFile(file));
             }
         }
 
-        public string get_file_descriptions()
+        public void get_td_hit_chargestates()
         {
-            //determine biorep, techrep, fraction of each raw file, component file, and topdown hit
-            foreach (string line in file_descriptions.Get(1, file_descriptions.Length))
+            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile))
             {
-                string[] file_description = line.Split('\t');
-                if (file_descriptions.Count(d => d.Split('\t')[0] == file_description[0]) > 1)
-                    return "Error in file descriptions file - multiple entries for one filename";
-                Parallel.ForEach(td_hits_calibration.Where(h => h.filename == file_description[0].Split('.')[0]), h =>
+                if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
-                    h.biological_replicate = file_description[1];
-                    h.fraction = file_description[2];
-                    h.technical_replicate = file_description[3];
-                });
+                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
+                    Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
+                    {
+                        int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(hit.ms2_retention_time);
+                        hit.ms2ScanNumber = scanNum;
+                        hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
+                        hit.mz = hit.reported_mass.ToMz(hit.charge);
+                        while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
+                        hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
+                        hit.technical_replicate = raw_file.technical_replicate;
+                        hit.biological_replicate = raw_file.biological_replicate;
+                        hit.fraction = raw_file.fraction;
+                    });
+                }
             }
-            if (td_hits_calibration.Any(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == ""))
-                return "Error in file descriptions file - top-down hit(s) with no matching description.";
-            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == ""))
-                return "Label fraction, biological replicate, and techincal replicate of input files.";
-            else return null;
-        }
-
-        public string get_td_hit_chargestates()
-        {
-            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.topdown_file))
-            {
-                IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
-                Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
-                {
-                    int scanNum = myMsDataFile.GetMsScansInTimeRange(hit.ms2_retention_time - 0.00001, hit.ms2_retention_time + .00001).First().OneBasedScanNumber;
-                    hit.ms2ScanNumber = scanNum;
-                    hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
-                    hit.mz = hit.reported_mass.ToMz(hit.charge);
-                    while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
-                    hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
-                });
-            }
-            if (td_hits_calibration.Any(h => h.charge == 0)) return "Error: need to input all raw files for top-down hits. Be sure top-down file box is checked.";
-            else return null;
         }
 
         public string calibrate_files()
         {
-            string message = get_file_descriptions();
-            if (message != null) return message;
-            message = get_td_hit_chargestates();
-            if (message != null) return message;
-
+            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == ""))
+                return "Label fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
+            if (input_files.Where(f => f.purpose == Purpose.RawFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.RawFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate)))
+                return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
+            get_td_hit_chargestates();
+            if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == ""))
+                return "Error: need to input all raw files for top-down hits. Make sure the filenames match.";
             foreach (string biological_replicate in input_files.Select(f => f.biological_replicate).Distinct())
             {
                 foreach (string fraction in input_files.Where(f => f.biological_replicate == biological_replicate).Select(f => f.fraction).Distinct())
                 {
-                    foreach (string technical_replicate in input_files.Where(f => f.biological_replicate == biological_replicate && f.fraction == fraction).Select(f => f.technical_replicate).Distinct())
+                    Calibration calibration = new Calibration();
+                    process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
+                    foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction))
                     {
-                        Calibration calibration = new Calibration();
-                        foreach(InputFile file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate))
+                        bool calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction).ToList());
+                        if (calibrated)
                         {
-                            process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.topdown_file == file.topdown_file && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
-                            bool calibrated = get_calibration_points(calibration, file);
-                            if (calibrated)
-                            {
-                                determine_shifts(file.filename, file.topdown_file, biological_replicate, fraction, technical_replicate);
-                                List<InputFile> files = input_files.Where(f => f.topdown_file == file.topdown_file && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList();
-                                foreach (InputFile f in files) calibration.calibrate_components_in_xlsx(f);
-                            }
-                            else filenames_did_not_calibrate.Add(file.filename);
+                            //determine component and td hit shifts
+                            determine_shifts(raw_file);
+                            //calibrate component xlsx files
+                            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == raw_file.biological_replicate && f.fraction == raw_file.fraction && f.technical_replicate == raw_file.technical_replicate)) Calibration.calibrate_components_in_xlsx(f);
                         }
+                        else filenames_did_not_calibrate.Add(raw_file.filename);
                     }
                 }
             }
-            Calibration cali = new Calibration();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown && td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
             {
-                cali.calibrate_td_hits_file(file);
+                Calibration.calibrate_td_hits_file(file);
             }
             return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + String.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
         }
 
-
-        public bool get_calibration_points(Calibration calibration, InputFile raw_file)
+        public void determine_shifts(InputFile raw_file)
         {
-            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!raw_file.topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.score >= 40).ToList();
-            return calibration.Run_TdMzCal(raw_file, hits, raw_file.topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
-        }
-
-        public void determine_shifts(string td_filename, bool topdown_file, string biological_replicate, string fraction, string technical_replicate)
-        {
-            Parallel.ForEach(calibration_components.Where(c =>c.input_file.topdown_file == topdown_file && c.input_file.biological_replicate == biological_replicate && c.input_file.fraction == fraction && c.input_file.technical_replicate == technical_replicate), c =>
+            //calibrate components with same topdown file, biological replicate, fraction, and technical replicate
+            Parallel.ForEach(calibration_components.Where(c => c.input_file.biological_replicate == raw_file.biological_replicate && c.input_file.fraction == raw_file.fraction && c.input_file.technical_replicate == raw_file.technical_replicate), c =>
             {
                 foreach (ChargeState cs in c.charge_states)
                 {
@@ -1079,8 +1051,8 @@ namespace ProteoformSuiteInternal
 
             });
 
-            //calibrate topdown hits if this is topdown file....
-            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == td_filename))
+            //get topdown shifts if this rawfile is the same name as the topdown hit's file
+            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
             {
                 Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
                 if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, Math.Round(hit.mz.ToMass(hit.charge), 8));

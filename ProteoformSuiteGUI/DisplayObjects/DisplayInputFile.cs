@@ -31,19 +31,7 @@ namespace ProteoformSuiteGUI
         {
             get { return file.filename; }
         }
-        
-        public bool topdown_file
-        {
-            get
-            {
-                return file.topdown_file;
-            }
-            set
-            {
-                file.topdown_file = value;
-            }
-        }
-
+       
         // For quantification or calibration files
         public string biological_replicate
         {
@@ -179,7 +167,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(lt_condition)].HeaderText = Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
-            dgv.Columns[nameof(topdown_file)].HeaderText = "Top-down File";
 
             //EDITABILITY
             dgv.Columns[nameof(UniqueId)].ReadOnly = true;
@@ -196,7 +183,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(TechnicalReplicate)].Visible = dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(hv_condition)].Visible = Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
-            dgv.Columns[nameof(topdown_file)].Visible = dgv_purposes.Contains(Purpose.RawFile) || dgv_purposes.Contains(Purpose.CalibrationIdentification);
         }
 
         #endregion

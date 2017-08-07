@@ -407,17 +407,6 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
                 return;
             }
-            MessageBox.Show("Please select file with columns of top-down hits filename, biological replicate, fraction, and technical replicate #'s.");
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "File Descriptions";
-            openFileDialog.Filter = ".tsv Files (*.tsv) | *.tsv";
-            openFileDialog.Multiselect = false;
-            DialogResult dr = openFileDialog.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                Sweet.lollipop.file_descriptions = File.ReadAllLines(openFileDialog.FileName);
-            }
-            else return;
             Sweet.lollipop.read_in_calibration_td_hits();
             MessageBox.Show(Sweet.lollipop.calibrate_files());
         }
