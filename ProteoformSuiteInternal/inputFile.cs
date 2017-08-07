@@ -48,9 +48,9 @@ namespace ProteoformSuiteInternal
 
         public string technical_replicate { get; set; } = "";
 
-        public string lt_condition { get; set; } = "lt_condition";
+        public string lt_condition { get; set; } = "";
 
-        public string hv_condition { get; set; } = "hv_condition";
+        public string hv_condition { get; set; } = "";
 
 
         //For database files

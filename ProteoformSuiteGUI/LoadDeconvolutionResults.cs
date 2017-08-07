@@ -534,7 +534,12 @@ namespace ProteoformSuiteGUI
         {
             if (dgv.Rows[e.RowIndex].IsNewRow)
                 return;
-            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 0))
+            if (e.FormattedValue.ToString() == "" && dgv.IsCurrentCellInEditMode)
+            {
+                e.Cancel = true;
+                MessageBox.Show("Please enter text for each label.");
+            }
+            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 1))
             {
                 e.Cancel = true;
                 MessageBox.Show("Please use positive integers for biological replicate labels.");
