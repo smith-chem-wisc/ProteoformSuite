@@ -94,7 +94,6 @@ namespace ProteoformSuiteInternal
             return convertedValue;
         }
 
-        //TD reader needs own getcellvalue to account for blank spaces in rows/columns
         private static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
