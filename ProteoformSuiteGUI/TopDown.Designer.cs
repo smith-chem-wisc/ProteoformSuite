@@ -34,6 +34,8 @@
             this.rtb_sequence = new System.Windows.Forms.RichTextBox();
             this.dgv_TD_family = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -45,8 +47,6 @@
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
-            this.tb_tableFilter = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -159,6 +159,23 @@
             this.splitContainer3.Size = new System.Drawing.Size(976, 622);
             this.splitContainer3.SplitterDistance = 73;
             this.splitContainer3.TabIndex = 2;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(148, 48);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(59, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Table Filter";
+            // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(13, 45);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(129, 20);
+            this.tb_tableFilter.TabIndex = 15;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
             // label5
             // 
@@ -283,25 +300,9 @@
             // 
             this.tb_tdProteoforms.Location = new System.Drawing.Point(13, 3);
             this.tb_tdProteoforms.Name = "tb_tdProteoforms";
+            this.tb_tdProteoforms.ReadOnly = true;
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
-            // 
-            // tb_tableFilter
-            // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(13, 45);
-            this.tb_tableFilter.Name = "tb_tableFilter";
-            this.tb_tableFilter.Size = new System.Drawing.Size(129, 20);
-            this.tb_tableFilter.TabIndex = 15;
-            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(148, 48);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 13);
-            this.label2.TabIndex = 16;
-            this.label2.Text = "Table Filter";
             // 
             // TopDown
             // 

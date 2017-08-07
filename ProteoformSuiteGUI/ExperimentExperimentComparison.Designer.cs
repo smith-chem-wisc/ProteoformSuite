@@ -80,7 +80,6 @@
             this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
             this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
@@ -475,7 +474,6 @@
             // 
             // splitContainer5.Panel2
             // 
-            this.splitContainer5.Panel2.Controls.Add(this.cb_automate_peak_acceptance);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox6);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
@@ -667,17 +665,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "EE Peak List Parameters";
             // 
-            // cb_automate_peak_acceptance
-            // 
-            this.cb_automate_peak_acceptance.AutoSize = true;
-            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(245, 96);
-            this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
-            this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
-            this.cb_automate_peak_acceptance.TabIndex = 30;
-            this.cb_automate_peak_acceptance.Text = "Automate peak acceptance above threshold";
-            this.cb_automate_peak_acceptance.UseVisualStyleBackColor = true;
-            this.cb_automate_peak_acceptance.CheckedChanged += new System.EventHandler(this.cb_automate_peak_acceptance_CheckedChanged);
-            // 
             // tb_max_accepted_fdr
             // 
             this.tb_max_accepted_fdr.Location = new System.Drawing.Point(52, 111);
@@ -783,7 +770,6 @@
             this.splitContainer6.ResumeLayout(false);
             this.splitContainer5.Panel1.ResumeLayout(false);
             this.splitContainer5.Panel2.ResumeLayout(false);
-            this.splitContainer5.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
             this.splitContainer5.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
@@ -851,7 +837,6 @@
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;

@@ -21,6 +21,7 @@ namespace ProteoformSuiteGUI
             tb_accepted_relations.Text = big_peaks.Sum(p => p.grouped_relations.Count(r => r.Accepted)).ToString();
             tb_total_peaks.Text = big_peaks.Count.ToString();
         }
+
         #endregion Public Methods
 
     }

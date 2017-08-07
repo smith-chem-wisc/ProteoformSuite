@@ -146,6 +146,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates.OfType<ExperimentalProteoform>().Select(ep => new DisplayExperimentalProteoform(ep)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
+
         private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);

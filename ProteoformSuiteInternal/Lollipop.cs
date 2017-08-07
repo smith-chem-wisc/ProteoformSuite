@@ -537,7 +537,6 @@ namespace ProteoformSuiteInternal
         public double peak_width_base_ee = 0.03;
         public double min_peak_count_et = 4;
         public double min_peak_count_ee = 10;
-        public bool limit_theoreticals_to_BU_or_TD_observed = false;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
