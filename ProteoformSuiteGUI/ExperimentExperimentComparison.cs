@@ -104,7 +104,6 @@ namespace ProteoformSuiteGUI
             nUD_EE_Upper_Bound.Maximum = 2000;
             xMaxEE.Maximum = nUD_EE_Upper_Bound.Maximum;
             xMinEE.Maximum = nUD_EE_Upper_Bound.Maximum;
-            if (!Sweet.lollipop.neucode_labeled) Sweet.lollipop.ee_max_mass_difference = 150;
             nUD_EE_Upper_Bound.Value = (decimal)Sweet.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
 
             //Other stuff

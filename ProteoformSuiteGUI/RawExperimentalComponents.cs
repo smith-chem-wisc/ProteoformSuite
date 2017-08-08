@@ -34,7 +34,7 @@ namespace ProteoformSuiteGUI
 
             Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
             if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
-                (MdiParent as ProteoformSweet).quantification.InitializeParameterSet();
+                (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
 
             Parallel.Invoke
             (
@@ -53,6 +53,8 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {
+            Sweet.lollipop.raw_experimental_components.Clear();
+
             if (clear_following_forms)
             {
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)

@@ -14,7 +14,8 @@ namespace ProteoformSuiteInternal
     {
 
         public static Lollipop lollipop = new Lollipop();
-        public static List<string> actions = new List<string>();
+        public static List<string> save_actions = new List<string>();
+        public static List<string> loaded_actions = new List<string>();
 
         #region BASICS FOR XML WRITING
 
@@ -94,7 +95,7 @@ namespace ProteoformSuiteInternal
 
         private static void add_actions(XmlWriter writer)
         {
-            foreach (string action in actions)
+            foreach (string action in save_actions)
             {
                 writer.WriteStartElement("action");
                 writer.WriteAttributeString("action", action);
@@ -102,7 +103,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static void open_method(string alltext, bool add_files)
+        public static bool open_method(string alltext, bool add_files)
         {
             FieldInfo[] lollipop_fields = typeof(Lollipop).GetFields();
             List<XElement> setting_elements = new List<XElement>();
@@ -118,10 +119,18 @@ namespace ProteoformSuiteInternal
                             setting_elements.Add(XElement.ReadFrom(reader) as XElement);
                         else if (reader.Name == "action")
                             action_elements.Add(XElement.ReadFrom(reader) as XElement);
-                        else return; //Settings come first. Return when done
+                        else return false; //unknown element
                     }
                 }
             }
+
+            if (lollipop_fields.Any(f => !f.IsLiteral &&
+                    (f.FieldType == typeof(int) ||
+                    f.FieldType == typeof(double) ||
+                    f.FieldType == typeof(string) ||
+                    f.FieldType == typeof(decimal) ||
+                    f.FieldType == typeof(bool)) 
+                    && !setting_elements.Any(s => GetAttribute(s, "field_name") == f.Name))) return false; //parameters in lollipop not specified in method file
 
             foreach (XElement setting in setting_elements)
             {
@@ -129,21 +138,22 @@ namespace ProteoformSuiteInternal
                 Type type = Type.GetType(type_string); //Takes only full name of type
                 string name = GetAttribute(setting, "field_name");
                 string value = GetAttribute(setting, "field_value");
-                lollipop_fields.FirstOrDefault(p => p.Name == name).SetValue(lollipop, Convert.ChangeType(value, type));
+                FieldInfo field = lollipop_fields.FirstOrDefault(p => p.Name == name);
+                if (field == null) return false; //parameters in the method file that don't exist in Proteoform Suite.
+                field.SetValue(lollipop, Convert.ChangeType(value, type));
             }
 
             foreach (XElement action in action_elements)
             {
-                actions.Add(GetAttribute(action, "action"));
+                loaded_actions.Add(GetAttribute(action, "action"));
             }
+            
+            if (loaded_actions.Any(a => !a.StartsWith("add file ") && !a.StartsWith("change file ") && !a.StartsWith("shift ") && !a.StartsWith("accept ") && !a.StartsWith("unaccept ")))
+                return false;
 
             if (add_files) add_files_from_presets(lollipop.input_files);
             else update_files_from_presets(lollipop.input_files);
-        }
-
-        public static void open_method(string[] lines, bool add_files)
-        {
-            open_method(String.Join(Environment.NewLine, lines), add_files);
+            return true;
         }
 
         #endregion METHOD SAVE/LOAD
@@ -152,34 +162,34 @@ namespace ProteoformSuiteInternal
 
         public static void add_file_action(InputFile file)
         {
-            actions.Add("add file " + file.complete_path + " with purpose " + file.purpose.ToString());
+            save_actions.Add("add file " + file.complete_path + " with purpose " + file.purpose.ToString());
         }
 
         public static void change_file(InputFile file, object property, string property_name, string from, string to)
         {
-            actions.Add("change file " + file.complete_path + " property " + property_name + " of type " + property.GetType().FullName + " from " + from + " to " + to);
+            save_actions.Add("change file " + file.complete_path + " property " + property_name + " of type " + property.GetType().FullName + " from " + from + " to " + to);
         }
 
         public static void accept_peak_action(IMassDifference peak)
         {
-            actions.Add("accept " + peak.RelationType.ToString() + " peak with delta-mass " + peak.DeltaMass.ToString());
+            save_actions.Add("accept " + peak.RelationType.ToString() + " peak with delta-mass " + peak.DeltaMass.ToString());
         }
 
         public static void unaccept_peak_action(IMassDifference peak)
         {
-            actions.Add("unaccept " + peak.RelationType.ToString() + " peak with delta-mass " + peak.DeltaMass.ToString());
+            save_actions.Add("unaccept " + peak.RelationType.ToString() + " peak with delta-mass " + peak.DeltaMass.ToString());
         }
 
         public static void shift_peak_action(DeltaMassPeak peak)
         {
-            actions.Add("shift " + peak.RelationType.ToString() + " peak with delta-mass " + peak.DeltaMass.ToString() + " by " + peak.mass_shifter);
+            save_actions.Add("shift " + peak.RelationType.ToString() + " peak with delta-mass " + peak.DeltaMass.ToString() + " by " + peak.mass_shifter);
         }
 
         public static void add_files_from_presets(List<InputFile> destination)
         {
             Regex findaddfile = new Regex(@"add file (\S+)");
             Regex findpurpose = new Regex(@"purpose (.+)");
-            foreach (string add_file in actions.Where(x => x.StartsWith("add file ")))
+            foreach (string add_file in loaded_actions.Where(x => x.StartsWith("add file ")))
             {
                 string filepath = findaddfile.Match(add_file).Groups[1].ToString();
                 Purpose? purpose = ExtensionMethods.EnumUntil.GetValues<Purpose>().FirstOrDefault(p => findpurpose.Match(add_file).Groups[1].ToString() == p.ToString());
@@ -187,6 +197,7 @@ namespace ProteoformSuiteInternal
                     continue;
                 string ext = Path.GetExtension(filepath);
                 lollipop.enter_input_files(new string[] { filepath }, new string[] { ext }, new List<Purpose> { (Purpose)purpose }, destination, false);
+                if(!save_actions.Contains(add_file)) save_actions.Add(add_file);
             }
         }
 
@@ -196,7 +207,7 @@ namespace ProteoformSuiteInternal
             Regex findproperty = new Regex(@" property (\S+)");
             Regex findtype = new Regex(@" type (\S+)");
             Regex findto = new Regex(@" to (.+)"); // matches to end of line
-            foreach (string change_file in actions.Where(x => x.StartsWith("change file ")))
+            foreach (string change_file in loaded_actions.Where(x => x.StartsWith("change file ")))
             {
                 string filename = Path.GetFileName(findchangefile.Match(change_file).Groups[1].ToString());
                 string property = findproperty.Match(change_file).Groups[1].ToString();
@@ -209,6 +220,7 @@ namespace ProteoformSuiteInternal
                 if (file == null || propertyinfo == null)
                     continue;
                 propertyinfo.SetValue(file, Convert.ChangeType(value, type));
+                if (!save_actions.Contains(change_file)) save_actions.Add(change_file);
             }
         }
 
@@ -217,7 +229,7 @@ namespace ProteoformSuiteInternal
         {
             Regex findshift = new Regex(@" by (.+)");
             Regex findshiftrelationtype = new Regex(@"shift (\S+)");
-            foreach (string mass_shift in actions.Where(x => x.StartsWith("shift ")))
+            foreach (string mass_shift in loaded_actions.Where(x => x.StartsWith("shift ")))
             {
                 string relationshiptype = findshiftrelationtype.Match(mass_shift).Groups[1].ToString();
                 ProteoformComparison? comparison = ExtensionMethods.EnumUntil.GetValues<ProteoformComparison>().FirstOrDefault(x => relationshiptype == x.ToString());
@@ -228,17 +240,16 @@ namespace ProteoformSuiteInternal
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
                     peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
-                else if (comparison == ProteoformComparison.ExperimentalExperimental)
-                    peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
                 if (peak != null)
                     peak.mass_shifter = shift;
+                save_actions.Add(mass_shift);
             }
         }
 
         public static void update_peaks_from_presets()
         {
             Regex findacceptrelationtype = new Regex(@"accept (\S+)");
-            foreach (string peak_change in actions.Where(x => x.StartsWith("accept ") || x.StartsWith("unaccept ")))
+            foreach (string peak_change in loaded_actions.Where(x => x.StartsWith("accept ") || x.StartsWith("unaccept ")))
             {
                 string relationshiptype = findacceptrelationtype.Match(peak_change).Groups[1].ToString();
                 ProteoformComparison? comparison = ExtensionMethods.EnumUntil.GetValues<ProteoformComparison>().FirstOrDefault(x => relationshiptype == x.ToString());
@@ -252,6 +263,7 @@ namespace ProteoformSuiteInternal
                     peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
                 if (peak != null)
                     lollipop.change_peak_acceptance(peak, peak_change.StartsWith("accept "), false);
+                save_actions.Add(peak_change);
             }
         }
 
