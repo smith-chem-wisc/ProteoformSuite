@@ -49,7 +49,6 @@
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -197,8 +196,7 @@
             // 
             this.runMethodToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveMethodToolStripMenuItem1,
-            this.loadSettingsToolStripMenuItem,
-            this.loadRunToolStripMenuItem});
+            this.loadSettingsToolStripMenuItem});
             this.runMethodToolStripMenuItem.Name = "runMethodToolStripMenuItem";
             this.runMethodToolStripMenuItem.Size = new System.Drawing.Size(61, 22);
             this.runMethodToolStripMenuItem.Text = "Method";
@@ -216,13 +214,6 @@
             this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadSettingsToolStripMenuItem.Text = "Load Method";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
-            // 
-            // loadRunToolStripMenuItem
-            // 
-            this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
-            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadRunToolStripMenuItem.Text = "Load && Run";
-            this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
             // ProteoformSweet
             // 
@@ -262,7 +253,6 @@
         private System.Windows.Forms.ToolStripMenuItem proteoformFamilyAssignmentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runMethodToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadRunToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem resultsSummaryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quantificationToolStripMenuItem;

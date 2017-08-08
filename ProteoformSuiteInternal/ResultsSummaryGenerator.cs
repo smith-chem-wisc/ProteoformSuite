@@ -101,7 +101,7 @@ namespace ProteoformSuiteInternal
         public static string actions()
         {
             string header = "USER ACTIONS" + Environment.NewLine;
-            string report = String.Join(Environment.NewLine, Sweet.actions) + Environment.NewLine + Environment.NewLine;
+            string report = String.Join(Environment.NewLine, Sweet.save_actions) + Environment.NewLine + Environment.NewLine;
             return header + report;
         }
 

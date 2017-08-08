@@ -30,6 +30,7 @@ namespace ProteoformSuiteGUI
         {
             tb_resultsFolder.Text = Sweet.lollipop.results_folder;
             rb_neucode.Checked = Sweet.lollipop.neucode_labeled;
+            rb_unlabeled.Checked = !rb_neucode.Checked;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
         }
 
@@ -41,7 +42,8 @@ namespace ProteoformSuiteGUI
         public void ClearListsTablesFigures(bool clear_following)
         {
             Sweet.lollipop.input_files.Clear();
-            Sweet.actions.Clear();
+            Sweet.save_actions.Clear();
+            Sweet.loaded_actions.Clear();
             Sweet.lollipop.results_folder = "";
             tb_resultsFolder.Text = "";
             if (clear_following)

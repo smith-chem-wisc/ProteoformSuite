@@ -54,6 +54,7 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.et_peaks.Any(x => x.mass_shifter != "0"))
             {
                 shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
+                RunTheGamut(); //will need to rerun the Gamut if peaks shifted from preset.
             }
             FillTablesAndCharts();
         }
@@ -68,6 +69,7 @@ namespace ProteoformSuiteGUI
             GraphETRelations();
             GraphETPeaks();
             update_figures_of_merit();
+            cb_discoveryHistogram.Checked = false;
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
@@ -78,7 +80,6 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
-            bool shiftedExperimentals = Sweet.lollipop.et_peaks.Any(p => p.mass_shifter != "0");
             Sweet.lollipop.clear_et();
             et_histogram_from_unmod.Clear();
 
@@ -100,7 +101,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as ExperimentExperimentComparison == null || shiftedExperimentals)
+                    if (sweet as ExperimentExperimentComparison == null)
                         sweet.ClearListsTablesFigures(false);
                 }
             }
@@ -112,12 +113,10 @@ namespace ProteoformSuiteGUI
             //only do this if ET hasn't already been run
             nUD_ET_Lower_Bound.Minimum = -2000;
             nUD_ET_Lower_Bound.Maximum = 0;
-            if (!Sweet.lollipop.neucode_labeled) Sweet.lollipop.et_low_mass_difference = -50;
             nUD_ET_Lower_Bound.Value = Convert.ToDecimal(Sweet.lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 2000;
-            if (!Sweet.lollipop.neucode_labeled) Sweet.lollipop.et_high_mass_difference = 150;
             nUD_ET_Upper_Bound.Value = Convert.ToDecimal(Sweet.lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
 
             //Other stuff
@@ -201,8 +200,15 @@ namespace ProteoformSuiteGUI
                     }
                     peak.shift_experimental_masses(int_mass_shifter, Sweet.lollipop.neucode_labeled);
                 }
-                ClearListsTablesFigures(true);
-                Sweet.lollipop.regroup_components(Sweet.lollipop.neucode_labeled, Sweet.lollipop.validate_proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, Sweet.lollipop.min_num_CS);
+
+                ((ProteoformSweet)MdiParent).rawExperimentalComponents.FillTablesAndCharts();
+                if (Sweet.lollipop.neucode_labeled)
+                {
+                    Sweet.lollipop.raw_neucode_pairs.Clear();
+                    Sweet.lollipop.process_neucode_components(Sweet.lollipop.raw_neucode_pairs);
+                    ((ProteoformSweet)MdiParent).neuCodePairs.FillTablesAndCharts();
+                }
+                ((ProteoformSweet)MdiParent).aggregatedProteoforms.RunTheGamut();
             }
         }
 
