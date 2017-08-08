@@ -424,9 +424,11 @@ namespace Test
             ProteoformCommunity.include_td_nodes = true;
             Sweet.lollipop.clear_all_families();
             Sweet.lollipop.construct_target_and_decoy_families();
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.families.Count);
-            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.families[0].proteoforms.Count);
-            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.families[1].proteoforms.Count);
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.families.Count);
+            Sweet.lollipop.target_proteoform_community.families = Sweet.lollipop.target_proteoform_community.families.OrderBy(f => f.proteoforms.Count).ToList();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.families[0].proteoforms.Count);
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.families[1].proteoforms.Count);
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.families[2].proteoforms.Count);
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null));
         }
 

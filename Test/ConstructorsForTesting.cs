@@ -120,8 +120,8 @@ namespace Test
             h.theoretical_mass = modified_mass;
             h.ms2_retention_time = retention_time;
             h.sequence = "MSSSSSSSSSS";
-            h.start_index = 10;
-            h.stop_index = 20;
+            h.begin = 10;
+            h.end = 20;
             TopDownProteoform td = new TopDownProteoform(accession, h, new List<TopDownHit>() { h } );
             return td;
         }
@@ -152,7 +152,7 @@ namespace Test
         public static Dictionary<string, List<Modification>> read_mods()
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
-            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            List<ModificationWithLocation> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).OfType<ModificationWithLocation>().ToList();
             return Sweet.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }

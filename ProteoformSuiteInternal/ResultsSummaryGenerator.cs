@@ -361,7 +361,7 @@ namespace ProteoformSuiteInternal
                     td.accession,
                     td.linked_proteoform_references.Last().gene_name.ordered_locus,
                     td.linked_proteoform_references.Last().gene_name.primary,
-                    td.start_index + " to " + td.stop_index,
+                    td.begin + " to " + td.end,
                     td.ptm_description,
                     td.modified_mass - td.linked_proteoform_references.Last().modified_mass,
                     td.modified_mass,
