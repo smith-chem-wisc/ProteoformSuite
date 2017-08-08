@@ -204,14 +204,14 @@
             // saveMethodToolStripMenuItem1
             // 
             this.saveMethodToolStripMenuItem1.Name = "saveMethodToolStripMenuItem1";
-            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(145, 22);
             this.saveMethodToolStripMenuItem1.Text = "Save Method";
             this.saveMethodToolStripMenuItem1.Click += new System.EventHandler(this.saveMethodToolStripMenuItem1_Click);
             // 
             // loadSettingsToolStripMenuItem
             // 
             this.loadSettingsToolStripMenuItem.Name = "loadSettingsToolStripMenuItem";
-            this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.loadSettingsToolStripMenuItem.Text = "Load Method";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
             // 
@@ -220,7 +220,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(882, 526);
             this.Controls.Add(this.menuStrip1);

@@ -84,6 +84,11 @@
             this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
             this.splitContainer9 = new System.Windows.Forms.SplitContainer();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.cb_useAveragePermutationFoldChange = new System.Windows.Forms.CheckBox();
+            this.cb_useBiorepPermutationFoldChange = new System.Windows.Forms.CheckBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.nud_foldChangeObservations = new System.Windows.Forms.NumericUpDown();
+            this.cmbx_foldChangeConjunction = new System.Windows.Forms.ComboBox();
             this.nud_foldChangeCutoff = new System.Windows.Forms.NumericUpDown();
             this.cb_useFoldChangeCutoff = new System.Windows.Forms.CheckBox();
             this.cb_significanceByPermutation = new System.Windows.Forms.CheckBox();
@@ -195,6 +200,7 @@
             this.splitContainer9.Panel2.SuspendLayout();
             this.splitContainer9.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeObservations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeCutoff)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).BeginInit();
@@ -848,11 +854,16 @@
             // 
             this.splitContainer9.Panel2.Controls.Add(this.ct_relativeDifference);
             this.splitContainer9.Size = new System.Drawing.Size(485, 408);
-            this.splitContainer9.SplitterDistance = 136;
+            this.splitContainer9.SplitterDistance = 155;
             this.splitContainer9.TabIndex = 0;
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.cb_useAveragePermutationFoldChange);
+            this.groupBox6.Controls.Add(this.cb_useBiorepPermutationFoldChange);
+            this.groupBox6.Controls.Add(this.label23);
+            this.groupBox6.Controls.Add(this.nud_foldChangeObservations);
+            this.groupBox6.Controls.Add(this.cmbx_foldChangeConjunction);
             this.groupBox6.Controls.Add(this.nud_foldChangeCutoff);
             this.groupBox6.Controls.Add(this.cb_useFoldChangeCutoff);
             this.groupBox6.Controls.Add(this.cb_significanceByPermutation);
@@ -869,10 +880,74 @@
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 0);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(485, 136);
+            this.groupBox6.Size = new System.Drawing.Size(485, 155);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Significance FDR Via Permutation";
+            // 
+            // cb_useAveragePermutationFoldChange
+            // 
+            this.cb_useAveragePermutationFoldChange.AutoSize = true;
+            this.cb_useAveragePermutationFoldChange.Location = new System.Drawing.Point(236, 86);
+            this.cb_useAveragePermutationFoldChange.Name = "cb_useAveragePermutationFoldChange";
+            this.cb_useAveragePermutationFoldChange.Size = new System.Drawing.Size(65, 17);
+            this.cb_useAveragePermutationFoldChange.TabIndex = 24;
+            this.cb_useAveragePermutationFoldChange.Text = "average";
+            this.cb_useAveragePermutationFoldChange.UseVisualStyleBackColor = true;
+            this.cb_useAveragePermutationFoldChange.CheckedChanged += new System.EventHandler(this.cb_useAveragePermutationFoldChange_CheckedChanged);
+            // 
+            // cb_useBiorepPermutationFoldChange
+            // 
+            this.cb_useBiorepPermutationFoldChange.AutoSize = true;
+            this.cb_useBiorepPermutationFoldChange.Location = new System.Drawing.Point(236, 106);
+            this.cb_useBiorepPermutationFoldChange.Name = "cb_useBiorepPermutationFoldChange";
+            this.cb_useBiorepPermutationFoldChange.Size = new System.Drawing.Size(34, 17);
+            this.cb_useBiorepPermutationFoldChange.TabIndex = 23;
+            this.cb_useBiorepPermutationFoldChange.Text = "in";
+            this.cb_useBiorepPermutationFoldChange.UseVisualStyleBackColor = true;
+            this.cb_useBiorepPermutationFoldChange.CheckedChanged += new System.EventHandler(this.cb_useBiorepPermutationFoldChange_CheckedChanged);
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(336, 105);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(99, 13);
+            this.label23.TabIndex = 22;
+            this.label23.Text = "biological replicates";
+            // 
+            // nud_foldChangeObservations
+            // 
+            this.nud_foldChangeObservations.Location = new System.Drawing.Point(276, 103);
+            this.nud_foldChangeObservations.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nud_foldChangeObservations.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_foldChangeObservations.Name = "nud_foldChangeObservations";
+            this.nud_foldChangeObservations.Size = new System.Drawing.Size(54, 20);
+            this.nud_foldChangeObservations.TabIndex = 20;
+            this.nud_foldChangeObservations.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_foldChangeObservations.ValueChanged += new System.EventHandler(this.nud_foldChangeObservations_ValueChanged);
+            // 
+            // cmbx_foldChangeConjunction
+            // 
+            this.cmbx_foldChangeConjunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_foldChangeConjunction.FormattingEnabled = true;
+            this.cmbx_foldChangeConjunction.Location = new System.Drawing.Point(8, 82);
+            this.cmbx_foldChangeConjunction.Name = "cmbx_foldChangeConjunction";
+            this.cmbx_foldChangeConjunction.Size = new System.Drawing.Size(57, 21);
+            this.cmbx_foldChangeConjunction.TabIndex = 18;
+            this.cmbx_foldChangeConjunction.SelectedIndexChanged += new System.EventHandler(this.cmbx_foldChangeConjunction_SelectedIndexChanged);
             // 
             // nud_foldChangeCutoff
             // 
@@ -882,7 +957,7 @@
             0,
             0,
             65536});
-            this.nud_foldChangeCutoff.Location = new System.Drawing.Point(159, 84);
+            this.nud_foldChangeCutoff.Location = new System.Drawing.Point(161, 84);
             this.nud_foldChangeCutoff.Maximum = new decimal(new int[] {
             10,
             0,
@@ -901,18 +976,18 @@
             0,
             0,
             0});
-            this.nud_foldChangeCutoff.ValueChanged += new System.EventHandler(this.nud_foldChangeCutoff_ValueChanged);
+            this.nud_foldChangeCutoff.ValueChanged += new System.EventHandler(this.nud_permutationFoldChangeCutoff_ValueChanged);
             // 
             // cb_useFoldChangeCutoff
             // 
             this.cb_useFoldChangeCutoff.AutoSize = true;
-            this.cb_useFoldChangeCutoff.Location = new System.Drawing.Point(11, 86);
+            this.cb_useFoldChangeCutoff.Location = new System.Drawing.Point(71, 85);
             this.cb_useFoldChangeCutoff.Name = "cb_useFoldChangeCutoff";
-            this.cb_useFoldChangeCutoff.Size = new System.Drawing.Size(142, 17);
+            this.cb_useFoldChangeCutoff.Size = new System.Drawing.Size(89, 17);
             this.cb_useFoldChangeCutoff.TabIndex = 16;
-            this.cb_useFoldChangeCutoff.Text = "Use Fold Change Cutoff:";
+            this.cb_useFoldChangeCutoff.Text = "Fold Change:";
             this.cb_useFoldChangeCutoff.UseVisualStyleBackColor = true;
-            this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_useFoldChangeCutoff_CheckedChanged);
+            this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_usePermutationFoldChangeCutoff_CheckedChanged);
             // 
             // cb_significanceByPermutation
             // 
@@ -972,7 +1047,7 @@
             0,
             0,
             196608});
-            this.nud_localFdrCutoff.Location = new System.Drawing.Point(410, 110);
+            this.nud_localFdrCutoff.Location = new System.Drawing.Point(410, 129);
             this.nud_localFdrCutoff.Maximum = new decimal(new int[] {
             2,
             0,
@@ -986,7 +1061,7 @@
             // cb_useLocalFdrCutoff
             // 
             this.cb_useLocalFdrCutoff.AutoSize = true;
-            this.cb_useLocalFdrCutoff.Location = new System.Drawing.Point(242, 113);
+            this.cb_useLocalFdrCutoff.Location = new System.Drawing.Point(242, 132);
             this.cb_useLocalFdrCutoff.Name = "cb_useLocalFdrCutoff";
             this.cb_useLocalFdrCutoff.Size = new System.Drawing.Size(168, 17);
             this.cb_useLocalFdrCutoff.TabIndex = 9;
@@ -997,7 +1072,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(8, 115);
+            this.label15.Location = new System.Drawing.Point(8, 133);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(90, 13);
             this.label15.TabIndex = 7;
@@ -1005,9 +1080,9 @@
             // 
             // tb_FDR
             // 
-            this.tb_FDR.Location = new System.Drawing.Point(159, 112);
+            this.tb_FDR.Location = new System.Drawing.Point(104, 130);
             this.tb_FDR.Name = "tb_FDR";
-            this.tb_FDR.Size = new System.Drawing.Size(69, 20);
+            this.tb_FDR.Size = new System.Drawing.Size(124, 20);
             this.tb_FDR.TabIndex = 6;
             // 
             // label13
@@ -1063,7 +1138,7 @@
             this.ct_relativeDifference.Series.Add(series4);
             this.ct_relativeDifference.Series.Add(series5);
             this.ct_relativeDifference.Series.Add(series6);
-            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 268);
+            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 249);
             this.ct_relativeDifference.TabIndex = 30;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
             this.ct_relativeDifference.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_relativeDifference_MouseClick);
@@ -1752,6 +1827,7 @@
             this.splitContainer9.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeObservations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_foldChangeCutoff)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).EndInit();
@@ -1901,5 +1977,10 @@
         private System.Windows.Forms.CheckBox cb_useFoldChangeCutoff;
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
+        private System.Windows.Forms.NumericUpDown nud_foldChangeObservations;
+        private System.Windows.Forms.ComboBox cmbx_foldChangeConjunction;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.CheckBox cb_useAveragePermutationFoldChange;
+        private System.Windows.Forms.CheckBox cb_useBiorepPermutationFoldChange;
     }
 }

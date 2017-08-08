@@ -52,7 +52,8 @@ namespace ProteoformSuiteInternal
             List<IBiorepIntensity> uninduced = allIntensities.Where(kv => kv.Key.Item1 != induced_condition).Select(kv => kv.Value).ToList<IBiorepIntensity>();
             relative_difference = getSingleTestStatistic(induced, uninduced, scatter, sKnot);
             fold_change = getSingleFoldChange(induced, uninduced);
-            tusher_statistic = new TusherStatistic(relative_difference, fold_change);
+            List<decimal> biorep_foldchanges = allNumeratorIntensities.Select(x => x.biorep).Distinct().Select(biorep => getSingleFoldChange(allIntensities.Where(kv => kv.Key.Item1 == induced_condition && kv.Key.Item2 == biorep).Select(kv => kv.Value).ToList<IBiorepIntensity>(), allIntensities.Where(kv => kv.Key.Item1 != induced_condition && kv.Key.Item2 == biorep).Select(kv => kv.Value).ToList<IBiorepIntensity>())).ToList();
+            tusher_statistic = new TusherStatistic(relative_difference, fold_change, biorep_foldchanges);
         }
 
         /// <summary>

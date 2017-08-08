@@ -772,6 +772,17 @@ namespace ProteoformSuiteInternal
         public decimal foldChangeCutoff = 1.5m;
         public Random seeded;
 
+        // Permutation fold change criteria
+        public static string[] fold_change_conjunction_options = new string[] 
+        {
+            "AND",
+            "OR"
+        };
+        public string fold_change_conjunction = fold_change_conjunction_options[0];
+        public int minBiorepsWithFoldChange = -1;
+        public bool useAveragePermutationFoldChange = true;
+        public bool useBiorepPermutationFoldChange = false;
+
         // "Local FDR" calculated using the relative difference of each proteoform as both minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic. This is an unofficial extension of the statisitical analysis above.
         public bool useLocalFdrCutoff = false;
         public decimal localFdrCutoff = 0.05m;
