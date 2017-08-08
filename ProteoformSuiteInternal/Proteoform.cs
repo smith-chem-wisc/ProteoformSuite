@@ -83,15 +83,16 @@ namespace ProteoformSuiteInternal
             List<Proteoform> identified = new List<Proteoform>();
             foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).Distinct().ToList())
             {
+                //check for connected experimental
                 Proteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
-                if (e == null) //check if TD 
+                if (e == null) //if no connected experimental...
                 {
-                    if (this as ExperimentalProteoform == null) //don't want to go E --> TD only T --> TD 
+                    if (this as ExperimentalProteoform == null) //make sure this isn't experimental (don't want to go E --> T or E --> TD) 
                     {
-                        e = r.connected_proteoforms.OfType<TopDownProteoform>().FirstOrDefault(p => p != this);
+                        e = r.connected_proteoforms.OfType<TopDownProteoform>().FirstOrDefault(p => p != this); //check for connected topdowns
                         if (e == null) continue; //on TD looking at T
                     }
-                    else continue; //on E looking at TD
+                    else continue; //on E looking at TD or T
                 }
     
             
@@ -102,10 +103,11 @@ namespace ProteoformSuiteInternal
                 TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
                     this as TheoreticalProteoform : //Theoretical starting point
                     (linked_proteoform_references.First() as TheoreticalProteoform != null ?
-                        linked_proteoform_references.First() as TheoreticalProteoform : //Experimental with theoretical reference
-                        null); //Experimental without theoretical reference
+                        linked_proteoform_references.First() as TheoreticalProteoform : //Experimental or TD with theoretical reference
+                        null); //Experimental or TD without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
-                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, 1)
+                //when form TD relations, already generate best candidate ptmset for relation
+                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
@@ -129,7 +131,7 @@ namespace ProteoformSuiteInternal
                 // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
                 if (best_addition == null && best_loss == null && Math.Abs(r.peak == null? r.DeltaMass : r.peak.DeltaMass) <= mass_tolerance)
                 {
-                    lock (r) lock (e) assign_pf_identity(e, e as TopDownProteoform != null? e.ptm_set : ptm_set, r, sign, null); //want TD to keep its ptmset (has position #'s)
+                    lock (r) lock (e) assign_pf_identity(e, e as TopDownProteoform != null? e.ptm_set : ptm_set, r, sign, null); //if on T going to TD, want TD to keep its ptmset (has positional info)
                     identified.Add(e);
                 }
 
@@ -140,7 +142,7 @@ namespace ProteoformSuiteInternal
                 PtmSet with_mod_change = null;
                 if (best_loss == null)
                 {
-                    PtmSet set = e as TopDownProteoform != null ? e.ptm_set : this.ptm_set;
+                    PtmSet set = e as TopDownProteoform != null ? e.ptm_set : this.ptm_set; //if on T going to TD, want TD to keep its ptmset (has positional info)
                     with_mod_change = new PtmSet(new List<Ptm>(set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
                 }
                 else
@@ -161,13 +163,13 @@ namespace ProteoformSuiteInternal
         }
 
         public List<PtmSet> generate_possible_added_ptmsets(List<PtmSet> possible_peak_assignments, double deltaM, double mass_tolerance, List<ModificationWithMass> all_mods_with_mass,
-            Proteoform theoretical_base, string theoretical_base_sequence, int additional_ptm_penalty)
+            TheoreticalProteoform theoretical_base, int additional_ptm_penalty)
         {
-            List<ModificationWithMass> known_mods = theoretical_base is TopDownProteoform? theoretical_base.ptm_set.ptm_combination.Select(m => m.modification).ToList() : ((TheoreticalProteoform)theoretical_base).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
+            List<ModificationWithMass> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
 
-            int n_terminal_degraded_aas = degraded_aas_count(theoretical_base_sequence, ptm_set, true);
-            int c_terminal_degraded_aas = degraded_aas_count(theoretical_base_sequence, ptm_set, false);
+            int n_terminal_degraded_aas = degraded_aas_count(theoretical_base.sequence, ptm_set, true);
+            int c_terminal_degraded_aas = degraded_aas_count(theoretical_base.sequence, ptm_set, false);
             foreach (PtmSet set in possible_peak_assignments)
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
@@ -183,14 +185,15 @@ namespace ProteoformSuiteInternal
                         rank_sum += mod_rank;
                         continue;
                     }
-                    int begin = theoretical_base is TopDownProteoform ? ((TopDownProteoform)theoretical_base).start_index : ((TheoreticalProteoform)theoretical_base).begin;
+                    int begin = theoretical_base.begin;
                     bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && begin == 2 && !ptm_set.ptm_combination.Select(p => p.modification).Contains(m);
-                    bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[n_terminal_degraded_aas].ToString();
-                    bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString();
+                    bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[n_terminal_degraded_aas].ToString();
+                    bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[theoretical_base.sequence.Length - c_terminal_degraded_aas - 1].ToString();
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if ((m.modificationType == "Missing" && cannot_be_degradation)
                         || (m.modificationType == "AminoAcid" && !could_be_m_retention)
                         || (u != null ? u.require_proteoform_without_mod : false && set.ptm_combination.Count > 1)
+                        //if topdown relation, only allow mod types of missing, amino acid, or deconvolution error
                         || (this as TopDownProteoform != null && m.modificationType != "Missing" && m.modificationType != "AminoAcid" && m.modificationType != "Deconvolution Error"))
                     {
                         rank_sum = Int32.MaxValue;
@@ -199,8 +202,8 @@ namespace ProteoformSuiteInternal
 
                     bool could_be_n_term_degradation = m.modificationType == "Missing" && motif_matches_n_terminus;
                     bool could_be_c_term_degradation = m.modificationType == "Missing" && motif_matches_c_terminus;
-                    bool likely_cleavage_site = could_be_n_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base_sequence[n_terminal_degraded_aas].ToString())
-                        || could_be_c_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString());
+                    bool likely_cleavage_site = could_be_n_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base.sequence[n_terminal_degraded_aas].ToString())
+                        || could_be_c_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base.sequence[theoretical_base.sequence.Length - c_terminal_degraded_aas - 1].ToString());
 
                     rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
@@ -250,6 +253,7 @@ namespace ProteoformSuiteInternal
             {
                 //reset in case previously set as true...
                 if (e as ExperimentalProteoform != null) (e as ExperimentalProteoform).adduct = false;
+                //if change only has suflate adducts, acetone artifacts, or SDS adducts, mark the experimental as an adduct
                 if (e as ExperimentalProteoform != null && change != null && change.ptm_combination.Count != 0 && change.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
                 {
                     (e as ExperimentalProteoform).adduct = true;
@@ -261,7 +265,7 @@ namespace ProteoformSuiteInternal
 
             if (e.gene_name == null)
                 e.gene_name = this.gene_name;
-            else if (this.gene_name != null)
+            else
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
         }
 

@@ -126,7 +126,7 @@ namespace Test
             Assert.AreEqual(91, Sweet.lollipop.file_mz_correction.Count);
             Assert.AreEqual(6, Sweet.lollipop.td_hit_correction.Count);
             Assert.IsFalse(Sweet.lollipop.file_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
-            Assert.True(Sweet.lollipop.file_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "05-26-17_B7A_yeast_td_fract5_rep1"));
+            Assert.IsFalse(Sweet.lollipop.file_mz_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
             Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed  
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
@@ -204,7 +204,7 @@ namespace Test
             Assert.AreEqual(91, Sweet.lollipop.file_mz_correction.Count);
             Assert.AreEqual(6, Sweet.lollipop.td_hit_correction.Count);
             Assert.IsFalse(Sweet.lollipop.file_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
-            Assert.True(Sweet.lollipop.file_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "05-26-17_B7A_yeast_td_fract5_rep1"));
+            Assert.IsFalse(Sweet.lollipop.file_mz_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
             Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed      
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
             //make sure calibrated file contains correct points...

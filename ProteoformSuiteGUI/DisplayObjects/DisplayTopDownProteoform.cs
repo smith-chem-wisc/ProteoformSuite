@@ -42,12 +42,12 @@ namespace ProteoformSuiteGUI
 
         public int Begin
         {
-            get { return t.start_index; }
+            get { return t.begin; }
         }
 
         public int End
         {
-            get { return t.stop_index; }
+            get { return t.end; }
         }
 
         public string PFR
