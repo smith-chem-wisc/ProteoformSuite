@@ -297,7 +297,7 @@ namespace ProteoformSuiteGUI
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp,
-                cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked,
+                cb_buildAsQuantitative.Checked ? (MdiParent as ProteoformSweet).resultsSummary.get_go_analysis() as IStatisiticalSignificance : null, cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
                 cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
@@ -310,7 +310,7 @@ namespace ProteoformSuiteGUI
             object[] selected = DisplayUtility.get_selected_objects(dgv_main);
             string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp,
-                cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked,
+                cb_buildAsQuantitative.Checked ? (MdiParent as ProteoformSweet).resultsSummary.get_go_analysis() as IStatisiticalSignificance : null, cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
                 cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");

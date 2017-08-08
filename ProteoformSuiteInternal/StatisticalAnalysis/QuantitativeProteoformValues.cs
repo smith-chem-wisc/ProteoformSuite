@@ -80,14 +80,10 @@ namespace ProteoformSuiteInternal
             decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
 
-            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v =>
-                (v.relative_difference < minimumNegativePassingTestStatistic && v.relative_difference <= 0 || minimumPositivePassingTestStatistic < v.relative_difference && v.relative_difference >= 0)
-                && (!Sweet.lollipop.useFoldChangeCutoff || v.fold_change > Sweet.lollipop.foldChangeCutoff));
+            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v.is_passing_permutation(minimumNegativePassingTestStatistic, minimumPositivePassingTestStatistic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange));
             decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
-            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => 
-                (stat.relative_difference <= minimumNegativePassingTestStatistic && stat.relative_difference <= 0 || minimumPositivePassingTestStatistic <= stat.relative_difference && stat.relative_difference >= 0)
-                && (!Sweet.lollipop.useFoldChangeCutoff || stat.fold_change > Sweet.lollipop.foldChangeCutoff));
+            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat.is_passing_real(minimumNegativePassingTestStatistic, minimumPositivePassingTestStatistic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange));
 
             decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
             return fdr;
