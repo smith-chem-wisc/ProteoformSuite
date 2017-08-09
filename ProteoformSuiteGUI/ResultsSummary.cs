@@ -37,7 +37,7 @@ namespace ProteoformSuiteGUI
             return true;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             create_summary();
         }

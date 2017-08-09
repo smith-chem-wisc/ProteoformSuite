@@ -331,11 +331,14 @@ namespace ProteoformSuiteInternal
         {
             foreach (Component c in aggregated_components)
             {
-                c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 if (neucode_labeled)
                 {
                     (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                }
+                else
+                {
+                    c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 }
             }
 

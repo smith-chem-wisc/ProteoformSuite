@@ -44,7 +44,7 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.target_proteoform_community.has_e_and_t_proteoforms;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
             ClearListsTablesFigures(true);
@@ -169,7 +169,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 xMaxET.Value = (decimal)Sweet.lollipop.et_high_mass_difference;
                 xMinET.Value = (decimal)Sweet.lollipop.et_low_mass_difference;
                 Cursor = Cursors.Default;

@@ -28,7 +28,7 @@ namespace ProteoformSuiteGUI
             return true;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
 
@@ -93,7 +93,7 @@ namespace ProteoformSuiteGUI
 
             NeuCodePairs pairs_form = (MdiParent as ProteoformSweet).neuCodePairs;
             if (Sweet.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
-                pairs_form.RunTheGamut();
+                pairs_form.RunTheGamut(false);
         }
 
         #endregion Public Methods
@@ -130,7 +130,7 @@ namespace ProteoformSuiteGUI
         private void bt_recalculate_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
-            RunTheGamut();
+            RunTheGamut(false);
             Cursor = Cursors.Default;
         }
 

@@ -48,7 +48,7 @@ namespace ProteoformSuiteGUI
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
-            RunTheGamut();
+            RunTheGamut(false);
             Cursor = Cursors.Default;
         }
 
@@ -138,13 +138,13 @@ namespace ProteoformSuiteGUI
             tb_totalTheoreticalProteoforms.Text = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             tb_totalTheoreticalProteoforms.Text = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             FillTablesAndCharts();
-            if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
                     String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
