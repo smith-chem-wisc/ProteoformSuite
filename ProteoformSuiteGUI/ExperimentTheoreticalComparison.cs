@@ -191,8 +191,10 @@ namespace ProteoformSuiteGUI
                 foreach (DeltaMassPeak peak in peaks_to_shift)
                 {
                     if (!Int32.TryParse(peak.mass_shifter, out int ok))
+                    {
                         MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.DeltaMass + ". Please enter an integer.");
-                    return;
+                        return;
+                    }
                 }
                 foreach (DeltaMassPeak peak in peaks_to_shift)
                 {
