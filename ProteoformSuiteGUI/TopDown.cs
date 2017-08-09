@@ -41,32 +41,32 @@ namespace ProteoformSuiteGUI
             load_ptm_colors();
         }
 
-        public void load_topdown()
-        {
-            if (ReadyToRunTheGamut())
-            {
-                RunTheGamut();
-            }
-        }
-
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             AggregateTdHits();
-            if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
-            {
-                MessageBox.Show("Warning: Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: "
-                  + String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
-            }
             Sweet.lollipop.td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
             Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values, c =>
             {
                 c.relate_td();
             });
-            if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0) > 0)
+            if (!full_run)
             {
-                MessageBox.Show("Warning: Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: "
-                     + String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
+                List<string> warning_methods = new List<string>() { "Warning:\n\n" };
+                if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+                {
+                    warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
+                    warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                }
+                if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0) > 0)
+                {
+                    warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
+                    warning_methods.Add(String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
+                }
+                if (warning_methods.Count > 1)
+                {
+                    MessageBox.Show(String.Join("\n\n", warning_methods));
+                }
             }
             FillTablesAndCharts();
         }
@@ -123,7 +123,7 @@ namespace ProteoformSuiteGUI
         {
             if (ReadyToRunTheGamut())
             {
-                RunTheGamut();
+                RunTheGamut(false);
             }
         }
 

@@ -126,7 +126,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(neuCodePairs);
             if (neuCodePairs.ReadyToRunTheGamut())
-                neuCodePairs.RunTheGamut(); // There's no update/run button in NeuCodePairs, so just fill the tables
+                neuCodePairs.RunTheGamut(false); // There's no update/run button in NeuCodePairs, so just fill the tables
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -163,7 +163,7 @@ namespace ProteoformSuiteGUI
         private void identifiedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(identifiedProteoforms);
-            if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut();
+            if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut(false);
         }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -226,7 +226,7 @@ namespace ProteoformSuiteGUI
                 Sweet.open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes);
                 loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                 if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                    loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                    loadDeconvolutionResults.RunTheGamut(false); // updates the dgvs
                 return true;
             }
             return false;
@@ -292,7 +292,7 @@ namespace ProteoformSuiteGUI
                     {
                         Sweet.lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
                         if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                            loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                            loadDeconvolutionResults.RunTheGamut(true); // updates the dgvs
                     }
                     else return false;
                 }
@@ -322,7 +322,7 @@ namespace ProteoformSuiteGUI
             foreach (ISweetForm sweet in forms)
             {
                 if (sweet.ReadyToRunTheGamut())
-                    sweet.RunTheGamut();
+                    sweet.RunTheGamut(true);
             }
 
             // Save the results
@@ -335,7 +335,26 @@ namespace ProteoformSuiteGUI
                 using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
                     file.WriteLine(Sweet.save_method());
             }
-
+            List<string> warning_methods = new List<string>() { "Warning:\n\n" };
+            if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            {
+                warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
+                warning_methods.Add(String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+            }
+            if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+            {
+                warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
+                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+            }
+            if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0) > 0)
+            {
+                warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
+                warning_methods.Add(String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
+            }
+            if(warning_methods.Count > 1)
+            {
+                MessageBox.Show(String.Join("\n\n", warning_methods));
+            }
             //Program ran successfully
             Cursor = Cursors.Default;
             return true;

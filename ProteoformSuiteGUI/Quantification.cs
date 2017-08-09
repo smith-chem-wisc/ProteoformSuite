@@ -31,7 +31,7 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView>() { dgv_quantification_results, dgv_goAnalysis };
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.quantify();
@@ -286,7 +286,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 Cursor = Cursors.Default;
             }
             else if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() <= 0)

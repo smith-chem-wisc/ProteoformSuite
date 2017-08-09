@@ -83,7 +83,7 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.target_proteoform_community.has_e_proteoforms || Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length > 0;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.construct_target_and_decoy_families();
@@ -334,7 +334,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 Cursor = Cursors.Default;
             }
         }

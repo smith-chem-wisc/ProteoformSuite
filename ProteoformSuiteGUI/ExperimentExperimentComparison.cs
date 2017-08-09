@@ -43,7 +43,7 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.target_proteoform_community.has_e_and_t_proteoforms; // Need the ptm dictionary for peak assignment from theoretical database
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, Environment.CurrentDirectory, true);
@@ -162,7 +162,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 xMaxEE.Value = Convert.ToDecimal(Sweet.lollipop.ee_max_mass_difference);
                 Cursor = Cursors.Default;
             }
