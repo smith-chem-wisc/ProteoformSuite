@@ -115,7 +115,8 @@ namespace ProteoformSuiteInternal
 
             else if (relation_type == ProteoformComparison.ExperimentalExperimental)
                 return 
-                    pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
+                    pf1 != pf2_with_allowed_lysines
+                    && pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference
                     && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;

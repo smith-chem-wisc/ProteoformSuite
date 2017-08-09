@@ -52,7 +52,7 @@ namespace ProteoformSuiteGUI
             });
             if (!full_run)
             {
-                List<string> warning_methods = new List<string>() { "Warning:\n\n" };
+                List<string> warning_methods = new List<string>() { "Warning:" };
                 if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
