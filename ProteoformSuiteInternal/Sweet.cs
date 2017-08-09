@@ -241,8 +241,10 @@ namespace ProteoformSuiteInternal
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
                     peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
                 if (peak != null)
+                {
                     peak.mass_shifter = shift;
-                save_actions.Add(mass_shift);
+                    save_actions.Add(mass_shift);
+                }
             }
         }
 
@@ -262,8 +264,10 @@ namespace ProteoformSuiteInternal
                 else if (comparison == ProteoformComparison.ExperimentalExperimental)
                     peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
                 if (peak != null)
+                {
                     lollipop.change_peak_acceptance(peak, peak_change.StartsWith("accept "), false);
-                save_actions.Add(peak_change);
+                    save_actions.Add(peak_change);
+                }
             }
         }
 
