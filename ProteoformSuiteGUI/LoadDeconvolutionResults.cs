@@ -6,7 +6,12 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-
+using System.Threading;
+using System.Threading.Tasks;
+using UsefulProteomicsDatabases;
+using Chemistry;
+using MassSpectrometry;
+using IO.Thermo;
 namespace ProteoformSuiteGUI
 {
     public partial class LoadDeconvolutionResults : Form, ISweetForm
@@ -304,7 +309,9 @@ namespace ProteoformSuiteGUI
 
         private void clear_files(ComboBox cmb, DataGridView dgv)
         {
-            Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex])).ToList();
+            List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).ToList();
+            Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
+            Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             match_files();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);

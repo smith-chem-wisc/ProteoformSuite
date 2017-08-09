@@ -323,7 +323,9 @@ namespace ProteoformSuiteGUI
 
         private void btn_clearFiles_Click(object sender, EventArgs e)
         {
-            Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex])).ToList();
+            List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).ToList();
+            Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
+            Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             set_Make_Database_Button();

@@ -46,16 +46,12 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
-            shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
+            shift_masses();  //check for shifts from GUI
             ClearListsTablesFigures(true);
             Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
-            if (Sweet.lollipop.et_peaks.Any(x => x.mass_shifter != "0"))
-            {
-                shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
-                RunTheGamut(); //will need to rerun the Gamut if peaks shifted from preset.
-            }
+            shift_masses(); //check for shifts from presets (need to have peaks formed first)
             FillTablesAndCharts();
         }
 
@@ -80,6 +76,12 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
+            //clear all save acceptance actions --> will re-add save actions from loaded actions if peak still exists
+            Sweet.save_actions.RemoveAll(x => x.StartsWith("accept ExperimentalTheoretical") || x.StartsWith("unaccept ExperimentalTheoretical"));
+            //if in this round or others haven't ever shifted a mass, clear them all. Need to be careful because rerun the gamut whenever shift peaks.
+            if (!Sweet.lollipop.raw_experimental_components.Any(c => c.manual_mass_shift > 0))
+                Sweet.save_actions.RemoveAll(x => x.StartsWith("shift "));
+
             Sweet.lollipop.clear_et();
             et_histogram_from_unmod.Clear();
 
@@ -180,24 +182,24 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
-        //shifts any mass shifts that have been changed from 0 in dgv
         private void shift_masses()
         {
             List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
             if (peaks_to_shift.Count > 0)
             {
+                //before making shifts, make sure all mass shifters are integers
+                try
+                {
+                    peaks_to_shift.Select(p => Convert.ToInt32(p.mass_shifter));
+                }
+                catch
+                {
+                    MessageBox.Show("Could not convert mass shift for a peak. Please enter an integer.");
+                    return;
+                }
                 foreach (DeltaMassPeak peak in peaks_to_shift)
                 {
-                    int int_mass_shifter = 0;
-                    try
-                    {
-                        int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.DeltaMass + ". Please enter an integer.");
-                        return;
-                    }
+                    int int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
                     peak.shift_experimental_masses(int_mass_shifter, Sweet.lollipop.neucode_labeled);
                 }
 
@@ -209,6 +211,7 @@ namespace ProteoformSuiteGUI
                     ((ProteoformSweet)MdiParent).neuCodePairs.FillTablesAndCharts();
                 }
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.RunTheGamut();
+                RunTheGamut(); //will need to rerun the Gamut if peaks shifted from preset.
             }
         }
 
