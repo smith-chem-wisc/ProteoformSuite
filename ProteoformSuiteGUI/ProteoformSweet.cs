@@ -335,7 +335,7 @@ namespace ProteoformSuiteGUI
                 using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
                     file.WriteLine(Sweet.save_method());
             }
-            List<string> warning_methods = new List<string>() { "Warning:\n\n" };
+            List<string> warning_methods = new List<string>() { "Warning:" };
             if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
