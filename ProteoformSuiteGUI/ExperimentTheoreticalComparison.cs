@@ -188,13 +188,10 @@ namespace ProteoformSuiteGUI
             if (peaks_to_shift.Count > 0)
             {
                 //before making shifts, make sure all mass shifters are integers
-                try
+                foreach (DeltaMassPeak peak in peaks_to_shift)
                 {
-                    peaks_to_shift.Select(p => Convert.ToInt32(p.mass_shifter));
-                }
-                catch
-                {
-                    MessageBox.Show("Could not convert mass shift for a peak. Please enter an integer.");
+                    if (!Int32.TryParse(peak.mass_shifter, out int ok))
+                        MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.DeltaMass + ". Please enter an integer.");
                     return;
                 }
                 foreach (DeltaMassPeak peak in peaks_to_shift)

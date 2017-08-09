@@ -6,12 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Threading;
-using System.Threading.Tasks;
-using UsefulProteomicsDatabases;
-using Chemistry;
-using MassSpectrometry;
-using IO.Thermo;
 namespace ProteoformSuiteGUI
 {
     public partial class LoadDeconvolutionResults : Form, ISweetForm
