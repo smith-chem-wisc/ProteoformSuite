@@ -10,7 +10,7 @@ namespace ProteoformSuiteInternal
     public class ProteoformCommunity
     {
 
-        #region Public Fields
+        #region Public Fields 
         public int community_number; //-100 for target, decoy database number for decoys
         public ExperimentalProteoform[] experimental_proteoforms = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms = new TheoreticalProteoform[0];
