@@ -60,7 +60,7 @@ namespace ProteoformSuiteGUI
         public void ClearListsTablesFigures(bool clear_following)
         {           
             //clear all save acceptance actions --> will re-add save actions from loaded actions if peak still exists
-            Sweet.save_actions.RemoveAll(x => x.StartsWith("accept ExperimentalExperimental") || x.StartsWith("unaccept ExperimentalExperimental") || x.StartsWith("shift "));
+            Sweet.save_actions.RemoveAll(x => x.StartsWith("accept ExperimentalExperimental") || x.StartsWith("unaccept ExperimentalExperimental"));
 
             Sweet.lollipop.clear_ee();
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
