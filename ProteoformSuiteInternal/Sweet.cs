@@ -152,16 +152,8 @@ namespace ProteoformSuiteInternal
             if (loaded_actions.Any(a => !a.StartsWith("add file ") && !a.StartsWith("change file ") && !a.StartsWith("shift ") && !a.StartsWith("accept ") && !a.StartsWith("unaccept ")))
                 return false;
 
-            if (add_files)
-            {
-                add_files_from_presets(lollipop.input_files);
-                save_actions.Clear();
-            }
-            else
-            {
-                save_actions.RemoveAll(a => !a.StartsWith("add file ") && !a.StartsWith("change file ")); //remove any saved actions, except for those involving files
-                update_files_from_presets(lollipop.input_files);
-            }
+            if (add_files)  add_files_from_presets(lollipop.input_files); 
+            else update_files_from_presets(lollipop.input_files);
             return true;
         }
 
