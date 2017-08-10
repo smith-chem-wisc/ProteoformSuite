@@ -105,6 +105,7 @@ namespace ProteoformSuiteInternal
 
         public static bool open_method(string alltext, bool add_files)
         {
+            loaded_actions.Clear();
             FieldInfo[] lollipop_fields = typeof(Lollipop).GetFields();
             List<XElement> setting_elements = new List<XElement>();
             List<XElement> action_elements = new List<XElement>();
