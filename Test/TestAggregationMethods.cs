@@ -20,28 +20,28 @@ namespace Test
             d.weighted_monoisotopic_mass = 119;
             e.weighted_monoisotopic_mass = 121;
             f.weighted_monoisotopic_mass = 122;
-            c.intensity_sum_olcs = 1;
-            d.intensity_sum_olcs = 2;
-            e.intensity_sum_olcs = 3;
-            f.intensity_sum_olcs = 4;
-            List<Component> ordered = new List<Component> { c, d, e, f }.OrderByDescending(cc => cc.intensity_sum_olcs).ToList();
+            c.intensity_sum = 1;
+            d.intensity_sum = 2;
+            e.intensity_sum = 3;
+            f.intensity_sum = 4;
+            List<IAggregatable> ordered = new List<IAggregatable> { c, d, e, f }.OrderByDescending(cc => cc.intensity_sum).ToList();
             Component is_running = new Component();
             is_running.weighted_monoisotopic_mass = 100;
-            is_running.intensity_sum_olcs = 100;
+            is_running.intensity_sum = 100;
 
             //Based on components
-            List<Component> active = new List<Component> { is_running };
-            Component next = Sweet.lollipop.find_next_root(ordered, active);
+            List<IAggregatable> active = new List<IAggregatable> { is_running };
+            IAggregatable next = Sweet.lollipop.find_next_root(ordered, active);
             Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.maximum_missed_monos);
-            Assert.AreEqual(4, next.intensity_sum_olcs);
+            Assert.AreEqual(4, next.intensity_sum);
 
             //Based on experimental proteoforms
             ExperimentalProteoform exp = ConstructorsForTesting.ExperimentalProteoform("E");
             exp.root = is_running;
             List<ExperimentalProteoform> active2 = new List<ExperimentalProteoform> { exp };
-            Component next2 = Sweet.lollipop.find_next_root(ordered, active2);
+            IAggregatable next2 = Sweet.lollipop.find_next_root(ordered, active2);
             Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.maximum_missed_monos);
-            Assert.AreEqual(4, next.intensity_sum_olcs);
+            Assert.AreEqual(4, next.intensity_sum);
         }
 
         [Test]
@@ -76,12 +76,12 @@ namespace Test
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
 
-            List<Component> components = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass);
+            List<IAggregatable> components = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass);
 
             Sweet.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(components.OfType<NeuCodePair>(), components, 0);
+            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(components.OfType<NeuCodePair>(), components.OfType<Component>(), 0);
             Assert.AreEqual(1, pfs.Count);
-            Assert.AreEqual(2, pfs[0].aggregated_components.Count);
+            Assert.AreEqual(2, pfs[0].aggregated.Count);
             Assert.AreEqual(2, components.Count);
             Assert.AreEqual(0, Sweet.lollipop.remaining_components.Count);
         }
@@ -101,7 +101,7 @@ namespace Test
             List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(neucodes, components, 0);
             List<ExperimentalProteoform> vetted = Sweet.lollipop.vetExperimentalProteoforms(pfs, components, new List<ExperimentalProteoform>());
             Assert.AreEqual(1, vetted.Count);
-            Assert.AreEqual(2, vetted[0].aggregated_components.Count);
+            Assert.AreEqual(2, vetted[0].aggregated.Count);
             Assert.AreEqual(2, vetted[0].lt_verification_components.Count);
             Assert.AreEqual(2, vetted[0].hv_verification_components.Count);
             Assert.AreEqual(4, components.Count);
@@ -120,10 +120,10 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             Sweet.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(neucodes, neucodes, 0);
+            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(neucodes, neucodes.Select(x => x.neuCodeLight), 0);
             List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.assignQuantificationComponents(pfs, quant_components);
             Assert.AreEqual(1, vetted_quant.Count);
-            Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
+            Assert.AreEqual(2, vetted_quant[0].aggregated.Count);
             Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
@@ -181,7 +181,7 @@ namespace Test
             Sweet.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
             List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.aggregate_proteoforms(true, neucodes, components, quant_components, 0);
             Assert.AreEqual(1, vetted_quant.Count);
-            Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
+            Assert.AreEqual(2, vetted_quant[0].aggregated.Count);
             Assert.AreEqual(2, vetted_quant[0].lt_verification_components.Count);
             Assert.AreEqual(2, vetted_quant[0].hv_verification_components.Count);
             Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
@@ -207,7 +207,7 @@ namespace Test
             List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.aggregate_proteoforms(false, neucodes, components, quant_components, 0);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(1, Sweet.lollipop.decoy_proteoform_communities.First().Value.experimental_proteoforms.Length);
-            Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
+            Assert.AreEqual(2, vetted_quant[0].aggregated.Count);
             Assert.AreEqual(0, vetted_quant[0].lt_verification_components.Count);
             Assert.AreEqual(0, vetted_quant[0].hv_verification_components.Count);
             Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
@@ -230,18 +230,18 @@ namespace Test
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
 
-            List<Component> components = TestExperimentalProteoform.generate_unlabeled_components(TestExperimentalProteoform.starter_mass);
+            List<IAggregatable> components = TestExperimentalProteoform.generate_unlabeled_components(TestExperimentalProteoform.starter_mass);
 
             Sweet.lollipop.neucode_labeled = false;
-            Sweet.lollipop.remaining_components = new List<Component>(components);
-            Sweet.lollipop.remaining_verification_components = new HashSet<Component>(components);
+            Sweet.lollipop.remaining_components = new List<IAggregatable>(components);
+            Sweet.lollipop.remaining_verification_components = new HashSet<Component>(components.OfType<Component>());
             Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-3, 3 * 2 + 1).ToList();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             e.root = components[0];
             e.aggregate();
             e.verify();
 
-            Assert.AreEqual(2, e.aggregated_components.Count);
+            Assert.AreEqual(2, e.aggregated.Count);
             Assert.AreEqual(2, e.lt_verification_components.Count);
             Assert.AreEqual(0, e.hv_verification_components.Count); // everything goes into light with unlabeled
             Assert.AreEqual(0, e.lt_quant_components.Count); // no quantitation for unlabeled, yet

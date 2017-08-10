@@ -18,9 +18,9 @@ namespace Test
 
 
         //class methods here
-        public static List<Component> generate_neucode_components(double mass, double lightIntensity, double heavyIntensity, int lysineCount)
+        public static List<IAggregatable> generate_neucode_components(double mass, double lightIntensity, double heavyIntensity, int lysineCount)
         {
-            List<Component> components = new List<Component>();
+            List<IAggregatable> components = new List<IAggregatable>();
             InputFile inFile = new InputFile("somepath", Labeling.NeuCode, Purpose.Identification);
 
             for (int i = 0; i < 2; i++)
@@ -39,17 +39,20 @@ namespace Test
                 //heavy.id = 2.ToString();
                 light.weighted_monoisotopic_mass = (mass);
                 heavy.weighted_monoisotopic_mass = (mass + lysineCount * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
-                light.intensity_sum_olcs = lightIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
-                heavy.intensity_sum_olcs = heavyIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
+                light.intensity_sum = lightIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
+                heavy.intensity_sum = heavyIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
                 light.rt_apex = starter_rt;
                 heavy.rt_apex = starter_rt;
                 light.accepted = true;
                 heavy.accepted = true;
-                ChargeState light_charge_state = new ChargeState(1, light.intensity_sum_olcs, light.weighted_monoisotopic_mass, 1.00727645D);
-                ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum_olcs, heavy.weighted_monoisotopic_mass, 1.00727645D);
+                ChargeState light_charge_state = new ChargeState(1, light.intensity_sum, light.weighted_monoisotopic_mass, 1.00727645D);
+                ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum, heavy.weighted_monoisotopic_mass, 1.00727645D);
                 light.charge_states = new List<ChargeState> { light_charge_state };
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
-                NeuCodePair n = new NeuCodePair(light, heavy);
+                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, 0, new List<int> { 1 }, true);
+                n.rt_apex = light.rt_apex;
+                n.weighted_monoisotopic_mass = light.weighted_monoisotopic_mass;
+                n.accepted = true;
                 n.lysine_count = lysineCount;
                 components.Add(n);
             }
@@ -103,7 +106,7 @@ namespace Test
             Sweet.lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1.ToString(), lysineCount);//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2.ToString(), lysineCount));//these are for quantification
-            List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
+            List<IAggregatable> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
             ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
             Assert.AreEqual(2, e1.lt_quant_components.Count);
             Assert.AreEqual(2, e1.hv_quant_components.Count);
@@ -145,7 +148,7 @@ namespace Test
             Sweet.lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1.ToString(), lysineCount);//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2.ToString(), lysineCount));//these are for quantification
-            List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
+            List<IAggregatable> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3.ToString(), lysineCount));//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 48d, 102d, 4.ToString(), lysineCount));//these are for quantification
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", components[0], components, quant_components_list, true);
@@ -283,7 +286,7 @@ namespace Test
             Sweet.lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1.ToString(), lysineCount);//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2.ToString(), lysineCount));//these are for quantification
-            List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
+            List<IAggregatable> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
             Sweet.lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
             ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);

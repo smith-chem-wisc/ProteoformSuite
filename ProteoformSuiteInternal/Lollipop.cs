@@ -237,16 +237,14 @@ namespace ProteoformSuiteInternal
                                 List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
                                 List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
                                 List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                                lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                double lower_intensity = lower_component.intensity_sum_olcs;
-                                double higher_intensity = higher_component.intensity_sum_olcs;
+                                double lower_intensity = NeuCodePair.calculate_sum_intensity_olcs(lower_component.charge_states, overlapping_charge_states);
+                                double higher_intensity = NeuCodePair.calculate_sum_intensity_olcs(higher_component.charge_states, overlapping_charge_states);
                                 bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
                                 if (lower_intensity > 0 && higher_intensity > 0)
                                 {
                                     NeuCodePair pair = lower_intensity > higher_intensity ?
-                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
                                     if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                         lock (pairsInScanRange) pairsInScanRange.Add(pair);
@@ -292,7 +290,7 @@ namespace ProteoformSuiteInternal
         public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
         public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity>();
         public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
-        public List<Component> remaining_components = new List<Component>();
+        public List<IAggregatable> remaining_components = new List<IAggregatable>();
         public HashSet<Component> remaining_verification_components = new HashSet<Component>();
         public HashSet<Component> remaining_quantification_components = new HashSet<Component>();
         public bool validate_proteoforms = true;
@@ -311,7 +309,7 @@ namespace ProteoformSuiteInternal
 
         private List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
 
-        private Component[] ordered_components = new Component[0];
+        private IAggregatable[] ordered_components = new IAggregatable[0];
 
         #endregion AGGREGATED PROTEOFORMS Private Fields
 
@@ -340,7 +338,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (ExperimentalProteoform pf in experimental_proteoforms)
             {
-                pf.manual_validation_id = pf.find_manual_inspection_component(pf.aggregated_components);
+                pf.manual_validation_id = pf.find_manual_inspection_component(pf.aggregated);
                 pf.manual_validation_verification = pf.find_manual_inspection_component(pf.lt_verification_components.Concat(pf.hv_verification_components));
                 pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
             }
@@ -356,11 +354,11 @@ namespace ProteoformSuiteInternal
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = neucode_labeled ?
-                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray() :
-                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.num_charge_states >= min_num_CS).ToArray();
-            remaining_components = new List<Component>(ordered_components);
+                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.overlapping_charge_states.Count >= min_num_CS).ToArray<IAggregatable>() :
+                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray<IAggregatable>();
+            remaining_components = new List<IAggregatable>(ordered_components);
 
-            Component root = ordered_components.FirstOrDefault();
+            IAggregatable root = ordered_components.FirstOrDefault();
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
             List<Thread> active = new List<Thread>();
             while (remaining_components.Count > 0 || active.Count > 0)
@@ -377,7 +375,7 @@ namespace ProteoformSuiteInternal
                 }
 
                 foreach (Thread t in active) t.Join();
-                foreach (ExperimentalProteoform e in running) remaining_components = remaining_components.Except(e.aggregated_components).ToList();
+                foreach (ExperimentalProteoform e in running) remaining_components = remaining_components.Except(e.aggregated).ToList();
 
                 running.Clear();
                 active.Clear();
@@ -392,14 +390,14 @@ namespace ProteoformSuiteInternal
             return candidateExperimentalProteoforms;
         }
 
-        public Component find_next_root(List<Component> ordered, List<Component> running)
+        public IAggregatable find_next_root(List<IAggregatable> ordered, List<IAggregatable> running)
         {
             return ordered.FirstOrDefault(c =>
                 running.All(d =>
                     c.weighted_monoisotopic_mass < d.weighted_monoisotopic_mass - 20 || c.weighted_monoisotopic_mass > d.weighted_monoisotopic_mass + 20));
         }
 
-        public Component find_next_root(List<Component> ordered, List<ExperimentalProteoform> running)
+        public IAggregatable find_next_root(List<IAggregatable> ordered, List<ExperimentalProteoform> running)
         {
             return ordered.FirstOrDefault(c =>
                 running.All(d =>

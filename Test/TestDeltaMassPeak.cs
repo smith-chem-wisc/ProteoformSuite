@@ -186,18 +186,18 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
-            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n2 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n4 = TestExperimentalProteoform.generate_neucode_components(200);
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.aggregated_components = n1;
+            pf1.aggregated = n1;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            pf2.aggregated_components = n2;
+            pf2.aggregated = n2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            pf3.aggregated_components = n3;
+            pf3.aggregated = n3;
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
-            pf4.aggregated_components = n4;
+            pf4.aggregated = n4;
 
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
@@ -255,18 +255,18 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
-            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n2 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n4 = TestExperimentalProteoform.generate_neucode_components(200);
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.aggregated_components = n1;
+            pf1.aggregated = n1;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            pf2.aggregated_components = n2;
+            pf2.aggregated = n2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            pf3.aggregated_components = n3;
+            pf3.aggregated = n3;
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
-            pf4.aggregated_components = n4;
+            pf4.aggregated = n4;
 
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
@@ -328,18 +328,18 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
-            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n2 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n4 = TestExperimentalProteoform.generate_neucode_components(200);
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.aggregated_components = n1;
+            pf1.aggregated = n1;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            pf2.aggregated_components = n2;
+            pf2.aggregated = n2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            pf3.aggregated_components = n3;
+            pf3.aggregated = n3;
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
-            pf4.aggregated_components = n4;
+            pf4.aggregated = n4;
 
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
