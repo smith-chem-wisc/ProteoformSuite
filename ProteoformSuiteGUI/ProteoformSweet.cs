@@ -208,7 +208,11 @@ namespace ProteoformSuiteGUI
                 string method_filename = methodFileOpen.FileName;
                 DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
                 if (d4 == DialogResult.Cancel) return false;
-                Sweet.open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes);
+                if (!open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes))
+                {
+                    MessageBox.Show("Error in method file. Save a new method file.");
+                    return false;
+                };
                 loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                 if (loadDeconvolutionResults.ReadyToRunTheGamut())
                     loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
@@ -217,21 +221,11 @@ namespace ProteoformSuiteGUI
             return false;
         }
 
-        private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
+        public bool open_method(string[] lines, bool add_files)
         {
-            if (Sweet.lollipop.input_files.Count == 0)
-            {
-                MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
-                return;
-            }
-            var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel) return;
-
-            if (!load_method()) return;
-            MessageBox.Show("Successfully loaded method. Will run the method now.");
-
-            if (full_run()) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
-            else MessageBox.Show("Method did not successfully run.");
+            bool method_file_success = Sweet.open_method(String.Join(Environment.NewLine, lines), add_files);
+            foreach (ISweetForm form in forms) form.InitializeParameterSet();
+            return method_file_success;
         }
 
         public bool full_run()
@@ -247,7 +241,11 @@ namespace ProteoformSuiteGUI
                     string filepath = methodFileOpen.FileName;
                     DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
                     if (d4 == DialogResult.Cancel) return false;
-                    Sweet.open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes);
+                    if (!open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes))
+                    {
+                        MessageBox.Show("Error in method file. Save a new method file.");
+                        return false;
+                    };
                 }
                 else if (dr == DialogResult.Cancel) return false;
             }

@@ -987,7 +987,7 @@
             this.btn_fullRun.Name = "btn_fullRun";
             this.btn_fullRun.Size = new System.Drawing.Size(283, 135);
             this.btn_fullRun.TabIndex = 58;
-            this.btn_fullRun.Text = "Full Run With Defaults";
+            this.btn_fullRun.Text = "Full Run";
             this.btn_fullRun.UseVisualStyleBackColor = true;
             this.btn_fullRun.Click += new System.EventHandler(this.btn_fullRun_Click);
             // 

@@ -123,9 +123,9 @@ namespace ProteoformSuiteGUI
             cmbx_relativeDifferenceChartSelection.SelectedIndex = selection;
         }
 
-        public void InitializeParameterSet()
+        public void InitializeConditionsParameters()
         {
-            //Initialize conditions
+            //Initialize conditions -- need to do after files entered
             List<string> conditions = Sweet.lollipop.ltConditionsBioReps.Keys.ToList();
             conditions.AddRange(Sweet.lollipop.hvConditionsBioReps.Keys.ToList());
             conditions = conditions.Distinct().ToList();
@@ -140,6 +140,10 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
             cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
 
+        }
+
+        public void InitializeParameterSet()
+        {
             //Initialize display options
             cmbx_volcanoChartSelection.Items.AddRange(volcano_selections);
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
