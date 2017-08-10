@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
             this.linked_proteoform_references = new List<Proteoform>();
             this.ExpandedProteinList = expanded_protein_list.ToList();
             this.accession = accession;
-            this.description = description;
+            this.description = description.Split('|').Length >= 3 ? description.Split('|')[2] : description;
             this.name = String.Join(";", expanded_protein_list.Select(p => p.Name));
             this.fragment = String.Join(";", expanded_protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
             this.begin = (int)expanded_protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition;

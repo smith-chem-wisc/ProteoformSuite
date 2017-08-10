@@ -336,10 +336,7 @@ namespace ProteoformSuiteInternal
                     (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 }
-                else
-                {
-                    c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                }
+                c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
             }
 
             mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
