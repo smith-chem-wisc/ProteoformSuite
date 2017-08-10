@@ -126,7 +126,7 @@ namespace ProteoformSuiteInternal
                         continue;
 
                     //sometimes repeats from deocnvolution -- remove these (if same scan, mass, intensity)
-                    removeThese.UnionWith(someComponents.Where(c => c != hc && c.weighted_monoisotopic_mass == hc.weighted_monoisotopic_mass && c.intensity_sum == hc.intensity_sum));
+                    removeThese.UnionWith(someComponents.Where(c => c != hc && c.scan_range == hc.scan_range && c.weighted_monoisotopic_mass == hc.weighted_monoisotopic_mass && c.intensity_sum == hc.intensity_sum));
 
                     List<double> possibleHarmonicList = // 2 missed on the top means up to 4 missed monos on the 2nd harmonic and 6 missed monos on the 3rd harmonic
                         Enumerable.Range(-4, 9).Select(x => (hc.weighted_monoisotopic_mass + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 2d).Concat(

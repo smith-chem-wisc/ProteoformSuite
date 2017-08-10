@@ -34,7 +34,7 @@ namespace ProteoformSuiteInternal
             DataPointAquisitionResults dataPointAcquisitionResult = null;
 
             //need to reset m/z in case same td hits used for multiple calibration raw files... 
-            Parallel.ForEach(all_topdown_hits, h => h.mz = h.reported_mass.ToMz(h.charge)); 
+            Parallel.ForEach(all_topdown_hits, h => h.mz = h.reported_mass.ToMz(h.charge));
 
             for (int linearCalibrationRound = 1; ; linearCalibrationRound++)
             {
@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
                 if (linearCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-                if(dataPointAcquisitionResult.Ms1List.Count < 5) return false;
+                if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
                 CalibrateLinear(dataPointAcquisitionResult.Ms1List);
             }
 
@@ -196,7 +196,7 @@ namespace ProteoformSuiteInternal
                     scanNumbers.Clear();
                     //get scan numbers using retention time (if raw file is spliced, scan numbers change)
                     double rt = Convert.ToDouble(matching_component.rt_range.Split('-')[0]);
-                    while(Math.Round(rt, 2) <= Math.Round(Convert.ToDouble(matching_component.rt_range.Split('-')[1]), 2))
+                    while (Math.Round(rt, 2) <= Math.Round(Convert.ToDouble(matching_component.rt_range.Split('-')[1]), 2))
                     {
                         int scanNumber = myMsDataFile.GetClosestOneBasedSpectrumNumber(rt);
                         scanNumbers.Add(scanNumber);
@@ -228,6 +228,7 @@ namespace ProteoformSuiteInternal
                     res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, 1, scansAdded, peaksAddedFromMS1HashSet, proteinCharge, identification));
                 }
             }
+
             return res;
         }
 
@@ -303,7 +304,7 @@ namespace ProteoformSuiteInternal
                             //10 ppm
                             double mass_tolerance = theMZ / 1e6 * 10;
                             var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - mass_tolerance, theMZ + mass_tolerance);
-                            if (npwr == 0) 
+                            if (npwr == 0)
                             {
                                 break;
                             }

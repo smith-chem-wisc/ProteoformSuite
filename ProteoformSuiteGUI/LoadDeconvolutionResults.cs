@@ -6,11 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-<<<<<<< HEAD
-using System.IO;
 
-=======
->>>>>>> 3d224d2d43114d5e7f4cde726bd6621f4be0833c
 namespace ProteoformSuiteGUI
 {
     public partial class LoadDeconvolutionResults : Form, ISweetForm
@@ -315,15 +311,10 @@ namespace ProteoformSuiteGUI
 
         private void clear_files(ComboBox cmb, DataGridView dgv)
         {
-<<<<<<< HEAD
-            Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex])).ToList();
-            refresh_dgvs();
-=======
             List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).ToList();
             Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
-            match_files();
->>>>>>> 3d224d2d43114d5e7f4cde726bd6621f4be0833c
+            refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }

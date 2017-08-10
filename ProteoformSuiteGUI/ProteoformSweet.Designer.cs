@@ -50,11 +50,7 @@
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-<<<<<<< HEAD
-            this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.identifiedProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-=======
->>>>>>> 3d224d2d43114d5e7f4cde726bd6621f4be0833c
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -230,14 +226,6 @@
             this.loadSettingsToolStripMenuItem.Text = "Load Method";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
             // 
-<<<<<<< HEAD
-            // loadRunToolStripMenuItem
-            // 
-            this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
-            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadRunToolStripMenuItem.Text = "Load && Run";
-            this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
-            // 
             // identifiedProteoformsToolStripMenuItem
             // 
             this.identifiedProteoformsToolStripMenuItem.Name = "identifiedProteoformsToolStripMenuItem";
@@ -245,8 +233,6 @@
             this.identifiedProteoformsToolStripMenuItem.Text = "Identified Proteoforms";
             this.identifiedProteoformsToolStripMenuItem.Click += new System.EventHandler(this.identifiedProteoformsToolStripMenuItem_Click);
             // 
-=======
->>>>>>> 3d224d2d43114d5e7f4cde726bd6621f4be0833c
             // ProteoformSweet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
