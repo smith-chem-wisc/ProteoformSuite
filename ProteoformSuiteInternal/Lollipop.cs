@@ -146,6 +146,13 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = true;
+        public double raw_component_mass_tolerance = 10;
+        public int unprocessed_exp_components = 0;
+        public int unprocessed_quant_components = 0;
+        public int missed_mono_merges_exp = 0;
+        public int missed_mono_merges_quant = 0;
+        public int harmonic_merges_exp = 0;
+        public int harmonic_merges_quant = 0;
 
         #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
 
