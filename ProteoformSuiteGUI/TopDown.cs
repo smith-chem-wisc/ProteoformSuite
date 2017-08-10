@@ -43,6 +43,18 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut(bool full_run)
         {
+            if (!full_run)
+            {
+                if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+                {
+                    MessageBox.Show("Go back and load in top-down results.");
+                }
+                if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                {
+                    MessageBox.Show("Go back and create a theoretical proteoform database.");
+                }
+            }
+
             ClearListsTablesFigures(true);
             AggregateTdHits();
             Sweet.lollipop.td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
@@ -94,14 +106,8 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+            if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown || Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0))
             {
-                MessageBox.Show("Go back and load in top-down results.");
-                return false;
-            }
-            if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-            {
-                MessageBox.Show("Go back and create a theoretical proteoform database.");
                 return false;
             }
             return true;
