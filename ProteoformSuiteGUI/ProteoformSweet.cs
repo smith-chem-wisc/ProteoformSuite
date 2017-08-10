@@ -202,7 +202,6 @@ namespace ProteoformSuiteGUI
 
         private bool load_method()
         {
-            Sweet.loaded_actions.Clear();
             DialogResult dr = methodFileOpen.ShowDialog();
             if (dr == DialogResult.OK)
             {
