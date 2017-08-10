@@ -337,7 +337,7 @@ namespace ProteoformSuiteInternal
                         "Aggregated Mass = " + ep.agg_mass.ToString(),
                         "Aggregated Retention Time = " + ep.agg_rt.ToString(),
                         "Total Intensity = " + total_intensity.ToString(),
-                        "Aggregated Component Count = " + ep.aggregated_components.Count.ToString(),
+                        "Aggregated Component Count = " + ep.aggregated.Count.ToString(),
                         Sweet.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
                         "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id,
                         "Abundant Component for Manual Validation of Identification Validation: " + ep.manual_validation_verification

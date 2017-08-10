@@ -15,13 +15,13 @@ namespace ProteoformSuiteInternal
 
         #region Public Field
 
-        public Component root;
+        public IAggregatable root;
 
         #endregion Public Field
 
         #region Public Properties
 
-        public List<Component> aggregated_components { get; set; } = new List<Component>();
+        public List<IAggregatable> aggregated { get; set; } = new List<IAggregatable>();
 
         public List<Component> lt_verification_components { get; set; } = new List<Component>();
 
@@ -59,17 +59,17 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructors
 
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) 
+        public ExperimentalProteoform(string accession, IAggregatable root, List<IAggregatable> candidate_observations, bool is_target) 
             : base(accession)
         {
             quant = new QuantitativeProteoformValues(this);
             this.root = root;
-            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
+            this.aggregated.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
             this.calculate_properties();
-            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
+            this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
 
-        public ExperimentalProteoform(string accession, Component root, bool is_target) 
+        public ExperimentalProteoform(string accession, IAggregatable root, bool is_target) 
             : base(accession)
         {
             quant = new QuantitativeProteoformValues(this);
@@ -77,7 +77,7 @@ namespace ProteoformSuiteInternal
             this.is_target = is_target;
         }
 
-        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, bool is_target, bool neucode_labeled) 
+        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<IAggregatable> candidate_observations, bool is_target, bool neucode_labeled) 
             : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
             if (neucode_labeled)
@@ -89,9 +89,9 @@ namespace ProteoformSuiteInternal
                 ncRoot.lysine_count = temp.lysine_count;
 
                 this.root = ncRoot;
-                this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
+                this.aggregated.AddRange(candidate_observations.Where(p => includes(p, this.root)));
                 this.calculate_properties();
-                this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
+                this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
 
             else
@@ -102,9 +102,9 @@ namespace ProteoformSuiteInternal
                 cRoot.rt_apex = temp.agg_rt;
 
                 this.root = cRoot;
-                this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
+                this.aggregated.AddRange(candidate_observations.Where(p => includes(p, this.root)));
                 calculate_properties();
-                this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
+                this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
 
@@ -134,7 +134,7 @@ namespace ProteoformSuiteInternal
             mass_shifted = e.mass_shifted;
             is_target = e.is_target;
             family = e.family;
-            aggregated_components = new List<Component>(e.aggregated_components);
+            aggregated = new List<IAggregatable>(e.aggregated);
             lt_quant_components = new List<Component>(e.lt_quant_components);
             lt_verification_components = new List<Component>(e.lt_verification_components);
             hv_quant_components = new List<Component>(e.hv_quant_components);
@@ -145,9 +145,9 @@ namespace ProteoformSuiteInternal
             manual_validation_quant = e.manual_validation_quant;
         }
 
-        public string find_manual_inspection_component(IEnumerable<Component> components)
+        public string find_manual_inspection_component(IEnumerable<IAggregatable> components)
         {
-            Component intense = components.OrderByDescending(c => c.intensity_sum).FirstOrDefault();
+            IAggregatable intense = components.OrderByDescending(c => c.intensity_sum).FirstOrDefault();
             if (intense == null)
                 return "";
 
@@ -166,8 +166,8 @@ namespace ProteoformSuiteInternal
 
         public void aggregate()
         {
-            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<Component>(Sweet.lollipop.remaining_components), true); //first pass returns temporary proteoform
-            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<Component>(Sweet.lollipop.remaining_components), true, Sweet.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
+            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<IAggregatable>(Sweet.lollipop.remaining_components), true); //first pass returns temporary proteoform
+            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<IAggregatable>(Sweet.lollipop.remaining_components), true, Sweet.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
             copy_aggregate(new_pf); //doesn't copy quant on purpose
             root = temp_pf.root; //maintain the original component root
         }
@@ -202,19 +202,19 @@ namespace ProteoformSuiteInternal
         public void calculate_properties()
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
-            agg_intensity = aggregated_components.Sum(c => Sweet.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum);
-            agg_mass = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (Sweet.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
-            agg_rt = aggregated_components.Sum(c => c.rt_apex * (Sweet.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity);
+            agg_intensity = aggregated.Sum(c => c.intensity_sum);
+            agg_mass = aggregated.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * c.intensity_sum / agg_intensity); //remove the monoisotopic errors before aggregating masses
+            agg_rt = aggregated.Sum(c => c.rt_apex * c.intensity_sum / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
-            accepted = aggregated_components.Count >= Sweet.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= Sweet.lollipop.min_num_bioreps;
+            accepted = aggregated.Count >= Sweet.lollipop.min_agg_count && aggregated.Select(c => c.input_file.biological_replicate).Distinct().Count() >= Sweet.lollipop.min_num_bioreps;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
         //lysine count first, and then aggregated based on mass and retention time afterwards, which may give a slightly different root for the 
         //experimental proteoform because the precursor aggregation may shuffle the intensity order slightly. We haven't observed any negative
         //impact of this difference as of 160812. -AC
-        public bool includes(Component candidate, Component root)
+        public bool includes(IAggregatable candidate, IAggregatable root)
         {
             return tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate, root.weighted_monoisotopic_mass)
                 && (candidate as NeuCodePair == null || tolerable_lysCt(candidate as NeuCodePair, (root as NeuCodePair).lysine_count));
@@ -231,7 +231,7 @@ namespace ProteoformSuiteInternal
 
         #region Aggregation Private Methods
 
-        private bool tolerable_rt(Component candidate, double rt_apex)
+        private bool tolerable_rt(IAggregatable candidate, double rt_apex)
         {
             return candidate.rt_apex >= rt_apex - Sweet.lollipop.retention_time_tolerance &&
                 candidate.rt_apex <= rt_apex + Sweet.lollipop.retention_time_tolerance;
@@ -243,7 +243,7 @@ namespace ProteoformSuiteInternal
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
-        private bool tolerable_mass(Component candidate, double corrected_mass)
+        private bool tolerable_mass(IAggregatable candidate, double corrected_mass)
         {
             foreach (int missed_mono_count in Sweet.lollipop.missed_monoisotopics_range)
             {
@@ -327,13 +327,16 @@ namespace ProteoformSuiteInternal
 
         public void shift_masses(int shift, bool neucode_labeled)
         {
-            foreach (Component c in aggregated_components)
+            foreach (IAggregatable c in aggregated)
             {
-                c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 if (neucode_labeled)
                 {
                     (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                }
+                else
+                {
+                    (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 }
             }
 

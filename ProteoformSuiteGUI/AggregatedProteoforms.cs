@@ -49,20 +49,20 @@ namespace ProteoformSuiteGUI
 
         private void display_light_proteoforms()
         {
-            List<Component> components = selected_pf == null ? new List<Component>() :
+            List<IAggregatable> components = selected_pf == null ? new List<IAggregatable>() :
                 rb_displayIdentificationComponents.Checked ?
-                selected_pf.aggregated_components :
+                selected_pf.aggregated :
                 rb_displayLightQuantificationComponents.Checked ?
-                    selected_pf.lt_quant_components :
-                    selected_pf.hv_quant_components;
-            DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, 
-                Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked ? 
-                    components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)) : 
-                    components.Select(c => new DisplayComponent(c)));
+                    selected_pf.lt_quant_components.ToList<IAggregatable>() :
+                    selected_pf.hv_quant_components.ToList<IAggregatable>();
+            if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
+                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)));
+            else
+                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayComponent(c as Component)));
             if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
                 DisplayNeuCodePair.FormatNeuCodeTable(dgv_AcceptNeuCdLtProteoforms);
             else
-                DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms, !rb_displayIdentificationComponents.Checked);
+                DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms);
         }
 
         private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)

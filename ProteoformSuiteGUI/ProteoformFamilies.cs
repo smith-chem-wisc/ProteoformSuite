@@ -375,7 +375,7 @@ namespace ProteoformSuiteGUI
                     foreach (ExperimentalProteoform proteoform in proteoforms)
                     {
                         //get highest intensity charge state 
-                        ChargeState max = proteoform.aggregated_components.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
+                        ChargeState max = proteoform.aggregated.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
                         double mz = max.mz_centroid;
                         if (Sweet.lollipop.neucode_labeled) mz = mz - (136.109162 * proteoform.lysine_count / max.charge_count) + (128.094963 * proteoform.lysine_count / max.charge_count);
                         writer.WriteLine(mz + "\t" + max.charge_count + "\t" + proteoform.agg_rt);

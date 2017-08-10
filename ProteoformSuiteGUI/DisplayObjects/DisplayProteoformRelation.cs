@@ -117,7 +117,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return connected_proteoforms[0] as ExperimentalProteoform != null ?
-                    ((ExperimentalProteoform)connected_proteoforms[0]).aggregated_components.Count :
+                    ((ExperimentalProteoform)connected_proteoforms[0]).aggregated.Count :
                     -1000000;
             }
         }
@@ -187,7 +187,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return connected_proteoforms[1] as ExperimentalProteoform != null ?
-                    ((ExperimentalProteoform)connected_proteoforms[1]).aggregated_components.Count :
+                    ((ExperimentalProteoform)connected_proteoforms[1]).aggregated.Count :
                     0;
             }
         }

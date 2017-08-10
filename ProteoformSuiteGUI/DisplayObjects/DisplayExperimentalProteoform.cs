@@ -61,7 +61,7 @@ namespace ProteoformSuiteGUI
 
         public int observation_count
         {
-            get { return e.aggregated_components.Count; }
+            get { return e.aggregated.Count; }
         }
 
         public int light_verification_count
