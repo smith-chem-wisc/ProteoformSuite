@@ -226,9 +226,7 @@ namespace Test
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
             foreach (Component c in 
-                n3.
-                Concat(n4).
-                Concat(n3.Select(n => ((NeuCodePair)n).neuCodeLight)).
+                n3.Select(n => ((NeuCodePair)n).neuCodeLight).
                 Concat(n4.Select(n => ((NeuCodePair)n).neuCodeLight)))
             {
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
@@ -293,15 +291,16 @@ namespace Test
             d2.mass_shifter = "-1";
             Sweet.shift_peak_action(d2);
             d2.mass_shifter = null;
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true);
             Sweet.mass_shifts_from_presets();
             d2.shift_experimental_masses(Convert.ToInt32(d2.mass_shifter), true);
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
             foreach (Component c in
-                n3.
-                Concat(n4).
-                Concat(n3.Select(n => ((NeuCodePair)n).neuCodeLight)).
+                n3.Select(n => ((NeuCodePair)n).neuCodeLight).
                 Concat(n4.Select(n => ((NeuCodePair)n).neuCodeLight)))
             {
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);

@@ -77,6 +77,9 @@ namespace ProteoformSuiteGUI
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
             tb_tdProteoforms.Clear();
+            dgv_TD_family.DataSource = null;
+            dgv_TD_family.Rows.Clear();
+            tb_tdProteoforms.Clear();
             tb_tableFilter.Clear();
             if (clear_following)
             {

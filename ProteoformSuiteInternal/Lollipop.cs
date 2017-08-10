@@ -661,7 +661,7 @@ namespace ProteoformSuiteInternal
                         {
                             count++;
                             string[] old_accession = new_pf.accession.Split('_');
-                            new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
+                            new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + "_" + old_accession[3] + "_" + old_accession[4];
                         }
                         topdown_proteoforms.Add(new_pf);
                     }
