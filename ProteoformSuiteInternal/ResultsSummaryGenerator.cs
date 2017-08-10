@@ -116,12 +116,31 @@ namespace ProteoformSuiteInternal
             return header + report;
         }
 
-        public static string counts()
+        public static string raw_components_report()
         {
             string report = "";
 
             report += Sweet.lollipop.raw_experimental_components.Count.ToString() + "\tRaw Experimental Components" + Environment.NewLine;
+            report += Sweet.lollipop.unprocessed_exp_components.ToString() + "\tUnprocessed Raw Experimental Components" + Environment.NewLine;
+            report += Sweet.lollipop.missed_mono_merges_exp.ToString() + "\tMissed Monoisotopic Raw Experimental Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.harmonic_merges_exp.ToString() + "\tHarmonic Raw Experimental Components Merged" + Environment.NewLine;
+            report += Environment.NewLine;
             report += Sweet.lollipop.raw_quantification_components.Count.ToString() + "\tRaw Quantitative Components" + Environment.NewLine;
+            report += Sweet.lollipop.unprocessed_quant_components.ToString() + "\tUnprocessed Raw Quantitative Components" + Environment.NewLine;
+            report += Sweet.lollipop.missed_mono_merges_quant.ToString() + "\tMissed Monoisotopic Raw Quantitative Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.harmonic_merges_quant.ToString() + "\tHarmonic Raw Quantitative Components Merged" + Environment.NewLine;
+            report += Environment.NewLine;
+
+            return report;
+
+        }
+
+        public static string counts()
+        {
+            string report = "";
+
+            report += raw_components_report();
+
             report += Sweet.lollipop.raw_neucode_pairs.Count.ToString() + "\tRaw NeuCode Pairs" + Environment.NewLine;
             report += Sweet.lollipop.raw_neucode_pairs.Count(nc => nc.accepted).ToString() + "\tAccepted NeuCode Pairs" + Environment.NewLine;
             report += Environment.NewLine;
