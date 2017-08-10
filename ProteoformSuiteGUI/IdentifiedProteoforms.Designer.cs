@@ -73,6 +73,8 @@
             // 
             // dgv_identified_experimentals
             // 
+            this.dgv_identified_experimentals.AllowUserToAddRows = false;
+            this.dgv_identified_experimentals.AllowUserToDeleteRows = false;
             this.dgv_identified_experimentals.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_identified_experimentals.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_identified_experimentals.Location = new System.Drawing.Point(0, 0);
@@ -119,6 +121,8 @@
             // 
             // dgv_same_topdown_id
             // 
+            this.dgv_same_topdown_id.AllowUserToAddRows = false;
+            this.dgv_same_topdown_id.AllowUserToDeleteRows = false;
             this.dgv_same_topdown_id.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_same_topdown_id.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_same_topdown_id.Location = new System.Drawing.Point(0, 0);
@@ -128,6 +132,8 @@
             // 
             // dgv_other_topdown_ids
             // 
+            this.dgv_other_topdown_ids.AllowUserToAddRows = false;
+            this.dgv_other_topdown_ids.AllowUserToDeleteRows = false;
             this.dgv_other_topdown_ids.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_other_topdown_ids.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_other_topdown_ids.Location = new System.Drawing.Point(0, 0);
@@ -137,6 +143,8 @@
             // 
             // dgv_bottom_up_peptides
             // 
+            this.dgv_bottom_up_peptides.AllowUserToAddRows = false;
+            this.dgv_bottom_up_peptides.AllowUserToDeleteRows = false;
             this.dgv_bottom_up_peptides.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_bottom_up_peptides.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_bottom_up_peptides.Location = new System.Drawing.Point(0, 0);

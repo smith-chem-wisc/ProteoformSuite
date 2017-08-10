@@ -61,7 +61,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, Modification> um;
             Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
-                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out um).ToArray());
+                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, true, false, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out um).ToArray());
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>().Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.modificationType)));
             });
 
