@@ -48,12 +48,20 @@ namespace ProteoformSuiteGUI
         public void InitializeParameterSet()
         {
             rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
+            nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
             FillTablesAndCharts();
         }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {
             Sweet.lollipop.raw_experimental_components.Clear();
+            Sweet.lollipop.raw_quantification_components.Clear();
+            Sweet.lollipop.unprocessed_exp_components = 0;
+            Sweet.lollipop.unprocessed_quant_components = 0;
+            Sweet.lollipop.missed_mono_merges_exp = 0;
+            Sweet.lollipop.missed_mono_merges_quant = 0;
+            Sweet.lollipop.harmonic_merges_exp = 0;
+            Sweet.lollipop.harmonic_merges_quant = 0;
 
             if (clear_following_forms)
             {
@@ -92,6 +100,8 @@ namespace ProteoformSuiteGUI
                 DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
 
             DisplayComponent.FormatComponentsTable(dgv_rawComponents, true);
+
+            rtb_raw_components_counts.Text = ResultsSummaryGenerator.raw_components_report();
 
             NeuCodePairs pairs_form = (MdiParent as ProteoformSweet).neuCodePairs;
             if (Sweet.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
@@ -137,5 +147,10 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Methods
+
+        private void nUD_mass_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.raw_component_mass_tolerance = Convert.ToDouble(nUD_mass_tolerance.Value);
+        }
     }
 }
