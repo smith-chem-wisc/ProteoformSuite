@@ -56,6 +56,7 @@ namespace ProteoformSuiteInternal
                     else new_component.add_charge_state(cellStrings);
                 }
             }
+            add_component(new_component);
             if (file.purpose == Purpose.Identification) Interlocked.Add(ref Sweet.lollipop.unprocessed_exp_components, raw_components_in_file.Count);
             else if (file.purpose == Purpose.Quantification) Interlocked.Add(ref Sweet.lollipop.unprocessed_quant_components, raw_components_in_file.Count);
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
