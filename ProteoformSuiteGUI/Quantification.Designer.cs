@@ -45,11 +45,6 @@
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.rb_saveBftIntensities = new System.Windows.Forms.RadioButton();
-            this.rb_saveBiorepIntensities = new System.Windows.Forms.RadioButton();
-            this.btn_saveBiorepIntensitiesWithImputation = new System.Windows.Forms.Button();
-            this.btn_saveBiologicalReplicateIntensities = new System.Windows.Forms.Button();
             this.nud_minObservations = new System.Windows.Forms.NumericUpDown();
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
@@ -151,6 +146,8 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.cmbx_quantitativeValuesTableSelection = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -165,7 +162,6 @@
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).BeginInit();
             this.splitContainer5.Panel1.SuspendLayout();
@@ -298,79 +294,23 @@
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
             this.splitContainer4.Size = new System.Drawing.Size(484, 602);
-            this.splitContainer4.SplitterDistance = 107;
+            this.splitContainer4.SplitterDistance = 89;
             this.splitContainer4.TabIndex = 0;
             // 
             // groupBox1
             // 
             this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox1.Controls.Add(this.groupBox3);
-            this.groupBox1.Controls.Add(this.btn_saveBiorepIntensitiesWithImputation);
-            this.groupBox1.Controls.Add(this.btn_saveBiologicalReplicateIntensities);
+            this.groupBox1.Controls.Add(this.label22);
+            this.groupBox1.Controls.Add(this.cmbx_quantitativeValuesTableSelection);
             this.groupBox1.Controls.Add(this.nud_minObservations);
             this.groupBox1.Controls.Add(this.cmbx_observationsTypeRequired);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(484, 107);
+            this.groupBox1.Size = new System.Drawing.Size(484, 89);
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Minimum Required Observations";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.rb_saveBftIntensities);
-            this.groupBox3.Controls.Add(this.rb_saveBiorepIntensities);
-            this.groupBox3.Location = new System.Drawing.Point(208, 46);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(270, 51);
-            this.groupBox3.TabIndex = 103;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Intensities to Save";
-            // 
-            // rb_saveBftIntensities
-            // 
-            this.rb_saveBftIntensities.AutoSize = true;
-            this.rb_saveBftIntensities.Checked = true;
-            this.rb_saveBftIntensities.Location = new System.Drawing.Point(6, 19);
-            this.rb_saveBftIntensities.Name = "rb_saveBftIntensities";
-            this.rb_saveBftIntensities.Size = new System.Drawing.Size(125, 17);
-            this.rb_saveBftIntensities.TabIndex = 1;
-            this.rb_saveBftIntensities.TabStop = true;
-            this.rb_saveBftIntensities.Text = "File / Condition Sums";
-            this.rb_saveBftIntensities.UseVisualStyleBackColor = true;
-            // 
-            // rb_saveBiorepIntensities
-            // 
-            this.rb_saveBiorepIntensities.AutoSize = true;
-            this.rb_saveBiorepIntensities.Location = new System.Drawing.Point(137, 19);
-            this.rb_saveBiorepIntensities.Name = "rb_saveBiorepIntensities";
-            this.rb_saveBiorepIntensities.Size = new System.Drawing.Size(84, 17);
-            this.rb_saveBiorepIntensities.TabIndex = 0;
-            this.rb_saveBiorepIntensities.Text = "Biorep Sums";
-            this.rb_saveBiorepIntensities.UseVisualStyleBackColor = true;
-            // 
-            // btn_saveBiorepIntensitiesWithImputation
-            // 
-            this.btn_saveBiorepIntensitiesWithImputation.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_saveBiorepIntensitiesWithImputation.Location = new System.Drawing.Point(18, 74);
-            this.btn_saveBiorepIntensitiesWithImputation.Name = "btn_saveBiorepIntensitiesWithImputation";
-            this.btn_saveBiorepIntensitiesWithImputation.Size = new System.Drawing.Size(184, 23);
-            this.btn_saveBiorepIntensitiesWithImputation.TabIndex = 102;
-            this.btn_saveBiorepIntensitiesWithImputation.Text = "Save Intensities With Imputation";
-            this.btn_saveBiorepIntensitiesWithImputation.UseVisualStyleBackColor = true;
-            this.btn_saveBiorepIntensitiesWithImputation.Click += new System.EventHandler(this.btn_saveBiorepIntensitiesWithImputation_Click);
-            // 
-            // btn_saveBiologicalReplicateIntensities
-            // 
-            this.btn_saveBiologicalReplicateIntensities.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btn_saveBiologicalReplicateIntensities.Location = new System.Drawing.Point(18, 45);
-            this.btn_saveBiologicalReplicateIntensities.Name = "btn_saveBiologicalReplicateIntensities";
-            this.btn_saveBiologicalReplicateIntensities.Size = new System.Drawing.Size(184, 23);
-            this.btn_saveBiologicalReplicateIntensities.TabIndex = 101;
-            this.btn_saveBiologicalReplicateIntensities.Text = "Save Intensities";
-            this.btn_saveBiologicalReplicateIntensities.UseVisualStyleBackColor = true;
-            this.btn_saveBiologicalReplicateIntensities.Click += new System.EventHandler(this.btn_saveBiologicalReplicateIntensities_Click);
             // 
             // nud_minObservations
             // 
@@ -416,8 +356,8 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_proteoformIntensities);
-            this.splitContainer5.Size = new System.Drawing.Size(484, 491);
-            this.splitContainer5.SplitterDistance = 126;
+            this.splitContainer5.Size = new System.Drawing.Size(484, 509);
+            this.splitContainer5.SplitterDistance = 124;
             this.splitContainer5.TabIndex = 0;
             // 
             // gb_quantDataDisplaySelection
@@ -440,7 +380,7 @@
             this.gb_quantDataDisplaySelection.Margin = new System.Windows.Forms.Padding(2);
             this.gb_quantDataDisplaySelection.Name = "gb_quantDataDisplaySelection";
             this.gb_quantDataDisplaySelection.Padding = new System.Windows.Forms.Padding(2);
-            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 126);
+            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 124);
             this.gb_quantDataDisplaySelection.TabIndex = 20;
             this.gb_quantDataDisplaySelection.TabStop = false;
             this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
@@ -629,7 +569,7 @@
             series2.Name = "Series2";
             this.ct_proteoformIntensities.Series.Add(series1);
             this.ct_proteoformIntensities.Series.Add(series2);
-            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 361);
+            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 381);
             this.ct_proteoformIntensities.TabIndex = 25;
             this.ct_proteoformIntensities.Text = "log2_intensity";
             this.ct_proteoformIntensities.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_proteoformIntensities_MouseClick);
@@ -784,7 +724,7 @@
             // cb_significanceByFoldChange
             // 
             this.cb_significanceByFoldChange.AutoSize = true;
-            this.cb_significanceByFoldChange.Location = new System.Drawing.Point(267, 52);
+            this.cb_significanceByFoldChange.Location = new System.Drawing.Point(267, 49);
             this.cb_significanceByFoldChange.Name = "cb_significanceByFoldChange";
             this.cb_significanceByFoldChange.Size = new System.Drawing.Size(202, 17);
             this.cb_significanceByFoldChange.TabIndex = 16;
@@ -1763,6 +1703,25 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(15, 43);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(176, 13);
+            this.label22.TabIndex = 16;
+            this.label22.Text = "Quantitative Values Table Selection";
+            // 
+            // cmbx_quantitativeValuesTableSelection
+            // 
+            this.cmbx_quantitativeValuesTableSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_quantitativeValuesTableSelection.FormattingEnabled = true;
+            this.cmbx_quantitativeValuesTableSelection.Location = new System.Drawing.Point(18, 61);
+            this.cmbx_quantitativeValuesTableSelection.Name = "cmbx_quantitativeValuesTableSelection";
+            this.cmbx_quantitativeValuesTableSelection.Size = new System.Drawing.Size(460, 21);
+            this.cmbx_quantitativeValuesTableSelection.TabIndex = 15;
+            this.cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_quantitativeValuesTableSelection_SelectedIndexChanged);
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1788,8 +1747,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).EndInit();
             this.splitContainer5.Panel1.ResumeLayout(false);
             this.splitContainer5.Panel2.ResumeLayout(false);
@@ -1957,8 +1915,6 @@
         private System.Windows.Forms.ComboBox cmbx_relativeDifferenceChartSelection;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Button btn_saveBiologicalReplicateIntensities;
-        private System.Windows.Forms.Button btn_saveBiorepIntensitiesWithImputation;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox cmbx_inducedCondition;
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
@@ -1968,9 +1924,6 @@
         private System.Windows.Forms.ComboBox cmbx_volcanoChartSelection;
         private System.Windows.Forms.CheckBox cb_significanceByFoldChange;
         private System.Windows.Forms.CheckBox cb_significanceByPermutation;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.RadioButton rb_saveBftIntensities;
-        private System.Windows.Forms.RadioButton rb_saveBiorepIntensities;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.NumericUpDown nud_benjiHochFDR;
         private System.Windows.Forms.NumericUpDown nud_foldChangeCutoff;
@@ -1982,5 +1935,7 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.CheckBox cb_useAveragePermutationFoldChange;
         private System.Windows.Forms.CheckBox cb_useBiorepPermutationFoldChange;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.ComboBox cmbx_quantitativeValuesTableSelection;
     }
 }

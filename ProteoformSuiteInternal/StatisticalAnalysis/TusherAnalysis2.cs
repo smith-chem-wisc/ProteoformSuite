@@ -9,6 +9,12 @@ namespace ProteoformSuiteInternal
         : TusherAnalysis
     {
 
+        #region Public Fields
+
+        public Dictionary<Tuple<string, string>, double> conditionBiorep_sums = new Dictionary<Tuple<string, string>, double>();
+
+        #endregion Public Fields
+
         #region Public Methods
 
         public void compute_proteoform_statistics(List<ExperimentalProteoform> satisfactoryProteoforms, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<string>> conditionsBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal sKnot_minFoldChange, bool define_histogram)
@@ -44,7 +50,7 @@ namespace ProteoformSuiteInternal
             }
 
             // Mixing bias normalization
-            Dictionary<Tuple<string, string>, double> conditionBiorep_sums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum());
+            conditionBiorep_sums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum());
             foreach (BiorepTechrepIntensity bi in allOriginalBiorepIntensities)
             {
                 double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value);

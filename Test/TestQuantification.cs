@@ -1497,6 +1497,11 @@ namespace Test
             TusherStatistic stat7 = new TusherStatistic(-3, 0, new List<decimal> { 3, 1, 1 });
             Assert.IsFalse(stat7.is_passing_real(-4, 2, "OR", true, 2, false, true, 2));
             Assert.IsFalse(stat7.is_passing_permutation(-4, 2, "OR", true, 2, false, true, 2));
+
+            // sufficient passing on either side of 1 doesn't count as passing
+            TusherStatistic stat8 = new TusherStatistic(-3, 0, new List<decimal> { 3, 0.25m, 1 });
+            Assert.IsFalse(stat8.is_passing_real(-2, 4, "AND", true, 2, false, true, 2));
+            Assert.IsFalse(stat8.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2));
         }
     }
 }

@@ -26,6 +26,17 @@ namespace ProteoformSuiteGUI
             foreach (DataGridViewColumn col in dgv.Columns) col.SortMode = DataGridViewColumnSortMode.Automatic;
         }
 
+        public static void FillDataGridView(DataGridView dgv, DataTable some_table)
+        {
+            dgv.DataSource = some_table;
+            dgv.ReadOnly = false;
+            dgv.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+            dgv.AllowUserToAddRows = false;
+            dgv.DefaultCellStyle.BackColor = Color.LightGray;
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
+            foreach (DataGridViewColumn col in dgv.Columns) col.SortMode = DataGridViewColumnSortMode.Automatic;
+        }
+
         public static void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
         {
             t.RemoveAll();
