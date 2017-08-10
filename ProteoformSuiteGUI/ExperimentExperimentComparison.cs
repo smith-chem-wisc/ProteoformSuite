@@ -58,9 +58,11 @@ namespace ProteoformSuiteGUI
         }
 
         public void ClearListsTablesFigures(bool clear_following)
-        {
-            Sweet.lollipop.clear_ee();
+        {           
+            //clear all save acceptance actions --> will re-add save actions from loaded actions if peak still exists
+            Sweet.save_actions.RemoveAll(x => x.StartsWith("accept ExperimentalExperimental") || x.StartsWith("unaccept ExperimentalExperimental"));
 
+            Sweet.lollipop.clear_ee();
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_EE_peakList.Series) series.Points.Clear();
 
@@ -107,7 +109,6 @@ namespace ProteoformSuiteGUI
             nUD_EE_Upper_Bound.Maximum = 2000;
             xMaxEE.Maximum = nUD_EE_Upper_Bound.Maximum;
             xMinEE.Maximum = nUD_EE_Upper_Bound.Maximum;
-            if (!Sweet.lollipop.neucode_labeled) Sweet.lollipop.ee_max_mass_difference = 150;
             nUD_EE_Upper_Bound.Value = (decimal)Sweet.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
 
             //Other stuff

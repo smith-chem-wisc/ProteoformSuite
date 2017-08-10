@@ -162,7 +162,7 @@ namespace ProteoformSuiteInternal
             if (neucode_labeled && purpose == Purpose.Identification) process_neucode_components(raw_neucode_pairs);
         }
 
-        private void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
+        public void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
         {
             foreach (InputFile inputFile in get_files(input_files, Purpose.Identification).ToList())
             {
@@ -465,22 +465,6 @@ namespace ProteoformSuiteInternal
                 p = find_next_root(proteoforms, running);
             }
             return vetted_proteoforms;
-        }
-
-        //Could be improved. Used for manual mass shifting.
-        //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
-        //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
-        //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
-        public List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
-        {
-            if (neucode_labeled)
-            {
-                raw_neucode_pairs.Clear();
-                process_neucode_components(raw_neucode_pairs);
-            }
-            List<ExperimentalProteoform> new_exps = aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
-            assign_best_components_for_manual_validation(new_exps);
-            return new_exps;
         }
 
         public void clear_aggregation()

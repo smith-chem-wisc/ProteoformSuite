@@ -3,6 +3,7 @@ using ProteoformSuiteInternal;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace Test
 {
@@ -50,6 +51,9 @@ namespace Test
             Sweet.change_file(mock, mock.lt_condition, nameof(mock.lt_condition), mock.lt_condition, "Normal");
             Sweet.change_file(mock, mock.hv_condition, nameof(mock.hv_condition), mock.hv_condition, "Stress");
             Sweet.change_file(mock, mock.biological_replicate, nameof(mock.biological_replicate), mock.biological_replicate.ToString(), "2");
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true);
             Sweet.lollipop.enter_input_files(folder, extension, purpose, destination, true);
             Assert.AreEqual(2, destination.Count);
             Assert.True(destination.All(f => f.extension == extension[0]));
@@ -68,6 +72,9 @@ namespace Test
             Sweet.change_file(mock, mock.lt_condition, nameof(mock.lt_condition), mock.lt_condition, "Normal");
             Sweet.change_file(mock, mock.hv_condition, nameof(mock.hv_condition), mock.hv_condition, "Stress");
             Sweet.change_file(mock, mock.biological_replicate, nameof(mock.biological_replicate), mock.biological_replicate.ToString(), "2");
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true);
             Sweet.add_files_from_presets(destination);
             Assert.AreEqual(1, destination.Count);
             Assert.True(destination[0].lt_condition == "Normal");
