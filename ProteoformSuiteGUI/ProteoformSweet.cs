@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -228,7 +229,7 @@ namespace ProteoformSuiteGUI
             return method_file_success;
         }
 
-        public bool full_run()
+        public Stopwatch full_run()
         {
             forms[1].ClearListsTablesFigures(true); // clear forms following load deconvolution results
 
@@ -240,16 +241,17 @@ namespace ProteoformSuiteGUI
                 {
                     string filepath = methodFileOpen.FileName;
                     DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
-                    if (d4 == DialogResult.Cancel) return false;
+                    if (d4 == DialogResult.Cancel) return null;
+
                     if (!open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes))
                     {
-                        MessageBox.Show("Error in method file. Save a new method file.");
-                        return false;
+                        MessageBox.Show("Error in method file. Generate a new method file.");
+                        return null;
                     };
                 }
-                else if (dr == DialogResult.Cancel) return false;
+                else if (dr == DialogResult.Cancel) return null;
             }
-            else if (d3 == DialogResult.Cancel) return false;
+            else if (d3 == DialogResult.Cancel) return null;
 
             loadDeconvolutionResults.FillTablesAndCharts(); // updates the filelists in form
 
@@ -257,7 +259,7 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
-                return false;
+                return null;
             }
 
             // Check that theoretical database(s) are present
@@ -266,7 +268,7 @@ namespace ProteoformSuiteGUI
                 if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
                 {
                     MessageBox.Show("Please list at least one protein database.", "Full Run");
-                    return false;
+                    return null;
                 }
                 else
                 {
@@ -277,7 +279,7 @@ namespace ProteoformSuiteGUI
                         if (loadDeconvolutionResults.ReadyToRunTheGamut())
                             loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                     }
-                    else return false;
+                    else return null;
                 }
             }
 
@@ -295,13 +297,23 @@ namespace ProteoformSuiteGUI
                         Sweet.lollipop.results_folder = temp_folder_path;
                         loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                     }
-                    else if (dr == DialogResult.Cancel) return false;
+                    else if (dr == DialogResult.Cancel) return null;
                 }
-                else if (d2 == DialogResult.Cancel) return false;
+                else if (d2 == DialogResult.Cancel) return null;
+            }
+            else
+            {
+                DialogResult d2 = MessageBox.Show("Would you like to save results of this Full Run to " + Sweet.lollipop.results_folder + "?", "Full Run", MessageBoxButtons.YesNoCancel);
+                if (d2 == DialogResult.No)
+                    Sweet.lollipop.results_folder = "";
+                else if (d2 == DialogResult.Cancel)
+                    return null;
             }
 
             // Run the program
             Cursor = Cursors.WaitCursor;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             foreach (ISweetForm sweet in forms)
             {
                 if (sweet.ReadyToRunTheGamut())
@@ -320,8 +332,9 @@ namespace ProteoformSuiteGUI
             }
 
             //Program ran successfully
+            stopwatch.Stop();
             Cursor = Cursors.Default;
-            return true;
+            return stopwatch;
         }
 
         #endregion METHOD TOOL STRIP Private Methods

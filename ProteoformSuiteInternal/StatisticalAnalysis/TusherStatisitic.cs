@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ProteoformSuiteInternal
@@ -44,8 +45,10 @@ namespace ProteoformSuiteInternal
 
         private bool is_passing(bool passing_relative_difference, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange)
         {
-            bool passing_average_foldchange = useAverageFoldChangeCutoff && fold_change > foldChangeCutoff;
-            bool passing_biorep_foldchange = useBiorepFoldChangeCutoff && biorep_fold_changes.Count(x => x > foldChangeCutoff) >= minBiorepsWithFoldChange;
+            bool passing_average_foldchange = useAverageFoldChangeCutoff && (fold_change >= 1 && fold_change > foldChangeCutoff || fold_change < 1 && (decimal)Math.Pow((double)fold_change, -1) > foldChangeCutoff);
+            bool passing_biorep_foldchange = useBiorepFoldChangeCutoff && 
+                (biorep_fold_changes.Count(fold_change => fold_change >= 1 && fold_change > foldChangeCutoff) >= minBiorepsWithFoldChange
+                || biorep_fold_changes.Count(fold_change => fold_change < 1 && fold_change > 0 && (decimal)Math.Pow((double)fold_change, -1) > foldChangeCutoff) >= minBiorepsWithFoldChange);
             return
                 passing_relative_difference && (!useFoldChangeCutoff || andOrUseFoldChange == "AND" && (passing_average_foldchange || passing_biorep_foldchange))
                 || useFoldChangeCutoff && andOrUseFoldChange == "OR" && (passing_relative_difference || passing_average_foldchange || passing_biorep_foldchange);

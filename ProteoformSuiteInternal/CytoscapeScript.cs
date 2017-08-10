@@ -75,7 +75,7 @@ namespace ProteoformSuiteInternal
 
         public static string write_cytoscape_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            IStatisiticalSignificance quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string prefered_gene_label)
         {
@@ -88,7 +88,7 @@ namespace ProteoformSuiteInternal
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            IStatisiticalSignificance quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string prefered_gene_label)
         {
@@ -118,7 +118,7 @@ namespace ProteoformSuiteInternal
 
         private static string write_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            IStatisiticalSignificance quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string preferred_gene_label)
         {
@@ -161,7 +161,7 @@ namespace ProteoformSuiteInternal
         }
 
         //CYTOSCAPE SCRIPT
-        private static string get_script(int feature_count, IStatisiticalSignificance quantitative, string node_position, string edges_path, string nodes_path, string styles_path, string style_name)
+        private static string get_script(int feature_count, IGoAnalysis quantitative, string node_position, string edges_path, string nodes_path, string styles_path, string style_name)
         {
             double sleep_factor = feature_count / 1000;
             string node_column_types = quantitative != null ? "s,s,d,s,i,d,d,boolean,s" : "s,s,d,s,i"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
@@ -271,7 +271,7 @@ namespace ProteoformSuiteInternal
         }
 
         public static string get_cytoscape_nodes_tsv(List<ProteoformFamily> families,
-            IStatisiticalSignificance quantitative,
+            IGoAnalysis quantitative,
             string color_scheme, string node_label, string node_label_position, string node_position, int double_rounding,
             IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
@@ -430,7 +430,7 @@ namespace ProteoformSuiteInternal
 
         private static string get_piechart_string(string color_scheme)
         {
-            return "piechart: attributelist = \"" + Sweet.lollipop.numerator_condition + "," + Sweet.lollipop.denominator_condition +
+            return "piechart: attributelist = \"" + Sweet.lollipop.denominator_condition + "," + Sweet.lollipop.numerator_condition +
                 "\" colorlist = \"" + color_schemes[color_scheme][0] + "," + color_schemes[color_scheme][3] +
                 "\" labellist = \",\"";
         }
@@ -588,7 +588,7 @@ namespace ProteoformSuiteInternal
 
         public static void write_styles(List<ProteoformFamily> all_families, string styles_path, string style_name, string time_stamp,
             string edge_label, string node_label, string node_label_position, string color_scheme,
-            IStatisiticalSignificance quantitative, bool quantitative_redBorder, bool quantitative_boldFace)
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace)
         {
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {

@@ -10,11 +10,11 @@ namespace ProteoformSuiteInternal
 
         #region Tusher Analysis Properties
 
-        public List<BiorepIntensity> numeratorOriginalIntensities { get; set; }
-        public List<BiorepIntensity> denominatorOriginalIntensities { get; set; }
-        public List<BiorepIntensity> numeratorImputedIntensities { get; set; }
-        public List<BiorepIntensity> denominatorImputedIntensities { get; set; }
-        public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; }
+        public List<BiorepIntensity> numeratorOriginalIntensities { get; set; } = new List<BiorepIntensity>();
+        public List<BiorepIntensity> denominatorOriginalIntensities { get; set; } = new List<BiorepIntensity>();
+        public List<BiorepIntensity> numeratorImputedIntensities { get; set; } = new List<BiorepIntensity>();
+        public List<BiorepIntensity> denominatorImputedIntensities { get; set; } = new List<BiorepIntensity>();
+        public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; } = new Dictionary<Tuple<string, string>, BiorepIntensity>();
 
         #endregion Tusher Analysis Properties
 
