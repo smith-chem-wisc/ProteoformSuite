@@ -348,6 +348,7 @@ namespace ProteoformSuiteInternal
                 Sweet.lollipop.ee_peaks.AddRange(peaks);
 
             Sweet.update_peaks_from_presets(); // accept or unaccept peaks noted in presets
+            Sweet.mass_shifts_from_presets(); //shift peaks
 
             //Nearby relations are no longer needed after counting them
             Parallel.ForEach(decoy_relations.SelectMany(kv => kv.Value).Concat(relations).ToList(), r =>

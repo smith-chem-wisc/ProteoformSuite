@@ -50,8 +50,11 @@
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+<<<<<<< HEAD
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.identifiedProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+=======
+>>>>>>> 3d224d2d43114d5e7f4cde726bd6621f4be0833c
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -208,8 +211,7 @@
             // 
             this.runMethodToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveMethodToolStripMenuItem1,
-            this.loadSettingsToolStripMenuItem,
-            this.loadRunToolStripMenuItem});
+            this.loadSettingsToolStripMenuItem});
             this.runMethodToolStripMenuItem.Name = "runMethodToolStripMenuItem";
             this.runMethodToolStripMenuItem.Size = new System.Drawing.Size(61, 22);
             this.runMethodToolStripMenuItem.Text = "Method";
@@ -228,6 +230,7 @@
             this.loadSettingsToolStripMenuItem.Text = "Load Method";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
             // 
+<<<<<<< HEAD
             // loadRunToolStripMenuItem
             // 
             this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
@@ -242,6 +245,8 @@
             this.identifiedProteoformsToolStripMenuItem.Text = "Identified Proteoforms";
             this.identifiedProteoformsToolStripMenuItem.Click += new System.EventHandler(this.identifiedProteoformsToolStripMenuItem_Click);
             // 
+=======
+>>>>>>> 3d224d2d43114d5e7f4cde726bd6621f4be0833c
             // ProteoformSweet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -280,7 +285,6 @@
         private System.Windows.Forms.ToolStripMenuItem proteoformFamilyAssignmentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runMethodToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadRunToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem resultsSummaryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quantificationToolStripMenuItem;

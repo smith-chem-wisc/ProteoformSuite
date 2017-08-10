@@ -247,14 +247,5 @@ namespace Test
             Assert.AreEqual(0, e.lt_quant_components.Count); // no quantitation for unlabeled, yet
             Assert.AreEqual(0, e.hv_quant_components.Count);
         }
-
-        [Test]
-        public void basic_regroup_test()
-        {
-            Sweet.lollipop.raw_neucode_pairs.Add(new NeuCodePair());
-            Assert.IsNotEmpty(Sweet.lollipop.raw_neucode_pairs);
-            Assert.IsEmpty(Sweet.lollipop.regroup_components(true, false, new List<InputFile>(), Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, 0));
-            Assert.IsEmpty(Sweet.lollipop.raw_neucode_pairs);
-        }
     }
 }

@@ -341,7 +341,7 @@
             this.cb_limitLargePtmSets.AutoSize = true;
             this.cb_limitLargePtmSets.Checked = true;
             this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(14, 263);
+            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(16, 223);
             this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
             this.cb_limitLargePtmSets.Size = new System.Drawing.Size(191, 17);
             this.cb_limitLargePtmSets.TabIndex = 51;
@@ -408,7 +408,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 220);
+            this.label7.Location = new System.Drawing.Point(12, 246);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(149, 13);
@@ -417,7 +417,7 @@
             // 
             // tb_modTypesToExclude
             // 
-            this.tb_modTypesToExclude.Location = new System.Drawing.Point(14, 235);
+            this.tb_modTypesToExclude.Location = new System.Drawing.Point(15, 261);
             this.tb_modTypesToExclude.Margin = new System.Windows.Forms.Padding(2);
             this.tb_modTypesToExclude.Name = "tb_modTypesToExclude";
             this.tb_modTypesToExclude.Size = new System.Drawing.Size(202, 20);
