@@ -256,7 +256,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static void update_peaks_from_presets()
+        public static void update_peaks_from_presets(ProteoformComparison comparison_to_update)
         {
             Regex findacceptrelationtype = new Regex(@"accept (\S+)");
             foreach (string peak_change in loaded_actions.Where(x => x.StartsWith("accept ") || x.StartsWith("unaccept ")))
@@ -264,7 +264,7 @@ namespace ProteoformSuiteInternal
                 string relationshiptype = findacceptrelationtype.Match(peak_change).Groups[1].ToString();
                 ProteoformComparison? comparison = ExtensionMethods.EnumUntil.GetValues<ProteoformComparison>().FirstOrDefault(x => relationshiptype == x.ToString());
                 bool converted = Double.TryParse(findmass.Match(peak_change).Groups[1].ToString(), out double mass);
-                if (comparison == null || !converted)
+                if (comparison == null || comparison != comparison_to_update || !converted)
                     continue;
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
