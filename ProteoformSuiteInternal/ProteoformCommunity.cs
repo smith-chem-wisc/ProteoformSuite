@@ -343,12 +343,16 @@ namespace ProteoformSuiteInternal
             }
 
             if (peaks.Count > 0 && peaks.First().RelationType == ProteoformComparison.ExperimentalTheoretical)
+            {
                 Sweet.lollipop.et_peaks.AddRange(peaks);
+                Sweet.update_peaks_from_presets(ProteoformComparison.ExperimentalTheoretical); // accept or unaccept peaks noted in presets
+                Sweet.mass_shifts_from_presets(); //shift peaks
+            }
             else
+            {
                 Sweet.lollipop.ee_peaks.AddRange(peaks);
-
-            Sweet.update_peaks_from_presets(); // accept or unaccept peaks noted in presets
-            Sweet.mass_shifts_from_presets(); //shift peaks
+                Sweet.update_peaks_from_presets(ProteoformComparison.ExperimentalExperimental); // accept or unaccept peaks noted in presets
+            }
 
             //Nearby relations are no longer needed after counting them
             Parallel.ForEach(decoy_relations.SelectMany(kv => kv.Value).Concat(relations).ToList(), r =>

@@ -105,6 +105,7 @@ namespace ProteoformSuiteInternal
 
         public static bool open_method(string alltext, bool add_files)
         {
+            loaded_actions.Clear();
             FieldInfo[] lollipop_fields = typeof(Lollipop).GetFields();
             List<XElement> setting_elements = new List<XElement>();
             List<XElement> action_elements = new List<XElement>();
@@ -151,7 +152,7 @@ namespace ProteoformSuiteInternal
             if (loaded_actions.Any(a => !a.StartsWith("add file ") && !a.StartsWith("change file ") && !a.StartsWith("shift ") && !a.StartsWith("accept ") && !a.StartsWith("unaccept ")))
                 return false;
 
-            if (add_files) add_files_from_presets(lollipop.input_files);
+            if (add_files)  add_files_from_presets(lollipop.input_files); 
             else update_files_from_presets(lollipop.input_files);
             return true;
         }
@@ -248,7 +249,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static void update_peaks_from_presets()
+        public static void update_peaks_from_presets(ProteoformComparison comparison_to_update)
         {
             Regex findacceptrelationtype = new Regex(@"accept (\S+)");
             foreach (string peak_change in loaded_actions.Where(x => x.StartsWith("accept ") || x.StartsWith("unaccept ")))
@@ -256,7 +257,7 @@ namespace ProteoformSuiteInternal
                 string relationshiptype = findacceptrelationtype.Match(peak_change).Groups[1].ToString();
                 ProteoformComparison? comparison = ExtensionMethods.EnumUntil.GetValues<ProteoformComparison>().FirstOrDefault(x => relationshiptype == x.ToString());
                 bool converted = Double.TryParse(findmass.Match(peak_change).Groups[1].ToString(), out double mass);
-                if (comparison == null || !converted)
+                if (comparison == null || comparison != comparison_to_update || !converted)
                     continue;
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
