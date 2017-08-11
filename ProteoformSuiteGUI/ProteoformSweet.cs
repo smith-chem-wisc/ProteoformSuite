@@ -211,7 +211,7 @@ namespace ProteoformSuiteGUI
                 if (d4 == DialogResult.Cancel) return false;
                 if (!open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes))
                 {
-                    MessageBox.Show("Error in method file. Save a new method file.");
+                    MessageBox.Show("Method file was not loaded succesffully.");
                     return false;
                 };
                 loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
@@ -224,7 +224,9 @@ namespace ProteoformSuiteGUI
 
         public bool open_method(string[] lines, bool add_files)
         {
-            bool method_file_success = Sweet.open_method(String.Join(Environment.NewLine, lines), add_files);
+            bool method_file_success = Sweet.open_method(String.Join(Environment.NewLine, lines), add_files, out string warning);
+            if (warning.Length > 0 && MessageBox.Show("WARNING" + Environment.NewLine + Environment.NewLine + warning, "Open Method", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                return false;
             foreach (ISweetForm form in forms) form.InitializeParameterSet();
             return method_file_success;
         }
