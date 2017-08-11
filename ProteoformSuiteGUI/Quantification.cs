@@ -102,8 +102,8 @@ namespace ProteoformSuiteGUI
         {
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             if (cmbx_geneLabel.Items.Count > 0)
-                cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
-            cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
+                cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
+            cb_geneCentric.Checked = Lollipop.gene_centric_families;
 
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
@@ -140,7 +140,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
             Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
             cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
-
         }
 
         public void InitializeParameterSet()
@@ -163,8 +162,8 @@ namespace ProteoformSuiteGUI
             cmbx_geneLabel.SelectedIndex = 1;
             cmbx_nodeLabel.SelectedIndex = 1;
             cmbx_edgeLabel.SelectedIndex = 1;
-            ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            Lollipop.gene_centric_families = cb_geneCentric.Checked;
 
             string[] relative_difference_selections = new string[]
             {
@@ -1206,12 +1205,12 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_geneLabel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
         }
 
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
-            ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+            Lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }

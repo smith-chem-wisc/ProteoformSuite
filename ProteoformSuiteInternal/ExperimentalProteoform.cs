@@ -166,8 +166,8 @@ namespace ProteoformSuiteInternal
 
         public void aggregate()
         {
-            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<IAggregatable>(Sweet.lollipop.remaining_components), true); //first pass returns temporary proteoform
-            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<IAggregatable>(Sweet.lollipop.remaining_components), true, Sweet.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
+            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<IAggregatable>(Sweet.lollipop.remaining_to_aggregate), true); //first pass returns temporary proteoform
+            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<IAggregatable>(Sweet.lollipop.remaining_to_aggregate), true, Sweet.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
             copy_aggregate(new_pf); //doesn't copy quant on purpose
             root = temp_pf.root; //maintain the original component root
         }

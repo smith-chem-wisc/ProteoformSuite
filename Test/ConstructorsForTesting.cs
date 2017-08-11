@@ -107,7 +107,8 @@ namespace Test
             if (quantitative_observations.Count > 0)
             {
                 e.lt_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, true)));
-                if (Sweet.lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
+                if (Sweet.lollipop.neucode_labeled)
+                    e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
             }
             e.root = e.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
             return e;

@@ -298,7 +298,7 @@ namespace Test
         [Test]
         public void test_construct_one_proteform_family_from_ET_with_two_theoretical_pf_groups_with_same_accession()
         {
-            ProteoformCommunity.gene_centric_families = false;
+            Lollipop.gene_centric_families = false;
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
 
@@ -410,8 +410,8 @@ namespace Test
         [Test]
         public void gene_centric_family()
         {
-            ProteoformCommunity.gene_centric_families = true;
-            ProteoformCommunity.preferred_gene_label = Lollipop.gene_name_labels[1];
+            Lollipop.gene_centric_families = true;
+            Lollipop.preferred_gene_label = Lollipop.gene_name_labels[1];
 
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
             Assert.AreEqual(1, community.families.Count);

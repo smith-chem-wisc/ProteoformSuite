@@ -184,6 +184,7 @@ namespace Test
                 {"n", new List<string>{1.ToString(), 2.ToString(), 3.ToString() } },
                 {"s", new List<string>{1.ToString(), 2.ToString(), 3.ToString() } },
             };
+            Sweet.lollipop.TusherAnalysis1.conditionBiorep_sums = conditionsBioReps.SelectMany(kv => kv.Value.Select(v => new Tuple<string, string>(kv.Key, v))).ToDictionary(t => t, t => 1d);
             List<InputFile> input_files = new List<InputFile>
             {
                 ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "1", "1"), //0

@@ -41,7 +41,8 @@ namespace Test
                 ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum, heavy.weighted_monoisotopic_mass, 1.00727645D);
                 light.charge_states = new List<ChargeState> { light_charge_state };
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
-                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, 0, new List<int>(), true);
+                double mass_difference = heavy.weighted_monoisotopic_mass - light.weighted_monoisotopic_mass;
+                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, mass_difference, new HashSet<int>(), true);
                 n.lysine_count = starter_lysine_count;
                 components.Add(n);
             }
@@ -170,7 +171,7 @@ namespace Test
         [Test]
         public void aggregate_in_bounds_monoisotopic_tolerance()
         {
-            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
+            Sweet.lollipop.set_missed_monoisotopic_range();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -190,7 +191,7 @@ namespace Test
         [Test]
         public void aggregate_out_of_monoisotpic_tolerance()
         {
-            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
+            Sweet.lollipop.set_missed_monoisotopic_range();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -211,7 +212,7 @@ namespace Test
         public void aggregate_in_bounds_middle_monoisotopic_tolerance()
         {
             missed_monoisotopics -= 1;
-            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
+            Sweet.lollipop.set_missed_monoisotopic_range();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -232,7 +233,7 @@ namespace Test
         public void aggregate_out_of_middle_monoisotopic_tolerance()
         {
             missed_monoisotopics -= 1;
-            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
+            Sweet.lollipop.set_missed_monoisotopic_range();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;

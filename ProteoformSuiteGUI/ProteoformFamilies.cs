@@ -31,8 +31,8 @@ namespace ProteoformSuiteGUI
             nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
             cb_buildAsQuantitative.Enabled = Sweet.lollipop.qVals.Count > 0;
             cb_buildAsQuantitative.Checked = false;
-            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
-            cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
+            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
+            cb_geneCentric.Checked = Lollipop.gene_centric_families;
         }
 
         public void InitializeParameterSet()
@@ -52,8 +52,8 @@ namespace ProteoformSuiteGUI
             cmbx_edgeLabel.SelectedIndex = 1;
             cmbx_nodeLabel.SelectedIndex = 1;
             cmbx_geneLabel.SelectedIndex = 1;
-            ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            Lollipop.gene_centric_families = cb_geneCentric.Checked;
 
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
@@ -333,7 +333,7 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_geneLabel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
         }
 
         #endregion Cytoscape Visualization Private Methods
@@ -388,7 +388,7 @@ namespace ProteoformSuiteGUI
 
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
-            ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+            Lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
         private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)
