@@ -49,7 +49,8 @@ namespace Test
                 ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum, heavy.weighted_monoisotopic_mass, 1.00727645D);
                 light.charge_states = new List<ChargeState> { light_charge_state };
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
-                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, 0, new List<int> { 1 }, true);
+                double mass_difference = heavy.weighted_monoisotopic_mass - light.weighted_monoisotopic_mass;
+                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, mass_difference, new HashSet<int> { 1 }, true);
                 n.rt_apex = light.rt_apex;
                 n.weighted_monoisotopic_mass = light.weighted_monoisotopic_mass;
                 n.accepted = true;

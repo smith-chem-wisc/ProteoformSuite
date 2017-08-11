@@ -83,7 +83,7 @@ namespace Test
             Assert.AreEqual(1, pfs.Count);
             Assert.AreEqual(2, pfs[0].aggregated.Count);
             Assert.AreEqual(2, components.Count);
-            Assert.AreEqual(0, Sweet.lollipop.remaining_components.Count);
+            Assert.AreEqual(0, Sweet.lollipop.remaining_to_aggregate.Count);
         }
 
         [Test]
@@ -218,7 +218,7 @@ namespace Test
             Sweet.lollipop.clear_aggregation();
             Assert.True(Sweet.lollipop.decoy_proteoform_communities.All(x => x.Value.experimental_proteoforms.Length == 0));
             Assert.IsEmpty(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
-            Assert.IsEmpty(Sweet.lollipop.remaining_components);
+            Assert.IsEmpty(Sweet.lollipop.remaining_to_aggregate);
             Assert.IsEmpty(Sweet.lollipop.remaining_quantification_components);
             Assert.IsEmpty(Sweet.lollipop.remaining_verification_components);
         }
@@ -233,7 +233,7 @@ namespace Test
             List<IAggregatable> components = TestExperimentalProteoform.generate_unlabeled_components(TestExperimentalProteoform.starter_mass);
 
             Sweet.lollipop.neucode_labeled = false;
-            Sweet.lollipop.remaining_components = new List<IAggregatable>(components);
+            Sweet.lollipop.remaining_to_aggregate = new List<IAggregatable>(components);
             Sweet.lollipop.remaining_verification_components = new HashSet<Component>(components.OfType<Component>());
             Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-3, 3 * 2 + 1).ToList();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");

@@ -239,8 +239,6 @@ namespace ProteoformSuiteInternal
 
         #region CONSTRUCTING FAMILIES
 
-        public static bool gene_centric_families = false;
-        public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
             Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToArray());
@@ -286,7 +284,7 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
-            if (gene_centric_families) families = combine_gene_families(families).ToList();
+            if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }

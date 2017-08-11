@@ -37,7 +37,7 @@ namespace Test
             Component c2 = Sweet.lollipop.raw_experimental_components[6]; // this one doesn't have the same number of charge states, which makes for a good example
             List<int> c1_charges = c1.charge_states.Select(charge_state => charge_state.charge_count).ToList();
             List<int> c2_charges = c2.charge_states.Select(charge_states => charge_states.charge_count).ToList();
-            List<int> overlapping_charge_states = c1_charges.Intersect(c2_charges).ToList();
+            HashSet<int> overlapping_charge_states = new HashSet<int>(c1_charges.Intersect(c2_charges));
             Assert.AreEqual(9, c1.charge_states.Count);
             Assert.AreEqual(8, overlapping_charge_states.Count);
             Assert.AreEqual(Sweet.lollipop.input_files.Where(f => f.filename == "noisy").FirstOrDefault().UniqueId + "_1", c1.id); //this line behaving strangely.
