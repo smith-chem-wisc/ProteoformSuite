@@ -650,14 +650,13 @@ namespace ProteoformSuiteInternal
                         int count = topdown_proteoforms.Count(t => t.accession == new_pf.accession);
                         if (count > 0)
                         {
-                            count++;
                             string[] old_accession = new_pf.accession.Split('_');
+                            count += topdown_proteoforms.Count(t => t.accession.Split('_')[2] == old_accession[2]);
                             new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + "_" + old_accession[3] + "_" + old_accession[4];
                         }
                         topdown_proteoforms.Add(new_pf);
                     }
                 }
-
             });
             return topdown_proteoforms;
         }
@@ -667,6 +666,9 @@ namespace ProteoformSuiteInternal
         #region PROTEOFORM FAMILIES Public Fields
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
+        public bool gene_centric_families = false;
+        public bool include_td_nodes = true;
+        public string preferred_gene_label = "";
 
         public int deltaM_edge_display_rounding = 2;
 

@@ -297,23 +297,25 @@ namespace ProteoformSuiteGUI
             }
 
             // Option to choose a result folder
-            if (Sweet.lollipop.results_folder == "")
+            DialogResult d2 = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
+            if (d2 == DialogResult.Yes)
             {
-                DialogResult d2 = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
-                if (d2 == DialogResult.Yes)
+                FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+                DialogResult dr = folderBrowser.ShowDialog();
+                if (dr == DialogResult.OK)
                 {
-                    FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
-                    DialogResult dr = folderBrowser.ShowDialog();
-                    if (dr == DialogResult.OK)
-                    {
-                        string temp_folder_path = folderBrowser.SelectedPath;
-                        Sweet.lollipop.results_folder = temp_folder_path;
-                        loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
-                    }
-                    else if (dr == DialogResult.Cancel) return false;
+                    string temp_folder_path = folderBrowser.SelectedPath;
+                    Sweet.lollipop.results_folder = temp_folder_path;
+                    loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                 }
-                else if (d2 == DialogResult.Cancel) return false;
+                else if (dr == DialogResult.Cancel) return false;
             }
+            else if (d2 == DialogResult.No)
+            {
+                Sweet.lollipop.results_folder = "";
+            }
+            else if (d2 == DialogResult.Cancel) return false;
+
 
             // Run the program
             Cursor = Cursors.WaitCursor;

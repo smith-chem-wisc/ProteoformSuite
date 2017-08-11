@@ -48,7 +48,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return t.gene_name != null ?
-                    t.gene_name.get_prefered_name(ProteoformCommunity.preferred_gene_label) :
+                    t.gene_name.get_prefered_name(Sweet.lollipop.preferred_gene_label) :
                     "";
             }
         }
