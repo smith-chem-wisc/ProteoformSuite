@@ -154,7 +154,7 @@ namespace ProteoformSuiteInternal
              List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
             int max_missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.maximum_missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-            foreach (TopDownProteoform topdown in topdown_proteoforms)
+            foreach (TopDownProteoform topdown in topdown_proteoforms.OrderBy(t => t.gene_name).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
                 //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
                 List<TheoreticalProteoform> candidate_theoreticals;
@@ -379,20 +379,17 @@ namespace ProteoformSuiteInternal
 
         #region CONSTRUCTING FAMILIES
 
-        public static bool gene_centric_families = false;
-        public static bool include_td_nodes = true;
-        public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
             ProteoformFamily.reset_family_counter();
             Parallel.ForEach(Sweet.lollipop.td_relations, t =>
             {
-                t.Accepted = include_td_nodes;
+                t.Accepted = Sweet.lollipop.include_td_nodes;
             });
 
             List<Proteoform> proteoforms = new List<Proteoform>();
             proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
-            if (include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
+            if (Sweet.lollipop.include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
             Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
@@ -436,7 +433,7 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
-            if (gene_centric_families) families = combine_gene_families(families).ToList();
+            if (Sweet.lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }

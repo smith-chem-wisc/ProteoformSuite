@@ -26,7 +26,7 @@ namespace ProteoformSuiteInternal
         public int family_id { get; set; }
         public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
-        public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Where(n => n != null).Distinct()); } }
+        public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(Sweet.lollipop.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
         public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
@@ -64,14 +64,24 @@ namespace ProteoformSuiteInternal
 
         public void merge_families(List<ProteoformFamily> families)
         {
-            IEnumerable<ProteoformFamily> gene_family =
-                    from f in families
-                    from n in gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
-                    where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
-                    select f;
+            List<ProteoformFamily> gene_family = merge_families(new List<ProteoformFamily> { this }, new List<ProteoformFamily>(families));
             proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms))).ToList();
             separate_proteoforms();
         }
+
+        public List<ProteoformFamily> merge_families(List<ProteoformFamily> seed, List<ProteoformFamily> families)
+        {
+            IEnumerable<ProteoformFamily> gene_expansion =
+           (from f in families
+            from n in seed.SelectMany(s => s.gene_names.Select(g => g.get_prefered_name(Sweet.lollipop.preferred_gene_label))).Distinct()
+            where f.gene_names.Select(g => g.get_prefered_name(Sweet.lollipop.preferred_gene_label)).Contains(n)
+            select f
+           ).ToList().Except(seed);
+            if (gene_expansion.Count() == 0) return seed;
+            seed.AddRange(gene_expansion);
+            return merge_families(seed, families);
+        }
+
 
         public void identify_experimentals()
         {
