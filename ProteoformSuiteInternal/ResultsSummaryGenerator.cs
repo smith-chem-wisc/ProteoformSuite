@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
         private static void save_dataframe(TusherAnalysis analysis, string directory, string timestamp)
         {
             using (StreamWriter writer = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "results_" + timestamp + ".tsv")))
-                writer.Write(results_dataframe(analysis));
+                writer.Write(datatable_tostring(results_dataframe(analysis)));
         }
 
         private static void save_cytoscripts(string directory, string timestamp, IGoAnalysis go_analysis, TusherAnalysis tusher_analysis)
@@ -31,28 +31,28 @@ namespace ProteoformSuiteInternal
 
             message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, "AllFamilies_", timestamp,
-                    false, 
+                    null, 
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
             message += Environment.NewLine;
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
                 message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, "AllQuantFamilies_", timestamp,
-                    true,
+                    go_analysis as IGoAnalysis,
                     true, true, 
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
 
                 message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.getInterestingFamilies(tusher_analysis, Sweet.lollipop.satisfactoryProteoforms, go_analysis.GoAnalysis.minProteoformFoldChange, go_analysis.GoAnalysis.maxGoTermFDR, go_analysis.GoAnalysis.minProteoformIntensity).Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, "SignificantChanges_", timestamp,
-                    true, 
+                    go_analysis as IGoAnalysis, 
                     true, true, 
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
             }
 
@@ -60,9 +60,9 @@ namespace ProteoformSuiteInternal
             {
                 message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, Sweet.lollipop.target_proteoform_community.families,
                     Sweet.lollipop.results_folder, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_").Replace(@"\", "_").Replace(@"/", "_") + "_", timestamp,
-                    true, true, true, 
+                    go_analysis as IGoAnalysis, true, true, 
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
             }
             message += "Remember to install the package \"enhancedGraphics\" under App -> App Manager to view piechart nodes for quantitative data";
@@ -90,12 +90,6 @@ namespace ProteoformSuiteInternal
                 go_terms_of_significance() +
                 actions() +
                 loaded_files_report();
-        }
-
-        public static void save_biological_replicate_intensities(TusherAnalysis analysis, string filename, bool include_imputation, bool use_bft, List<ExperimentalProteoform> proteoforms)
-        {
-            using (StreamWriter writer = new StreamWriter(filename))
-                writer.Write(biological_replicate_intensities(analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation, use_bft));
         }
 
         public static string actions()
@@ -181,11 +175,11 @@ namespace ProteoformSuiteInternal
             List<ProteoformFamily> identified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();
             List<ProteoformFamily> ambiguous_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() > 1).ToList();
             List<ProteoformFamily> unidentified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 0 && f.proteoforms.Count > 1).ToList();
-            report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 " + (ProteoformCommunity.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
+            report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += identified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
-            report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 " + (ProteoformCommunity.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
+            report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
-            report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no " + (ProteoformCommunity.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
+            report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += unidentified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Unidentified Families" + Environment.NewLine;
             report += Sweet.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine;
             report += Environment.NewLine;
@@ -222,6 +216,12 @@ namespace ProteoformSuiteInternal
         public static string quant_report()
         {
             string report = "";
+            string tusher_significance_parenthetical = "(Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line";
+            if (Sweet.lollipop.useFoldChangeCutoff)
+            {
+                tusher_significance_parenthetical += ", " + Sweet.lollipop.fold_change_conjunction + " > " + Sweet.lollipop.foldChangeCutoff.ToString() + " fold-change" + (Sweet.lollipop.useAveragePermutationFoldChange ? ", on average among biological replicates" : Sweet.lollipop.useBiorepPermutationFoldChange ? " in " + Sweet.lollipop.minBiorepsWithFoldChange + " biological replicates at minimum" : "");
+            }
+            tusher_significance_parenthetical += ")";
 
             report += "QUANTIFICATION" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Sweet.lollipop.minBiorepsWithObservations.ToString() + " = " + Sweet.lollipop.observation_requirement + ")" + Environment.NewLine;
@@ -231,7 +231,7 @@ namespace ProteoformSuiteInternal
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion " + tusher_significance_parenthetical + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
@@ -241,7 +241,7 @@ namespace ProteoformSuiteInternal
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues2.significant).ToString() + "\tExperimental Proteoforms with Significant Change" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.TusherAnalysis2.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.TusherAnalysis2.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion " + tusher_significance_parenthetical + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis2 as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis2.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
@@ -329,9 +329,24 @@ namespace ProteoformSuiteInternal
             return analysis as TusherAnalysis1 != null ? q.TusherValues1 as TusherValues : q.TusherValues2 as TusherValues;
         }
 
-        public static string results_dataframe(TusherAnalysis analysis)
+        public static string datatable_tostring(DataTable results)
         {
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(String.Join("\t", row.ItemArray));
+            }
+            return result_string.ToString();
+        }
 
+        public static DataTable results_dataframe(TusherAnalysis analysis)
+        {
             DataTable results = new DataTable();
             results.Columns.Add("Proteoform ID", typeof(string));
             results.Columns.Add("Aggregated Observation ID", typeof(string));
@@ -367,46 +382,44 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
                 );
             }
-
-            StringBuilder result_string = new StringBuilder();
-            string header = "";
-            foreach (DataColumn column in results.Columns)
-            {
-                header += column.ColumnName + "\t";
-            }
-            result_string.AppendLine(header);
-            foreach (DataRow row in results.Rows)
-            {
-                result_string.AppendLine(String.Join("\t", row.ItemArray));
-            }
-            return result_string.ToString();
+            return results;
         }
 
-        public static string biological_replicate_intensities(TusherAnalysis analysis, List<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation, bool use_bft)
+        public static DataTable biological_replicate_intensities(IGoAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation)
         {
             DataTable results = new DataTable();
+            List<Tuple<string, string>> biorep_techreps = Sweet.lollipop.get_files(input_files, Purpose.Quantification).Select(x => new Tuple<string, string>(x.biological_replicate, x.technical_replicate)).Distinct().ToList();
+
+            // Add columns
             results.Columns.Add("Proteoform ID", typeof(string));
             foreach (KeyValuePair<string, List<string>> condition_bioreps in conditionsBioReps)
             {
                 foreach (string biorep in condition_bioreps.Value)
                 {
-                    if (use_bft)
+                    if (analysis as TusherAnalysis1 != null)
                     {
-                        HashSet<Tuple<string, string>> frac_tech = new HashSet<Tuple<string, string>>();
-                        frac_tech = new HashSet<Tuple<string, string>>(input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep).Select(f => new Tuple<string, string>(f.fraction, f.technical_replicate)));
-                        foreach (Tuple<string, string> ft in frac_tech)
+                        results.Columns.Add(condition_bioreps.Key + "_" + biorep, typeof(double)); // biorep intensities in TusherAnalysis1
+                    }
+                    else if (analysis as TusherAnalysis2 != null)
+                    {
+                        foreach (string techrep in biorep_techreps.Where(x => x.Item1 == biorep).Select(x => x.Item2).Distinct().ToList())
                         {
-                            results.Columns.Add(condition_bioreps.Key + "_" + biorep + "_" + ft.Item1 + "_" + ft.Item2, typeof(double));
+                            results.Columns.Add(condition_bioreps.Key + "_" + biorep + "_" + techrep, typeof(double)); // biorep-techrep intensities in TusherAnalysis2
                         }
                     }
-                    else
+                    else if (analysis as Log2FoldChangeAnalysis != null)
                     {
-                        results.Columns.Add(condition_bioreps.Key + "_" + biorep, typeof(double));
+                        foreach (InputFile f in input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep))
+                        {
+                            results.Columns.Add(condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate, typeof(double)); // biorep-fraction-techrep intensities in Log2FoldChangeAnalysis
+                        }
                     }
                 }
             }
+            results.Columns.Add("Subtracted Average", typeof(double));
 
-            foreach (ExperimentalProteoform pf in proteoforms)
+            // Add data for each proteoform
+            foreach (ExperimentalProteoform pf in proteoforms.ToList())
             {
                 DataRow row = results.NewRow();
                 row["Proteoform ID"] = pf.accession;
@@ -414,47 +427,68 @@ namespace ProteoformSuiteInternal
                 {
                     foreach (string biorep in condition_bioreps.Value)
                     {
-                        if (use_bft)
+                        double value;
+                        if (analysis as TusherAnalysis1 != null)  // biorep intensities in TusherAnalysis1
+                        {
+                            if (include_imputation)
+                            {
+                                pf.quant.TusherValues1.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
+                                value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
+                            }
+                            else
+                            {
+                                double norm_divisor = Sweet.lollipop.TusherAnalysis1.conditionBiorep_sums[new Tuple<string, string>(condition_bioreps.Key, biorep)] / Sweet.lollipop.TusherAnalysis1.conditionBiorep_sums.Where(kv => kv.Key.Item2 == biorep).Average(kv => kv.Value);
+                                value = pf.biorepIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep).Sum(x => x.intensity_sum) / norm_divisor;
+                            }
+                            row[condition_bioreps.Key + "_" + biorep] = value;
+                        }
+                        else if (analysis as TusherAnalysis2 != null)  // biorep-techrep intensities in TusherAnalysis1
+                        {
+                            foreach (string techrep in biorep_techreps.Where(x => x.Item1 == biorep).Select(x => x.Item2).Distinct().ToList())
+                            {
+                                if (include_imputation)
+                                {
+                                    pf.quant.TusherValues2.allIntensities.TryGetValue(new Tuple<string, string, string>(condition_bioreps.Key, biorep, techrep), out BiorepTechrepIntensity br);
+                                    value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
+                                }
+                                else
+                                {
+                                    double norm_divisor = Sweet.lollipop.TusherAnalysis2.conditionBiorep_sums[new Tuple<string, string>(condition_bioreps.Key, biorep)] / Sweet.lollipop.TusherAnalysis2.conditionBiorep_sums.Where(kv => kv.Key.Item2 == biorep).Average(kv => kv.Value);
+                                    value = pf.biorepTechrepIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.techrep == techrep).Sum(x => x.intensity_sum) / norm_divisor;
+                                }
+                                row[condition_bioreps.Key + "_" + biorep + "_" + techrep] = value;
+                            }
+                        }
+                        else if (analysis as Log2FoldChangeAnalysis != null)  // biorep-fraction-techrep intensities in TusherAnalysis1
                         {
                             foreach (InputFile f in input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep))
                             {
-                                pf.quant.Log2FoldChangeValues.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
-                                double value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
+                                if (include_imputation)
+                                {
+                                    pf.quant.Log2FoldChangeValues.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
+                                    value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
+                                }
+                                else
+                                {
+                                    value = pf.bftIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.input_file.technical_replicate == f.technical_replicate && x.input_file.fraction == f.fraction).Sum(x => x.intensity_sum)
+                                        / Sweet.lollipop.Log2FoldChangeAnalysis.conditionBiorepNormalizationDivisors[new Tuple<string, string>(condition_bioreps.Key, f.biological_replicate)];
+                                }
                                 row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;
-                            }
-                        }
-                        else if (analysis as TusherAnalysis1 != null)
-                        {
-                            pf.quant.TusherValues1.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
-                            double value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
-                            row[condition_bioreps.Key + "_" + biorep] = value;
-                        }
-                        else
-                        {
-                            foreach (string techrep in input_files.Select(f => f.technical_replicate).Distinct().ToList())
-                            {
-                                pf.quant.TusherValues2.allIntensities.TryGetValue(new Tuple<string, string, string>(condition_bioreps.Key, biorep, techrep), out BiorepTechrepIntensity br);
-                                double value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
-                                row[condition_bioreps.Key + "_" + biorep + "_" + techrep] = value;
                             }
                         }
                     }
                 }
+
+                double subtracted = analysis as TusherAnalysis1 != null ? pf.quant.TusherValues1.normalization_subtractand : analysis as TusherAnalysis2 != null ? pf.quant.TusherValues2.normalization_subtractand : 0;
+                if (subtracted != 0)
+                {
+                    row["Subtracted Average"] = subtracted;
+                }
+
                 results.Rows.Add(row);
             }
 
-            StringBuilder result_string = new StringBuilder();
-            string header = "";
-            foreach (DataColumn column in results.Columns)
-            {
-                header += column.ColumnName + "\t";
-            }
-            result_string.AppendLine(header);
-            foreach (DataRow row in results.Rows)
-            {
-                result_string.AppendLine(String.Join("\t", row.ItemArray));
-            }
-            return result_string.ToString();
+            return results;
         }
 
         #endregion Public Methods

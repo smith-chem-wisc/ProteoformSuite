@@ -1,6 +1,6 @@
 ﻿namespace ProteoformSuiteInternal
 {
-    interface IStatisiticalSignificance
+    public interface IStatisiticalSignificance
     {
         bool significant { get; set; }
     }
