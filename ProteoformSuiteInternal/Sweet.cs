@@ -103,8 +103,9 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static bool open_method(string alltext, bool add_files)
+        public static bool open_method(string alltext, bool add_files, out string warning_message)
         {
+            warning_message = "";
             loaded_actions.Clear();
             FieldInfo[] lollipop_fields = typeof(Lollipop).GetFields();
             List<XElement> setting_elements = new List<XElement>();
@@ -125,14 +126,6 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            if (lollipop_fields.Any(f => !f.IsLiteral &&
-                    (f.FieldType == typeof(int) ||
-                    f.FieldType == typeof(double) ||
-                    f.FieldType == typeof(string) ||
-                    f.FieldType == typeof(decimal) ||
-                    f.FieldType == typeof(bool)) 
-                    && !setting_elements.Any(s => GetAttribute(s, "field_name") == f.Name))) return false; //parameters in lollipop not specified in method file
-
             foreach (XElement setting in setting_elements)
             {
                 string type_string = GetAttribute(setting, "field_type");
@@ -140,7 +133,13 @@ namespace ProteoformSuiteInternal
                 string name = GetAttribute(setting, "field_name");
                 string value = GetAttribute(setting, "field_value");
                 FieldInfo field = lollipop_fields.FirstOrDefault(p => p.Name == name);
-                if (field == null) return false; //parameters in the method file that don't exist in Proteoform Suite.
+
+                if (field == null)
+                {
+                    warning_message += "Setting " + name + " has changed, and it was not changed to preset " + type_string + " " + value + " in the current run" + Environment.NewLine;
+                    continue;
+                }
+
                 field.SetValue(lollipop, Convert.ChangeType(value, type));
             }
 

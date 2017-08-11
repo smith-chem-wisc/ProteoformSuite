@@ -99,17 +99,18 @@ namespace Test
             return e;
         }
 
-        public static ExperimentalProteoform ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target)
+        public static ExperimentalProteoform ExperimentalProteoform(string accession, IAggregatable root, List<IAggregatable> candidate_observations, List<Component> quantitative_observations, bool is_target)
         {
             ExperimentalProteoform e = new ExperimentalProteoform(accession, root, is_target);
-            e.aggregated_components.AddRange(candidate_observations.Where(p => e.includes(p, e.root)));
+            e.aggregated.AddRange(candidate_observations.Where(p => e.includes(p, e.root)));
             e.calculate_properties();
             if (quantitative_observations.Count > 0)
             {
                 e.lt_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, true)));
-                if (Sweet.lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
+                if (Sweet.lollipop.neucode_labeled)
+                    e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
             }
-            e.root = e.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
+            e.root = e.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
             return e;
         }
 

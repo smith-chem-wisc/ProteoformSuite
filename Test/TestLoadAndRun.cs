@@ -42,7 +42,7 @@ namespace Test
             Sweet.lollipop.ee_max_RetentionTime_difference = 2.5;
             Sweet.lollipop.peak_width_base_ee = 0.015;
             //load method --> should switch parametetrs to saved 
-            Sweet.open_method(saved_method, false);
+            Sweet.open_method(saved_method, false, out string warning);
 
             //tests that the method settings properly a) saved b)loaded up above
             Assert.AreEqual(3, Sweet.lollipop.min_lysine_ct);

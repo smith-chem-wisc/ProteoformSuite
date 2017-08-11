@@ -26,7 +26,7 @@ namespace ProteoformSuiteInternal
         public int family_id { get; set; }
         public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
-        public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Where(n => n != null).Distinct()); } }
+        public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
         public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
@@ -60,8 +60,8 @@ namespace ProteoformSuiteInternal
         {
             IEnumerable<ProteoformFamily> gene_family =
                     from f in families
-                    from n in gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
-                    where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
+                    from n in gene_names.Select(g => g.get_prefered_name(Lollipop.preferred_gene_label)).Distinct()
+                    where f.gene_names.Select(g => g.get_prefered_name(Lollipop.preferred_gene_label)).Contains(n)
                     select f;
             proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms))).ToList();
             separate_proteoforms();
