@@ -75,7 +75,7 @@ namespace ProteoformSuiteInternal
 
         public static string write_cytoscape_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string prefered_gene_label)
         {
@@ -88,7 +88,7 @@ namespace ProteoformSuiteInternal
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string prefered_gene_label)
         {
@@ -118,7 +118,7 @@ namespace ProteoformSuiteInternal
 
         private static string write_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string preferred_gene_label)
         {
@@ -161,10 +161,10 @@ namespace ProteoformSuiteInternal
         }
 
         //CYTOSCAPE SCRIPT
-        private static string get_script(int feature_count, bool quantitative, string node_position, string edges_path, string nodes_path, string styles_path, string style_name)
+        private static string get_script(int feature_count, IGoAnalysis quantitative, string node_position, string edges_path, string nodes_path, string styles_path, string style_name)
         {
             double sleep_factor = feature_count / 1000;
-            string node_column_types = quantitative ? "s,s,d,s,i,d,d,boolean,s" : "s,s,d,s,i"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
+            string node_column_types = quantitative != null ? "s,s,d,s,i,d,d,boolean,s" : "s,s,d,s,i"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
             string edge_column_types = "s,s,s,s,s";
             return String.Join(Environment.NewLine, new string[] {
 
@@ -273,7 +273,7 @@ namespace ProteoformSuiteInternal
         }
 
         public static string get_cytoscape_nodes_tsv(List<ProteoformFamily> families,
-            bool quantitative,
+            IGoAnalysis quantitative,
             string color_scheme, string node_label, string node_label_position, string node_position, int double_rounding,
             IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
@@ -284,7 +284,7 @@ namespace ProteoformSuiteInternal
             node_table.Columns.Add(tooltip_header, typeof(string));
             node_table.Columns.Add(layout_header, typeof(int));
 
-            if (quantitative)
+            if (quantitative != null)
             {
                 node_table.Columns.Add(Sweet.lollipop.numerator_condition, typeof(string));
                 node_table.Columns.Add(Sweet.lollipop.denominator_condition, typeof(string));
@@ -326,11 +326,11 @@ namespace ProteoformSuiteInternal
                 {
                     ExperimentalProteoform ep = p as ExperimentalProteoform;
 
-                    string node_type = quantitative && ep.quant.intensitySum == 0 ?
+                    string node_type = quantitative != null && ep.quant.intensitySum == 0 ?
                         experimental_notQuantified_label :
                         experimental_label;
 
-                    string total_intensity = quantitative ?
+                    string total_intensity = quantitative != null ?
                         ep.quant.intensitySum == 0 ? mock_intensity : ((double)ep.quant.intensitySum).ToString() :
                         ep.agg_intensity.ToString();
 
@@ -344,27 +344,31 @@ namespace ProteoformSuiteInternal
                         "Aggregated Mass = " + ep.agg_mass.ToString(),
                         "Aggregated Retention Time = " + ep.agg_rt.ToString(),
                         "Total Intensity = " + total_intensity.ToString(),
-                        "Aggregated Component Count = " + ep.aggregated_components.Count.ToString(),
+                        "Aggregated Component Count = " + ep.aggregated.Count.ToString(),
                         Sweet.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
                         "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id,
                         "Abundant Component for Manual Validation of Identification Validation: " + ep.manual_validation_verification
                     });
-                    if (quantitative && ep.quant.intensitySum > 0)
+                    if (quantitative != null && ep.quant.intensitySum > 0)
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
-                            "Q-Value = " + ep.quant.TusherValues1.roughSignificanceFDR.ToString(),
-                            "Log2FC = " + ep.quant.logFoldChange.ToString(),
-                            "Significant = " + ep.quant.TusherValues1.significant.ToString(),
+                            "Q-Value = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.roughSignificanceFDR.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.roughSignificanceFDR.ToString() : ""),
+                            "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.average_log2fc.ToString() : ep.quant.logFoldChange.ToString()),
+                            "Significant = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.significant.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.significant.ToString() : quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.significant.ToString() : ""),
                             Sweet.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
                             Sweet.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
                             "Abundant Component for Manual Validation of Quantification: " + ep.manual_validation_quant
                         });
                     }
 
-                    if (quantitative && ep.quant.intensitySum != 0)
+                    if (quantitative as TusherAnalysis1 != null && ep.quant.intensitySum != 0)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues1.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues1.denominatorIntensitySum).ToString(), ep.quant.TusherValues1.significant.ToString(), get_piechart_string(color_scheme));
-                    else if (quantitative)
+                    else if (quantitative as TusherAnalysis2 != null && ep.quant.intensitySum != 0)
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues2.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues2.denominatorIntensitySum).ToString(), ep.quant.TusherValues2.significant.ToString(), get_piechart_string(color_scheme));
+                    else if (quantitative as Log2FoldChangeAnalysis != null && ep.quant.intensitySum != 0)
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allBftIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allBftIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
+                    else if (quantitative != null)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank);
@@ -376,7 +380,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).Distinct())
                 {
-                    if (gene_name != null && quantitative)
+                    if (gene_name != null && quantitative != null)
                         node_table.Rows.Add(gene_name, gene_name_label, mock_intensity, "Other Gene Names: ", 0, "", "", "", "");
                     else if (gene_name != null)
                         node_table.Rows.Add(gene_name, gene_name_label, mock_intensity, "Other Gene Names: ", 0);
@@ -437,7 +441,7 @@ namespace ProteoformSuiteInternal
 
         private static string get_piechart_string(string color_scheme)
         {
-            return "piechart: attributelist = \"" + Sweet.lollipop.numerator_condition + "," + Sweet.lollipop.denominator_condition +
+            return "piechart: attributelist = \"" + Sweet.lollipop.denominator_condition + "," + Sweet.lollipop.numerator_condition +
                 "\" colorlist = \"" + color_schemes[color_scheme][0] + "," + color_schemes[color_scheme][3] +
                 "\" labellist = \",\"";
         }
@@ -595,7 +599,7 @@ namespace ProteoformSuiteInternal
 
         public static void write_styles(List<ProteoformFamily> all_families, string styles_path, string style_name, string time_stamp,
             string edge_label, string node_label, string node_label_position, string color_scheme,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace)
+            IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace)
         {
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {
@@ -625,9 +629,9 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() > 0 ? ( quantitative ?
-                   (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
-                   all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity)) : 1e6;
+                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() > 0 ? quantitative != null ?
+                    (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
+                    all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity) : 1e6;
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
                 writer.WriteAttributeString("name", "nodeCustomGraphicsSizeSync");
@@ -663,7 +667,7 @@ namespace ProteoformSuiteInternal
                     {
                         write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
                         {
-                            new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[color_scheme][0], experimental_label),
+                            new Tuple<string, string>(quantitative != null ? "#FFFFFF" : color_schemes[color_scheme][0], experimental_label),
                             new Tuple<string, string>(not_quantified, experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
@@ -686,6 +690,18 @@ namespace ProteoformSuiteInternal
                         });
                     }
 
+                    if (style.Key == "NODE_LABEL_FONT_FACE")
+                    {
+                        write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
+                        {
+                            new Tuple<string, string>("Arial Italic,plain,14", gene_name_label),
+                            new Tuple<string, string>("Arial,plain,14", modified_theoretical_label),
+                            new Tuple<string, string>("Arial,plain,14", unmodified_theoretical_label),
+                            new Tuple<string, string>("Arial,plain,14", experimental_label),
+                            new Tuple<string, string>("Arial,plain,14", experimental_notQuantified_label)
+                        });
+                    }
+
                     if (style.Key == "NODE_LABEL_COLOR")
                     {
                         write_passthrough(writer, "string", "shared name");
@@ -705,12 +721,12 @@ namespace ProteoformSuiteInternal
                         });
                     }
 
-                    if (style.Key == "NODE_CUSTOMGRAPHICS_1" && quantitative)
+                    if (style.Key == "NODE_CUSTOMGRAPHICS_1" && quantitative != null)
                     {
                         write_passthrough(writer, "string", piechart_header);
                     }
 
-                    if (style.Key == "NODE_BORDER_WIDTH" && quantitative && quantitative_redBorder)
+                    if (style.Key == "NODE_BORDER_WIDTH" && quantitative != null && quantitative_redBorder)
                     {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
@@ -718,7 +734,7 @@ namespace ProteoformSuiteInternal
                         });
                     }
 
-                    if (style.Key == "NODE_BORDER_PAINT" && quantitative && quantitative_redBorder)
+                    if (style.Key == "NODE_BORDER_PAINT" && quantitative != null && quantitative_redBorder)
                     {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
@@ -727,7 +743,7 @@ namespace ProteoformSuiteInternal
                         });
                     }
 
-                    if (style.Key == "NODE_BORDER_TRANSPARENCY" && quantitative && quantitative_redBorder)
+                    if (style.Key == "NODE_BORDER_TRANSPARENCY" && quantitative != null && quantitative_redBorder)
                     {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
@@ -735,7 +751,7 @@ namespace ProteoformSuiteInternal
                         });
                     }
 
-                    if (style.Key == "NODE_LABEL_FONT_FACE" && quantitative && quantitative_boldFace)
+                    if (style.Key == "NODE_LABEL_FONT_FACE" && quantitative != null && quantitative_boldFace)
                     {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {

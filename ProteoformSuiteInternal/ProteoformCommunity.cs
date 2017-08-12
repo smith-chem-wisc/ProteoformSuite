@@ -384,12 +384,12 @@ namespace ProteoformSuiteInternal
             ProteoformFamily.reset_family_counter();
             Parallel.ForEach(Sweet.lollipop.td_relations, t =>
             {
-                t.Accepted = Sweet.lollipop.include_td_nodes;
+                t.Accepted =Lollipop.include_td_nodes;
             });
 
             List<Proteoform> proteoforms = new List<Proteoform>();
             proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
-            if (Sweet.lollipop.include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
+            if (Lollipop.include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
             Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
@@ -433,7 +433,7 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
-            if (Sweet.lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
+            if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }

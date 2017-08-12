@@ -22,7 +22,7 @@ namespace Test
             Assert.AreEqual(99.9d, createdComponent1.intensity_reported);
             Assert.AreEqual(5, createdComponent1.num_charge_states);
             Assert.AreEqual(6, createdComponent1.num_detected_intervals);
-            Assert.AreEqual(0.02d, createdComponent1.delta_mass);
+            Assert.AreEqual(0.02d, createdComponent1.reported_delta_mass);
             Assert.AreEqual(88.8d, createdComponent1.relative_abundance);
             Assert.AreEqual(0.888, createdComponent1.fract_abundance);
             Assert.AreEqual("10-15", createdComponent1.scan_range);
@@ -49,7 +49,7 @@ namespace Test
             Assert.AreEqual(200d, createdComponent2.intensity_sum);
             Assert.AreEqual(1, createdComponent2.num_charge_states);
             Assert.AreEqual(6, createdComponent2.num_detected_intervals);
-            Assert.AreEqual(0.02d, createdComponent2.delta_mass);
+            Assert.AreEqual(0.02d, createdComponent2.reported_delta_mass);
             Assert.AreEqual(88.8d, createdComponent2.relative_abundance);
             Assert.AreEqual(0.888, createdComponent2.fract_abundance);
             Assert.AreEqual("10-15", createdComponent2.scan_range);

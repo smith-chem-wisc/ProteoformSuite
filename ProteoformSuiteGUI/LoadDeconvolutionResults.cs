@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -324,8 +325,10 @@ namespace ProteoformSuiteGUI
 
         private void btn_fullRun_Click(object sender, EventArgs e)
         {
-            bool successful_run = ((ProteoformSweet)MdiParent).full_run();
-            if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.", "Full Run");
+            Stopwatch successful_run = ((ProteoformSweet)MdiParent).full_run();
+            if (successful_run != null) MessageBox.Show("Successfully ran method in " 
+                + String.Format("{0:00}:{1:00}:{2:00}.{3:00}", successful_run.Elapsed.Hours, successful_run.Elapsed.Minutes, successful_run.Elapsed.Seconds, successful_run.Elapsed.Milliseconds / 10) 
+                + ". Feel free to explore using the Results menu.", "Full Run");
             else MessageBox.Show("Method did not successfully run.", "Full Run");
         }
         private void bt_clearResults_Click(object sender, EventArgs e)

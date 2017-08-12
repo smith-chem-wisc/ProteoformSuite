@@ -41,11 +41,11 @@ namespace ProteoformSuiteGUI
             this.rb_displayIdentificationComponents = new System.Windows.Forms.RadioButton();
             this.dgv_rawComponents = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.dgv_chargeStates = new System.Windows.Forms.DataGridView();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.rtb_raw_components_counts = new System.Windows.Forms.RichTextBox();
-            this.nUD_mass_tolerance = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            this.nUD_mass_tolerance = new System.Windows.Forms.NumericUpDown();
+            this.rtb_raw_components_counts = new System.Windows.Forms.RichTextBox();
+            this.dgv_chargeStates = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -61,12 +61,12 @@ namespace ProteoformSuiteGUI
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -202,17 +202,6 @@ namespace ProteoformSuiteGUI
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 0;
             // 
-            // dgv_chargeStates
-            // 
-            this.dgv_chargeStates.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_chargeStates.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_chargeStates.Location = new System.Drawing.Point(0, 0);
-            this.dgv_chargeStates.Margin = new System.Windows.Forms.Padding(2);
-            this.dgv_chargeStates.Name = "dgv_chargeStates";
-            this.dgv_chargeStates.RowTemplate.Height = 28;
-            this.dgv_chargeStates.Size = new System.Drawing.Size(747, 355);
-            this.dgv_chargeStates.TabIndex = 0;
-            // 
             // splitContainer4
             // 
             this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -232,14 +221,14 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.SplitterDistance = 72;
             this.splitContainer4.TabIndex = 0;
             // 
-            // rtb_raw_components_counts
+            // label1
             // 
-            this.rtb_raw_components_counts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtb_raw_components_counts.Location = new System.Drawing.Point(0, 0);
-            this.rtb_raw_components_counts.Name = "rtb_raw_components_counts";
-            this.rtb_raw_components_counts.Size = new System.Drawing.Size(371, 279);
-            this.rtb_raw_components_counts.TabIndex = 0;
-            this.rtb_raw_components_counts.Text = "";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(146, 30);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(209, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Mass Tolerance for Merging Artifacts (ppm)";
             // 
             // nUD_mass_tolerance
             // 
@@ -249,14 +238,26 @@ namespace ProteoformSuiteGUI
             this.nUD_mass_tolerance.TabIndex = 0;
             this.nUD_mass_tolerance.ValueChanged += new System.EventHandler(this.nUD_mass_tolerance_ValueChanged);
             // 
-            // label1
+            // rtb_raw_components_counts
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(146, 30);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(112, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Mass Tolerance (ppm)";
+            this.rtb_raw_components_counts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtb_raw_components_counts.Location = new System.Drawing.Point(0, 0);
+            this.rtb_raw_components_counts.Name = "rtb_raw_components_counts";
+            this.rtb_raw_components_counts.ReadOnly = true;
+            this.rtb_raw_components_counts.Size = new System.Drawing.Size(371, 279);
+            this.rtb_raw_components_counts.TabIndex = 0;
+            this.rtb_raw_components_counts.Text = "";
+            // 
+            // dgv_chargeStates
+            // 
+            this.dgv_chargeStates.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_chargeStates.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_chargeStates.Location = new System.Drawing.Point(0, 0);
+            this.dgv_chargeStates.Margin = new System.Windows.Forms.Padding(2);
+            this.dgv_chargeStates.Name = "dgv_chargeStates";
+            this.dgv_chargeStates.RowTemplate.Height = 28;
+            this.dgv_chargeStates.Size = new System.Drawing.Size(747, 355);
+            this.dgv_chargeStates.TabIndex = 0;
             // 
             // RawExperimentalComponents
             // 
@@ -286,13 +287,13 @@ namespace ProteoformSuiteGUI
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
             this.splitContainer4.Panel1.ResumeLayout(false);
             this.splitContainer4.Panel1.PerformLayout();
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
             this.ResumeLayout(false);
 
         }

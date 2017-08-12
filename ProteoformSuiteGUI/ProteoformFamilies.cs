@@ -34,8 +34,8 @@ namespace ProteoformSuiteGUI
             nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
             cb_buildAsQuantitative.Enabled = Sweet.lollipop.qVals.Count > 0;
             cb_buildAsQuantitative.Checked = false;
-            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Sweet.lollipop.preferred_gene_label);
-            cb_geneCentric.Checked = Sweet.lollipop.gene_centric_families;
+            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
+            cb_geneCentric.Checked = Lollipop.gene_centric_families;
         }
 
         public void InitializeParameterSet()
@@ -55,8 +55,8 @@ namespace ProteoformSuiteGUI
             cmbx_edgeLabel.SelectedIndex = 1;
             cmbx_nodeLabel.SelectedIndex = 1;
             cmbx_geneLabel.SelectedIndex = 1;
-            Sweet.lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Sweet.lollipop.gene_centric_families = cb_geneCentric.Checked;
+            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            Lollipop.gene_centric_families = cb_geneCentric.Checked;
 
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
@@ -310,7 +310,7 @@ namespace ProteoformSuiteGUI
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp,
-                cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked,
+                cb_buildAsQuantitative.Checked ? (MdiParent as ProteoformSweet).resultsSummary.get_go_analysis() : null, cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
                 cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
@@ -323,7 +323,7 @@ namespace ProteoformSuiteGUI
             object[] selected = DisplayUtility.get_selected_objects(dgv_main);
             string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp,
-                cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked,
+                cb_buildAsQuantitative.Checked ? (MdiParent as ProteoformSweet).resultsSummary.get_go_analysis() : null, cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
                 cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
@@ -346,7 +346,7 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_geneLabel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
         }
 
         #endregion Cytoscape Visualization Private Methods
@@ -389,7 +389,7 @@ namespace ProteoformSuiteGUI
                     foreach (ExperimentalProteoform proteoform in proteoforms)
                     {
                         //get highest intensity charge state 
-                        ChargeState max = proteoform.aggregated_components.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
+                        ChargeState max = proteoform.aggregated.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
                         double mz = max.mz_centroid;
                         if (Sweet.lollipop.neucode_labeled) mz = mz - (136.109162 * proteoform.lysine_count / max.charge_count) + (128.094963 * proteoform.lysine_count / max.charge_count);
                         writer.WriteLine(mz + "\t" + max.charge_count + "\t" + proteoform.agg_rt);
@@ -402,12 +402,12 @@ namespace ProteoformSuiteGUI
 
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.gene_centric_families = cb_geneCentric.Checked;
+            Lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
         private void cb_include_td_nodes_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.include_td_nodes = cb_include_td_nodes.Checked;
+            Lollipop.include_td_nodes = cb_include_td_nodes.Checked;
         }
 
         private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)

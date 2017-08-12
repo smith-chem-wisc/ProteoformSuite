@@ -120,6 +120,7 @@
     <Compile Include="CalibrationFunctions\LinearCalibrationFunctionMathNet.cs" />
     <Compile Include="CalibrationFunctions\RandomForestCalibrationFunction.cs" />
     <Compile Include="CalibrationFunctions\RegressionTree.cs" />
+    <Compile Include="IAggregatable.cs" />
     <Compile Include="StatisticalAnalysis\GoAnalysis.cs" />
     <Compile Include="Intensities\BiorepFractionTechrepIntensity.cs" />
     <Compile Include="Intensities\BiorepIntensity.cs" />

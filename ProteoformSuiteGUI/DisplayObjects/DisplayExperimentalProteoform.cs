@@ -63,7 +63,7 @@ namespace ProteoformSuiteGUI
 
         public int observation_count
         {
-            get { return e.aggregated_components.Count; }
+            get { return e.aggregated.Count; }
         }
 
         public int light_verification_count
@@ -96,7 +96,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.gene_name != null ?
-                    e.gene_name.get_prefered_name(Sweet.lollipop.preferred_gene_label) :
+                    e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) :
                     "";
             }
         }
