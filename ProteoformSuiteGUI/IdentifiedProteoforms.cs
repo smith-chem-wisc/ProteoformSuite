@@ -52,6 +52,9 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_identified_experimentals, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatIdentifiedProteoformTable(dgv_identified_experimentals);
+            tb_bottom_up.Text = "Bottom-Up Peptides";
+            tb_etd.Text = "Top-Down Pairs";
+            tb_other_td.Text = "Other Top-Down Proteoforms of Same Gene and Mass";
         }
 
 

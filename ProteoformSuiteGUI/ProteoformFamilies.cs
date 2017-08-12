@@ -359,16 +359,6 @@ namespace ProteoformSuiteGUI
             cb_boldLabel.Enabled = cb_buildAsQuantitative.Checked;
         }
 
-        private void btn_inclusion_list_all_families_Click(object sender, EventArgs e)
-        {
-            List<ExperimentalProteoform> proteoforms = new List<ExperimentalProteoform>();
-            //identified experimentals --> not in ETD relation and not adduct (sulfate, sds, etc)
-            if (cb_identified_families.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null && p.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0 && !p.adduct).ToList());
-            if (cb_unidentified_families.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references == null).ToList());
-            if (cb_orphans.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.families.Where(f => f.relations.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
-            write_inclusion_list(proteoforms);
-        }
-
         private void btn_inclusion_list_selected_families_Click(object sender, EventArgs e)
         {
             object[] selected = DisplayUtility.get_selected_objects(dgv_main);
