@@ -186,18 +186,18 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
-            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n2 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n4 = TestExperimentalProteoform.generate_neucode_components(200);
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.aggregated_components = n1;
+            pf1.aggregated = n1;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            pf2.aggregated_components = n2;
+            pf2.aggregated = n2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            pf3.aggregated_components = n3;
+            pf3.aggregated = n3;
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
-            pf4.aggregated_components = n4;
+            pf4.aggregated = n4;
 
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
@@ -225,19 +225,20 @@ namespace Test
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
-            foreach (Component c in 
-                n3.Select(n => ((NeuCodePair)n).neuCodeLight).
-                Concat(n4.Select(n => ((NeuCodePair)n).neuCodeLight)))
+
+            foreach (IAggregatable c in 
+                n3.Select(n => (n as NeuCodePair).neuCodeLight).
+                Concat(n4.Select(n => (n as NeuCodePair).neuCodeLight)))
             {
-                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, (c as Component).manual_mass_shift);
                 Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
             }
 
-            foreach (Component c in 
-                n3.Select(n => ((NeuCodePair)n).neuCodeHeavy).
-                Concat(n4.Select(n => ((NeuCodePair)n).neuCodeHeavy)))
+            foreach (IAggregatable c in 
+                n3.Select(n => (n as NeuCodePair).neuCodeHeavy).
+                Concat(n4.Select(n => (n as NeuCodePair).neuCodeHeavy)))
             {
-                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, (c as Component).manual_mass_shift);
                 Assert.AreEqual(200 + TestExperimentalProteoform.starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
             }
 
@@ -253,18 +254,18 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
-            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n2 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n4 = TestExperimentalProteoform.generate_neucode_components(200);
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.aggregated_components = n1;
+            pf1.aggregated = n1;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            pf2.aggregated_components = n2;
+            pf2.aggregated = n2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            pf3.aggregated_components = n3;
+            pf3.aggregated = n3;
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
-            pf4.aggregated_components = n4;
+            pf4.aggregated = n4;
 
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
@@ -293,23 +294,24 @@ namespace Test
             d2.mass_shifter = null;
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true);
+            Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
             Sweet.mass_shifts_from_presets();
             d2.shift_experimental_masses(Convert.ToInt32(d2.mass_shifter), true);
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
+
             foreach (Component c in
-                n3.Select(n => ((NeuCodePair)n).neuCodeLight).
-                Concat(n4.Select(n => ((NeuCodePair)n).neuCodeLight)))
+                n3.OfType<NeuCodePair>().Select(n => n.neuCodeLight).
+                Concat(n4.OfType<NeuCodePair>().Select(n => n.neuCodeLight)))
             {
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
                 Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
             }
 
             foreach (Component c in
-                n3.Select(n => ((NeuCodePair)n).neuCodeHeavy).
-                Concat(n4.Select(n => ((NeuCodePair)n).neuCodeHeavy)))
+                n3.OfType<NeuCodePair>().Select(n => n.neuCodeHeavy).
+                Concat(n4.OfType<NeuCodePair>().Select(n => n.neuCodeHeavy)))
             {
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
                 Assert.AreEqual(200 + TestExperimentalProteoform.starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
@@ -322,20 +324,21 @@ namespace Test
             Sweet.lollipop = new Lollipop();
             ProteoformCommunity test_community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = test_community;
+            Sweet.lollipop.neucode_labeled = false;
 
             //Make a few experimental proteoforms
-            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
-            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
-            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<IAggregatable> n2 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<IAggregatable> n4 = TestExperimentalProteoform.generate_neucode_components(200);
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.aggregated_components = n1;
+            pf1.aggregated = n1.Select(n => (n as NeuCodePair).neuCodeLight).ToList<IAggregatable>();
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            pf2.aggregated_components = n2;
+            pf2.aggregated = n2.Select(n => (n as NeuCodePair).neuCodeLight).ToList<IAggregatable>();
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            pf3.aggregated_components = n3;
+            pf3.aggregated = n3.Select(n => (n as NeuCodePair).neuCodeLight).ToList<IAggregatable>();
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
-            pf4.aggregated_components = n4;
+            pf4.aggregated = n4.Select(n => (n as NeuCodePair).neuCodeLight).ToList<IAggregatable>();
 
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
@@ -363,7 +366,7 @@ namespace Test
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
-            foreach (Component c in n3.Concat(n4))
+            foreach (Component c in pf3.aggregated.Concat(pf4.aggregated).OfType<Component>())
             {
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
                 Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);

@@ -10,11 +10,11 @@ namespace ProteoformSuiteInternal
 
         #region Tusher Analysis Properties
 
-        public List<BiorepIntensity> numeratorOriginalIntensities { get; set; }
-        public List<BiorepIntensity> denominatorOriginalIntensities { get; set; }
-        public List<BiorepIntensity> numeratorImputedIntensities { get; set; }
-        public List<BiorepIntensity> denominatorImputedIntensities { get; set; }
-        public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; }
+        public List<BiorepIntensity> numeratorOriginalIntensities { get; set; } = new List<BiorepIntensity>();
+        public List<BiorepIntensity> denominatorOriginalIntensities { get; set; } = new List<BiorepIntensity>();
+        public List<BiorepIntensity> numeratorImputedIntensities { get; set; } = new List<BiorepIntensity>();
+        public List<BiorepIntensity> denominatorImputedIntensities { get; set; } = new List<BiorepIntensity>();
+        public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; } = new Dictionary<Tuple<string, string>, BiorepIntensity>();
 
         #endregion Tusher Analysis Properties
 
@@ -52,7 +52,8 @@ namespace ProteoformSuiteInternal
             List<IBiorepIntensity> uninduced = allIntensities.Where(kv => kv.Key.Item1 != induced_condition).Select(kv => kv.Value).ToList<IBiorepIntensity>();
             relative_difference = getSingleTestStatistic(induced, uninduced, scatter, sKnot);
             fold_change = getSingleFoldChange(induced, uninduced);
-            tusher_statistic = new TusherStatistic(relative_difference, fold_change);
+            List<decimal> biorep_foldchanges = allNumeratorIntensities.Select(x => x.biorep).Distinct().Select(biorep => getSingleFoldChange(allIntensities.Where(kv => kv.Key.Item1 == induced_condition && kv.Key.Item2 == biorep).Select(kv => kv.Value).ToList<IBiorepIntensity>(), allIntensities.Where(kv => kv.Key.Item1 != induced_condition && kv.Key.Item2 == biorep).Select(kv => kv.Value).ToList<IBiorepIntensity>())).ToList();
+            tusher_statistic = new TusherStatistic(relative_difference, fold_change, biorep_foldchanges);
         }
 
         /// <summary>

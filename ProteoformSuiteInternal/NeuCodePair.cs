@@ -1,27 +1,43 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace ProteoformSuiteInternal
 {
-    public class NeuCodePair : Component
+    public class NeuCodePair 
+        : IFileIntensity, IAggregatable
     {
 
         #region Public Properties
 
+        public InputFile input_file { get; set; }
+        public string scan_range { get; set; }
+
         public Component neuCodeLight { get; set; }
         public Component neuCodeHeavy { get; set; }
-        public List<int> overlapping_charge_states { get; set; }
         public double intensity_ratio { get; set; }
+        public double intensity_sum { get; set; } //intensity sum for overlapping charge states -> determined when grouped into neucode pairs.
+
+        public List<ChargeState> charge_states { get; set; } // light charge states that had charge counts also observed for the heavy component
         public int lysine_count { get; set; }
+
+        public double weighted_monoisotopic_mass { get; set; }
+
+        public double rt_apex { get; set; }
+        public bool accepted { get; set; }
 
         #endregion Public Properties
 
         #region Public Constructors
 
-        public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) 
-            : base(neuCodeLight)
+        public NeuCodePair(Component neuCodeLight, double light_intensity_sum_olcs, Component neuCodeHeavy, double heavy_intensity_sum_olcs, double mass_difference, HashSet<int> overlapping_charge_states, bool light_is_lower) 
         {
-            this.overlapping_charge_states = overlapping_charge_states;
+            this.scan_range = neuCodeLight.scan_range;
+            this.rt_apex = neuCodeLight.rt_apex;
+            this.input_file = neuCodeLight.input_file;
+            this.intensity_sum = light_intensity_sum_olcs;
+            this.charge_states = neuCodeLight.charge_states.Where(x => overlapping_charge_states.Contains(x.charge_count)).ToList();
+
             this.neuCodeLight = neuCodeLight;
             this.neuCodeHeavy = neuCodeHeavy;
 
@@ -31,26 +47,25 @@ namespace ProteoformSuiteInternal
                 neuCodeLight.weighted_monoisotopic_mass - (diff_integer + 1) * Lollipop.MONOISOTOPIC_UNIT_MASS;
 
             this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.NEUCODE_LYSINE_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
-            this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
-            this.neuCodeCorrection = Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            this.intensity_ratio = light_intensity_sum_olcs / heavy_intensity_sum_olcs; //ratio of overlapping charge states
+            double neuCodeCorrection = Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            this.weighted_monoisotopic_mass = neuCodeLight.weighted_monoisotopic_mass + neuCodeCorrection;
 
             //marking pair as accepted or not when it's created
             set_accepted();
-            calculate_properties();
         }
 
         public NeuCodePair()
         { }
 
-        public NeuCodePair(Component neucodeLight, Component neucodeHeavy): base(neucodeLight) 
-        {
-            this.neuCodeLight = neucodeLight;
-            this.neuCodeHeavy = neucodeHeavy;
-        }
-
         #endregion Public Constructors
 
         #region Public Methods
+
+        public static double calculate_sum_intensity_olcs(List<ChargeState> light_or_heavy_charge_states, HashSet<int> charges_to_sum)
+        {
+            return light_or_heavy_charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Sum(charge_state => charge_state.intensity);
+        }
 
         public void set_accepted()
         {

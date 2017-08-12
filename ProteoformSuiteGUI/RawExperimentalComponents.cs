@@ -99,7 +99,7 @@ namespace ProteoformSuiteGUI
             if (rb_displayQuantificationComponents.Checked && Sweet.lollipop.raw_quantification_components.Count > 0)
                 DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
 
-            DisplayComponent.FormatComponentsTable(dgv_rawComponents, true);
+            DisplayComponent.FormatComponentsTable(dgv_rawComponents);
 
             rtb_raw_components_counts.Text = ResultsSummaryGenerator.raw_components_report();
 

@@ -484,7 +484,7 @@ namespace Test
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
             Assert.AreEqual("T2", ((TheoreticalProteoform)rel.connected_proteoforms[1]).name);
-            Assert.AreEqual(0, ((ExperimentalProteoform)rel.connected_proteoforms[0]).aggregated_components.Count); //nothing aggregated with the basic constructor
+            Assert.AreEqual(0, ((ExperimentalProteoform)rel.connected_proteoforms[0]).aggregated.Count); //nothing aggregated with the basic constructor
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
             Assert.True(string.Equals("unmodified", ((TheoreticalProteoform)rel.connected_proteoforms[1]).ptm_description, StringComparison.CurrentCultureIgnoreCase));

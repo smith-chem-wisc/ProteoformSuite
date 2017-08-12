@@ -69,10 +69,8 @@ namespace ProteoformSuiteInternal
         {
             double i = allInduced.Sum(x => x.intensity_sum + normalization_subtractand);
             double u = allUninduced.Sum(x => x.intensity_sum + normalization_subtractand);
-            double max_sum = Math.Max(i, u);
-            double min_sum = Math.Min(i, u);
-            if (min_sum == 0) return 1000000m;
-            return (decimal)max_sum / (decimal)min_sum;
+            if (u == 0) return 1;
+            return (decimal)i / (decimal)u;
         }
 
         #endregion Public Methods
