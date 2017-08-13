@@ -81,7 +81,8 @@ namespace ProteoformSuiteInternal
         public List<Proteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
         {
             List<Proteoform> identified = new List<Proteoform>();
-            foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).Distinct().ToList())
+            //order by relation canddiate delta mass - observed delta mass. Null candidate ptmsets ordered last. 
+            foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).Distinct().OrderBy(r => r.candidate_ptmset != null ? Math.Abs(r.candidate_ptmset.mass - r.DeltaMass) : 1e6).ToList())
             {
                 //check for connected experimental
                 Proteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
