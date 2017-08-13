@@ -119,7 +119,7 @@ namespace ProteoformSuiteInternal
 
             //Continue looking for new experimental identifications until no more remain to be identified
             //order by experimentals with reltaions w/ delta mass closest to candidate theoretical delta mass (if no relations, order first. If no candidate ptmset for relation, order last. 
-            newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as ExperimentalProteoform) != null).OrderBy(p => p.relationships.Count > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 0)).ToList();
+            newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as ExperimentalProteoform) != null).OrderBy(p => p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 0)).ToList();
             last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {
