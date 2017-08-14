@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                         null); //Experimental or TD without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
                 //when form TD relations, already generate best candidate ptmset for relation
-                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
+                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak.possiblePeakAssignments.Where(p => Math.Sign(p.mass) == Math.Sign(deltaM)).ToList() , deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
@@ -252,13 +252,6 @@ namespace ProteoformSuiteInternal
 
             if (e.linked_proteoform_references == null)
             {
-                //reset in case previously set as true...
-                if (e as ExperimentalProteoform != null) (e as ExperimentalProteoform).adduct = false;
-                //if change only has suflate adducts, acetone artifacts, or SDS adducts, mark the experimental as an adduct
-                if (e as ExperimentalProteoform != null && change != null && change.ptm_combination.Count != 0 && change.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
-                {
-                    (e as ExperimentalProteoform).adduct = true;
-                }
                 e.linked_proteoform_references = new List<Proteoform>(this.linked_proteoform_references);
                 e.linked_proteoform_references.Add(this);
                 e.ptm_set = set;
