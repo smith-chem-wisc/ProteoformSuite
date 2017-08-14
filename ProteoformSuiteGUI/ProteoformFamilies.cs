@@ -122,18 +122,16 @@ namespace ProteoformSuiteGUI
         {
             rtb_proteoformFamilyResults.Text = ResultsSummaryGenerator.proteoform_families_report();
 
+            cmbx_tableSelector.Items.Clear();
+            cmbx_tableSelector.Items.AddRange(table_names);
             //change selected table names based on # decoy communities
             int decoy_communities = Sweet.lollipop.decoy_proteoform_communities.Count;
             for(int i = 0; i < decoy_communities; i++)
             {
                if (!cmbx_tableSelector.Items.Contains("Decoy Community " + i)) cmbx_tableSelector.Items.Add("Decoy Community " + i);
             }
-
-            //if more items than decoy databases, remove later ones //FIX   
-            while(cmbx_tableSelector.Items.Count - 5 - decoy_communities > 0)
-            {
-                cmbx_tableSelector.Items.RemoveAt(5 + decoy_communities);
-            }
+            cmbx_tableSelector.SelectedIndex = 0;
+           
         }
 
         #endregion Public Methods

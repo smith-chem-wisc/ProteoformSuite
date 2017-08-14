@@ -33,12 +33,12 @@
             this.dgv_identified_experimentals = new System.Windows.Forms.DataGridView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.dgv_same_topdown_id = new System.Windows.Forms.DataGridView();
-            this.dgv_other_topdown_ids = new System.Windows.Forms.DataGridView();
-            this.dgv_bottom_up_peptides = new System.Windows.Forms.DataGridView();
             this.tb_etd = new System.Windows.Forms.TextBox();
+            this.dgv_same_topdown_id = new System.Windows.Forms.DataGridView();
             this.tb_other_td = new System.Windows.Forms.TextBox();
+            this.dgv_other_topdown_ids = new System.Windows.Forms.DataGridView();
             this.tb_bottom_up = new System.Windows.Forms.TextBox();
+            this.dgv_bottom_up_peptides = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -125,39 +125,6 @@
             this.splitContainer3.SplitterDistance = 237;
             this.splitContainer3.TabIndex = 0;
             // 
-            // dgv_same_topdown_id
-            // 
-            this.dgv_same_topdown_id.AllowUserToAddRows = false;
-            this.dgv_same_topdown_id.AllowUserToDeleteRows = false;
-            this.dgv_same_topdown_id.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_same_topdown_id.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dgv_same_topdown_id.Location = new System.Drawing.Point(0, 26);
-            this.dgv_same_topdown_id.Name = "dgv_same_topdown_id";
-            this.dgv_same_topdown_id.Size = new System.Drawing.Size(790, 211);
-            this.dgv_same_topdown_id.TabIndex = 0;
-            // 
-            // dgv_other_topdown_ids
-            // 
-            this.dgv_other_topdown_ids.AllowUserToAddRows = false;
-            this.dgv_other_topdown_ids.AllowUserToDeleteRows = false;
-            this.dgv_other_topdown_ids.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_other_topdown_ids.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dgv_other_topdown_ids.Location = new System.Drawing.Point(0, 23);
-            this.dgv_other_topdown_ids.Name = "dgv_other_topdown_ids";
-            this.dgv_other_topdown_ids.Size = new System.Drawing.Size(790, 168);
-            this.dgv_other_topdown_ids.TabIndex = 0;
-            // 
-            // dgv_bottom_up_peptides
-            // 
-            this.dgv_bottom_up_peptides.AllowUserToAddRows = false;
-            this.dgv_bottom_up_peptides.AllowUserToDeleteRows = false;
-            this.dgv_bottom_up_peptides.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_bottom_up_peptides.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dgv_bottom_up_peptides.Location = new System.Drawing.Point(0, 25);
-            this.dgv_bottom_up_peptides.Name = "dgv_bottom_up_peptides";
-            this.dgv_bottom_up_peptides.Size = new System.Drawing.Size(790, 198);
-            this.dgv_bottom_up_peptides.TabIndex = 0;
-            // 
             // tb_etd
             // 
             this.tb_etd.Dock = System.Windows.Forms.DockStyle.Top;
@@ -166,6 +133,17 @@
             this.tb_etd.ReadOnly = true;
             this.tb_etd.Size = new System.Drawing.Size(790, 20);
             this.tb_etd.TabIndex = 1;
+            // 
+            // dgv_same_topdown_id
+            // 
+            this.dgv_same_topdown_id.AllowUserToAddRows = false;
+            this.dgv_same_topdown_id.AllowUserToDeleteRows = false;
+            this.dgv_same_topdown_id.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_same_topdown_id.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_same_topdown_id.Location = new System.Drawing.Point(0, 0);
+            this.dgv_same_topdown_id.Name = "dgv_same_topdown_id";
+            this.dgv_same_topdown_id.Size = new System.Drawing.Size(790, 237);
+            this.dgv_same_topdown_id.TabIndex = 0;
             // 
             // tb_other_td
             // 
@@ -176,6 +154,17 @@
             this.tb_other_td.Size = new System.Drawing.Size(790, 20);
             this.tb_other_td.TabIndex = 2;
             // 
+            // dgv_other_topdown_ids
+            // 
+            this.dgv_other_topdown_ids.AllowUserToAddRows = false;
+            this.dgv_other_topdown_ids.AllowUserToDeleteRows = false;
+            this.dgv_other_topdown_ids.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_other_topdown_ids.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_other_topdown_ids.Location = new System.Drawing.Point(0, 0);
+            this.dgv_other_topdown_ids.Name = "dgv_other_topdown_ids";
+            this.dgv_other_topdown_ids.Size = new System.Drawing.Size(790, 191);
+            this.dgv_other_topdown_ids.TabIndex = 0;
+            // 
             // tb_bottom_up
             // 
             this.tb_bottom_up.Dock = System.Windows.Forms.DockStyle.Top;
@@ -184,6 +173,17 @@
             this.tb_bottom_up.ReadOnly = true;
             this.tb_bottom_up.Size = new System.Drawing.Size(790, 20);
             this.tb_bottom_up.TabIndex = 3;
+            // 
+            // dgv_bottom_up_peptides
+            // 
+            this.dgv_bottom_up_peptides.AllowUserToAddRows = false;
+            this.dgv_bottom_up_peptides.AllowUserToDeleteRows = false;
+            this.dgv_bottom_up_peptides.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_bottom_up_peptides.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_bottom_up_peptides.Location = new System.Drawing.Point(0, 0);
+            this.dgv_bottom_up_peptides.Name = "dgv_bottom_up_peptides";
+            this.dgv_bottom_up_peptides.Size = new System.Drawing.Size(790, 223);
+            this.dgv_bottom_up_peptides.TabIndex = 0;
             // 
             // IdentifiedProteoforms
             // 
