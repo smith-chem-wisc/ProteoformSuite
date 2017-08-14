@@ -82,7 +82,6 @@ namespace ProteoformSuiteInternal
             return merge_families(seed, families);
         }
 
-
         public void identify_experimentals()
         {
 

@@ -242,6 +242,10 @@ namespace ProteoformSuiteGUI
             cb_useAveragePermutationFoldChange.Checked = Sweet.lollipop.useAveragePermutationFoldChange;
             cb_useAveragePermutationFoldChange.CheckedChanged += cb_useAveragePermutationFoldChange_CheckedChanged;
 
+            cb_useFoldChangeCutoff.CheckedChanged -= cb_useFoldChangeCutoff_CheckedChanged;
+            cb_useFoldChangeCutoff.Checked = Sweet.lollipop.useFoldChangeCutoff;
+            cb_useFoldChangeCutoff.CheckedChanged += cb_useFoldChangeCutoff_CheckedChanged;
+
             cb_useBiorepPermutationFoldChange.CheckedChanged -= cb_useBiorepPermutationFoldChange_CheckedChanged;
             cb_useBiorepPermutationFoldChange.Checked = Sweet.lollipop.useBiorepPermutationFoldChange;
             cb_useBiorepPermutationFoldChange.CheckedChanged += cb_useBiorepPermutationFoldChange_CheckedChanged;
@@ -278,7 +282,7 @@ namespace ProteoformSuiteGUI
 
             cmbx_foldChangeConjunction.SelectedIndexChanged -= cmbx_foldChangeConjunction_SelectedIndexChanged;
             cmbx_foldChangeConjunction.Items.AddRange(Lollipop.fold_change_conjunction_options);
-            cmbx_foldChangeConjunction.SelectedIndex = 0;
+            cmbx_foldChangeConjunction.SelectedIndex = Lollipop.fold_change_conjunction_options.ToList().IndexOf(Sweet.lollipop.fold_change_conjunction);
             cmbx_foldChangeConjunction.SelectedIndexChanged += cmbx_foldChangeConjunction_SelectedIndexChanged;
 
             cb_useAveragePermutationFoldChange.CheckedChanged -= cb_useAveragePermutationFoldChange_CheckedChanged;
@@ -830,7 +834,7 @@ namespace ProteoformSuiteGUI
 
         #region Permutation Fold Change Cutoff Methods
 
-        private void cb_usePermutationFoldChangeCutoff_CheckedChanged(object sender, EventArgs e)
+        private void cb_useFoldChangeCutoff_CheckedChanged(object sender, EventArgs e)
         {
             nud_foldChangeCutoff.Enabled = cb_useFoldChangeCutoff.Checked;
             cb_useAveragePermutationFoldChange.Enabled = cb_useFoldChangeCutoff.Checked;
@@ -840,6 +844,7 @@ namespace ProteoformSuiteGUI
             plots();
         }
 
+    
         private void nud_permutationFoldChangeCutoff_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.foldChangeCutoff = nud_foldChangeCutoff.Value;

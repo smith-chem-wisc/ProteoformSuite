@@ -45,6 +45,8 @@
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.cmbx_quantitativeValuesTableSelection = new System.Windows.Forms.ComboBox();
             this.nud_minObservations = new System.Windows.Forms.NumericUpDown();
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
@@ -146,8 +148,6 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.cmbx_quantitativeValuesTableSelection = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -311,6 +311,25 @@
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Minimum Required Observations";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(15, 43);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(176, 13);
+            this.label22.TabIndex = 16;
+            this.label22.Text = "Quantitative Values Table Selection";
+            // 
+            // cmbx_quantitativeValuesTableSelection
+            // 
+            this.cmbx_quantitativeValuesTableSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_quantitativeValuesTableSelection.FormattingEnabled = true;
+            this.cmbx_quantitativeValuesTableSelection.Location = new System.Drawing.Point(18, 61);
+            this.cmbx_quantitativeValuesTableSelection.Name = "cmbx_quantitativeValuesTableSelection";
+            this.cmbx_quantitativeValuesTableSelection.Size = new System.Drawing.Size(460, 21);
+            this.cmbx_quantitativeValuesTableSelection.TabIndex = 15;
+            this.cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_quantitativeValuesTableSelection_SelectedIndexChanged);
             // 
             // nud_minObservations
             // 
@@ -927,7 +946,7 @@
             this.cb_useFoldChangeCutoff.TabIndex = 16;
             this.cb_useFoldChangeCutoff.Text = "Fold Change:";
             this.cb_useFoldChangeCutoff.UseVisualStyleBackColor = true;
-            this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_usePermutationFoldChangeCutoff_CheckedChanged);
+            this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_useFoldChangeCutoff_CheckedChanged);
             // 
             // cb_significanceByPermutation
             // 
@@ -1703,25 +1722,6 @@
             this.cmbx_colorScheme.Size = new System.Drawing.Size(200, 21);
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(15, 43);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(176, 13);
-            this.label22.TabIndex = 16;
-            this.label22.Text = "Quantitative Values Table Selection";
-            // 
-            // cmbx_quantitativeValuesTableSelection
-            // 
-            this.cmbx_quantitativeValuesTableSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_quantitativeValuesTableSelection.FormattingEnabled = true;
-            this.cmbx_quantitativeValuesTableSelection.Location = new System.Drawing.Point(18, 61);
-            this.cmbx_quantitativeValuesTableSelection.Name = "cmbx_quantitativeValuesTableSelection";
-            this.cmbx_quantitativeValuesTableSelection.Size = new System.Drawing.Size(460, 21);
-            this.cmbx_quantitativeValuesTableSelection.TabIndex = 15;
-            this.cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_quantitativeValuesTableSelection_SelectedIndexChanged);
             // 
             // Quantification
             // 
