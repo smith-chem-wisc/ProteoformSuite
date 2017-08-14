@@ -73,9 +73,9 @@ namespace ProteoformSuiteGUI
         {
             ExperimentalProteoform selected_experimental = (ExperimentalProteoform)((DisplayObject)this.dgv_identified_experimentals.Rows[row_index].DataBoundItem).display_object;
             DisplayUtility.FillDataGridView(dgv_same_topdown_id, selected_experimental.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownExperimental).Select(r => r.connected_proteoforms[0]).Select(t => new DisplayTopDownProteoform(t as TopDownProteoform)));
-            DisplayUtility.FillDataGridView(dgv_other_topdown_ids, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t =>  t.gene_name == selected_experimental.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
+            DisplayUtility.FillDataGridView(dgv_other_topdown_ids, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == selected_experimental.gene_name.get_prefered_name(Lollipop.preferred_gene_label) && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
                 Math.Abs(t.modified_mass - selected_experimental.modified_mass) < (double)Sweet.lollipop.mass_tolerance).Select(t => new DisplayTopDownProteoform(t)));
-            DisplayUtility.FillDataGridView(dgv_bottom_up_peptides, selected_experimental.family.theoretical_proteoforms.Where(t => t.gene_name == selected_experimental.gene_name).SelectMany(t => t.psm_list).Select(t => new DisplayBottomUpPSM(t)));
+            DisplayUtility.FillDataGridView(dgv_bottom_up_peptides, selected_experimental.family.theoretical_proteoforms.Where(t => t.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == selected_experimental.gene_name.get_prefered_name(Lollipop.preferred_gene_label)).SelectMany(t => t.psm_list).Select(t => new DisplayBottomUpPSM(t)));
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_other_topdown_ids);
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_same_topdown_id);
             DisplayBottomUpPSM.FormatTopDownProteoformTable(dgv_bottom_up_peptides);
