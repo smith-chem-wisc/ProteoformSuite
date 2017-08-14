@@ -24,7 +24,7 @@ namespace ProteoformSuiteInternal
         public void GO_analysis(List<ProteinWithGoTerms> inducedOrRepressedProteins)
         {
             List<ProteinWithGoTerms> backgroundProteinsForGoAnalysis;
-            if (backgroundProteinsList != null && backgroundProteinsList != "")
+            if (backgroundProteinsList != null && backgroundProteinsList != "" && File.Exists(backgroundProteinsList))
             {
                 string[] protein_accessions = File.ReadAllLines(backgroundProteinsList).Select(acc => acc.Trim()).ToArray();
                 backgroundProteinsForGoAnalysis = Sweet.lollipop.theoretical_database.expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc.Split('_')[0]))).DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList();

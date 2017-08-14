@@ -58,13 +58,23 @@ namespace ProteoformSuiteInternal
 
         public void merge_families(List<ProteoformFamily> families)
         {
-            IEnumerable<ProteoformFamily> gene_family =
-                    from f in families
-                    from n in gene_names.Select(g => g.get_prefered_name(Lollipop.preferred_gene_label)).Distinct()
-                    where f.gene_names.Select(g => g.get_prefered_name(Lollipop.preferred_gene_label)).Contains(n)
-                    select f;
+            List<ProteoformFamily> gene_family = merge_families(new List<ProteoformFamily> { this }, new List<ProteoformFamily>(families));
             proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms))).ToList();
             separate_proteoforms();
+        }
+
+        public List<ProteoformFamily> merge_families(List<ProteoformFamily> seed, List<ProteoformFamily> families)
+        {
+            IEnumerable<ProteoformFamily> gene_expansion =
+                (from f in families
+                from n in seed.SelectMany(s => s.gene_names.Select(g => g.get_prefered_name(Lollipop.preferred_gene_label))).Distinct()
+                where f.gene_names.Select(g => g.get_prefered_name(Lollipop.preferred_gene_label)).Contains(n)
+                select f)
+                .ToList().Except(seed);
+
+            if (gene_expansion.Count() == 0) return seed;
+            seed.AddRange(gene_expansion);
+            return merge_families(seed, families);
         }
 
         public void identify_experimentals()
