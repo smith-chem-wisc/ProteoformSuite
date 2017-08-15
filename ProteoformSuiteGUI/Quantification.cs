@@ -318,9 +318,9 @@ namespace ProteoformSuiteGUI
             rb_allTheoreticalProteins.Checked = get_go_analysis().GoAnalysis.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             rb_allTheoreticalProteins.Enabled = true;
 
-            cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed;
+            cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed_quant;
             nud_foldChangeCutoff.Enabled = Sweet.lollipop.useFoldChangeCutoff;
-            nud_randomSeed.Enabled = Sweet.lollipop.useRandomSeed;
+            nud_randomSeed.Enabled = Sweet.lollipop.useRandomSeed_quant;
 
             rb_quantifiedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
             rb_detectedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
@@ -388,12 +388,12 @@ namespace ProteoformSuiteGUI
         private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
         {
             nud_randomSeed.Enabled = cb_useRandomSeed.Checked;
-            Sweet.lollipop.useRandomSeed = cb_useRandomSeed.Checked;
+            Sweet.lollipop.useRandomSeed_quant = cb_useRandomSeed.Checked;
         }
 
         private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.randomSeed = Convert.ToInt32(nud_randomSeed.Value);
+            Sweet.lollipop.randomSeed_quant = Convert.ToInt32(nud_randomSeed.Value);
         }
 
         #endregion Quantification Private Methods

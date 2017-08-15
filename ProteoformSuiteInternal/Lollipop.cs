@@ -149,12 +149,6 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = true;
         public double raw_component_mass_tolerance = 10;
-        public int unprocessed_exp_components = 0;
-        public int unprocessed_quant_components = 0;
-        public int missed_mono_merges_exp = 0;
-        public int missed_mono_merges_quant = 0;
-        public int harmonic_merges_exp = 0;
-        public int harmonic_merges_quant = 0;
 
         #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
 
@@ -535,6 +529,8 @@ namespace ProteoformSuiteInternal
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
+        public bool useRandomSeed_decoys = false;
+        public int randomSeed_decoys = 1;
 
         #endregion THEORETICAL DATABASE Public Fields
 
@@ -754,8 +750,8 @@ namespace ProteoformSuiteInternal
         // Imputation
         public decimal backgroundShift = -1.8m;
         public decimal backgroundWidth = 0.5m;
-        public bool useRandomSeed = false;
-        public int randomSeed = 1;
+        public bool useRandomSeed_quant = false;
+        public int randomSeed_quant = 1;
 
         // Log2FC statistics
         public Log2FoldChangeAnalysis Log2FoldChangeAnalysis = new Log2FoldChangeAnalysis();
@@ -796,8 +792,8 @@ namespace ProteoformSuiteInternal
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
 
-            if (useRandomSeed)
-                seeded = new Random(randomSeed);
+            if (useRandomSeed_quant)
+                seeded = new Random(randomSeed_quant);
 
             computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
