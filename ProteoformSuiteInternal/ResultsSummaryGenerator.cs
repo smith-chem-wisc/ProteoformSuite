@@ -114,13 +114,13 @@ namespace ProteoformSuiteInternal
         {
             string report = "";
 
-            report += Sweet.lollipop.raw_experimental_components.Count.ToString() + "\tRaw Experimental Components" + Environment.NewLine;
             report += Sweet.lollipop.unprocessed_exp_components.ToString() + "\tUnprocessed Raw Experimental Components" + Environment.NewLine;
+            report += Sweet.lollipop.raw_experimental_components.Count.ToString() + "\tRaw Experimental Components" + Environment.NewLine;
             report += Sweet.lollipop.missed_mono_merges_exp.ToString() + "\tMissed Monoisotopic Raw Experimental Components Merged" + Environment.NewLine;
             report += Sweet.lollipop.harmonic_merges_exp.ToString() + "\tHarmonic Raw Experimental Components Merged" + Environment.NewLine;
             report += Environment.NewLine;
-            report += Sweet.lollipop.raw_quantification_components.Count.ToString() + "\tRaw Quantitative Components" + Environment.NewLine;
             report += Sweet.lollipop.unprocessed_quant_components.ToString() + "\tUnprocessed Raw Quantitative Components" + Environment.NewLine;
+            report += Sweet.lollipop.raw_quantification_components.Count.ToString() + "\tRaw Quantitative Components" + Environment.NewLine;
             report += Sweet.lollipop.missed_mono_merges_quant.ToString() + "\tMissed Monoisotopic Raw Quantitative Components Merged" + Environment.NewLine;
             report += Sweet.lollipop.harmonic_merges_quant.ToString() + "\tHarmonic Raw Quantitative Components Merged" + Environment.NewLine;
             report += Environment.NewLine;
@@ -231,6 +231,8 @@ namespace ProteoformSuiteInternal
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant_relative_difference).ToString() + "\tExperimental Proteoforms with Significant Change by Relative Difference " + tusher_significance_parenthetical + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant_fold_change).ToString() + "\tExperimental Proteoforms with Significant Change by Fold Change " + tusher_significance_parenthetical + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis1.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion " + tusher_significance_parenthetical + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
@@ -241,6 +243,8 @@ namespace ProteoformSuiteInternal
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues2.significant).ToString() + "\tExperimental Proteoforms with Significant Change" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues2.significant_relative_difference).ToString() + "\tExperimental Proteoforms with Significant Change by Relative Difference " + tusher_significance_parenthetical + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues2.significant_fold_change).ToString() + "\tExperimental Proteoforms with Significant Change by Fold Change " + tusher_significance_parenthetical + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.TusherAnalysis2.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion " + tusher_significance_parenthetical + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis2 as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformFoldChange, Sweet.lollipop.TusherAnalysis2.GoAnalysis.maxGoTermFDR, Sweet.lollipop.TusherAnalysis2.GoAnalysis.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;

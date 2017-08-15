@@ -14,6 +14,8 @@ namespace ProteoformSuiteInternal
         public decimal denominatorIntensitySum { get; set; } = 0;
         public decimal scatter { get; set; } = 0;
         public bool significant { get; set; } = false;
+        public bool significant_relative_difference { get; set; } = false;
+        public bool significant_fold_change { get; set; } = false;
         public decimal relative_difference { get; set; }
         public decimal fold_change { get; set; }
         public TusherStatistic tusher_statistic { get; set; }

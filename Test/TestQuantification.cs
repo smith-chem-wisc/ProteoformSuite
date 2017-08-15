@@ -1394,118 +1394,124 @@ namespace Test
         public void tusher_relative_difference_test_conditions()
         {
             Sweet.lollipop = new Lollipop();
+            bool is_passing_relative_difference;
+            bool is_passing_fold_change;
 
             // relative difference passes negative easily
             TusherStatistic stat1 = new TusherStatistic(-3, 1, new List<decimal>());
-            Assert.IsTrue(stat1.is_passing_real(-2, 4, "AND", false, 1, false, false, 1));
-            Assert.IsTrue(stat1.is_passing_permutation(-2, 4, "AND", false, 1, false, false, 1));
+            Assert.IsTrue(stat1.is_passing_real(-2, 4, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat1.is_passing_permutation(-2, 4, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // relative difference passes positive easily
             TusherStatistic stat2 = new TusherStatistic(3, 1, new List<decimal>());
-            Assert.IsTrue(stat2.is_passing_real(-4, 2, "AND", false, 1, false, false, 1));
-            Assert.IsTrue(stat2.is_passing_permutation(-4, 2, "AND", false, 1, false, false, 1));
+            Assert.IsTrue(stat2.is_passing_real(-4, 2, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat2.is_passing_permutation(-4, 2, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // relative difference edge case negative
             TusherStatistic stat3 = new TusherStatistic(-3, 1, new List<decimal>());
-            Assert.IsTrue(stat3.is_passing_real(-3, 4, "AND", false, 1, false, false, 1));
-            Assert.IsFalse(stat3.is_passing_permutation(-3, 4, "AND", false, 1, false, false, 1));
+            Assert.IsTrue(stat3.is_passing_real(-3, 4, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat3.is_passing_permutation(-3, 4, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // relative difference edge case positive
             TusherStatistic stat4 = new TusherStatistic(3, 1, new List<decimal>());
-            Assert.IsTrue(stat4.is_passing_real(-4, 3, "AND", false, 1, false, false, 1));
-            Assert.IsFalse(stat4.is_passing_permutation(-4, 3, "AND", false, 1, false, false, 1));
+            Assert.IsTrue(stat4.is_passing_real(-4, 3, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat4.is_passing_permutation(-4, 3, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // relative difference not passing negative easily
             TusherStatistic stat5 = new TusherStatistic(-3, 1, new List<decimal>());
-            Assert.IsFalse(stat5.is_passing_real(-4, 2, "AND", false, 1, false, false, 1));
-            Assert.IsFalse(stat5.is_passing_permutation(-4, 2, "AND", false, 1, false, false, 1));
+            Assert.IsFalse(stat5.is_passing_real(-4, 2, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat5.is_passing_permutation(-4, 2, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // relative difference not passing positive easily
             TusherStatistic stat6 = new TusherStatistic(3, 1, new List<decimal>());
-            Assert.IsFalse(stat6.is_passing_real(-2, 4, "AND", false, 1, false, false, 1));
-            Assert.IsFalse(stat6.is_passing_permutation(-2, 4, "AND", false, 1, false, false, 1));
+            Assert.IsFalse(stat6.is_passing_real(-2, 4, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat6.is_passing_permutation(-2, 4, "AND", false, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
         }
 
         [Test]
         public void tusher_averagefoldchange_test_conditions()
         {
             Sweet.lollipop = new Lollipop();
+            bool is_passing_relative_difference;
+            bool is_passing_fold_change;
 
             // relative difference and fold change pass easily
             TusherStatistic stat1 = new TusherStatistic(-3, 2, new List<decimal>());
-            Assert.IsTrue(stat1.is_passing_real(-2, 4, "AND", true, 1, true, false, 1));
-            Assert.IsTrue(stat1.is_passing_permutation(-2, 4, "AND", true, 1, true, false, 1));
+            Assert.IsTrue(stat1.is_passing_real(-2, 4, "AND", true, 1, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat1.is_passing_permutation(-2, 4, "AND", true, 1, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // relative difference passes; fold change does not
             TusherStatistic stat2 = new TusherStatistic(-3, 2, new List<decimal>());
-            Assert.IsFalse(stat2.is_passing_real(-2, 4, "AND", true, 3, true, false, 1));
-            Assert.IsFalse(stat2.is_passing_permutation(-2, 4, "AND", true, 3, true, false, 1));
+            Assert.IsFalse(stat2.is_passing_real(-2, 4, "AND", true, 3, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat2.is_passing_permutation(-2, 4, "AND", true, 3, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // useaverage not marked
             TusherStatistic stat3 = new TusherStatistic(-3, 2, new List<decimal>());
-            Assert.IsFalse(stat3.is_passing_real(-2, 4, "AND", true, 1, false, false, 1));
-            Assert.IsFalse(stat3.is_passing_permutation(-2, 4, "AND", true, 1, false, false, 1));
+            Assert.IsFalse(stat3.is_passing_real(-2, 4, "AND", true, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat3.is_passing_permutation(-2, 4, "AND", true, 1, false, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // passing fold change, not passing rel diff, passes with or
             TusherStatistic stat4 = new TusherStatistic(-3, 2, new List<decimal>());
-            Assert.IsTrue(stat4.is_passing_real(-4, 2, "OR", true, 1, true, false, 1));
-            Assert.IsTrue(stat4.is_passing_permutation(-4, 2, "OR", true, 1, true, false, 1));
+            Assert.IsTrue(stat4.is_passing_real(-4, 2, "OR", true, 1, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat4.is_passing_permutation(-4, 2, "OR", true, 1, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // passing rel diff, not passing fold change, passes with or
             TusherStatistic stat5 = new TusherStatistic(-3, 2, new List<decimal>());
-            Assert.IsTrue(stat5.is_passing_real(-2, 4, "OR", true, 3, true, false, 1));
-            Assert.IsTrue(stat5.is_passing_permutation(-2, 4, "OR", true, 3, true, false, 1));
+            Assert.IsTrue(stat5.is_passing_real(-2, 4, "OR", true, 3, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat5.is_passing_permutation(-2, 4, "OR", true, 3, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
 
             // neither passing, doesn't pass with or
             TusherStatistic stat6 = new TusherStatistic(-3, 2, new List<decimal>());
-            Assert.IsFalse(stat6.is_passing_real(-4, 2, "OR", true, 3, true, false, 1));
-            Assert.IsFalse(stat6.is_passing_permutation(-4, 2, "OR", true, 3, true, false, 1));
+            Assert.IsFalse(stat6.is_passing_real(-4, 2, "OR", true, 3, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat6.is_passing_permutation(-4, 2, "OR", true, 3, true, false, 1, out is_passing_relative_difference, out is_passing_fold_change));
         }
 
         [Test]
         public void tusher_biorepfoldchange_test_conditions()
         {
             Sweet.lollipop = new Lollipop();
+            bool is_passing_relative_difference;
+            bool is_passing_fold_change;
 
             // sufficient passing bioreps and passing rel diff passes
             TusherStatistic stat1 = new TusherStatistic(-3, 0, new List<decimal> { 3, 3, 1 });
-            Assert.IsTrue(stat1.is_passing_real(-2, 4, "AND", true, 2, false, true, 2));
-            Assert.IsTrue(stat1.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2));
+            Assert.IsTrue(stat1.is_passing_real(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat1.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // insufficient passing bioreps
             TusherStatistic stat2 = new TusherStatistic(-3, 0, new List<decimal> { 3, 1, 1 });
-            Assert.IsFalse(stat2.is_passing_real(-2, 4, "AND", true, 2, false, true, 2));
-            Assert.IsFalse(stat2.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2));
+            Assert.IsFalse(stat2.is_passing_real(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat2.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // insufficient passing bioreps with passing average doesn't pass
             TusherStatistic stat3 = new TusherStatistic(-3, 3, new List<decimal> { 3, 1, 1 });
-            Assert.IsFalse(stat3.is_passing_real(-2, 4, "AND", true, 2, false, true, 2));
-            Assert.IsFalse(stat3.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2));
+            Assert.IsFalse(stat3.is_passing_real(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat3.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // usebioreps not marked
             TusherStatistic stat4 = new TusherStatistic(-3, 0, new List<decimal> { 3, 3, 1 });
-            Assert.IsFalse(stat4.is_passing_real(-2, 4, "AND", true, 2, false, false, 2));
-            Assert.IsFalse(stat4.is_passing_permutation(-2, 4, "AND", true, 2, false, false, 2));
+            Assert.IsFalse(stat4.is_passing_real(-2, 4, "AND", true, 2, false, false, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat4.is_passing_permutation(-2, 4, "AND", true, 2, false, false, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // passing rel diff, but not fold change, passes with or
             TusherStatistic stat5 = new TusherStatistic(-3, 0, new List<decimal> { 3, 1, 1 });
-            Assert.IsTrue(stat5.is_passing_real(-2, 4, "OR", true, 2, false, true, 2));
-            Assert.IsTrue(stat5.is_passing_permutation(-2, 4, "OR", true, 2, false, true, 2));
+            Assert.IsTrue(stat5.is_passing_real(-2, 4, "OR", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat5.is_passing_permutation(-2, 4, "OR", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // passing fold chasnge, but not rel diff, passes with or
             TusherStatistic stat6 = new TusherStatistic(-3, 0, new List<decimal> { 3, 3, 1 });
-            Assert.IsTrue(stat6.is_passing_real(-4, 2, "OR", true, 2, false, true, 2));
-            Assert.IsTrue(stat6.is_passing_permutation(-4, 2, "OR", true, 2, false, true, 2));
+            Assert.IsTrue(stat6.is_passing_real(-4, 2, "OR", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsTrue(stat6.is_passing_permutation(-4, 2, "OR", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // neither passing, doesn't pass with or
             TusherStatistic stat7 = new TusherStatistic(-3, 0, new List<decimal> { 3, 1, 1 });
-            Assert.IsFalse(stat7.is_passing_real(-4, 2, "OR", true, 2, false, true, 2));
-            Assert.IsFalse(stat7.is_passing_permutation(-4, 2, "OR", true, 2, false, true, 2));
+            Assert.IsFalse(stat7.is_passing_real(-4, 2, "OR", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat7.is_passing_permutation(-4, 2, "OR", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
 
             // sufficient passing on either side of 1 doesn't count as passing
             TusherStatistic stat8 = new TusherStatistic(-3, 0, new List<decimal> { 3, 0.25m, 1 });
-            Assert.IsFalse(stat8.is_passing_real(-2, 4, "AND", true, 2, false, true, 2));
-            Assert.IsFalse(stat8.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2));
+            Assert.IsFalse(stat8.is_passing_real(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
+            Assert.IsFalse(stat8.is_passing_permutation(-2, 4, "AND", true, 2, false, true, 2, out is_passing_relative_difference, out is_passing_fold_change));
         }
     }
 }

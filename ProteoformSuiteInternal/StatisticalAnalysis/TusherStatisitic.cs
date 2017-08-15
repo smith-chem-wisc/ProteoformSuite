@@ -27,28 +27,29 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public bool is_passing_real(decimal minimumPassingNegativeTestStatistic, decimal minimumPassingPositiveTestStatisitic, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange)
+        public bool is_passing_real(decimal minimumPassingNegativeTestStatistic, decimal minimumPassingPositiveTestStatisitic, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange, out bool is_passing_relative_difference, out bool is_passing_fold_change)
         {
-            bool passing_relative_difference = relative_difference <= minimumPassingNegativeTestStatistic && relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= relative_difference && relative_difference >= 0;
-            return is_passing(passing_relative_difference, andOrUseFoldChange, useFoldChangeCutoff, foldChangeCutoff, useAverageFoldChangeCutoff, useBiorepFoldChangeCutoff, minBiorepsWithFoldChange);
+            is_passing_relative_difference = relative_difference <= minimumPassingNegativeTestStatistic && relative_difference <= 0 || minimumPassingPositiveTestStatisitic <= relative_difference && relative_difference >= 0;
+            return is_passing(is_passing_relative_difference, andOrUseFoldChange, useFoldChangeCutoff, foldChangeCutoff, useAverageFoldChangeCutoff, useBiorepFoldChangeCutoff, minBiorepsWithFoldChange, out is_passing_fold_change);
         }
 
-        public bool is_passing_permutation(decimal minimumPassingNegativeTestStatistic, decimal minimumPassingPositiveTestStatisitic, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange)
+        public bool is_passing_permutation(decimal minimumPassingNegativeTestStatistic, decimal minimumPassingPositiveTestStatisitic, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange, out bool is_passing_relative_difference, out bool is_passing_fold_change)
         {
-            bool passing_relative_difference = relative_difference < minimumPassingNegativeTestStatistic && relative_difference <= 0 || minimumPassingPositiveTestStatisitic < relative_difference && relative_difference >= 0;
-            return is_passing(passing_relative_difference, andOrUseFoldChange, useFoldChangeCutoff, foldChangeCutoff, useAverageFoldChangeCutoff, useBiorepFoldChangeCutoff, minBiorepsWithFoldChange);
+            is_passing_relative_difference = relative_difference < minimumPassingNegativeTestStatistic && relative_difference <= 0 || minimumPassingPositiveTestStatisitic < relative_difference && relative_difference >= 0;
+            return is_passing(is_passing_relative_difference, andOrUseFoldChange, useFoldChangeCutoff, foldChangeCutoff, useAverageFoldChangeCutoff, useBiorepFoldChangeCutoff, minBiorepsWithFoldChange, out is_passing_fold_change);
         }
 
         #endregion Public Methods
 
         #region Private Method
 
-        private bool is_passing(bool passing_relative_difference, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange)
+        private bool is_passing(bool passing_relative_difference, string andOrUseFoldChange, bool useFoldChangeCutoff, decimal foldChangeCutoff, bool useAverageFoldChangeCutoff, bool useBiorepFoldChangeCutoff, int minBiorepsWithFoldChange, out bool is_passing_fold_change)
         {
             bool passing_average_foldchange = useAverageFoldChangeCutoff && (fold_change >= 1 && fold_change > foldChangeCutoff || fold_change < 1 && (decimal)Math.Pow((double)fold_change, -1) > foldChangeCutoff);
             bool passing_biorep_foldchange = useBiorepFoldChangeCutoff && 
                 (biorep_fold_changes.Count(fold_change => fold_change >= 1 && fold_change > foldChangeCutoff) >= minBiorepsWithFoldChange
                 || biorep_fold_changes.Count(fold_change => fold_change < 1 && fold_change > 0 && (decimal)Math.Pow((double)fold_change, -1) > foldChangeCutoff) >= minBiorepsWithFoldChange);
+            is_passing_fold_change = passing_average_foldchange || passing_biorep_foldchange;
             return
                 passing_relative_difference && (!useFoldChangeCutoff || andOrUseFoldChange == "AND" && (passing_average_foldchange || passing_biorep_foldchange))
                 || useFoldChangeCutoff && andOrUseFoldChange == "OR" && (passing_relative_difference || passing_average_foldchange || passing_biorep_foldchange);
