@@ -80,10 +80,10 @@ namespace ProteoformSuiteInternal
             decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
 
-            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v.is_passing_permutation(minimumNegativePassingTestStatistic, minimumPositivePassingTestStatistic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange));
+            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v.is_passing_permutation(minimumNegativePassingTestStatistic, minimumPositivePassingTestStatistic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange, out bool a, out bool b));
             decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
-            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat.is_passing_real(minimumNegativePassingTestStatistic, minimumPositivePassingTestStatistic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange));
+            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat.is_passing_real(minimumNegativePassingTestStatistic, minimumPositivePassingTestStatistic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange, out bool a, out bool b));
 
             decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
             return fdr;
