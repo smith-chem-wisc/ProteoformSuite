@@ -27,12 +27,12 @@ namespace ProteoformSuiteInternal
 
             significant = false;
             numeratorOriginalIntensities = intensities.Where(b => b.condition == numerator_condition).Select(x => new BiorepTechrepIntensity(x.imputed, x.biorep, x.condition, x.techrep, x.intensity_sum)).ToList(); // normalized, so create new objects
-            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition], Sweet.lollipop.useRandomSeed, seeded);
+            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition], Sweet.lollipop.useRandomSeed_quant, seeded);
             numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
             denominatorOriginalIntensities = intensities.Where(b => b.condition == denominator_condition).Select(x => new BiorepTechrepIntensity(x.imputed, x.biorep, x.condition, x.techrep, x.intensity_sum)).ToList(); // normalized, so create new objects
-            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition], Sweet.lollipop.useRandomSeed, seeded);
+            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition], Sweet.lollipop.useRandomSeed_quant, seeded);
             denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
 

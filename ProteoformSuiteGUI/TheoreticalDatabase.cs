@@ -379,5 +379,14 @@ namespace ProteoformSuiteGUI
 
         #endregion Modification Names Private Methods
 
+        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.useRandomSeed_decoys = cb_useRandomSeed.Checked;
+        }
+
+        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
+        }
     }
 }

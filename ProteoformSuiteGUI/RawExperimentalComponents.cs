@@ -56,12 +56,10 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.raw_experimental_components.Clear();
             Sweet.lollipop.raw_quantification_components.Clear();
-            Sweet.lollipop.unprocessed_exp_components = 0;
-            Sweet.lollipop.unprocessed_quant_components = 0;
-            Sweet.lollipop.missed_mono_merges_exp = 0;
-            Sweet.lollipop.missed_mono_merges_quant = 0;
-            Sweet.lollipop.harmonic_merges_exp = 0;
-            Sweet.lollipop.harmonic_merges_quant = 0;
+            foreach (InputFile f in Sweet.lollipop.input_files)
+            {
+                f.reader.Clear();
+            }
 
             if (clear_following_forms)
             {

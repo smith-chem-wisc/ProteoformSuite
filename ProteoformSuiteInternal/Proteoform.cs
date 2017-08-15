@@ -94,7 +94,7 @@ namespace ProteoformSuiteInternal
                         null); //Experimental without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
 
-                List<PtmSet> possible_additions = r.peak.possiblePeakAssignments.Where(p => Math.Sign(p.mass) == Math.Sign(deltaM)).ToList();
+                List<PtmSet> possible_additions = r.peak.possiblePeakAssignments.Where(p => Math.Abs(p.mass - deltaM) <= 1).ToList(); // EE relations have PtmSets around both positive and negative deltaM, so remove the ones around the opposite of the deltaM of interest
                 PtmSet best_addition = generate_possible_added_ptmsets(possible_additions, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();

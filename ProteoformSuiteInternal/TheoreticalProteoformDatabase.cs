@@ -434,7 +434,8 @@ namespace ProteoformSuiteInternal
                 string giantProtein = GetOneGiantProtein(expanded_proteins, Sweet.lollipop.methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
                 Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);
-                new Random().Shuffle(shuffled_proteins); //randomize order of protein array
+                Random decoy_rng = Sweet.lollipop.useRandomSeed_decoys ? new Random(decoyNumber + Sweet.lollipop.randomSeed_decoys) : new Random(); // each decoy database needs to have a new random number generator
+                decoy_rng.Shuffle(shuffled_proteins); //randomize order of protein array
 
                 int prevLength = 0;
                 Parallel.ForEach(shuffled_proteins, p =>

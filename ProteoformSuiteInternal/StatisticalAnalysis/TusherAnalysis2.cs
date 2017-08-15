@@ -21,7 +21,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
-                eP.quant.TusherValues2.impute_biorep_intensities(eP.biorepTechrepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange, Sweet.lollipop.useRandomSeed, Sweet.lollipop.seeded);
+                eP.quant.TusherValues2.impute_biorep_intensities(eP.biorepTechrepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange, Sweet.lollipop.useRandomSeed_quant, Sweet.lollipop.seeded);
             }
 
             if (define_histogram)
