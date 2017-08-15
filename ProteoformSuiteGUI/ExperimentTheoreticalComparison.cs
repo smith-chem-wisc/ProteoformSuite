@@ -64,6 +64,8 @@ namespace ProteoformSuiteGUI
             DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, false);
             GraphETRelations();
             GraphETPeaks();
+            if(cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            else ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
             cb_discoveryHistogram.Checked = false;
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
