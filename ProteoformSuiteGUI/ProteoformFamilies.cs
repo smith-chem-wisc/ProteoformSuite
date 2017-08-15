@@ -63,10 +63,6 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
-            tb_likelyCleavages.TextChanged -= tb_likelyCleavages_TextChanged;
-            tb_likelyCleavages.Text = String.Join(",", Sweet.lollipop.likely_cleavages);
-            tb_likelyCleavages.TextChanged += tb_likelyCleavages_TextChanged;
-
             initialize_every_time();
         }
 
@@ -389,11 +385,6 @@ namespace ProteoformSuiteGUI
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
-        }
-
-        private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.likely_cleavages = tb_likelyCleavages.Text.Split(',');
         }
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
