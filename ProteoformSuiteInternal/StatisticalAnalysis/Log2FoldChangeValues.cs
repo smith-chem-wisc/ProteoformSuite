@@ -10,7 +10,7 @@ namespace ProteoformSuiteInternal
 
         #region Fold Change Analysis Properties
 
-        public Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity> allBftIntensities { get; set; } // each bft corresponds to a file and condition
+        public Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity> allBftIntensities { get; set; } = new Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity>(); // each bft corresponds to a file and condition
         public List<double> log2FoldChanges = new List<double>();
         public double average_log2fc { get; set; } = 0;
         public double stdev_log2fc { get; set; } = 0;

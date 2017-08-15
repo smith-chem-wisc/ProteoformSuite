@@ -53,13 +53,22 @@ namespace ProteoformSuiteInternal
                 peak_relation_group_count >= Sweet.lollipop.min_peak_count_et :
                 peak_relation_group_count >= Sweet.lollipop.min_peak_count_ee;
 
-            possiblePeakAssignments = new List<PtmSet>();
-            if (Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out List<PtmSet> candidates))
+            bool are_positive_candidates = Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out List<PtmSet> positive_candidates);
+            bool are_negative_candidates = Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(-DeltaMass, 1), out List<PtmSet> negative_candidates) 
+                && (RelationType == ProteoformComparison.ExperimentalExperimental || RelationType == ProteoformComparison.ExperimentalFalse);
+
+            if (are_positive_candidates || are_negative_candidates)
             {
+                List<PtmSet> candidates = (are_positive_candidates ? positive_candidates : new List<PtmSet>()).Concat(are_negative_candidates ? negative_candidates : new List<PtmSet>()).ToList();
                 possiblePeakAssignments = candidates.Where(c => RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
                     Math.Abs(DeltaMass - c.mass) <= 0.05 :
                     Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= 0.05).ToList();
             }
+            else
+            {
+                possiblePeakAssignments = new List<PtmSet>();
+            }
+
             possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => 
                 String.Join(";", ptmset.ptm_combination.Select(ptm => 
                     Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id))).Distinct()) + "]";

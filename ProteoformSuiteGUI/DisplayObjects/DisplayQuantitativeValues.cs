@@ -78,6 +78,16 @@ namespace ProteoformSuiteGUI
             get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant : qval.TusherValues2.significant; }
         }
 
+        public bool Significant_RelDiff
+        {
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant_relative_difference : qval.TusherValues2.significant_relative_difference; }
+        }
+
+        public bool Significant_FoldChange
+        {
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant_fold_change : qval.TusherValues2.significant_fold_change; }
+        }
+
         public decimal RelativeDifference
         {
             get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.relative_difference : qval.TusherValues2.relative_difference; }
@@ -122,7 +132,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
             dgv.Columns[nameof(RelativeDifference)].HeaderText = "Student's t-Test Statistic (Linear Intensities)";
             dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
-            dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
+            dgv.Columns[nameof(Significant_RelDiff)].HeaderText = "Significant by Relative Difference Analysis";
+            dgv.Columns[nameof(Significant_FoldChange)].HeaderText = "Significant by Fold Change";
         }
 
         #endregion

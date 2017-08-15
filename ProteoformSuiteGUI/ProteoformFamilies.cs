@@ -66,10 +66,6 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
-            tb_likelyCleavages.TextChanged -= tb_likelyCleavages_TextChanged;
-            tb_likelyCleavages.Text = String.Join(",", Sweet.lollipop.likely_cleavages);
-            tb_likelyCleavages.TextChanged += tb_likelyCleavages_TextChanged;
-
             initialize_every_time();
         }
 
@@ -407,18 +403,11 @@ namespace ProteoformSuiteGUI
             Lollipop.include_td_nodes = cb_include_td_nodes.Checked;
         }
 
-        private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.likely_cleavages = tb_likelyCleavages.Text.Split(',');
-        }
-
         private void cb_count_adducts_as_id_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.count_adducts_as_identifications = cb_count_adducts_as_id.Checked;
             update_figures_of_merit();
         }
-
-
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 

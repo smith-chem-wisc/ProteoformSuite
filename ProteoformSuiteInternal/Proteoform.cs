@@ -108,7 +108,8 @@ namespace ProteoformSuiteInternal
                         null); //Experimental or TD without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
                 //when form TD relations, already generate best candidate ptmset for relation
-                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak.possiblePeakAssignments.Where(p => Math.Sign(p.mass) == Math.Sign(deltaM)).ToList() , deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
+                List<PtmSet> possible_additions = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? null : r.peak.possiblePeakAssignments.Where(p => Math.Sign(p.mass) == Math.Sign(deltaM)).ToList();
+                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(possible_additions, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
@@ -151,7 +152,7 @@ namespace ProteoformSuiteInternal
                     List<Ptm> new_combo = new List<Ptm>(this.ptm_set.ptm_combination);
                     foreach (Ptm ptm in best_loss.ptm_combination)
                     {
-                        new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification == ptm.modification));
+                        new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification.Equals(ptm.modification)));
                     }
                     with_mod_change = new PtmSet(new_combo);
                 }
@@ -179,22 +180,22 @@ namespace ProteoformSuiteInternal
 
                 foreach (ModificationWithMass m in mods_in_set)
                 {
-                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks[m.monoisotopicMass];
+                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue(m.monoisotopicMass, out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
 
                     if (m.monoisotopicMass == 0)
                     {
                         rank_sum += mod_rank;
                         continue;
                     }
-                    int begin = theoretical_base.begin;
-                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && begin == 2 && !ptm_set.ptm_combination.Select(p => p.modification).Contains(m);
+
+                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
                     bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[n_terminal_degraded_aas].ToString();
                     bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[theoretical_base.sequence.Length - c_terminal_degraded_aas - 1].ToString();
+
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
-                    if ((m.modificationType == "Missing" && cannot_be_degradation)
-                        || (m.modificationType == "AminoAcid" && !could_be_m_retention)
-                        || (u != null ? u.require_proteoform_without_mod : false && set.ptm_combination.Count > 1)
-                        //if topdown relation, only allow mod types of missing, amino acid, or deconvolution error
+                    if (m.modificationType == "Missing" && cannot_be_degradation
+                        || m.modificationType == "AminoAcid" && !could_be_m_retention
+                        || (u != null ? u.require_proteoform_without_mod : false) && set.ptm_combination.Count > 1
                         || (this as TopDownProteoform != null && m.modificationType != "Missing" && m.modificationType != "AminoAcid" && m.modificationType != "Deconvolution Error"))
                     {
                         rank_sum = Int32.MaxValue;
@@ -203,21 +204,13 @@ namespace ProteoformSuiteInternal
 
                     bool could_be_n_term_degradation = m.modificationType == "Missing" && motif_matches_n_terminus;
                     bool could_be_c_term_degradation = m.modificationType == "Missing" && motif_matches_c_terminus;
-                    bool likely_cleavage_site = could_be_n_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base.sequence[n_terminal_degraded_aas].ToString())
-                        || could_be_c_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base.sequence[theoretical_base.sequence.Length - c_terminal_degraded_aas - 1].ToString());
-
                     rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
                     // In order of likelihood:
-                    // 1. First, we observe I/L/A cleavage to be the most common, 
-                    // 1. "Fatty Acid" is a list of modifications prevalent in yeast or bacterial analysis, 
-                    // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis (handled in unlocalized modification)
-                    // 2. Second, other degradations and methionine cleavage are weighted mid-level
-                    // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
-                    if (likely_cleavage_site)  
+                    // 1. First, we observe I/L/A cleavage to be the most common, other degradations and methionine cleavage are weighted mid-level
+                    // 2. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
+                    if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
-                    else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
-                        rank_sum += Sweet.lollipop.mod_rank_second_quartile;
                     else if (m.modificationType == "Deconvolution Error")
                         rank_sum += Sweet.lollipop.neucode_labeled ? 
                             Sweet.lollipop.mod_rank_third_quartile :   //in neucode-labeled data, fewer missed monoisotopics - don't prioritize
@@ -278,6 +271,7 @@ namespace ProteoformSuiteInternal
             }
             return degraded;
         }
+
         #endregion Private Methods
 
     }

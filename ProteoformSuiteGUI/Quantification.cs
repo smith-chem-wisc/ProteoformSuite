@@ -89,11 +89,11 @@ namespace ProteoformSuiteGUI
         public void FillTablesAndCharts()
         {
             plots();
+            fill_quantitative_values_table();
             TusherAnalysis analysis = get_tusher_analysis();
-
-            tb_avgIntensity.Text = Math.Round(get_tusher_analysis().QuantitativeDistributions.selectAverageIntensity, 1).ToString();
-            tb_stdevIntensity.Text = Math.Round(get_tusher_analysis().QuantitativeDistributions.selectStDev, 3).ToString();
-            tb_FDR.Text = Math.Round(get_tusher_analysis().relativeDifferenceFDR, 4).ToString();
+            tb_avgIntensity.Text = Math.Round(analysis.QuantitativeDistributions.selectAverageIntensity, 1).ToString();
+            tb_stdevIntensity.Text = Math.Round(analysis.QuantitativeDistributions.selectStDev, 3).ToString();
+            tb_FDR.Text = Math.Round(analysis.relativeDifferenceFDR, 4).ToString();
             plotBiorepIntensities();
             updateGoTermsTable();
         }
@@ -119,9 +119,9 @@ namespace ProteoformSuiteGUI
 
             cmbx_relativeDifferenceChartSelection.Items.Clear();
             cmbx_relativeDifferenceChartSelection.Items.AddRange(relative_difference_selections);
+            cmbx_relativeDifferenceChartSelection.SelectedIndexChanged -= cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
             cmbx_relativeDifferenceChartSelection.SelectedIndex = selection;
-
-            fill_quantitative_values_table();
+            cmbx_relativeDifferenceChartSelection.SelectedIndexChanged += cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
         }
 
         public void InitializeConditionsParameters()
@@ -658,7 +658,7 @@ namespace ProteoformSuiteGUI
                 decimal avg = get_tusher_analysis().avgSortedPermutationRelativeDifferences[i];
                 foreach (TusherStatistic stat in get_tusher_analysis().sortedPermutedRelativeDifferences.Select(sorted => sorted[i]))
                 {
-                    if (stat.is_passing_real(get_tusher_analysis().minimumPassingNegativeTestStatistic, get_tusher_analysis().minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange))
+                    if (stat.is_passing_real(get_tusher_analysis().minimumPassingNegativeTestStatistic, get_tusher_analysis().minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange, out bool a, out bool b))
                     {
                         ct_relativeDifference.Series["Passing Permuted"].Points.AddXY(avg, stat.relative_difference);
                     }
