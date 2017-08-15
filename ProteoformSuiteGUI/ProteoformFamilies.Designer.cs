@@ -58,8 +58,8 @@
             this.cb_identified_families = new System.Windows.Forms.CheckBox();
             this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
-            this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
+            this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
             this.cb_buildAsQuantitative = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
@@ -341,6 +341,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_count_adducts_as_id);
             this.splitContainer3.Panel2.Controls.Add(this.cb_buildAsQuantitative);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer3.Panel2.Controls.Add(this.nud_decimalRoundingLabels);
@@ -475,6 +476,14 @@
             this.cb_geneCentric.UseVisualStyleBackColor = true;
             this.cb_geneCentric.CheckedChanged += new System.EventHandler(this.cb_geneCentric_CheckedChanged);
             // 
+            // cb_count_adducts_as_id
+            // 
+            this.cb_count_adducts_as_id.Location = new System.Drawing.Point(300, 57);
+            this.cb_count_adducts_as_id.Name = "cb_count_adducts_as_id";
+            this.cb_count_adducts_as_id.Size = new System.Drawing.Size(180, 24);
+            this.cb_count_adducts_as_id.TabIndex = 0;
+            this.cb_count_adducts_as_id.Text = "Count Adducts as Identifications";
+            // 
             // cb_buildAsQuantitative
             // 
             this.cb_buildAsQuantitative.AutoSize = true;
@@ -490,7 +499,7 @@
             // 
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(280, 151);
+            this.groupBox5.Location = new System.Drawing.Point(301, 156);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(200, 84);
             this.groupBox5.TabIndex = 57;
