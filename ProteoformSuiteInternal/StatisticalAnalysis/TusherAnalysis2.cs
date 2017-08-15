@@ -167,13 +167,15 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            IEnumerable<TusherStatistic> permutedPassingProteoforms = permutedTestStatistics.Where(v => v.is_passing_permutation(minimumPassingNegativeTestStatistic, minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange));
+            IEnumerable<TusherStatistic> permutedPassingProteoforms = permutedTestStatistics.Where(v => v.is_passing_permutation(minimumPassingNegativeTestStatistic, minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange, out bool is_passing_relative_difference, out bool is_passing_fold_change));
             double avgPermutedPassingProteoforms = (double)permutedPassingProteoforms.Count() / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
 
             int totalPassingProteoforms = 0;
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                pf.quant.TusherValues2.significant = pf.quant.TusherValues2.tusher_statistic.is_passing_real(minimumPassingNegativeTestStatistic, minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange);
+                pf.quant.TusherValues2.significant = pf.quant.TusherValues2.tusher_statistic.is_passing_real(minimumPassingNegativeTestStatistic, minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange, out bool is_passing_relative_difference, out bool is_passing_fold_change);
+                pf.quant.TusherValues2.significant_relative_difference = is_passing_relative_difference;
+                pf.quant.TusherValues2.significant_fold_change = is_passing_fold_change;
                 totalPassingProteoforms += Convert.ToInt32(pf.quant.TusherValues2.significant);
             }
 
