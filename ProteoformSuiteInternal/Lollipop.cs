@@ -653,13 +653,6 @@ namespace ProteoformSuiteInternal
             "Ordered Locus, e.g. YLR113W"
         };
 
-        public string[] likely_cleavages = new string[]
-        {
-            "I",
-            "L",
-            "A"
-        };
-
         public void construct_target_and_decoy_families()
         {
             target_proteoform_community.construct_families();
