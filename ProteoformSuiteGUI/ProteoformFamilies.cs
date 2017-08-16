@@ -23,6 +23,12 @@ namespace ProteoformSuiteGUI
 
         #endregion
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Methods
 
         public void initialize_every_time()
@@ -68,7 +74,13 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_main };
+            return new List<DataGridView> { dgv_main };
+        }
+
+        public List<DataTable> SetTables()
+        {
+            DataTables = new List<DataTable> { DisplayProteoformFamily.FormatFamiliesTable(Sweet.lollipop.target_proteoform_community.families.Select(x => new DisplayProteoformFamily(x)).ToList(), "ProteoformFamilies") };
+            return DataTables;
         }
 
         public bool ReadyToRunTheGamut()
@@ -180,7 +192,7 @@ namespace ProteoformSuiteGUI
                 ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count), filter)
                 : ExtensionMethods.filter(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count), filter));
             DisplayUtility.FillDataGridView(dgv_main, families.OfType<ProteoformFamily>().Select(f => new DisplayProteoformFamily(f)));
-            DisplayProteoformFamily.format_families_dgv(dgv_main);
+            DisplayProteoformFamily.FormatFamiliesTable(dgv_main);
         }
 
         private void fill_theoreticals(string filter)

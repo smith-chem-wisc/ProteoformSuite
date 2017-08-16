@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -114,29 +119,59 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            //NUMBER FORMAT
-            dgv.Columns[nameof(NumeratorIntensitySum)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(DenominatorIntensitySum)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(IntensitySum)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(LogFoldChange)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(pValue)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(RelativeDifference)].DefaultCellStyle.Format = "0.#####";
-            dgv.Columns[nameof(AvgPermutedTestStatistic)].DefaultCellStyle.Format = "0.#####";
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
+        }
 
-            //HEADERS
-            dgv.Columns[nameof(GeneName)].HeaderText = "Gene Name";
-            dgv.Columns[nameof(NumeratorIntensitySum)].HeaderText = "Light Intensity Sum";
-            dgv.Columns[nameof(DenominatorIntensitySum)].HeaderText = "Heavy Intensity Sum";
-            dgv.Columns[nameof(IntensitySum)].HeaderText = "Intensity Sum";
-            dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
-            dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
-            dgv.Columns[nameof(RelativeDifference)].HeaderText = "Student's t-Test Statistic (Linear Intensities)";
-            dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
-            dgv.Columns[nameof(Significant_RelDiff)].HeaderText = "Significant by Relative Difference Analysis";
-            dgv.Columns[nameof(Significant_FoldChange)].HeaderText = "Significant by Fold Change";
+        public static DataTable FormatGridView(List<DisplayQuantitativeValues> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayQuantitativeValues).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
         #endregion
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(GeneName)) return "Gene Name";
+            if (property_name == nameof(NumeratorIntensitySum)) return "Light Intensity Sum";
+            if (property_name == nameof(DenominatorIntensitySum)) return "Heavy Intensity Sum";
+            if (property_name == nameof(IntensitySum)) return "Intensity Sum";
+            if (property_name == nameof(LogFoldChange)) return "Log2 Fold Change";
+            if (property_name == nameof(pValue)) return "p-value (by randomization test)";
+            if (property_name == nameof(RelativeDifference)) return "Student's t-Test Statistic (Linear Intensities)";
+            if (property_name == nameof(AvgPermutedTestStatistic)) return "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
+            if (property_name == nameof(Significant_RelDiff)) return "Significant by Relative Difference Analysis";
+            if (property_name == nameof(Significant_FoldChange)) return "Significant by Fold Change";
+            return null;
+        }
+        
+        private static bool visible(string property_name, bool current)
+        {
+            return current;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(NumeratorIntensitySum)) return "0.##";
+            if (property_name == nameof(DenominatorIntensitySum)) return "0.##";
+            if (property_name == nameof(IntensitySum)) return "0.##";
+            if (property_name == nameof(LogFoldChange)) return "0.####";
+            if (property_name == nameof(pValue)) return "E2";
+            if (property_name == nameof(RelativeDifference)) return "0.#####";
+            if (property_name == nameof(AvgPermutedTestStatistic)) return "0.#####";
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

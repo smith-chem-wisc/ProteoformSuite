@@ -1,5 +1,9 @@
 ﻿using ProteoformSuiteInternal;
 using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -262,86 +266,126 @@ namespace ProteoformSuiteGUI
 
             dgv.AllowUserToAddRows = false;
 
-            //round table values
-            dgv.Columns[nameof(DeltaMass)].DefaultCellStyle.Format = "0.####";
-            if(!raw_et_histogram) dgv.Columns[nameof(PeakCenterDeltaMass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(proteoform_mass_1)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(proteoform_mass_2)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(agg_intensity_1)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(agg_intensity_2)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(agg_RT_1)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(agg_RT_2)].DefaultCellStyle.Format = "0.##";
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name, mask_experimental, mask_theoretical, raw_et_histogram);
+                string n = number_format(c.Name, raw_et_histogram);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible, mask_experimental, mask_theoretical, raw_et_histogram);
+            }
+        }
 
+        public static DataTable FormatRelationsGridView(List<DisplayProteoformRelation> display, string table_name, bool mask_experimental, bool mask_theoretical, bool raw_et_histogram)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayProteoformRelation).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name, mask_experimental, mask_theoretical, raw_et_histogram), visible(x.Name, true, mask_experimental, mask_theoretical, raw_et_histogram)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static string header(string property_name, bool mask_experimental, bool mask_theoretical, bool raw_et_histogram)
+        {
             //set column header
-            dgv.Columns[nameof(DeltaMass)].HeaderText = "Delta Mass";
-            dgv.Columns[nameof(NearbyRelationCount)].HeaderText = "Nearby Relation Count";
-            dgv.Columns[nameof(Accepted)].HeaderText = "Accepted";
-            dgv.Columns[nameof(PeakCenterDeltaMass)].HeaderText = "Peak Center Delta Mass";
-            if(!raw_et_histogram) dgv.Columns[nameof(PeakCenterCount)].HeaderText = "Peak Center Count";
-            dgv.Columns[nameof(LysineCount)].HeaderText = "Lysine Count";
-            if (!raw_et_histogram) dgv.Columns[nameof(OutsideNoMansLand)].HeaderText = "Outside No Man's Land";
+            if (property_name == nameof(DeltaMass)) return "Delta Mass";
+            if (property_name == nameof(NearbyRelationCount)) return "Nearby Relation Count";
+            if (property_name == nameof(Accepted)) return "Accepted";
+            if (property_name == nameof(PeakCenterDeltaMass)) return "Peak Center Delta Mass";
+            if (!raw_et_histogram) if (property_name == nameof(PeakCenterCount)) return "Peak Center Count";
+            if (property_name == nameof(LysineCount)) return "Lysine Count";
+            if (!raw_et_histogram) if (property_name == nameof(OutsideNoMansLand)) return "Outside No Man's Land";
 
             //ET formatting
-            dgv.Columns[nameof(PtmDescription)].HeaderText = "PTM Description";
+            if (property_name == nameof(PtmDescription)) return "PTM Description";
             if (mask_experimental)
             {
-                dgv.Columns[nameof(num_observations_1)].HeaderText = "Number Experimental Observations";
-                dgv.Columns[nameof(accession_1)].HeaderText = "Experimental Accession";
-                dgv.Columns[nameof(accession_2)].HeaderText = "Theoretical Accession";
-                dgv.Columns[nameof(proteoform_mass_2)].HeaderText = "Theoretical Proteoform Mass";
-                dgv.Columns[nameof(proteoform_mass_1)].HeaderText = "Experimental Aggregated Proteoform Mass";
-                dgv.Columns[nameof(agg_intensity_1)].HeaderText = "Experimental Aggregated Intensity";
-                dgv.Columns[nameof(agg_RT_1)].HeaderText = "Experimental Aggregated RT";
-                dgv.Columns[nameof(manual_validation_id_1)].HeaderText = "Abundant Exp. Component for Manual Validation";
-                dgv.Columns[nameof(agg_intensity_2)].Visible = false;
-                dgv.Columns[nameof(agg_RT_2)].Visible = false;
-                dgv.Columns[nameof(num_observations_2)].Visible = false;
-                dgv.Columns[nameof(manual_validation_id_2)].Visible = false;
-                dgv.Columns[nameof(RelationType)].Visible = false;
+                if (property_name == nameof(num_observations_1)) return "Number Experimental Observations";
+                if (property_name == nameof(accession_1)) return "Experimental Accession";
+                if (property_name == nameof(accession_2)) return "Theoretical Accession";
+                if (property_name == nameof(proteoform_mass_2)) return "Theoretical Proteoform Mass";
+                if (property_name == nameof(proteoform_mass_1)) return "Experimental Aggregated Proteoform Mass";
+                if (property_name == nameof(agg_intensity_1)) return "Experimental Aggregated Intensity";
+                if (property_name == nameof(agg_RT_1)) return "Experimental Aggregated RT";
+                if (property_name == nameof(manual_validation_id_1)) return "Abundant Exp. Component for Manual Validation";
             }
 
             //EE formatting
             if (mask_theoretical)
             {
-                dgv.Columns[nameof(num_observations_2)].HeaderText = "Number Light Experimental Observations";
-                dgv.Columns[nameof(num_observations_1)].HeaderText = "Number Heavy Experimental Observations";
-                dgv.Columns[nameof(agg_intensity_2)].HeaderText = "Light Experimental Aggregated Intensity";
-                dgv.Columns[nameof(agg_intensity_1)].HeaderText = "Heavy Experimental Aggregated Intensity";
-                dgv.Columns[nameof(agg_RT_1)].HeaderText = "Aggregated RT Heavy";
-                dgv.Columns[nameof(agg_RT_2)].HeaderText = "Aggregated RT Light";
-                dgv.Columns[nameof(accession_1)].HeaderText = "Heavy Experimental Accession";
-                dgv.Columns[nameof(accession_2)].HeaderText = "Light Experimental Accession";
-                dgv.Columns[nameof(proteoform_mass_1)].HeaderText = "Heavy Experimental Aggregated Mass";
-                dgv.Columns[nameof(proteoform_mass_2)].HeaderText = "Light Experimental Aggregated Mass";
-                dgv.Columns[nameof(manual_validation_id_1)].HeaderText = "Heavy Abundant Exp. Component for Manual Validation";
-                dgv.Columns[nameof(manual_validation_id_2)].HeaderText = "Light Abundant Exp. Component for Manual Validation";
-                dgv.Columns[nameof(RelationType)].Visible = false;
-                dgv.Columns[nameof(Name)].Visible = false;
-                dgv.Columns[nameof(Fragment)].Visible = false;
+                if (property_name == nameof(num_observations_2)) return "Number Light Experimental Observations";
+                if (property_name == nameof(num_observations_1)) return "Number Heavy Experimental Observations";
+                if (property_name == nameof(agg_intensity_2)) return "Light Experimental Aggregated Intensity";
+                if (property_name == nameof(agg_intensity_1)) return "Heavy Experimental Aggregated Intensity";
+                if (property_name == nameof(agg_RT_1)) return "Aggregated RT Heavy";
+                if (property_name == nameof(agg_RT_2)) return "Aggregated RT Light";
+                if (property_name == nameof(accession_1)) return "Heavy Experimental Accession";
+                if (property_name == nameof(accession_2)) return "Light Experimental Accession";
+                if (property_name == nameof(proteoform_mass_1)) return "Heavy Experimental Aggregated Mass";
+                if (property_name == nameof(proteoform_mass_2)) return "Light Experimental Aggregated Mass";
+                if (property_name == nameof(manual_validation_id_1)) return "Heavy Abundant Exp. Component for Manual Validation";
+                if (property_name == nameof(manual_validation_id_2)) return "Light Abundant Exp. Component for Manual Validation";
             }
 
             //ProteoformFamilies formatting
             if (!mask_experimental && !mask_theoretical)
             {
-                dgv.Columns[nameof(num_observations_2)].HeaderText = "Number Observations #2";
-                dgv.Columns[nameof(num_observations_1)].HeaderText = "Number Observations #1";
-                dgv.Columns[nameof(agg_intensity_2)].HeaderText = "Intensity #2";
-                dgv.Columns[nameof(agg_intensity_1)].HeaderText = "Intensity #1";
-                dgv.Columns[nameof(agg_RT_1)].HeaderText = "Aggregated RT #1";
-                dgv.Columns[nameof(agg_RT_2)].HeaderText = "Aggregated RT #2";
-                dgv.Columns[nameof(accession_1)].HeaderText = "Accession #1";
-                dgv.Columns[nameof(accession_2)].HeaderText = "Accession #2";
-                dgv.Columns[nameof(proteoform_mass_1)].HeaderText = "Proteoform Mass #1";
-                dgv.Columns[nameof(proteoform_mass_2)].HeaderText = "Proteoform Mass #2";
-                dgv.Columns[nameof(manual_validation_id_1)].HeaderText = "Abundant Exp. Component for Manual Validation #1";
-                dgv.Columns[nameof(manual_validation_id_2)].HeaderText = "Abundant Exp. Component for Manual Validation #2";
-                dgv.Columns[nameof(RelationType)].HeaderText = "Relation Type";
+                if (property_name == nameof(num_observations_2)) return "Number Observations #2";
+                if (property_name == nameof(num_observations_1)) return "Number Observations #1";
+                if (property_name == nameof(agg_intensity_2)) return "Intensity #2";
+                if (property_name == nameof(agg_intensity_1)) return "Intensity #1";
+                if (property_name == nameof(agg_RT_1)) return "Aggregated RT #1";
+                if (property_name == nameof(agg_RT_2)) return "Aggregated RT #2";
+                if (property_name == nameof(accession_1)) return "Accession #1";
+                if (property_name == nameof(accession_2)) return "Accession #2";
+                if (property_name == nameof(proteoform_mass_1)) return "Proteoform Mass #1";
+                if (property_name == nameof(proteoform_mass_2)) return "Proteoform Mass #2";
+                if (property_name == nameof(manual_validation_id_1)) return "Abundant Exp. Component for Manual Validation #1";
+                if (property_name == nameof(manual_validation_id_2)) return "Abundant Exp. Component for Manual Validation #2";
+                if (property_name == nameof(RelationType)) return "Relation Type";
+            }
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current, bool mask_experimental, bool mask_theoretical, bool raw_et_histogram)
+        {
+            //ET formatting
+            if (mask_experimental)
+            {
+                if (property_name == nameof(agg_intensity_2)) return false;
+                if (property_name == nameof(agg_RT_2)) return false;
+                if (property_name == nameof(num_observations_2)) return false;
+                if (property_name == nameof(manual_validation_id_2)) return false;
+                if (property_name == nameof(RelationType)) return false;
             }
 
-            //making these columns invisible
-            dgv.Columns[nameof(LysineCount)].Visible = Sweet.lollipop.neucode_labeled;
-        } 
-        #endregion
+            //EE formatting
+            if (mask_theoretical)
+            {
+                if (property_name == nameof(RelationType)) return false;
+                if (property_name == nameof(Name)) return false;
+                if (property_name == nameof(Fragment)) return false;
+            }
+            if (property_name == nameof(LysineCount)) return Sweet.lollipop.neucode_labeled;
+            return current;
+        }
+
+        private static string number_format(string property_name, bool raw_et_histogram)
+        {
+            //round table values
+            if (property_name == nameof(DeltaMass)) return "0.####";
+            if (!raw_et_histogram) if (property_name == nameof(PeakCenterDeltaMass)) return "0.####";
+            if (property_name == nameof(proteoform_mass_1)) return "0.####";
+            if (property_name == nameof(proteoform_mass_2)) return "0.####";
+            if (property_name == nameof(agg_intensity_1)) return "0.##";
+            if (property_name == nameof(agg_intensity_2)) return "0.##";
+            if (property_name == nameof(agg_RT_1)) return "0.##";
+            if (property_name == nameof(agg_RT_2)) return "0.##";
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

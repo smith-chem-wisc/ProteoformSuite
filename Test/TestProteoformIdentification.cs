@@ -8,7 +8,7 @@ using System.Linq;
 namespace Test
 {
     [TestFixture]
-    public class ProteoformIdentification
+    public class TestProteoformIdentification
     {
         [Test]
         public void assign_missing_aa_identity()
@@ -64,6 +64,38 @@ namespace Test
             e.identify_connected_experimentals(new List<PtmSet> { set, set2, set3 }, new List<ModificationWithMass> { set.ptm_combination.First().modification });
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(42.01, e2.ptm_set.mass);
+        }
+
+        [Test]
+        public void unmodified_identification()
+        {
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 100000, 0); // sequence with all serines
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+            ConstructorsForTesting.make_relation(t, e, ProteoformComparison.ExperimentalTheoretical, 0);
+
+            ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
+            PtmSet set_not_quite_zero = new PtmSet(new List<Ptm>
+            {
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.011, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl loss", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+            });
+
+            PtmSet set_unmodified = new PtmSet(new List<Ptm>{ new Ptm() });
+
+            // Proteoforms start without any modifications in the PtmSet
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(set_not_quite_zero.mass, 1), new List<PtmSet> { set_not_quite_zero, set_unmodified } },
+            };
+
+            e.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
+
+            // Identify adds nothing to the PtmSet of the Experimental, so it will be labeled Unmodified. It adds the TheoreticalProteoform to the linked reference. 
+            t.identify_connected_experimentals(new List<PtmSet> { set_not_quite_zero, set_unmodified }, new List<ModificationWithMass> { set_not_quite_zero.ptm_combination[0].modification, set_not_quite_zero.ptm_combination[1].modification, set_unmodified.ptm_combination[0].modification, });
+            Assert.IsNotNull(e.linked_proteoform_references);
+            Assert.AreEqual(0, e.ptm_set.mass);
+            Assert.AreEqual(new Ptm().modification.id, e.ptm_description); // it's unmodified
         }
     }
 }

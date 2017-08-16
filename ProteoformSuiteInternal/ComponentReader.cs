@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace ProteoformSuiteInternal
 {
@@ -22,6 +21,9 @@ namespace ProteoformSuiteInternal
 
         public List<Component> final_components = new List<Component>();
         public List<string> scan_ranges = new List<string>();
+        public int unprocessed_components = 0;
+        public int missed_mono_merges = 0;
+        public int harmonic_merges = 0;
 
         #endregion Public Fields
 
@@ -76,11 +78,19 @@ namespace ProteoformSuiteInternal
                 }
                 add_component(new_component); //add the final component
             }
-            if (file.purpose == Purpose.Identification) Interlocked.Add(ref Sweet.lollipop.unprocessed_exp_components, raw_components_in_file.Count);
-            else if (file.purpose == Purpose.Quantification) Interlocked.Add(ref Sweet.lollipop.unprocessed_quant_components, raw_components_in_file.Count);
+            unprocessed_components += raw_components_in_file.Count;
             final_components = remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
             scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range)).ToList();
             return final_components;
+        }
+
+        public void Clear()
+        {
+            final_components.Clear();
+            scan_ranges.Clear();
+            unprocessed_components = 0;
+            missed_mono_merges = 0;
+            harmonic_merges = 0;
         }
 
         #endregion Public Method
@@ -118,8 +128,7 @@ namespace ProteoformSuiteInternal
 
                         foreach (Component c in missedMonoisotopics.Where(m => m.id != sc.id).ToList())
                         {
-                            if (c.input_file.purpose == Purpose.Identification) Interlocked.Increment(ref Sweet.lollipop.missed_mono_merges_exp);
-                            else if (c.input_file.purpose == Purpose.Quantification) Interlocked.Increment(ref Sweet.lollipop.missed_mono_merges_quant);
+                            missed_mono_merges++;
                             sc.mergeTheseComponents(c);
                             removeThese.Add(c);
                         }
@@ -170,8 +179,7 @@ namespace ProteoformSuiteInternal
 
                             if (lysFourteenComponents.Contains(h.id))
                             {
-                                if (hc.input_file.purpose == Purpose.Identification) Interlocked.Increment(ref Sweet.lollipop.harmonic_merges_exp);
-                                else if (hc.input_file.purpose == Purpose.Quantification) Interlocked.Increment(ref Sweet.lollipop.harmonic_merges_quant);
+                                harmonic_merges++;
                                 h.mergeTheseComponents(hc);
                                 removeThese.Add(hc);
                             }
@@ -200,8 +208,7 @@ namespace ProteoformSuiteInternal
                                         removeThese.Add(hc);
                                     }
                                 }
-                                if (hc.input_file.purpose == Purpose.Identification) Interlocked.Increment(ref Sweet.lollipop.harmonic_merges_exp);
-                                else if (hc.input_file.purpose == Purpose.Quantification) Interlocked.Increment(ref Sweet.lollipop.harmonic_merges_quant);
+                                harmonic_merges++;
                             }
                         }
                     }

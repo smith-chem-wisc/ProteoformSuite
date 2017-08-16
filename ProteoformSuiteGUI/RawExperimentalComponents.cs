@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,6 +21,12 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Constructor
+
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
 
         #region Public Methods
 
@@ -56,12 +63,10 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.raw_experimental_components.Clear();
             Sweet.lollipop.raw_quantification_components.Clear();
-            Sweet.lollipop.unprocessed_exp_components = 0;
-            Sweet.lollipop.unprocessed_quant_components = 0;
-            Sweet.lollipop.missed_mono_merges_exp = 0;
-            Sweet.lollipop.missed_mono_merges_quant = 0;
-            Sweet.lollipop.harmonic_merges_exp = 0;
-            Sweet.lollipop.harmonic_merges_quant = 0;
+            foreach (InputFile f in Sweet.lollipop.input_files)
+            {
+                f.reader.Clear();
+            }
 
             if (clear_following_forms)
             {
@@ -84,7 +89,17 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_rawComponents };
+            return new List<DataGridView> { dgv_rawComponents };
+        }
+
+        public List<DataTable> SetTables()
+        {
+            DataTables = new List<DataTable>
+            {
+                DisplayComponent.FormatComponentsTable(Sweet.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)).ToList(), "RawExperimentalComponents"),
+                DisplayComponent.FormatComponentsTable(Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)).ToList(), "RawQuantificationComponents"),
+            };
+            return DataTables;
         }
 
         public void FillTablesAndCharts()
@@ -118,7 +133,7 @@ namespace ProteoformSuiteGUI
             {
                 Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
                 DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates, false);
+                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates);
             }
         }
 
@@ -129,7 +144,7 @@ namespace ProteoformSuiteGUI
             {
                 Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
                 DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates, true);
+                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates);
             }
         }
 

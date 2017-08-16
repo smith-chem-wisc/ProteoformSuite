@@ -114,15 +114,15 @@ namespace ProteoformSuiteInternal
         {
             string report = "";
 
-            report += Sweet.lollipop.unprocessed_exp_components.ToString() + "\tUnprocessed Raw Experimental Components" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Sum(f => f.reader.unprocessed_components).ToString() + "\tUnprocessed Raw Experimental Components" + Environment.NewLine;
             report += Sweet.lollipop.raw_experimental_components.Count.ToString() + "\tRaw Experimental Components" + Environment.NewLine;
-            report += Sweet.lollipop.missed_mono_merges_exp.ToString() + "\tMissed Monoisotopic Raw Experimental Components Merged" + Environment.NewLine;
-            report += Sweet.lollipop.harmonic_merges_exp.ToString() + "\tHarmonic Raw Experimental Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Sum(f => f.reader.missed_mono_merges).ToString() + "\tMissed Monoisotopic Raw Experimental Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Sum(f => f.reader.harmonic_merges).ToString() + "\tHarmonic Raw Experimental Components Merged" + Environment.NewLine;
             report += Environment.NewLine;
-            report += Sweet.lollipop.unprocessed_quant_components.ToString() + "\tUnprocessed Raw Quantitative Components" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Sum(f => f.reader.unprocessed_components).ToString() + "\tUnprocessed Raw Quantitative Components" + Environment.NewLine;
             report += Sweet.lollipop.raw_quantification_components.Count.ToString() + "\tRaw Quantitative Components" + Environment.NewLine;
-            report += Sweet.lollipop.missed_mono_merges_quant.ToString() + "\tMissed Monoisotopic Raw Quantitative Components Merged" + Environment.NewLine;
-            report += Sweet.lollipop.harmonic_merges_quant.ToString() + "\tHarmonic Raw Quantitative Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Sum(f => f.reader.missed_mono_merges).ToString() + "\tMissed Monoisotopic Raw Quantitative Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Sum(f => f.reader.harmonic_merges).ToString() + "\tHarmonic Raw Quantitative Components Merged" + Environment.NewLine;
             report += Environment.NewLine;
 
             return report;
