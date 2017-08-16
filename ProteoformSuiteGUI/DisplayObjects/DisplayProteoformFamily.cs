@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -73,25 +78,45 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public static void format_families_dgv(DataGridView dgv)
+        public static void FormatFamiliesTable(DataGridView dgv)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.ReadOnly = true;
 
-            //set column header
-            dgv.Columns[nameof(family_id)].HeaderText = "Family ID";
-            dgv.Columns[nameof(experimental_count)].HeaderText = "Experimental Proteoforms";
-            dgv.Columns[nameof(theoretical_count)].HeaderText = "Theoretical Proteoforms";
-            dgv.Columns[nameof(relation_count)].HeaderText = "Relation Count";
-            dgv.Columns[nameof(accession_list)].HeaderText = "Theoretical Accessions";
-            dgv.Columns[nameof(name_list)].HeaderText = "Theoretical Names";
-            dgv.Columns[nameof(gene_list)].HeaderText = "Gene Names";
-            dgv.Columns[nameof(experimentals_list)].HeaderText = "Experimental Accessions";
-            dgv.Columns[nameof(agg_mass_list)].HeaderText = "Experimental Aggregated Masses";
+
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+            }
         }
 
-        #endregion
+        public static DataTable FormatFamiliesTable(List<DisplayProteoformFamily> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayProteoformFamily).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), true));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name ==nameof(family_id)) return "Family ID";
+            if (property_name ==nameof(experimental_count)) return "Experimental Proteoforms";
+            if (property_name ==nameof(theoretical_count)) return "Theoretical Proteoforms";
+            if (property_name ==nameof(relation_count)) return "Relation Count";
+            if (property_name ==nameof(accession_list)) return "Theoretical Accessions";
+            if (property_name ==nameof(name_list)) return "Theoretical Names";
+            if (property_name ==nameof(gene_list)) return "Gene Names";
+            if (property_name ==nameof(experimentals_list)) return "Experimental Accessions";
+            if (property_name ==nameof(agg_mass_list)) return "Experimental Aggregated Masses";
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

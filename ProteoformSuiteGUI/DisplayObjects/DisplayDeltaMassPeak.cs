@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -74,27 +79,60 @@ namespace ProteoformSuiteGUI
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
             if (!mask_mass_shifter)
             {
-                dgv.Columns[nameof(MassShifter)].Visible = true;
                 dgv.Columns[nameof(MassShifter)].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
-                dgv.Columns[nameof(MassShifter)].HeaderText = "Mass Shifter";
             }
-            dgv.Columns[nameof(DeltaMass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(PeakGroupFDR)].DefaultCellStyle.Format = "0.##";
 
-            dgv.Columns[nameof(PeakRelationGroupCount)].HeaderText = "Peak Center Count";
-            dgv.Columns[nameof(DecoyRelationCount)].HeaderText = "Decoy Count under Peak";
-            dgv.Columns[nameof(DeltaMass)].HeaderText = "Peak Center Delta Mass";
-            dgv.Columns[nameof(PeakGroupFDR)].HeaderText = "Peak FDR";
-            dgv.Columns[nameof(Accepted)].HeaderText = "Peak Accepted";
-            dgv.Columns[nameof(possiblePeakAssignments_string)].HeaderText = "Peak Assignment Possibilites";
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name, mask_mass_shifter);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible, mask_mass_shifter);
+            }
+        }
 
-            dgv.Columns[nameof(PeakRelationGroupCount)].Visible = true;
-            dgv.Columns[nameof(DeltaMass)].Visible = true;
-            dgv.Columns[nameof(PeakGroupFDR)].Visible = true;
-            dgv.Columns[nameof(Accepted)].Visible = true;
-            dgv.Columns[nameof(possiblePeakAssignments_string)].Visible = true;
+        public static DataTable FormatPeakListGridView(List<DisplayDeltaMassPeak> display, string table_name, bool mask_mass_shifter)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayDeltaMassPeak).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name, mask_mass_shifter), visible(x.Name, true, mask_mass_shifter)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private static bool visible(string property_name, bool current, bool mask_mass_shifter)
+        {
+            if (property_name == nameof(PeakRelationGroupCount)) return true;
+            if (property_name == nameof(DeltaMass)) return true;
+            if (property_name == nameof(PeakGroupFDR)) return true;
+            if (property_name == nameof(Accepted)) return true;
+            if (property_name == nameof(possiblePeakAssignments_string)) return true;
+            if (!mask_mass_shifter && property_name == nameof(MassShifter)) return true;
+            return current;
+        }
+
+        private static string header(string property_name, bool mask_mass_shifter)
+        {
+            if (property_name == nameof(PeakRelationGroupCount)) return "Peak Center Count";
+            if (property_name == nameof(DecoyRelationCount)) return "Decoy Count under Peak";
+            if (property_name == nameof(DeltaMass)) return "Peak Center Delta Mass";
+            if (property_name == nameof(PeakGroupFDR)) return "Peak FDR";
+            if (property_name == nameof(Accepted)) return "Peak Accepted";
+            if (property_name == nameof(possiblePeakAssignments_string)) return "Peak Assignment Possibilites";
+            if (!mask_mass_shifter && property_name == nameof(MassShifter)) return "Mass Shifter";
+            return null;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(DeltaMass)) return "0.0000";
+            if (property_name == nameof(PeakGroupFDR)) return "0.00";
+            return null;
+        }
+
+        #endregion Private Methods
+
     }
 }
