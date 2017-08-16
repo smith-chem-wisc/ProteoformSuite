@@ -109,7 +109,7 @@ namespace ProteoformSuiteGUI
                 return connected_proteoforms[0] as ExperimentalProteoform != null ?
                     ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt :
                     connected_proteoforms[0] as TopDownProteoform != null ?
-                    ((TopDownProteoform)connected_proteoforms[0]).agg_RT : 0;
+                    ((TopDownProteoform)connected_proteoforms[0]).agg_rt : 0;
             }
         }
 

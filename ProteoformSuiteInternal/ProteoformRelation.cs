@@ -14,8 +14,6 @@ namespace ProteoformSuiteInternal
         ExperimentalDecoy, //Experiment-Decoy comparisons
         ExperimentalExperimental, //Experiment-Experiment comparisons
         ExperimentalFalse,  //Experiment-Experiment comparisons using unequal lysine counts
-        TopdownExperimental, //Experiment-TopDown comparisons
-        TopdownTheoretical //Theoretical-TopDown comparisons 
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as

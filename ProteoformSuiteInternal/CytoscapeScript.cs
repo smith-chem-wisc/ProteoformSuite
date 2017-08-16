@@ -235,8 +235,7 @@ namespace ProteoformSuiteInternal
 
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                double mass_label = (r.RelationType == ProteoformComparison.TopdownExperimental || r.RelationType == ProteoformComparison.TopdownTheoretical)? r.DeltaMass : r.peak.DeltaMass;
-                string delta_mass = Math.Round(mass_label, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_table.Rows.Add
                 (
@@ -430,7 +429,7 @@ namespace ProteoformSuiteInternal
 
             else if (p as TopDownProteoform != null)
             {
-                return p.accession + "_" + Math.Round((p as TopDownProteoform).agg_RT, double_rounding) + "_min " + p.ptm_description;
+                return p.accession + "_" + Math.Round((p as TopDownProteoform).agg_rt, double_rounding) + "_min " + p.ptm_description;
             }
 
             else

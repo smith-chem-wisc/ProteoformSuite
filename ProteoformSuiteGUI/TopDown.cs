@@ -35,7 +35,7 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
-            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
+            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
             load_colors();
             load_ptm_colors();
@@ -48,20 +48,17 @@ namespace ProteoformSuiteGUI
                 if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
                 {
                     MessageBox.Show("Go back and load in top-down results.");
+                    return;
                 }
-                if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                if(!Sweet.lollipop.theoretical_database.ready_to_get_modifications(Environment.CurrentDirectory))
                 {
-                    MessageBox.Show("Go back and create a theoretical proteoform database.");
+                    MessageBox.Show("Load in a ptmlist.");
+                    return;
                 }
             }
 
             ClearListsTablesFigures(true);
             AggregateTdHits();
-            Sweet.lollipop.td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
-            Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values, c =>
-            {
-                c.relate_td();
-            });
             if (!full_run)
             {
                 List<string> warning_methods = new List<string>() { "Warning:" };
@@ -70,10 +67,10 @@ namespace ProteoformSuiteGUI
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
                     warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
                 }
-                if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0) > 0)
+                if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted)> 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                    warning_methods.Add(String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
+                    warning_methods.Add(String.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
                 }
                 if (warning_methods.Count > 1)
                 {
@@ -106,10 +103,6 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown || Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0))
-            {
-                return false;
-            }
             return true;
         }
 
@@ -118,13 +111,8 @@ namespace ProteoformSuiteGUI
              Sweet.lollipop.read_in_td_hits();
             if (Sweet.lollipop.top_down_hits.Count > 0)
             {
-                List<TopDownProteoform> topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits);
-                Sweet.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
-                foreach(ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
-                {
-                    community.topdown_proteoforms = Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
-                }
-                tb_tdProteoforms.Text = Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length.ToString();
+                 Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+                tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             }
         }
 
@@ -214,7 +202,7 @@ namespace ProteoformSuiteGUI
         private static void load_ptm_colors()
         {
             List<Ptm> ptm = new List<Ptm>();
-            foreach (TopDownProteoform p in Sweet.lollipop.target_proteoform_community.topdown_proteoforms)
+            foreach (TopDownProteoform p in Sweet.lollipop.topdown_proteoforms)
             {
                 ptm.AddRange(p.ptm_set.ptm_combination);
             }
@@ -255,8 +243,8 @@ namespace ProteoformSuiteGUI
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
             IEnumerable<object> selected_td = tb_tableFilter.Text == "" ?
-               Sweet.lollipop.target_proteoform_community.topdown_proteoforms :
-               ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.topdown_proteoforms, tb_tableFilter.Text);
+               Sweet.lollipop.topdown_proteoforms :
+               ExtensionMethods.filter(Sweet.lollipop.topdown_proteoforms, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, selected_td.OfType<TopDownProteoform>().Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
 

@@ -261,6 +261,78 @@ namespace ProteoformSuiteInternal
 
         #endregion NEUCODE PAIRS
 
+        #region TOPDOWN 
+        public double min_RT_td = 40.0;
+        public double max_RT_td = 90.0;
+        public double min_score_td = 3.0;
+        public bool biomarker = true;
+        public bool tight_abs_mass = true;
+        public List<TopDownHit> top_down_hits = new List<TopDownHit>();
+        public List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
+        public TopDownReader topdownReader = new TopDownReader();
+        //C-score > 40: proteoform is both identified and fully characterized; 
+        //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
+        //C-score < 3: proteoform is neither identified nor characterized.
+
+        public void read_in_td_hits()
+        {
+            topdownReader.topdown_ptms.Clear();
+            theoretical_database.get_modifications(Environment.CurrentDirectory);
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
+            {
+                top_down_hits.AddRange(topdownReader.ReadTDFile(file));
+            }
+        }
+
+        public void aggregate_td_hits(List<TopDownHit> top_down_hits)
+        {
+            //get topdown hits that meet criteria
+            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.ms2_retention_time >= min_RT_td && h.ms2_retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+
+            //need to loop through - if 2 hits are from same MS2 and have same exact p-value, only one should be reported. Choose higher score
+            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
+            while (unprocessed_td_hits.Count > 0)
+            {
+                TopDownHit root = unprocessed_td_hits[0];
+                remaining_td_hits.Add(root);
+                unprocessed_td_hits = unprocessed_td_hits.Except(unprocessed_td_hits.Where(h => h.pvalue == root.pvalue && h.ms2ScanNumber == root.ms2ScanNumber && h.filename == root.filename)).ToList();
+            }
+
+            List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
+            Parallel.ForEach(PFRs, pfr =>
+            {
+                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr == pfr).ToList();
+                List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
+                //aggregate to td hit w/ highest c-score as root - 1st average for retention time
+                while (hits_by_pfr.Count > 0)
+                {
+                    TopDownHit root = hits_by_pfr[0];
+                    //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
+                    //find topdownhits within RT tol --> first average
+                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance)).Select(h => h.ms2_retention_time).Average();
+                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
+                    root = hits_to_aggregate[0];
+                    //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
+                    TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
+                    hits_by_pfr = hits_by_pfr.Except(new_pf.topdown_hits).ToList();
+
+                    //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
+                    lock (topdown_proteoforms)
+                    {
+                        int count = topdown_proteoforms.Count(t => t.accession == new_pf.accession);
+                        if (count > 0)
+                        {
+                            string[] old_accession = new_pf.accession.Split('_');
+                            count += topdown_proteoforms.Count(t => t.accession.Split('_')[2] == old_accession[2]);
+                            new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + "_" + old_accession[3] + "_" + old_accession[4];
+                        }
+                        topdown_proteoforms.Add(new_pf);
+                    }
+                }
+            });
+        }
+        #endregion TOPDOWN 
+
         #region AGGREGATED PROTEOFORMS Public Fields
 
         public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
@@ -298,7 +370,7 @@ namespace ProteoformSuiteInternal
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
-
+            vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms);
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
@@ -326,6 +398,28 @@ namespace ProteoformSuiteInternal
                 pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
             }
         }
+        
+        public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms)
+        {
+            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)))
+            {
+                double mass = topdown.modified_mass;
+                List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
+                //remove existing experimentals that correspond to this topdown
+                foreach (int m in missed_monoisotopics_range)
+                {
+                    double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
+                    double low = mass + shift - mass_tol;
+                    double high = mass + shift + mass_tol;
+                    vetted_proteoforms = vetted_proteoforms.Except(vetted_proteoforms.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
+                        && Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance))).ToList();
+                }
+                vetted_proteoforms.Add(topdown);
+            }
+            return vetted_proteoforms;
+        }
+       
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
@@ -532,7 +626,6 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
-        public List<ProteoformRelation> td_relations = new List<ProteoformRelation>(); //td data
 
         public void relate_ed()
         {
@@ -591,84 +684,10 @@ namespace ProteoformSuiteInternal
         }
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
 
-        #region TOPDOWN 
-        public double min_RT_td = 40.0;
-        public double max_RT_td = 90.0;
-        public double min_score_td = 3.0;
-        public bool biomarker = true;
-        public bool tight_abs_mass = true;
-        public List<TopDownHit> top_down_hits = new List<TopDownHit>();
-        public TopDownReader topdownReader = new TopDownReader();
-        //C-score > 40: proteoform is both identified and fully characterized; 
-        //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
-        //C-score < 3: proteoform is neither identified nor characterized.
-
-        public void read_in_td_hits()
-        {
-            topdownReader.topdown_ptms.Clear();
-            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
-            {
-                top_down_hits.AddRange(topdownReader.ReadTDFile(file));
-            }
-        }
-
-        public List<TopDownProteoform> AggregateTdHits(List<TopDownHit> top_down_hits)
-        {
-            //get topdown hits that meet criteria
-            List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
-            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.ms2_retention_time >= min_RT_td && h.ms2_retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
-
-            //need to loop through - if 2 hits are from same MS2 and have same exact p-value, only one should be reported. Choose higher score
-            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
-            while(unprocessed_td_hits.Count > 0)
-            {
-                TopDownHit root = unprocessed_td_hits[0];
-                remaining_td_hits.Add(root);
-                unprocessed_td_hits = unprocessed_td_hits.Except(unprocessed_td_hits.Where(h => h.pvalue == root.pvalue && h.ms2ScanNumber == root.ms2ScanNumber && h.filename == root.filename)).ToList();
-            }
-
-            List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
-            Parallel.ForEach(PFRs, pfr =>
-            {
-                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr == pfr).ToList();
-                List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
-                //aggregate to td hit w/ highest c-score as root - 1st average for retention time
-                while (hits_by_pfr.Count > 0)
-                {
-                    TopDownHit root = hits_by_pfr[0];
-                    //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
-                    //find topdownhits within RT tol --> first average
-                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance)).Select(h => h.ms2_retention_time).Average();
-                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
-                    root = hits_to_aggregate[0];
-                    //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
-                    TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
-                    hits_by_pfr = hits_by_pfr.Except(new_pf.topdown_hits).ToList();
-
-                    //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
-                    lock (topdown_proteoforms)
-                    {
-                        int count = topdown_proteoforms.Count(t => t.accession == new_pf.accession);
-                        if (count > 0)
-                        {
-                            string[] old_accession = new_pf.accession.Split('_');
-                            count += topdown_proteoforms.Count(t => t.accession.Split('_')[2] == old_accession[2]);
-                            new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + "_" + old_accession[3] + "_" + old_accession[4];
-                        }
-                        topdown_proteoforms.Add(new_pf);
-                    }
-                }
-            });
-            return topdown_proteoforms;
-        }
-     
-        #endregion TOPDOWN 
-
         #region PROTEOFORM FAMILIES Public Fields
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
         public static bool gene_centric_families = false;
-        public static bool include_td_nodes = true;
         public static string preferred_gene_label = "";
 
         public int deltaM_edge_display_rounding = 2;
@@ -703,36 +722,6 @@ namespace ProteoformSuiteInternal
         {
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\etd_relations.txt"))
-            {
-                writer.WriteLine("target: " + target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
-
-                foreach(var c in Sweet.lollipop.decoy_proteoform_communities)
-                {
-                    writer.WriteLine(c.Value.community_number + ": " + c.Value.experimental_proteoforms.Count(e => e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
-                }
-
-                writer.WriteLine("ET peaks:");
-                foreach(var peak in et_peaks.Where(p => p.Accepted))
-                {
-                    writer.WriteLine("database\tpeakmass\tpeakcount\tEsInPeak\tEsInETD");
-                    writer.WriteLine("target\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
-                    foreach (var c in Sweet.lollipop.decoy_proteoform_communities)
-                    {
-                        writer.WriteLine("Decoy" + c.Value.community_number + "\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
-                    }
-                }
-
-                foreach (var peak in ee_peaks.Where(p => p.Accepted))
-                {
-                    writer.WriteLine("database\tpeakmass\tpeakcount\tEsInPeak\tEsInETD");
-                    writer.WriteLine("target\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
-                    foreach (var c in Sweet.lollipop.decoy_proteoform_communities)
-                    {
-                        writer.WriteLine("Decoy" + c.Value.community_number + "\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
-                    }
-                }
-            }
         }
 
         #endregion PROTEOFORM FAMILIES Public Fields
@@ -1146,22 +1135,8 @@ namespace ProteoformSuiteInternal
         public void clear_td()
         {
             Sweet.lollipop.top_down_hits.Clear();
-            Sweet.lollipop.td_relations.Clear();
             topdownReader.topdown_ptms.Clear();
-            foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }))
-            {
-                community.topdown_proteoforms = new TopDownProteoform[0];
-                foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TopdownExperimental);
-                foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TopdownTheoretical);
-                community.theoretical_proteoforms.ToList().RemoveAll(t => t.topdown_theoretical);
-                if (theoretical_database.theoreticals_by_accession.ContainsKey(community.community_number))
-                {
-                    Parallel.ForEach(theoretical_database.theoreticals_by_accession[community.community_number], list =>
-                    {
-                        list.Value.RemoveAll(t => t.topdown_theoretical);
-                    });
-                }
-            }
+            Sweet.lollipop.topdown_proteoforms.Clear();
         }
 
         public void clear_all_families()

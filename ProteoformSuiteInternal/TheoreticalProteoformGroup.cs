@@ -25,6 +25,7 @@ namespace ProteoformSuiteInternal
             fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
             contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
             psm_list = theoreticals_with_contaminants_first.SelectMany(p => p.psm_list).ToList();
+            topdown_theoretical = theoreticals_with_contaminants_first.First().topdown_theoretical;
         }
 
         #endregion Public Constructor

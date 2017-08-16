@@ -28,8 +28,6 @@ namespace ProteoformSuiteGUI
 
         public void initialize_every_time()
         {
-            cb_include_td_nodes.Enabled = Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length > 0;
-            cb_include_td_nodes.Checked = cb_include_td_nodes.Enabled;
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
             cb_buildAsQuantitative.Enabled = Sweet.lollipop.qVals.Count > 0;
@@ -76,7 +74,7 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.target_proteoform_community.has_e_proteoforms || Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length > 0;
+            return Sweet.lollipop.target_proteoform_community.has_e_proteoforms;
         }
 
         public void RunTheGamut(bool full_run)
@@ -396,11 +394,6 @@ namespace ProteoformSuiteGUI
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
-        }
-
-        private void cb_include_td_nodes_CheckedChanged(object sender, EventArgs e)
-        {
-            Lollipop.include_td_nodes = cb_include_td_nodes.Checked;
         }
 
         private void cb_count_adducts_as_id_CheckedChanged(object sender, EventArgs e)

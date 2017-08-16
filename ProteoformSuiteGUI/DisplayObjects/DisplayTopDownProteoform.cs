@@ -79,7 +79,7 @@ namespace ProteoformSuiteGUI
 
         public double retentionTime
         {
-            get { return t.agg_RT; }
+            get { return t.agg_rt; }
         }
 
         public double theoretical_mass
@@ -90,16 +90,6 @@ namespace ProteoformSuiteGUI
         public int Observations
         {
             get { return t.topdown_hits.Count; }
-        }
-
-        public int TDE_relations
-        {
-            get { return t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental); }
-        }
-
-        public int TDT_relations
-        {
-            get { return t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical); }
         }
 
         #endregion Public Properties
@@ -121,12 +111,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
             dgv.Columns[nameof(retentionTime)].HeaderText = "Retention Time";
             dgv.Columns[nameof(theoretical_mass)].HeaderText = "Theoretical Mass";
-            dgv.Columns[nameof(TDE_relations)].HeaderText = "Topdown-Experimental Relations";
-            dgv.Columns[nameof(TDT_relations)].HeaderText = "Topdown-Theoretical Relations";
             dgv.AllowUserToAddRows = false;
         }
-
         #endregion
-
     }
 }

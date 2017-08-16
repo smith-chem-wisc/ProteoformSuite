@@ -56,7 +56,6 @@
             this.btn_inclusion_list_all_families = new System.Windows.Forms.Button();
             this.cb_unidentified_families = new System.Windows.Forms.CheckBox();
             this.cb_identified_families = new System.Windows.Forms.CheckBox();
-            this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
@@ -338,7 +337,6 @@
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
             this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
-            this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
             this.splitContainer3.Panel2.Controls.Add(this.cb_count_adducts_as_id);
@@ -439,19 +437,6 @@
             this.cb_identified_families.TabIndex = 56;
             this.cb_identified_families.Text = "Identified Families";
             this.cb_identified_families.UseVisualStyleBackColor = true;
-            // 
-            // cb_include_td_nodes
-            // 
-            this.cb_include_td_nodes.AutoSize = true;
-            this.cb_include_td_nodes.Checked = true;
-            this.cb_include_td_nodes.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_include_td_nodes.Location = new System.Drawing.Point(301, 133);
-            this.cb_include_td_nodes.Name = "cb_include_td_nodes";
-            this.cb_include_td_nodes.Size = new System.Drawing.Size(168, 17);
-            this.cb_include_td_nodes.TabIndex = 66;
-            this.cb_include_td_nodes.Text = "Include Topdown Proteoforms";
-            this.cb_include_td_nodes.UseVisualStyleBackColor = true;
-            this.cb_include_td_nodes.CheckedChanged += new System.EventHandler(this.cb_include_td_nodes_CheckedChanged);
             // 
             // rtb_proteoformFamilyResults
             // 
@@ -702,7 +687,6 @@
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
-        public System.Windows.Forms.CheckBox cb_include_td_nodes;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cb_unidentified_families;
         private System.Windows.Forms.CheckBox cb_identified_families;

@@ -161,8 +161,7 @@ namespace ProteoformSuiteInternal
             report += Environment.NewLine;
 
             report += Sweet.lollipop.top_down_hits.Count.ToString() + "\tTop-Down Hits" + Environment.NewLine;
-            report += Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length.ToString() + "\tTop-Down Proteoforms" + Environment.NewLine;
-            report += Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.RelationType == ProteoformComparison.TopdownExperimental)).ToString() + "\tExperimental Proteoforms with Top-Down Pairs" + Environment.NewLine;
+            report += Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.topdown_id).ToString() + "\tTop-Down Proteoforms" + Environment.NewLine;
             report += Environment.NewLine;
 
             report += proteoform_families_report();
@@ -202,23 +201,19 @@ namespace ProteoformSuiteInternal
                 "N/A\t% of Raw Quantitative Components in Families" + Environment.NewLine;
             report += Environment.NewLine;
 
-            int identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0);
+            int identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
             double avg_identified_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
-                Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0)) : 
+                Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) : 
                 -1;
             report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;
             report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")
                     + "\tAverage Identified Experimental Proteoforms by Decoys" + Environment.NewLine;
             if (avg_identified_decoy_proteoforms > 0)
-                report += String.Join(", ", Sweet.lollipop.decoy_proteoform_communities.Select(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0)))
+                report += String.Join(", ", Sweet.lollipop.decoy_proteoform_communities.Select(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))))
                     + "\tIndividual Decoy Community Identified Experimental Proteoforms" + Environment.NewLine;
             report += Sweet.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0 && identified_exp_proteoforms > 0 ?
                 Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR" + Environment.NewLine :
                 "N/A\tProteoform FDR" + Environment.NewLine;
-            report += identified_exp_proteoforms + Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length
-            + "\tTotal Identified Proteoforms" + Environment.NewLine;
-            report += Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0).ToString()
-                + "\tTop-Dop Proteoforms Without Experimental Match" + Environment.NewLine;
             report += Environment.NewLine;
 
             return report;
@@ -379,7 +374,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Statistically Significant", typeof(bool));
 
             foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
-                .Where(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0 && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
+                .Where(e => e.linked_proteoform_references != null && !e.topdown_id && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
                 .OrderByDescending(e => (Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant) ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
@@ -401,7 +396,7 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
                 );
             }
-            foreach (TopDownProteoform td in Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.linked_proteoform_references != null))
+            foreach (TopDownProteoform td in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(t => t.linked_proteoform_references != null && t.topdown_id))
             {
 
                 results.Rows.Add(
@@ -414,7 +409,7 @@ namespace ProteoformSuiteInternal
                     td.ptm_description,
                     td.modified_mass - td.linked_proteoform_references.Last().modified_mass,
                     td.modified_mass,
-                    td.agg_RT,
+                    td.agg_rt,
                     0,
                     0,
                     0,
@@ -423,7 +418,7 @@ namespace ProteoformSuiteInternal
             }
 
 
-                StringBuilder result_string = new StringBuilder();
+             StringBuilder result_string = new StringBuilder();
             string header = "";
             foreach (DataColumn column in results.Columns)
             {
