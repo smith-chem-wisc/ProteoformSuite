@@ -22,6 +22,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Constructor
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Methods
 
         public bool ReadyToRunTheGamut()
@@ -86,13 +92,14 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_rawComponents };
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
-            return new List<DataTable>
+            DataTables = new List<DataTable>
             {
                 DisplayComponent.FormatComponentsTable(Sweet.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)).ToList(), "RawExperimentalComponents"),
                 DisplayComponent.FormatComponentsTable(Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)).ToList(), "RawQuantificationComponents"),
             };
+            return DataTables;
         }
 
         public void FillTablesAndCharts()

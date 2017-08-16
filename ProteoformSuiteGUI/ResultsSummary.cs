@@ -21,6 +21,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Constructor
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Methods
 
         public List<DataGridView> GetDGVs()
@@ -28,7 +34,7 @@ namespace ProteoformSuiteGUI
             return null;
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
             return null;
         }

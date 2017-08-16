@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
-namespace ProteoformSuiteInternal
+namespace ProteoformSuiteGUI
 {
     public class ExcelWriter
     {
+
         #region Private Field
 
         private XLWorkbook workbook = new XLWorkbook();
@@ -61,7 +62,7 @@ namespace ProteoformSuiteInternal
                 IXLWorksheet worksheet = null;
                 lock (workbook)
                 {
-                    worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dt.TableName.Length)) + "_" + dt.TableName);
+                    worksheet = workbook.Worksheets.Add(dt, sheet_name(sheet_prefix, dt.TableName));
                 }
 
                 foreach (var col in worksheet.Columns())
@@ -80,6 +81,22 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        public void BuildHyperlinkSheet(List<Tuple<ISweetForm, List<DataTable>>> sheets)
+        {
+            var ws = workbook.Worksheets.Add("Contents");
+            int row = 1;
+            foreach (Tuple<ISweetForm, List<DataTable>> x in sheets)
+            {
+                if (x.Item2 == null) continue;
+                foreach (DataTable dt in x.Item2)
+                {
+                    ws.Cell(row, 1).Value = "Table S" + row.ToString();
+                    ws.Cell(row, 2).Value = sheet_name((x.Item1 as Form).Name, dt.TableName);
+                    ws.Cell(row++, 2).Hyperlink = new XLHyperlink("'" + sheet_name((x.Item1 as Form).Name, dt.TableName) + "'!A1");
+                }
+            }
+        }
+
         public string SaveToExcel(string filename)
         {
             if (workbook.Worksheets.Count > 0)
@@ -94,6 +111,16 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Methods
+
+        #region Private Method
+
+        private static string sheet_name(string sheet_prefix, string table_name)
+        {
+            return sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - table_name.Length)) + "_" + table_name;
+        }
+
+        #endregion Private Method
+
     }
 }
 

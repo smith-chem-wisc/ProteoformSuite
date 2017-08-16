@@ -16,6 +16,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Private Field
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Constructor
 
         public AggregatedProteoforms()
@@ -179,12 +185,13 @@ namespace ProteoformSuiteGUI
             };
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
-            return new List<DataTable>
+            DataTables = new List<DataTable>
             {
                 DisplayExperimentalProteoform.FormatAggregatesTable(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)).ToList(), "AggregatedProteoforms")
             };
+            return DataTables;
         }
 
         public void FillTablesAndCharts()

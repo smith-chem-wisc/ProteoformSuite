@@ -19,6 +19,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Private Field
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Constructors
 
         public ExperimentExperimentComparison()
@@ -57,13 +63,14 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_EE_Relations, dgv_EE_Peaks };
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
-            return new List<DataTable>
+            DataTables = new List<DataTable>
             {
                 DisplayProteoformRelation.FormatRelationsGridView(Sweet.lollipop.ee_relations.OfType<ProteoformRelation>().Select(r => new DisplayProteoformRelation(r)).ToList(), "EERelations", false, true, false),
                 DisplayDeltaMassPeak.FormatPeakListGridView(Sweet.lollipop.ee_peaks.Select(p => new DisplayDeltaMassPeak(p)).ToList(), "EEPeaks", true)
             };
+            return DataTables;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
