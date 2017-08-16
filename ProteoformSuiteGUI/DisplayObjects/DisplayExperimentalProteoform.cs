@@ -130,9 +130,8 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            for (int i = 0; i < dgv.Columns.Count; i++)
+            foreach (DataGridViewColumn c in dgv.Columns)
             {
-                DataGridViewColumn c = dgv.Columns[i];
                 string h = header(c.Name);
                 string n = number_format(c.Name);
                 c.Name = h != null ? h : c.Name;

@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -68,19 +73,52 @@ namespace ProteoformSuiteGUI
 
             dgv.AllowUserToAddRows = false;
 
-            //HEADERS
-            dgv.Columns[nameof(OriginalID)].HeaderText = "Original ID";
-            dgv.Columns[nameof(ID)].HeaderText = "New ID";
-            dgv.Columns[nameof(PtmCount)].HeaderText = "Num. PTMs Represented";
-            dgv.Columns[nameof(require_proteoform_without_mod)].HeaderText = "Require Proteoform Without This Modification";
-            dgv.Columns[nameof(PtmRank)].HeaderText = "Frequency-Based Rank of PTM Mass";
-
             //EDITABILITY
             dgv.Columns[nameof(OriginalID)].ReadOnly = true;
             dgv.Columns[nameof(Mass)].ReadOnly = true;
+
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.Name = h != null ? h : c.Name;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
+        }
+
+
+        public static DataTable FormatUnlocalizedModificationTable(List<DisplayUnlocalizedModification> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayUnlocalizedModification).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(OriginalID)) return "Original ID";
+            if (property_name == nameof(ID)) return "New ID";
+            if (property_name == nameof(PtmCount)) return "Num. PTMs Represented";
+            if (property_name == nameof(require_proteoform_without_mod)) return "Require Proteoform Without This Modification";
+            if (property_name == nameof(PtmRank)) return "Frequency-Based Rank of PTM Mass";
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current)
+        {
+            return current;
+        }
+
+        private static string number_format(string property_name)
+        {
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

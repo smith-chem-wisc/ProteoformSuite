@@ -180,7 +180,7 @@ namespace ProteoformSuiteGUI
                 ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count), filter)
                 : ExtensionMethods.filter(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count), filter));
             DisplayUtility.FillDataGridView(dgv_main, families.OfType<ProteoformFamily>().Select(f => new DisplayProteoformFamily(f)));
-            DisplayProteoformFamily.format_families_dgv(dgv_main);
+            DisplayProteoformFamily.FormatFamiliesTable(dgv_main);
         }
 
         private void fill_theoreticals(string filter)
