@@ -68,7 +68,12 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_main };
+            return new List<DataGridView> { dgv_main };
+        }
+
+        public List<DataTable> GetTables()
+        {
+            return new List<DataTable> { DisplayProteoformFamily.FormatFamiliesTable(Sweet.lollipop.target_proteoform_community.families.Select(x => new DisplayProteoformFamily(x)).ToList(), "ProteoformFamilies") };
         }
 
         public bool ReadyToRunTheGamut()

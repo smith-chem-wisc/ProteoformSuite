@@ -134,7 +134,7 @@ namespace ProteoformSuiteGUI
             {
                 string h = header(c.Name);
                 string n = number_format(c.Name);
-                c.Name = h != null ? h : c.Name;
+                c.HeaderText = h != null ? h : c.HeaderText;
                 c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
                 c.Visible = visible(c.Name, c.Visible);
             }            

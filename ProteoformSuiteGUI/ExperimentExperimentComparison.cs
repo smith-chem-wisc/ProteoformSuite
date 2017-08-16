@@ -57,6 +57,15 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_EE_Relations, dgv_EE_Peaks };
         }
 
+        public List<DataTable> GetTables()
+        {
+            return new List<DataTable>
+            {
+                DisplayProteoformRelation.FormatRelationsGridView(Sweet.lollipop.ee_relations.OfType<ProteoformRelation>().Select(r => new DisplayProteoformRelation(r)).ToList(), "EERelations", false, true, false),
+                DisplayDeltaMassPeak.FormatPeakListGridView(Sweet.lollipop.ee_peaks.Select(p => new DisplayDeltaMassPeak(p)).ToList(), "EEPeaks", true)
+            };
+        }
+
         public void ClearListsTablesFigures(bool clear_following)
         {           
             //clear all save acceptance actions --> will re-add save actions from loaded actions if peak still exists

@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Windows.Forms;
 
@@ -23,6 +24,11 @@ namespace ProteoformSuiteGUI
         #region Public Methods
 
         public List<DataGridView> GetDGVs()
+        {
+            return null;
+        }
+
+        public List<DataTable> GetTables()
         {
             return null;
         }

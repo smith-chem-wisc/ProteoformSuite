@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -345,16 +346,16 @@ namespace ProteoformSuiteGUI
 
         private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<DataGridView> grid_views = current_form.GetDGVs();
+            List<DataTable> data_tables = current_form.GetTables();
 
-            if (grid_views == null)
+            if (data_tables == null)
             {
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
                 return;
             }
             
             ExcelWriter writer = new ExcelWriter();
-            writer.ExportToExcel(grid_views, (current_form as Form).Name);
+            writer.ExportToExcel(data_tables, (current_form as Form).Name);
             SaveExcelFile(writer, (current_form as Form).Name + "_table.xlsx");
         }
 
@@ -364,8 +365,8 @@ namespace ProteoformSuiteGUI
             ExcelWriter writer = new ExcelWriter();
             Parallel.ForEach(forms, form =>
             {
-                List<DataGridView> grid_views = form.GetDGVs();
-                writer.ExportToExcel(grid_views, (form as Form).Name);
+                List<DataTable> data_tables = form.GetTables();
+                writer.ExportToExcel(data_tables, (form as Form).Name);
             });
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
         }

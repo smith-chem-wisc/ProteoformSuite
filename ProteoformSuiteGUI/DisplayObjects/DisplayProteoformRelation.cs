@@ -270,7 +270,7 @@ namespace ProteoformSuiteGUI
             {
                 string h = header(c.Name, mask_experimental, mask_theoretical, raw_et_histogram);
                 string n = number_format(c.Name, raw_et_histogram);
-                c.Name = h != null ? h : c.Name;
+                c.HeaderText = h != null ? h : c.HeaderText;
                 c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
                 c.Visible = visible(c.Name, c.Visible, mask_experimental, mask_theoretical, raw_et_histogram);
             }
