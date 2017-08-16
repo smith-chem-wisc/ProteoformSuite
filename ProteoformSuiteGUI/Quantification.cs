@@ -246,6 +246,10 @@ namespace ProteoformSuiteGUI
             cmbx_quantitativeValuesTableSelection.SelectedIndex = 0;
             cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += cmbx_quantitativeValuesTableSelection_SelectedIndexChanged;
 
+            // Set the selected analyses
+            get_tusher_analysis();
+            get_selected_analysis();
+
             //Set parameters
             cb_significanceByFoldChange.CheckedChanged -= cb_significanceByFoldChange_CheckedChanged;
             cb_significanceByFoldChange.Checked = Sweet.lollipop.significance_by_log2FC;
@@ -503,6 +507,7 @@ namespace ProteoformSuiteGUI
         private void fill_quantitative_values_table()
         {
             TusherAnalysis tusher = get_tusher_analysis();
+            IGoAnalysis selected_analysis = get_selected_analysis();
 
             if (cmbx_quantitativeValuesTableSelection.SelectedIndex == 0)
             {
@@ -517,12 +522,6 @@ namespace ProteoformSuiteGUI
                 return;
             }
 
-            selected_analysis = new int[] { 2, 3, 4, 5 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
-                ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis
-                : new int[] { 6, 7, 8, 9 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
-                    ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis
-                    : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
-
             IEnumerable<ExperimentalProteoform> proteoforms = new int[] { 2,4,6,8,10,12 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex) 
                 ? Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform> 
                 : Sweet.lollipop.target_proteoform_community.experimental_proteoforms as IEnumerable<ExperimentalProteoform>;
@@ -530,6 +529,16 @@ namespace ProteoformSuiteGUI
             bool include_imputation = new int[] { 2, 3, 6, 7, 10, 11 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex);
 
             DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation));
+        }
+
+        private IGoAnalysis get_selected_analysis()
+        {
+            selected_analysis = new int[] { 2, 3, 4, 5 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
+                ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis
+                : new int[] { 6, 7, 8, 9 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
+                    ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis
+                    : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
+            return selected_analysis;
         }
 
         private void cmbx_quantitativeValuesTableSelection_SelectedIndexChanged(object sender, EventArgs e)
