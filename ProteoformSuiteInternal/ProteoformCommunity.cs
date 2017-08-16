@@ -382,9 +382,9 @@ namespace ProteoformSuiteInternal
         public List<ProteoformFamily> construct_families()
         {
             ProteoformFamily.reset_family_counter();
-            Parallel.ForEach(Sweet.lollipop.td_relations, t =>
+            Parallel.ForEach(topdown_proteoforms.SelectMany(t => t.relationships), r =>
             {
-                t.Accepted =Lollipop.include_td_nodes;
+                r.Accepted = Lollipop.include_td_nodes;
             });
 
             List<Proteoform> proteoforms = new List<Proteoform>();

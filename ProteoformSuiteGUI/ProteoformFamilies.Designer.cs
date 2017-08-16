@@ -483,6 +483,7 @@
             this.cb_count_adducts_as_id.Size = new System.Drawing.Size(180, 24);
             this.cb_count_adducts_as_id.TabIndex = 0;
             this.cb_count_adducts_as_id.Text = "Count Adducts as Identifications";
+            this.cb_count_adducts_as_id.CheckedChanged += new System.EventHandler(this.cb_count_adducts_as_id_CheckedChanged);
             // 
             // cb_buildAsQuantitative
             // 
