@@ -703,6 +703,36 @@ namespace ProteoformSuiteInternal
         {
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\etd_relations.txt"))
+            {
+                writer.WriteLine("target: " + target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
+
+                foreach(var c in Sweet.lollipop.decoy_proteoform_communities)
+                {
+                    writer.WriteLine(c.Value.community_number + ": " + c.Value.experimental_proteoforms.Count(e => e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
+                }
+
+                writer.WriteLine("ET peaks:");
+                foreach(var peak in et_peaks.Where(p => p.Accepted))
+                {
+                    writer.WriteLine("database\tpeakmass\tpeakcount\tEsInPeak\tEsInETD");
+                    writer.WriteLine("target\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
+                    foreach (var c in Sweet.lollipop.decoy_proteoform_communities)
+                    {
+                        writer.WriteLine("Decoy" + c.Value.community_number + "\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
+                    }
+                }
+
+                foreach (var peak in ee_peaks.Where(p => p.Accepted))
+                {
+                    writer.WriteLine("database\tpeakmass\tpeakcount\tEsInPeak\tEsInETD");
+                    writer.WriteLine("target\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + target_proteoform_community.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
+                    foreach (var c in Sweet.lollipop.decoy_proteoform_communities)
+                    {
+                        writer.WriteLine("Decoy" + c.Value.community_number + "\t" + peak.DeltaMass + "\t" + peak.peak_relation_group_count + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak)) + "\t" + c.Value.experimental_proteoforms.Count(e => e.relationships.Any(r => r.peak == peak) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
+                    }
+                }
+            }
         }
 
         #endregion PROTEOFORM FAMILIES Public Fields

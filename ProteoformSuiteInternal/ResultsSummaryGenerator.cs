@@ -209,9 +209,16 @@ namespace ProteoformSuiteInternal
             report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;
             report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")
                     + "\tAverage Identified Experimental Proteoforms by Decoys" + Environment.NewLine;
+            if (avg_identified_decoy_proteoforms > 0)
+                report += String.Join(", ", Sweet.lollipop.decoy_proteoform_communities.Select(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0)))
+                    + "\tIndividual Decoy Community Identified Experimental Proteoforms" + Environment.NewLine;
             report += Sweet.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0 && identified_exp_proteoforms > 0 ?
                 Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR" + Environment.NewLine :
                 "N/A\tProteoform FDR" + Environment.NewLine;
+            report += identified_exp_proteoforms + Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length
+            + "\tTotal Identified Proteoforms" + Environment.NewLine;
+            report += Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) == 0).ToString()
+                + "\tTop-Dop Proteoforms Without Experimental Match" + Environment.NewLine;
             report += Environment.NewLine;
 
             return report;

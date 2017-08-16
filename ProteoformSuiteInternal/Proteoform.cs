@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                         null); //Experimental or TD without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
                 //when form TD relations, already generate best candidate ptmset for relation
-                List<PtmSet> possible_additions = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? null : r.peak.possiblePeakAssignments.Where(p => Math.Sign(p.mass) == Math.Sign(deltaM)).ToList();
+                List<PtmSet> possible_additions = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? null : r.peak.possiblePeakAssignments.Where(p => p.mass == 0 || Math.Sign(p.mass) == Math.Sign(deltaM)).ToList();
                 PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(possible_additions, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
