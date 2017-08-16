@@ -62,8 +62,11 @@ namespace ProteoformSuiteGUI
                 IXLWorksheet worksheet = null;
                 lock (workbook)
                 {
-                    worksheet = workbook.Worksheets.Add(dt, sheet_name(sheet_prefix, dt.TableName));
+                    worksheet = workbook.Worksheets.Add(sheet_name(sheet_prefix, dt.TableName));
                 }
+
+                // speedup by doing this in parallel
+                worksheet.Cell(1, 1).InsertTable(dt);
 
                 foreach (var col in worksheet.Columns())
                 {
