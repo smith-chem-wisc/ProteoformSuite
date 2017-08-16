@@ -173,6 +173,13 @@ namespace ProteoformSuiteGUI
 
             dgv.AllowUserToAddRows = false;
 
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.Visible = visible(c.Name, c.Visible, dgv_purposes);
+            }
+
             //EDITABILITY
             dgv.Columns[nameof(UniqueId)].ReadOnly = true;
             dgv.Columns[nameof(complete_path)].ReadOnly = true;
@@ -180,13 +187,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Filename)].ReadOnly = true;
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
             dgv.Columns[nameof(matchingCalibrationFile)].ReadOnly = true;
-
-            foreach (DataGridViewColumn c in dgv.Columns)
-            {
-                string h = header(c.Name);
-                c.Name = h != null ? h : c.Name;
-                c.Visible = visible(c.Name, c.Visible, dgv_purposes);
-            }
         }
 
         public static DataTable FormatInputFileTable(List<DisplayInputFile> display, string table_name, IEnumerable<Purpose> dgv_purposes)

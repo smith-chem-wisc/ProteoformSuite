@@ -39,6 +39,22 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_loadFiles1, dgv_loadFiles2, dgv_loadFiles3 };
         }
 
+        public List<DataTable> GetTables()
+        {
+            List<DataTable> datatables = new List<DataTable>();
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Count() > 0)
+                datatables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => new DisplayInputFile(x)).ToList(), "IdentificationFiles", new List<Purpose> { Purpose.Identification }));
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Calibration).Count() > 0)
+                datatables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Calibration).Select(x => new DisplayInputFile(x)).ToList(), "CalibrationFiles", new List<Purpose> { Purpose.Calibration }));
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0)
+                datatables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Select(x => new DisplayInputFile(x)).ToList(), "PtmLists", new List<Purpose> { Purpose.PtmList }));
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
+                datatables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(x => new DisplayInputFile(x)).ToList(), "QuantificationFiles", new List<Purpose> { Purpose.Quantification }));
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
+                datatables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Select(x => new DisplayInputFile(x)).ToList(), "ProteinDatabases", new List<Purpose> { Purpose.ProteinDatabase }));
+            return datatables;
+        }
+
         public void ClearListsTablesFigures(bool clear_following)
         {
             Sweet.lollipop.input_files.Clear();

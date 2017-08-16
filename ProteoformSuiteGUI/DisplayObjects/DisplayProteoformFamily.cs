@@ -1,6 +1,4 @@
 ﻿using ProteoformSuiteInternal;
-using System.Windows.Forms;
-using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -90,7 +88,7 @@ namespace ProteoformSuiteGUI
             foreach (DataGridViewColumn c in dgv.Columns)
             {
                 string h = header(c.Name);
-                c.Name = h != null ? h : c.Name;
+                c.HeaderText = h != null ? h : c.HeaderText;
             }
         }
 

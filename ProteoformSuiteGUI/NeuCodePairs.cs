@@ -71,7 +71,12 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_RawExpNeuCodePairs };
+            return new List<DataGridView> { dgv_RawExpNeuCodePairs };
+        }
+
+        public List<DataTable> GetTables()
+        {
+            return new List<DataTable> { DisplayNeuCodePair.FormatNeuCodeTable(Sweet.lollipop.raw_neucode_pairs.Select(x => new DisplayNeuCodePair(x)).ToList(), "NeuCodePairs" ) };
         }
 
         public void InitializeParameterSet()
