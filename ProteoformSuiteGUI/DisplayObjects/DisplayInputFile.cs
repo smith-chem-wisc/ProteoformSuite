@@ -1,6 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -170,16 +173,6 @@ namespace ProteoformSuiteGUI
 
             dgv.AllowUserToAddRows = false;
 
-            //HEADERS
-            dgv.Columns[nameof(UniqueId)].HeaderText = "File ID";
-            dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
-            dgv.Columns[nameof(matchingCalibrationFile)].HeaderText = "Matching Calibration File";
-            dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
-            dgv.Columns[nameof(TechnicalReplicate)].HeaderText = "Technical Replicate";
-            dgv.Columns[nameof(lt_condition)].HeaderText = Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
-            dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
-            dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
-
             //EDITABILITY
             dgv.Columns[nameof(UniqueId)].ReadOnly = true;
             dgv.Columns[nameof(complete_path)].ReadOnly = true;
@@ -188,18 +181,51 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
             dgv.Columns[nameof(matchingCalibrationFile)].ReadOnly = true;
 
-            //VISIBILITY
-            dgv.Columns[nameof(matchingCalibrationFile)].Visible = dgv_purposes.Contains(Purpose.Calibration) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(TechnicalReplicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(hv_condition)].Visible = Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                c.Name = h != null ? h : c.Name;
+                c.Visible = visible(c.Name, c.Visible, dgv_purposes);
+            }
+        }
+
+        public static DataTable FormatInputFileTable(List<DisplayInputFile> display, string table_name, IEnumerable<Purpose> dgv_purposes)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayInputFile).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true, dgv_purposes)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
         #endregion
 
+        #region Private Methods
+
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(UniqueId)) return "File ID";
+            if (property_name == nameof(complete_path)) return "File Path";
+            if (property_name == nameof(matchingCalibrationFile)) return "Matching Calibration File";
+            if (property_name == nameof(biological_replicate)) return "Biological Replicate";
+            if (property_name == nameof(TechnicalReplicate)) return "Technical Replicate";
+            if (property_name == nameof(lt_condition)) return Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
+            if (property_name == nameof(hv_condition)) return "NeuCode Heavy Condition";
+            if (property_name == nameof(ContaminantDB)) return "Contaminant Database";
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current, IEnumerable<Purpose> dgv_purposes)
+        {
+            if (property_name == nameof(matchingCalibrationFile)) return dgv_purposes.Contains(Purpose.Calibration) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(Labeling)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(biological_replicate)) return dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(Fraction)) return dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(TechnicalReplicate)) return dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(hv_condition)) return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(ContaminantDB)) return dgv_purposes.Contains(Purpose.ProteinDatabase);
+            return current;
+        }
+
+        #endregion Private Methods
     }
 }

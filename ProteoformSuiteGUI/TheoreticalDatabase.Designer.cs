@@ -42,7 +42,9 @@
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
+            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
             this.ckbx_Meth_Cleaved = new System.Windows.Forms.CheckBox();
@@ -78,8 +80,6 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
-            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -110,6 +110,7 @@
             this.splitContainer8.Panel2.SuspendLayout();
             this.splitContainer8.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).BeginInit();
@@ -122,7 +123,6 @@
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -341,6 +341,29 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
             // 
+            // nud_randomSeed
+            // 
+            this.nud_randomSeed.Location = new System.Drawing.Point(170, 105);
+            this.nud_randomSeed.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Name = "nud_randomSeed";
+            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
+            this.nud_randomSeed.TabIndex = 21;
+            this.nud_randomSeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
+            // 
             // cb_limitLargePtmSets
             // 
             this.cb_limitLargePtmSets.AutoSize = true;
@@ -353,6 +376,17 @@
             this.cb_limitLargePtmSets.Text = "Three or More Mods of a Kind Only";
             this.cb_limitLargePtmSets.UseVisualStyleBackColor = true;
             this.cb_limitLargePtmSets.CheckedChanged += new System.EventHandler(this.cb_limitLargePtmSets_CheckedChanged);
+            // 
+            // cb_useRandomSeed
+            // 
+            this.cb_useRandomSeed.AutoSize = true;
+            this.cb_useRandomSeed.Location = new System.Drawing.Point(51, 107);
+            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
+            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
+            this.cb_useRandomSeed.TabIndex = 20;
+            this.cb_useRandomSeed.Text = "Use Random Seed:";
+            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
+            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
             // 
             // ckbx_OxidMeth
             // 
@@ -774,40 +808,6 @@
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
-            // nud_randomSeed
-            // 
-            this.nud_randomSeed.Location = new System.Drawing.Point(170, 105);
-            this.nud_randomSeed.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Name = "nud_randomSeed";
-            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
-            this.nud_randomSeed.TabIndex = 21;
-            this.nud_randomSeed.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
-            // 
-            // cb_useRandomSeed
-            // 
-            this.cb_useRandomSeed.AutoSize = true;
-            this.cb_useRandomSeed.Location = new System.Drawing.Point(51, 107);
-            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
-            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
-            this.cb_useRandomSeed.TabIndex = 20;
-            this.cb_useRandomSeed.Text = "Use Random Seed:";
-            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
-            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
-            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -851,6 +851,7 @@
             this.splitContainer8.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).EndInit();
@@ -866,7 +867,6 @@
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             this.ResumeLayout(false);
 
         }

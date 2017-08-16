@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -126,41 +131,69 @@ namespace ProteoformSuiteGUI
 
             dgv.AllowUserToAddRows = false;
 
-            //round table values
-            dgv.Columns[nameof(reported_monoisotopic_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(reported_delta_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(weighted_monoisotopic_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(rt_apex)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(relative_abundance)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(fract_abundance)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(intensity_sum)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(intensity_reported)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(manual_mass_shift)].DefaultCellStyle.Format = "0.####";
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.Name = h != null ? h : c.Name;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
+        }
 
-            //Headers
-            dgv.Columns[nameof(weighted_monoisotopic_mass)].HeaderText = "Weighted Monoisotopic Mass";
-            dgv.Columns[nameof(rt_apex)].HeaderText = "Apex RT";
-            dgv.Columns[nameof(intensity_sum)].HeaderText = "Intensity Sum";
-            dgv.Columns[nameof(input_file_filename)].HeaderText = "Input Filename";
-            dgv.Columns[nameof(input_file_purpose)].HeaderText = "Input File Purpose";
-            dgv.Columns[nameof(input_file_uniqueId)].HeaderText = "Input File Unique ID";
-            dgv.Columns[nameof(component_id)].HeaderText = "Component ID";
-            dgv.Columns[nameof(scan_range)].HeaderText = "Scan Range";
-            dgv.Columns[nameof(rt_range)].HeaderText = "RT Range";
-            dgv.Columns[nameof(num_charge_states)].HeaderText = "No. Charge States";
-            dgv.Columns[nameof(manual_mass_shift)].HeaderText = "Manual Mass Shift";
-            dgv.Columns[nameof(reported_monoisotopic_mass)].HeaderText = "Monoisotopic Mass (from Thermo Decon.)";
-            dgv.Columns[nameof(intensity_reported)].HeaderText = "Intensity (from Thermo Decon.)";
-            dgv.Columns[nameof(num_detected_intervals)].HeaderText = "No. Detected Intervals (from Thermo Decon.)";
-            dgv.Columns[nameof(reported_delta_mass)].HeaderText = "Reported Delta Mass (from Thermo Decon.)";
-            dgv.Columns[nameof(relative_abundance)].HeaderText = "Relative Abundance (from Thermo Decon.)";
-            dgv.Columns[nameof(fract_abundance)].HeaderText = "Fractional Abundance (from Thermo Decon.)";
-
-            //Visibility
-            dgv.Columns[nameof(manual_mass_shift)].Visible = false;
+        public static DataTable FormatComponentsTable(List<DisplayComponent> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayComponent).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
         #endregion
-        
+
+        #region Private Methods
+
+        private static bool visible(string property_name, bool current)
+        {
+            if (property_name == nameof(manual_mass_shift)) return false;
+            return current;
+        }
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(weighted_monoisotopic_mass)) return "Weighted Monoisotopic Mass";
+            if (property_name == nameof(rt_apex)) return "Apex RT";
+            if (property_name == nameof(intensity_sum)) return "Intensity Sum";
+            if (property_name == nameof(input_file_filename)) return "Input Filename";
+            if (property_name == nameof(input_file_purpose)) return "Input File Purpose";
+            if (property_name == nameof(input_file_uniqueId)) return "Input File Unique ID";
+            if (property_name == nameof(component_id)) return "Component ID";
+            if (property_name == nameof(scan_range)) return "Scan Range";
+            if (property_name == nameof(rt_range)) return "RT Range";
+            if (property_name == nameof(num_charge_states)) return "No. Charge States";
+            if (property_name == nameof(manual_mass_shift)) return "Manual Mass Shift";
+            if (property_name == nameof(reported_monoisotopic_mass)) return "Monoisotopic Mass (from Thermo Decon.)";
+            if (property_name == nameof(intensity_reported)) return "Intensity (from Thermo Decon.)";
+            if (property_name == nameof(num_detected_intervals)) return "No. Detected Intervals (from Thermo Decon.)";
+            if (property_name == nameof(reported_delta_mass)) return "Reported Delta Mass (from Thermo Decon.)";
+            if (property_name == nameof(relative_abundance)) return "Relative Abundance (from Thermo Decon.)";
+            if (property_name == nameof(fract_abundance)) return "Fractional Abundance (from Thermo Decon.)";
+            return null;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(reported_monoisotopic_mass)) return "0.0000";
+            if (property_name == nameof(reported_delta_mass)) return "0.0000";
+            if (property_name == nameof(weighted_monoisotopic_mass)) return "0.0000";
+            if (property_name == nameof(rt_apex)) return "0.00";
+            if (property_name == nameof(relative_abundance)) return "0.0000";
+            if (property_name == nameof(fract_abundance)) return "0.0000";
+            if (property_name == nameof(intensity_sum)) return "0.0000";
+            if (property_name == nameof(intensity_reported)) return "0.0000";
+            if (property_name == nameof(manual_mass_shift)) return "0.0000";
+            return null;
+        }
+
+        #endregion Private Methods
+
     }
 }
