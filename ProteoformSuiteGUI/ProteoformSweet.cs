@@ -74,12 +74,12 @@ namespace ProteoformSuiteGUI
             {
                 loadDeconvolutionResults,
                 rawExperimentalComponents,
+                topDown,
                 neuCodePairs,
                 aggregatedProteoforms,
                 theoreticalDatabase,
                 experimentalTheoreticalComparison,
                 experimentExperimentComparison,
-                topDown,
                 identifiedProteoforms,
                 proteoformFamilies,
                 quantification,
@@ -358,10 +358,10 @@ namespace ProteoformSuiteGUI
                 warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
                 warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
             }
-            if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0) > 0)
+            if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                warning_methods.Add(String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
+                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
             }
             if(warning_methods.Count > 1)
             {

@@ -57,6 +57,8 @@ namespace ProteoformSuiteInternal
 
         public string manual_validation_quant { get; set; }
 
+        public bool topdown_id { get; set; }
+
         #endregion Public Properties
 
         #region Public Constructors

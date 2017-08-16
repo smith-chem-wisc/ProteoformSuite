@@ -118,6 +118,11 @@ namespace ProteoformSuiteGUI
             get { return String.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
         }
 
+        public bool topdown_theoretical
+        {
+            get { return t.topdown_theoretical;  }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -143,6 +148,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
             dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
             dgv.Columns[nameof(groupedAccessions)].HeaderText = "Grouped Theoretical Accessions";
+            dgv.Columns[nameof(topdown_theoretical)].HeaderText = "Top-Down Theoretical";
 
             dgv.AllowUserToAddRows = false;
         }

@@ -24,7 +24,7 @@ namespace ProteoformSuiteInternal
         public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
         public bool contaminant { get; set; }
         public List<GoTerm> goTerms { get; private set; }
-        public bool topdown_theoretical { get; set; } = false;
+        public bool topdown_theoretical { get; set; }
         #endregion Public Properties
 
         #region Public Constructor
