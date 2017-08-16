@@ -353,7 +353,7 @@ namespace ProteoformSuiteGUI
                 return;
             }
             
-            DGVExcelWriter writer = new DGVExcelWriter();
+            ExcelWriter writer = new ExcelWriter();
             writer.ExportToExcel(grid_views, (current_form as Form).Name);
             SaveExcelFile(writer, (current_form as Form).Name + "_table.xlsx");
         }
@@ -361,7 +361,7 @@ namespace ProteoformSuiteGUI
 
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DGVExcelWriter writer = new DGVExcelWriter();
+            ExcelWriter writer = new ExcelWriter();
             Parallel.ForEach(forms, form =>
             {
                 List<DataGridView> grid_views = form.GetDGVs();
@@ -370,7 +370,7 @@ namespace ProteoformSuiteGUI
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
         }
 
-        private void SaveExcelFile(DGVExcelWriter writer, string filename)
+        private void SaveExcelFile(ExcelWriter writer, string filename)
         {
             saveExcelDialog.FileName = filename;
             DialogResult dr = saveExcelDialog.ShowDialog();

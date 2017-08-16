@@ -6,46 +6,62 @@ using System.Windows.Forms;
 
 namespace ProteoformSuiteInternal
 {
-    class DGVExcelWriter
+    public class ExcelWriter
     {
+        #region Private Field
 
         private XLWorkbook workbook = new XLWorkbook();
+
+        #endregion Private Field
+
+        #region Public Methods
 
         public void ExportToExcel(List<DataGridView> dgvs, string sheet_prefix)
         {
             if (dgvs == null)
                 return;
 
+            List<DataTable> datatables = new List<DataTable>();
             foreach (DataGridView dgv in dgvs)
             {
-                if (dgv.DataSource == null || dgv.Columns.Count == 0 || dgv.Rows.Count == 0) continue;
-                DataTable dt = new DataTable();
+                if (dgv.DataSource == null || dgv.Columns.Count == 0 || dgv.Rows.Count == 0)
+                    continue;
+
+                DataTable dt = new DataTable(dgv.Name);
+
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
-                    dt.Columns.Add(col.HeaderText);
+                    if (col.Visible)
+                        dt.Columns.Add(col.HeaderText);
                 }
 
-                foreach(DataGridViewRow row in dgv.Rows)
+                foreach (DataGridViewRow row in dgv.Rows)
                 {
                     DataRow new_row = dt.NewRow();
+                    int column_index = 0;
                     foreach (DataGridViewCell cell in row.Cells)
                     {
                         if (dgv.Columns[cell.ColumnIndex].Visible)
-                            new_row[cell.ColumnIndex] = cell.Value == null || cell.Value.ToString() == "NaN" ? "" : cell.Value;
+                            new_row[column_index++] = cell.Value == null || cell.Value.ToString() == "NaN" ? "" : cell.Value;
                     }
-                    lock (dt) dt.Rows.Add(new_row);
+                    dt.Rows.Add(new_row);
                 }
+            }
 
-                foreach (DataGridViewColumn col in dgv.Columns)
-                {
-                    if (!col.Visible)
-                        dt.Columns.Remove(col.HeaderText);
-                }
+            ExportToExcel(datatables, sheet_prefix);
+        }
 
+        public void ExportToExcel(List<DataTable> datatables, string sheet_prefix)
+        {
+            if (datatables == null)
+                return;
+
+            foreach (DataTable dt in datatables)
+            {
                 IXLWorksheet worksheet = null;
                 lock (workbook)
                 {
-                    worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dgv.Name.Length)) + "_" + dgv.Name);
+                    worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dt.TableName.Length)) + "_" + dt.TableName);
                 }
 
                 foreach (var col in worksheet.Columns())
@@ -76,6 +92,8 @@ namespace ProteoformSuiteInternal
                 return "There were no tables to export.";
             }
         }
+
+        #endregion Public Methods
     }
 }
 

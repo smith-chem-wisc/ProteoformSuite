@@ -116,7 +116,7 @@ namespace ProteoformSuiteGUI
             {
                 Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
                 DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates, false);
+                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates);
             }
         }
 
@@ -127,7 +127,7 @@ namespace ProteoformSuiteGUI
             {
                 Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
                 DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates, true);
+                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates);
             }
         }
 
