@@ -37,6 +37,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Constructor
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Methods
 
         public bool ReadyToRunTheGamut()
@@ -74,13 +80,14 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_ET_Relations, dgv_ET_Peak_List };
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
-            return new List<DataTable>
+            DataTables = new List<DataTable>
             {
                 DisplayProteoformRelation.FormatRelationsGridView(Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)).ToList(), "ETRelations", true, false, cb_discoveryHistogram.Checked),
                 DisplayDeltaMassPeak.FormatPeakListGridView(Sweet.lollipop.et_peaks.Select(p => new DisplayDeltaMassPeak(p)).ToList(), "ETPeaks", false)
             };
+            return DataTables;
         }
 
         public void ClearListsTablesFigures(bool clear_following)

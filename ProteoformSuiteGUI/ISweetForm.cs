@@ -29,6 +29,8 @@ namespace ProteoformSuiteGUI
 
         List<DataGridView> GetDGVs();
 
-        List<DataTable> GetTables();
+        List<DataTable> DataTables { get; }
+        List<DataTable> SetTables();
+
     }
 }

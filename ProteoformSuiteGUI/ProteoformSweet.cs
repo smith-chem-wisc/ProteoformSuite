@@ -346,7 +346,7 @@ namespace ProteoformSuiteGUI
 
         private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<DataTable> data_tables = current_form.GetTables();
+            List<DataTable> data_tables = current_form.SetTables();
 
             if (data_tables == null)
             {
@@ -363,11 +363,9 @@ namespace ProteoformSuiteGUI
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExcelWriter writer = new ExcelWriter();
-            Parallel.ForEach(forms, form =>
-            {
-                List<DataTable> data_tables = form.GetTables();
-                writer.ExportToExcel(data_tables, (form as Form).Name);
-            });
+            Parallel.ForEach(forms, form => form.SetTables());
+            writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<ISweetForm, List<DataTable>>(sweet, sweet.DataTables)).ToList());
+            Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as Form).Name));
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
         }
 

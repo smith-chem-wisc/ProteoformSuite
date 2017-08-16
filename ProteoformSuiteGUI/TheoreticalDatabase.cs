@@ -31,6 +31,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Private Fields
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Private Methods
 
         private void TheoreticalDatabase_Load(object sender, EventArgs e)
@@ -88,14 +94,14 @@ namespace ProteoformSuiteGUI
             };
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
-            List<DataTable> datatables = new List<DataTable> { DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)).ToList(), "TargetDatabase") };
+            DataTables = new List<DataTable> { DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)).ToList(), "TargetDatabase") };
             foreach (KeyValuePair<string, ProteoformCommunity> decoy_community in Sweet.lollipop.decoy_proteoform_communities)
             {
-                datatables.Add(DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(decoy_community.Value.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)).ToList(), decoy_community.Key));
+                DataTables.Add(DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(decoy_community.Value.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)).ToList(), decoy_community.Key));
             }
-            return datatables;
+            return DataTables;
         }
 
         public void FillDataBaseTable(string table)
@@ -118,6 +124,8 @@ namespace ProteoformSuiteGUI
                 }
             }
             cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases);
+            cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed_decoys;
+            nud_randomSeed.Value = Sweet.lollipop.randomSeed_decoys;
         }
 
         public void InitializeParameterSet()

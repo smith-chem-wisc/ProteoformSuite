@@ -9,12 +9,13 @@ using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
-    public class DisplayNeuCodePair
+    public class DisplayNeuCodePair : DisplayObject
     {
 
         #region Public Constructors
 
         public DisplayNeuCodePair(NeuCodePair c)
+            : base(c)
         {
             this.c = c;
         }

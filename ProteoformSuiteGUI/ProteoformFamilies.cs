@@ -23,6 +23,12 @@ namespace ProteoformSuiteGUI
 
         #endregion
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Methods
 
         public void initialize_every_time()
@@ -71,9 +77,10 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_main };
         }
 
-        public List<DataTable> GetTables()
+        public List<DataTable> SetTables()
         {
-            return new List<DataTable> { DisplayProteoformFamily.FormatFamiliesTable(Sweet.lollipop.target_proteoform_community.families.Select(x => new DisplayProteoformFamily(x)).ToList(), "ProteoformFamilies") };
+            DataTables = new List<DataTable> { DisplayProteoformFamily.FormatFamiliesTable(Sweet.lollipop.target_proteoform_community.families.Select(x => new DisplayProteoformFamily(x)).ToList(), "ProteoformFamilies") };
+            return DataTables;
         }
 
         public bool ReadyToRunTheGamut()
