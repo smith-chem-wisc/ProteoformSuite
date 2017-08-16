@@ -96,5 +96,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Methods
+
     }
 }

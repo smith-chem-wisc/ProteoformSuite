@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -167,6 +168,33 @@ namespace ProteoformSuiteGUI
             return display_objects.Count > 0 ?
                 display_objects.Select(d => d.display_object).ToArray() :
                 items.ToArray();
+        }
+
+        public static DataTable FormatTable(List<DisplayObject> display_objects, IEnumerable<Tuple<PropertyInfo, string, bool>> property1_header2_visible3, string table_name)
+        {
+            DataTable dt = new DataTable(table_name);
+            if (display_objects == null || display_objects.Count <= 0)
+                return dt;
+
+            DisplayObject first = display_objects[0];
+            foreach (var property_header_visible in property1_header2_visible3)
+            {
+                if (property_header_visible.Item3) dt.Columns.Add(property_header_visible.Item2 != null ? property_header_visible.Item2 : property_header_visible.Item1.Name);
+            }
+
+            foreach (DisplayObject de in display_objects)
+            {
+                DataRow new_row = dt.NewRow();
+                int column_index = 0;
+                foreach (var item in property1_header2_visible3)
+                {
+                    if (item.Item3)
+                        new_row[column_index++] = item.Item1.GetValue(de) == null || item.Item1.GetValue(de).ToString() == "NaN" ? "" : item.Item1.GetValue(de);
+                }
+                dt.Rows.Add(new_row);
+            }
+
+            return dt;
         }
 
         #endregion Public Methods
