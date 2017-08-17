@@ -73,11 +73,11 @@ namespace ProteoformSuiteGUI
             forms = new List<ISweetForm>
             {
                 loadDeconvolutionResults,
-                rawExperimentalComponents,
+                theoreticalDatabase,
                 topDown,
+                rawExperimentalComponents,
                 neuCodePairs,
                 aggregatedProteoforms,
-                theoreticalDatabase,
                 experimentalTheoreticalComparison,
                 experimentExperimentComparison,
                 identifiedProteoforms,

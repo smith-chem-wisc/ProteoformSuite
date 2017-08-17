@@ -42,12 +42,18 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void get_modifications(string current_directory)
+        public void get_theoretical_proteoforms(string current_directory)
         {
-            if (!ready_to_get_modifications(current_directory)) return;
+            if (!ready_to_make_database(current_directory))
+                return;
+
+            //Clear out data from potential previous runs
+            foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
+            {
+                community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            }
 
             theoretical_proteins.Clear();
-            theoreticals_by_accession.Clear();
 
             //Read the UniProt-XML and ptmlist
             List<ModificationWithLocation> all_known_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).OfType<ModificationWithLocation>().ToList();
@@ -82,34 +88,26 @@ namespace ProteoformSuiteInternal
             unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<ModificationWithMass> { new Ptm().modification }));
             load_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
 
-            //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
+            //this is for ptmsets --> used in RELATIONS, theoreticals
             all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, all_mods_with_mass, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2).ToList();
-            for (int i = 2; i < Math.Max(2, Sweet.lollipop.max_ptms) + 1; i++) // the method above doesn't make 2 of a kind, so we make it here
+            for (int i = 2; i < Math.Max(2, Sweet.lollipop.max_ptms) + 1; i++) // the method above doesn't make 2 or more of a kind, so we make it here
             {
                 all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2)));
             }
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
             possible_ptmset_dictionary = make_ptmset_dictionary();
-        }
-
-        public void get_theoretical_proteoforms(string current_directory)
-        {
-            if (!ready_to_make_database(current_directory))
-                return;
-
-            //Clear out data from potential previous runs
-            foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
-            {
-                community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            }
-
-            get_modifications(current_directory);
-
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             populate_aa_mass_dictionary();
-            if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
+            make_theoretical_proteoforms();
+        }
+
+        //separate --> if topdown proteoforms, need to redo this and add topdown proteoforms
+        public void make_theoretical_proteoforms()
+        {
+            theoreticals_by_accession.Clear();
             add_topdown_sequences();
+            if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
             process_entries(expanded_proteins, variableModifications);
             process_decoys(expanded_proteins, variableModifications);
@@ -127,7 +125,6 @@ namespace ProteoformSuiteInternal
                 if (Sweet.lollipop.combine_theoretical_proteoforms_byMass) community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
                 add_theoreticals_to_accession_dictionary(community.theoretical_proteoforms, community.community_number);
             });
-
         }
 
 
@@ -300,17 +297,11 @@ namespace ProteoformSuiteInternal
         /// <returns></returns>
         public bool ready_to_make_database(string current_directory)
         {
-            List<InputFile> proteinDbs = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList();
-            return proteinDbs.Count > 0
-                && ready_to_get_modifications(current_directory);
-        }
-
-        public bool ready_to_get_modifications(string current_directory)
-        {
             Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
             List<InputFile> proteinDbs = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList();
-            return proteinDbs.Any(file => ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)
-               || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0;
+            return proteinDbs.Count > 0
+                && (proteinDbs.Any(file => ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)
+                || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0);
         }
 
         public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<ModificationWithMass> variableModifications)
@@ -334,7 +325,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-
+            //if topdown protein (added new sequence) only add PTMs of the protein... 
             List<PtmSet> unique_ptm_groups = prot.topdown_protein? new List<PtmSet>() { new PtmSet(prot.OneBasedPossibleLocalizedModifications.SelectMany(m => m.Value.Select(p => new Ptm(m.Key, (ModificationWithMass)p))).ToList(), Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2) }  : PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
@@ -372,7 +363,7 @@ namespace ProteoformSuiteInternal
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.Accession.Split('_')[0] == topdown.accession.Split('_')[0] && p.BaseSequence == topdown.sequence))
                     {
                         Dictionary<int, List<Modification>> mods = new Dictionary<int, List<Modification>>();
-                        foreach (Ptm ptm in topdown.ptm_set.ptm_combination)
+                        foreach (Ptm ptm in topdown.topdown_ptmset.ptm_combination)
                         {
                             if (mods.ContainsKey(ptm.position)) mods[ptm.position].Add(ptm.modification);
                             else mods.Add(ptm.position, new List<Modification>() { ptm.modification });
@@ -391,10 +382,10 @@ namespace ProteoformSuiteInternal
         {
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0])).OrderBy(t => t.gene_name).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
-                if (!new_theoreticals.Any(t => topdown.ptm_set.ptm_combination.Count == t.ptm_set.ptm_combination.Count && !topdown.ptm_set.ptm_combination.Any(m => topdown.ptm_set.ptm_combination.Count(ptm => ptm.modification.id == m.modification.id) != t.ptm_set.ptm_combination.Count(ptm => ptm.modification.id == m.modification.id))))
+                if (!new_theoreticals.Any(t => topdown.topdown_ptmset.ptm_combination.Count == t.ptm_set.ptm_combination.Count && !topdown.topdown_ptmset.ptm_combination.Any(m => topdown.topdown_ptmset.ptm_combination.Count(ptm => ptm.modification.id == m.modification.id) != t.ptm_set.ptm_combination.Count(ptm => ptm.modification.id == m.modification.id))))
                 {
                     //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
-                    PtmSet ptm_set = new PtmSet(topdown.ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
+                    PtmSet ptm_set = new PtmSet(topdown.topdown_ptmset.ptm_combination, mod_ranks, added_ptm_penalty);
                     TheoreticalProteoform t =
                     new TheoreticalProteoform(
                         accession + "_P" + ptm_set_counter.ToString(),

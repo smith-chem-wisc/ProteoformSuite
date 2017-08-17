@@ -216,6 +216,20 @@ namespace ProteoformSuiteInternal
                 "N/A\tProteoform FDR" + Environment.NewLine;
             report += Environment.NewLine;
 
+             identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
+             avg_identified_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
+                Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) :
+                -1;
+            report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms Not Identified in Top-Down" + Environment.NewLine;
+            report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")
+                    + "\tAverage Identified Experimental Proteoforms by Decoys Not Identified in Top-Down" + Environment.NewLine;
+            if (avg_identified_decoy_proteoforms > 0)
+                report += String.Join(", ", Sweet.lollipop.decoy_proteoform_communities.Select(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))))
+                    + "\tIndividual Decoy Community Identified Experimental Proteoforms Not Identified in Top-Down" + Environment.NewLine;
+            report += Sweet.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0 && identified_exp_proteoforms > 0 ?
+                Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR for Experimental Proteofomrs Not Identified in Top-Down" + Environment.NewLine :
+                "N/A\tProteoform FDR" + Environment.NewLine;
+            report += Environment.NewLine;
             return report;
         }
 

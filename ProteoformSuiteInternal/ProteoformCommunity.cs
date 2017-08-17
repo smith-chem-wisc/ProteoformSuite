@@ -106,21 +106,20 @@ namespace ProteoformSuiteInternal
         public bool allowed_relation(Proteoform pf1, Proteoform pf2_with_allowed_lysines, ProteoformComparison relation_type)
         {
             if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
-                return 
+                return
                     (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) >= Sweet.lollipop.et_low_mass_difference
-                    && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <= Sweet.lollipop.et_high_mass_difference
-                    && (pf2_with_allowed_lysines.ptm_set.ptm_combination.Count < 3 || pf2_with_allowed_lysines.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2_with_allowed_lysines.ptm_set.ptm_combination.First().modification.monoisotopicMass));
+                    && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <= Sweet.lollipop.et_high_mass_difference;
 
             else if (relation_type == ProteoformComparison.ExperimentalExperimental)
-                return 
+                return
                     pf1 != pf2_with_allowed_lysines
                     && pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference
                     && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;
 
-            else if (relation_type == ProteoformComparison.ExperimentalFalse) 
-                return 
+            else if (relation_type == ProteoformComparison.ExperimentalFalse)
+                return
                     pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
