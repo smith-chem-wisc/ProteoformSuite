@@ -59,6 +59,9 @@ namespace ProteoformSuiteGUI
 
             foreach (DataTable dt in datatables)
             {
+                if (dt.Rows.Count == 0)
+                    continue;
+
                 IXLWorksheet worksheet = null;
                 lock (workbook)
                 {

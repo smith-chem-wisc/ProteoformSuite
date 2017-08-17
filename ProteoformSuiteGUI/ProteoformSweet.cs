@@ -363,9 +363,11 @@ namespace ProteoformSuiteGUI
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExcelWriter writer = new ExcelWriter();
+            if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButtons.OKCancel) == DialogResult.Cancel) return;
             Parallel.ForEach(forms, form => form.SetTables());
             writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<ISweetForm, List<DataTable>>(sweet, sweet.DataTables)).ToList());
             Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as Form).Name));
+            if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButtons.OKCancel) == DialogResult.Cancel) return;
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
         }
 

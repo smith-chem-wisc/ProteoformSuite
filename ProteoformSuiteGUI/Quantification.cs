@@ -64,7 +64,7 @@ namespace ProteoformSuiteGUI
                     Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count.ToString() + "Perm" :
                     "Log2FC";
 
-            //Satisfactory proteoforms with and without imputation
+            // Satisfactory proteoforms with and without imputation
             IEnumerable <ExperimentalProteoform> proteoforms;
             proteoforms = Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform>;
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, true);
@@ -74,7 +74,7 @@ namespace ProteoformSuiteGUI
             results.TableName = "SelectNoImputation" + suffix;
             DataTables.Add(results);
 
-            //All proteoforms with and without imputation
+            // All proteoforms with and without imputation
             proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms as IEnumerable<ExperimentalProteoform>;
             proteoforms = Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform>;
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, true);
@@ -82,6 +82,10 @@ namespace ProteoformSuiteGUI
             DataTables.Add(results);
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false);
             results.TableName = "AllNoImputation" + suffix;
+            DataTables.Add(results);
+
+            // Go term table
+            results = DisplayGoTermNumber.FormatGridView(selected_analysis.GoAnalysis.goTermNumbers.OrderBy(x => x.by).Select(x => new DisplayGoTermNumber(x)).ToList(), "GoTerms");
             DataTables.Add(results);
 
             return DataTables;
@@ -92,7 +96,9 @@ namespace ProteoformSuiteGUI
             ClearListsTablesFigures(true);
             Sweet.lollipop.quantify();
             Sweet.lollipop.Log2FoldChangeAnalysis.calculate_log2fc_statistics();
-            get_go_analysis().GoAnalysis.GO_analysis(Sweet.lollipop.significance_by_log2FC ? Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins : get_go_analysis().inducedOrRepressedProteins);
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.GO_analysis(Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins);
+            Sweet.lollipop.TusherAnalysis2.GoAnalysis.GO_analysis(Sweet.lollipop.TusherAnalysis2.inducedOrRepressedProteins);
+            Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.GO_analysis(Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins);
             FillTablesAndCharts();
         }
 
@@ -246,9 +252,6 @@ namespace ProteoformSuiteGUI
             cmbx_quantitativeValuesTableSelection.SelectedIndex = 0;
             cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += cmbx_quantitativeValuesTableSelection_SelectedIndexChanged;
 
-            // Set the selected analyses
-            get_tusher_analysis();
-            get_selected_analysis();
 
             //Set parameters
             cb_significanceByFoldChange.CheckedChanged -= cb_significanceByFoldChange_CheckedChanged;
@@ -506,19 +509,16 @@ namespace ProteoformSuiteGUI
 
         private void fill_quantitative_values_table()
         {
-            TusherAnalysis tusher = get_tusher_analysis();
-            IGoAnalysis selected_analysis = get_selected_analysis();
-
             if (cmbx_quantitativeValuesTableSelection.SelectedIndex == 0)
             {
-                DisplayUtility.FillDataGridView(dgv_quantification_results, Sweet.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q, tusher)));
+                DisplayUtility.FillDataGridView(dgv_quantification_results, Sweet.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q, get_tusher_analysis())));
                 DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
                 return;
             }
 
             if (cmbx_quantitativeValuesTableSelection.SelectedIndex == 1)
             {
-                DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.results_dataframe(tusher));
+                DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.results_dataframe(get_tusher_analysis()));
                 return;
             }
 
@@ -529,16 +529,6 @@ namespace ProteoformSuiteGUI
             bool include_imputation = new int[] { 2, 3, 6, 7, 10, 11 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex);
 
             DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation));
-        }
-
-        private IGoAnalysis get_selected_analysis()
-        {
-            selected_analysis = new int[] { 2, 3, 4, 5 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
-                ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis
-                : new int[] { 6, 7, 8, 9 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
-                    ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis
-                    : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
-            return selected_analysis;
         }
 
         private void cmbx_quantitativeValuesTableSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -1069,6 +1059,7 @@ namespace ProteoformSuiteGUI
             IGoAnalysis go = Sweet.lollipop.significance_by_log2FC ?
                 Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis :
                 selection < 3 ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis : Sweet.lollipop.TusherAnalysis2 as IGoAnalysis;
+            selected_analysis = go;
             return go;
         }
 
