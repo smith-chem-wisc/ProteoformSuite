@@ -136,7 +136,7 @@ namespace ProteoformSuiteGUI
             //round table values
             dgv.Columns[nameof(unmodified_mass)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(ptm_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(modified_mass)].DefaultCellStyle.Format = "0.####";
+           // dgv.Columns[nameof(modified_mass)].DefaultCellStyle.Format = "0.####";
 
             //set column header
             dgv.Columns[nameof(unmodified_mass)].HeaderText = "Unmodified Mass";

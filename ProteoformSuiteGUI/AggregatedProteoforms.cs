@@ -67,8 +67,10 @@ namespace ProteoformSuiteGUI
                     DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms);
             }
             else
+            {
                 DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, (selected_pf as TopDownProteoform).topdown_hits.Select(h => new DisplayTopDownHit(h)));
                 DisplayTopDownHit.FormatTopdownHitsTable(dgv_AcceptNeuCdLtProteoforms);
+            }
         }
 
         private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)
@@ -164,7 +166,7 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0;
+            return Sweet.lollipop.topdown_proteoforms.Count > 0 || ( Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0 );
         }
 
         public void RunTheGamut(bool full_run)
@@ -210,8 +212,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as TheoreticalDatabase == null)
-                        sweet.ClearListsTablesFigures(false);
+                    sweet.ClearListsTablesFigures(false);
                 }
             }
 

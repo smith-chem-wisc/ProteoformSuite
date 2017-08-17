@@ -111,11 +111,11 @@
             // 
             this.resultsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadDeconvolutionResultsToolStripMenuItem,
+            this.theoreticalProteoformDatabaseToolStripMenuItem,
+            this.topdownResultsToolStripMenuItem,
             this.rawExperimentalProteoformsToolStripMenuItem,
             this.neuCodeProteoformPairsToolStripMenuItem,
-            this.topdownResultsToolStripMenuItem,
             this.aggregatedProteoformsToolStripMenuItem,
-            this.theoreticalProteoformDatabaseToolStripMenuItem,
             this.experimentTheoreticalComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem,

@@ -62,7 +62,7 @@ namespace ProteoformSuiteGUI
 
         public string ptm_description
         {
-            get { return t.ptm_description; }
+            get { return t.topdown_ptm_description; }
         }
 
         public int bottomUpPSMcount

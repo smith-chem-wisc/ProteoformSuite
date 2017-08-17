@@ -45,18 +45,24 @@ namespace ProteoformSuiteGUI
         {
             if (!full_run)
             {
+                if(Sweet.lollipop.top_down_hits.Count == 0)
+                {
+                    MessageBox.Show("Click Read In Top-Down Hits first!");
+                    return;
+                }
+
+                if(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                {
+                    MessageBox.Show("Go back and construct a theoretical database.");
+                    return;
+                }
                 if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
                 {
                     MessageBox.Show("Go back and load in top-down results.");
                     return;
                 }
-                if(!Sweet.lollipop.theoretical_database.ready_to_get_modifications(Environment.CurrentDirectory))
-                {
-                    MessageBox.Show("Load in a ptmlist.");
-                    return;
-                }
             }
-
+            if (Sweet.lollipop.top_down_hits.Count == 0) Sweet.lollipop.read_in_td_hits();
             ClearListsTablesFigures(true);
             AggregateTdHits();
             if (!full_run)
@@ -77,6 +83,8 @@ namespace ProteoformSuiteGUI
                     MessageBox.Show(String.Join("\n\n", warning_methods));
                 }
             }
+            //need to refill theo database --> added theoreticsl
+            (MdiParent as ProteoformSweet).theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
         }
 
@@ -108,7 +116,6 @@ namespace ProteoformSuiteGUI
 
         private void AggregateTdHits()
         {
-             Sweet.lollipop.read_in_td_hits();
             if (Sweet.lollipop.top_down_hits.Count > 0)
             {
                  Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
@@ -156,7 +163,7 @@ namespace ProteoformSuiteGUI
 
             int length = p.sequence.Length + 1;
 
-            foreach (Ptm ptm in p.ptm_set.ptm_combination.Where(m => m.position > 0))
+            foreach (Ptm ptm in p.topdown_ptmset.ptm_combination.Where(m => m.position > 0))
             {
                 int i;
                 try { i = mods.IndexOf(ptm.modification.id); }
@@ -215,16 +222,6 @@ namespace ProteoformSuiteGUI
 
         }
 
-        private void nUD_min_RT_td_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_RT_td = Convert.ToDouble(nUD_min_RT_td.Value);
-        }
-
-        private void nUD_max_RT_td_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.max_RT_td = Convert.ToDouble(nUD_max_RT_td.Value);
-        }
-
         private void nUD_min_score_td_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_score_td = Convert.ToDouble(nUD_min_score_td.Value);
@@ -248,6 +245,22 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, selected_td.OfType<TopDownProteoform>().Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
 
+        }
+
+        private void bt_read_in_td_hits_Click(object sender, EventArgs e)
+        {
+            if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+            {
+                MessageBox.Show("Go back and load in top-down results.");
+                return;
+            }
+            Sweet.lollipop.read_in_td_hits();
+            MessageBox.Show("Successfully read in " + Sweet.lollipop.top_down_hits.Count + " top-down hits.");
+        }
+
+        private void nUD_max_mass_error_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_mass_error = (double)nUD_max_mass_error.Value;
         }
     }
 }

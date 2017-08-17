@@ -22,8 +22,9 @@ namespace ProteoformSuiteInternal
                 proteins_with_contaminants_first.SelectMany(p => p.GoTerms))
         {
             proteinWithGoTermList = proteins_with_contaminants_first.ToList();
-            this.AccessionList = proteins_with_contaminants_first.Select(p => p.Accession).ToList();
+            this.AccessionList = proteins_with_contaminants_first.SelectMany(p => p.AccessionList).ToList();
             this.AccessionList.Sort();
+            topdown_protein = proteinWithGoTermList.Any(p => p.topdown_protein);
         }
     }
 }

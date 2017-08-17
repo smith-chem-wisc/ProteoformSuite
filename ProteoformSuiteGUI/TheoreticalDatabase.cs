@@ -142,7 +142,6 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
-            tb_totalTheoreticalProteoforms.Text = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             FillTablesAndCharts();
             if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
@@ -172,7 +171,10 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    sweet.ClearListsTablesFigures(false);
+                    if (sweet as RawExperimentalComponents == null)
+                    {
+                        sweet.ClearListsTablesFigures(false);
+                    }
                 }
             }
         }
@@ -185,6 +187,7 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
             DisplayUtility.FillDataGridView(dgv_unlocalizedModifications, Sweet.lollipop.theoretical_database.unlocalized_lookup.Values.Select(m => new DisplayUnlocalizedModification(m)));
             DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
+            tb_totalTheoreticalProteoforms.Text = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
         #endregion Public Methods

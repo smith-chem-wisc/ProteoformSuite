@@ -262,8 +262,7 @@ namespace ProteoformSuiteInternal
         #endregion NEUCODE PAIRS
 
         #region TOPDOWN 
-        public double min_RT_td = 40.0;
-        public double max_RT_td = 90.0;
+        public double max_mass_error = .015;
         public double min_score_td = 3.0;
         public bool biomarker = true;
         public bool tight_abs_mass = true;
@@ -276,8 +275,8 @@ namespace ProteoformSuiteInternal
 
         public void read_in_td_hits()
         {
+            Sweet.lollipop.top_down_hits.Clear();
             topdownReader.topdown_ptms.Clear();
-            theoretical_database.get_modifications(Environment.CurrentDirectory);
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
@@ -287,7 +286,7 @@ namespace ProteoformSuiteInternal
         public void aggregate_td_hits(List<TopDownHit> top_down_hits)
         {
             //get topdown hits that meet criteria
-            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.ms2_retention_time >= min_RT_td && h.ms2_retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && Math.Abs(h.reported_mass - h.theoretical_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * MONOISOTOPIC_UNIT_MASS) < max_mass_error && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
 
             //need to loop through - if 2 hits are from same MS2 and have same exact p-value, only one should be reported. Choose higher score
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
@@ -330,6 +329,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+            theoretical_database.make_theoretical_proteoforms();
         }
         #endregion TOPDOWN 
 
@@ -405,6 +405,7 @@ namespace ProteoformSuiteInternal
             {
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
+                List<ExperimentalProteoform> potential_matches = new List<ExperimentalProteoform>();
                 //remove existing experimentals that correspond to this topdown
                 foreach (int m in missed_monoisotopics_range)
                 {
@@ -412,9 +413,10 @@ namespace ProteoformSuiteInternal
                     double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
                     double low = mass + shift - mass_tol;
                     double high = mass + shift + mass_tol;
-                    vetted_proteoforms = vetted_proteoforms.Except(vetted_proteoforms.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
-                        && Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance))).ToList();
+                    potential_matches.AddRange(vetted_proteoforms.Where(ep => !ep.topdown_id && ep.modified_mass >= low && ep.modified_mass <= high
+                        && Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)));
                 }
+                if (potential_matches.Count > 0) vetted_proteoforms.Remove(potential_matches.OrderBy(p => Math.Abs(topdown.modified_mass - Math.Round(topdown.modified_mass - p.modified_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).First());
                 vetted_proteoforms.Add(topdown);
             }
             return vetted_proteoforms;
@@ -1134,8 +1136,6 @@ namespace ProteoformSuiteInternal
 
         public void clear_td()
         {
-            Sweet.lollipop.top_down_hits.Clear();
-            topdownReader.topdown_ptms.Clear();
             Sweet.lollipop.topdown_proteoforms.Clear();
         }
 

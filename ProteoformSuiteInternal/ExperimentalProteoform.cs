@@ -331,16 +331,19 @@ namespace ProteoformSuiteInternal
 
         public void shift_masses(int shift, bool neucode_labeled)
         {
-            foreach (IAggregatable c in aggregated)
+            if (!topdown_id)
             {
-                if (neucode_labeled)
+                foreach (IAggregatable c in aggregated)
                 {
-                    (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                    (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                }
-                else
-                {
-                    (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    if (neucode_labeled)
+                    {
+                        (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    }
+                    else
+                    {
+                        (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    }
                 }
             }
 
