@@ -38,7 +38,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
             load_colors();
-            load_ptm_colors();
+            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.ptm_set.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
         }
 
         public void RunTheGamut(bool full_run)
@@ -165,10 +165,18 @@ namespace ProteoformSuiteGUI
 
             foreach (Ptm ptm in p.topdown_ptmset.ptm_combination.Where(m => m.position > 0))
             {
-                int i;
-                try { i = mods.IndexOf(ptm.modification.id); }
-                catch { i = 0; } //just make color blue if > 20 unique PTMs
-                Color color = colors[i];
+                int i = 0;
+                Color color;
+                try
+                {
+                    i = mods.IndexOf(ptm.modification.id);
+                    color = colors[i];
+                }
+                catch
+                {
+                    i = 0;
+                    color = colors[0];
+                } //just make color blue if > 20 unique PTMs
 
                 rtb_sequence.SelectionStart = ptm.position - 1;
                 rtb_sequence.SelectionLength = 1;
@@ -204,17 +212,6 @@ namespace ProteoformSuiteGUI
             colors[17] = Color.DarkOliveGreen;
             colors[18] = Color.Fuchsia;
             colors[19] = Color.HotPink;
-        }
-
-        private static void load_ptm_colors()
-        {
-            List<Ptm> ptm = new List<Ptm>();
-            foreach (TopDownProteoform p in Sweet.lollipop.topdown_proteoforms)
-            {
-                ptm.AddRange(p.ptm_set.ptm_combination);
-            }
-            IEnumerable<string> unique_ptm = ptm.Select(p => p.modification.id).Distinct();
-            mods = unique_ptm.ToList();
         }
 
         private void TopDown_Load(object sender, EventArgs e)

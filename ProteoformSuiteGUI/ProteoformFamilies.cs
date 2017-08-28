@@ -236,9 +236,9 @@ namespace ProteoformSuiteGUI
 
             else if (new List<string> { nameof(DisplayProteoformFamily.topdown_count) }.Contains(dgv_main.Columns[column_index].Name))
             {
-                if (selected_family.topdown_proteoforms.Count > 0)
+                if (selected_family.experimental_proteoforms.Count(p => p.topdown_id) > 0)
                 {
-                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.topdown_proteoforms.Select(td => new DisplayTopDownProteoform(td)));
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Where(p => p.topdown_id).Select(td => new DisplayTopDownProteoform(td as TopDownProteoform)));
                     DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_proteoform_family_members);
                 }
                 else dgv_proteoform_family_members.Rows.Clear();

@@ -24,14 +24,13 @@ namespace ProteoformSuiteInternal
         #region Public Property
 
         public int family_id { get; set; }
-        public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
+        public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name).Distinct()); } }
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
         public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
         public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
-        public List<TopDownProteoform> topdown_proteoforms { get; set; }
         public List<GeneName> gene_names { get; private set; }
         public List<ProteoformRelation> relations { get; private set; }
         public List<Proteoform> proteoforms { get; private set; }
@@ -84,74 +83,42 @@ namespace ProteoformSuiteInternal
 
         public void identify_experimentals()
         {
-
-            HashSet<Proteoform> identified_experimentals = new HashSet<Proteoform>(); //identified experimentals are topdown proteoforms or experimental proteoforms
+            HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (Proteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
             });
 
-            //Continue looking for new topdown identifications until no more remain to be identified
-            //begin with lowest mass error
-            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null).OrderBy(p => p.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && r.Accepted && r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6)).ToList();
+            //Continue looking for new experimental identifications until no more remain to be identified
+            List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals).OrderBy(p => p.linked_proteoform_references.Count).ThenBy(p => p.relationships.Count > 0 ? (p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6) : 0).ThenByDescending(e => e.agg_intensity).ToList(); 
             int last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {
                 last_identified_count = identified_experimentals.Count;
-                HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
-                foreach (Proteoform id_experimental in newly_identified_experimentals)
+                HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
+                Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);
                             }
-                }
-                newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
+                });
+                newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
             }
-
-
-            //Continue looking for new experimental identifications until no more remain to be identified
-            //order by experimentals with reltaions w/ delta mass closest to candidate theoretical delta mass (if no relations, order first. If no candidate ptmset for relation, order last. 
-            newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as ExperimentalProteoform) != null).OrderBy(p => p.linked_proteoform_references.Count).ThenBy(p => p.relationships.Count > 0 ? (p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6) : 0)).ToList();
-            last_identified_count = identified_experimentals.Count - 1;
-            while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
-            {
-                last_identified_count = identified_experimentals.Count;
-                HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
-                foreach (Proteoform id_experimental in newly_identified_experimentals)
-                {
-                    lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
-                            {
-                                identified_experimentals.Add(new_e);
-                                tmp_new_experimentals.Add(new_e);
-                            }
-                }
-                newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
-            }
-
-            //determine identified experimentals that are adducts
-            //checks if any experimentals have same mods as e's ptmset, except e has additional adduct only mods. 
-            Parallel.ForEach(experimental_proteoforms, e =>
-            {
-                (e as ExperimentalProteoform).adduct = e.ptm_set != null && e.ptm_set.ptm_combination.Any(m => m.modification.id == "Sulfate Adduct" || m.modification.id == "Acetone Artifact (Unconfirmed)" || m.modification.id == "Hydrogen Dodecyl Sulfate")
-                && experimental_proteoforms.Any(l => l.linked_proteoform_references != null && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) && l.ptm_set.ptm_combination.Count() < e.ptm_set.ptm_combination.Count() 
-                && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id) != e.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id))
-                .Count(p => p.modification.modificationType != "Deconvolution Error" && p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0);
-            });
         }
 
-        #endregion Public Methods
 
-         #region Private Methods
+    #endregion Public Methods
 
-        private List<Proteoform> construct_family(List<Proteoform> seed)
+    #region Private Methods
+
+    private List<Proteoform> construct_family(List<Proteoform> seed)
         {
             List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms()).Except(seed).ToList();
             if (seed_expansion.Count == 0) return seed;
@@ -163,7 +130,6 @@ namespace ProteoformSuiteInternal
         {
             theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
             gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
-            topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
             relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.Accepted))).ToList();
         }

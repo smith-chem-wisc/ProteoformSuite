@@ -458,7 +458,7 @@ namespace ProteoformSuiteGUI
 
             if (cmbx_quantitativeValuesTableSelection.SelectedIndex == 1)
             {
-                DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.results_dataframe(tusher));
+                DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.experimental_results_dataframe(tusher));
                 return;
             }
 

@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
         public bool is_target { get; set; } = true;
         public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }
-        public string ptm_description { get; set; }
+        public string ptm_description { get; set; } = "";
         public PtmSet ptm_set
         {
             get

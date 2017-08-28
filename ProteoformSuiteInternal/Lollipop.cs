@@ -312,7 +312,7 @@ namespace ProteoformSuiteInternal
                     List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
                     root = hits_to_aggregate[0];
                     //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
-                    TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
+                    TopDownProteoform new_pf = new TopDownProteoform(root.accession, hits_to_aggregate);
                     hits_by_pfr = hits_by_pfr.Except(new_pf.topdown_hits).ToList();
 
                     //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
@@ -375,7 +375,7 @@ namespace ProteoformSuiteInternal
             target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
-                community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+                community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => e.topdown_id ? new TopDownProteoform(e as TopDownProteoform) : new ExperimentalProteoform(e)).ToArray();
             }
             if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
             {
@@ -416,7 +416,14 @@ namespace ProteoformSuiteInternal
                     potential_matches.AddRange(vetted_proteoforms.Where(ep => !ep.topdown_id && ep.modified_mass >= low && ep.modified_mass <= high
                         && Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)));
                 }
-                if (potential_matches.Count > 0) vetted_proteoforms.Remove(potential_matches.OrderBy(p => Math.Abs(topdown.modified_mass - Math.Round(topdown.modified_mass - p.modified_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).First());
+                if (potential_matches.Count > 0)
+                {
+                    ExperimentalProteoform matching_experimental = potential_matches.OrderBy(p => Math.Abs(topdown.modified_mass - Math.Round(topdown.modified_mass - p.modified_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).First();
+                    topdown.matching_experimental = matching_experimental;
+                    topdown.agg_intensity = matching_experimental.agg_intensity;
+                    vetted_proteoforms.Remove(matching_experimental);
+                }
+                else topdown.matching_experimental = null;
                 vetted_proteoforms.Add(topdown);
             }
             return vetted_proteoforms;

@@ -142,17 +142,6 @@ namespace ProteoformSuiteGUI
             get { return e.topdown_id; }
         }
 
-        public int other_topdown
-        {
-            get
-            {
-                return e.linked_proteoform_references != null ?
-                Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(t => t.topdown_id && t.gene_name == e.gene_name && t != e &&
-                Math.Abs(t.modified_mass - e.modified_mass) * 1e6 / e.modified_mass < (double)Sweet.lollipop.mass_tolerance) :
-                0;
-            }
-        }
-
         public int bottomup_PSMs
         {
             get
@@ -200,7 +189,6 @@ namespace ProteoformSuiteGUI
 
             //VISIBILITY
             dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled;
-            dgv.Columns[nameof(other_topdown)].Visible = false;
             dgv.Columns[nameof(bottomup_PSMs)].Visible = false;
             dgv.Columns[nameof(theoretical_accession)].Visible = false;
             dgv.Columns[nameof(fragment)].Visible = false;
@@ -230,7 +218,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(theoretical_accession)].HeaderText = "Theoretical Accession";
             dgv.Columns[nameof(fragment)].HeaderText = "Fragment";
             dgv.Columns[nameof(topdown_id)].HeaderText = "Top-Down Identified";
-            dgv.Columns[nameof(other_topdown)].HeaderText = "Other TopDown Proteoforms With Same Gene Name and Mass";
             dgv.Columns[nameof(bottomup_PSMs)].HeaderText = "BottomUp PSMs Count";
 
             //VISIBILITY

@@ -51,11 +51,11 @@ namespace ProteoformSuiteInternal
 
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
 
-        public string manual_validation_id { get; set; }
+        public string manual_validation_id { get; set; } = "";
 
-        public string manual_validation_verification { get; set; }
+        public string manual_validation_verification { get; set; } = "";
 
-        public string manual_validation_quant { get; set; }
+        public string manual_validation_quant { get; set; } = "";
 
         public bool topdown_id { get; set; }
 

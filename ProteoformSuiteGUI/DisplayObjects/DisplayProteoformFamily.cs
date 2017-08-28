@@ -1,5 +1,6 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace ProteoformSuiteGUI
 {
@@ -31,7 +32,7 @@ namespace ProteoformSuiteGUI
 
         public int experimental_count
         {
-            get { return f.experimental_proteoforms.Count; }
+            get { return f.experimental_proteoforms.Count(e => !e.topdown_id); }
         }
 
         public string experimentals_list
@@ -51,7 +52,7 @@ namespace ProteoformSuiteGUI
 
         public int topdown_count
         {
-            get { return f.topdown_proteoforms.Count; }
+            get { return f.experimental_proteoforms.Count(e => e.topdown_id); }
         }
 
         public string accession_list
