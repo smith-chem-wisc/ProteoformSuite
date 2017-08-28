@@ -126,8 +126,8 @@ namespace ProteoformSuiteInternal
             if (folder_path == "" || !Directory.Exists(folder_path))
                 return "Please choose a folder in which the families will be built, so you can load them into Cytoscape.";
 
-            if (families.Any(f => f.experimental_proteoforms.Count == 0 && f.topdown_proteoforms.Count == 0))
-                return "Error: there is a family with zero experimental or top-down proteoforms.";
+            if (families.Any(f => f.experimental_proteoforms.Count == 0))
+                return "Error: there is a family with zero experimental proteoforms.";
 
             string nodes_path = Path.Combine(folder_path, file_prefix + node_file_prefix + time_stamp + node_file_extension);
             string edges_path = Path.Combine(folder_path, file_prefix + edge_file_prefix + time_stamp + edge_file_extension);
@@ -299,10 +299,10 @@ namespace ProteoformSuiteInternal
                 case 0: //arbitrary circle
                 case 2: //mass circle
                 default:
-                    layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).Concat(families.SelectMany(f => f.topdown_proteoforms)).OrderBy(p => p.modified_mass);
+                    layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).OrderBy(p => p.modified_mass);
                     break;
                 case 1: //mass-based spiral
-                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(families.SelectMany(f => f.topdown_proteoforms)).OrderBy(p => p.modified_mass));
+                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().OrderBy(p => p.modified_mass));
                     break;
             }
 
@@ -315,11 +315,6 @@ namespace ProteoformSuiteInternal
                     string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                     node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
                 }
-                if (p as TopDownProteoform != null)
-                {
-                    string node_type = td_label;
-                    node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
-                }
 
                 if (p as ExperimentalProteoform != null)
                 {
@@ -327,6 +322,8 @@ namespace ProteoformSuiteInternal
 
                     string node_type = quantitative != null && ep.quant.intensitySum == 0 ?
                         experimental_notQuantified_label :
+                        ep.topdown_id? 
+                        td_label :
                         experimental_label;
 
                     string total_intensity = quantitative != null ?
@@ -343,7 +340,7 @@ namespace ProteoformSuiteInternal
                         "Aggregated Mass = " + ep.agg_mass.ToString(),
                         "Aggregated Retention Time = " + ep.agg_rt.ToString(),
                         "Total Intensity = " + total_intensity.ToString(),
-                        "Aggregated Component Count = " + ep.aggregated.Count.ToString(),
+                        "Aggregated Component Count = " + (ep.topdown_id ? (ep as TopDownProteoform).topdown_hits.Count.ToString() : ep.aggregated.Count.ToString()),
                         Sweet.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
                         "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id,
                         "Abundant Component for Manual Validation of Identification Validation: " + ep.manual_validation_verification
@@ -427,10 +424,6 @@ namespace ProteoformSuiteInternal
                 return p.accession + " " + p.ptm_description;
             }
 
-            else if (p as TopDownProteoform != null)
-            {
-                return p.accession + "_" + Math.Round((p as TopDownProteoform).agg_rt, double_rounding) + "_min " + p.ptm_description;
-            }
 
             else
             {

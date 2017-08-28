@@ -88,7 +88,7 @@ namespace ProteoformSuiteInternal
             unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<ModificationWithMass> { new Ptm().modification }));
             load_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
 
-            //this is for ptmsets --> used in RELATIONS, theoreticals
+            //this is for ptmsets --> used in RELATIONS
             all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, all_mods_with_mass, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2).ToList();
             for (int i = 2; i < Math.Max(2, Sweet.lollipop.max_ptms) + 1; i++) // the method above doesn't make 2 or more of a kind, so we make it here
             {
@@ -97,8 +97,6 @@ namespace ProteoformSuiteInternal
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
             possible_ptmset_dictionary = make_ptmset_dictionary();
-            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
-            populate_aa_mass_dictionary();
             make_theoretical_proteoforms();
         }
 
@@ -106,6 +104,8 @@ namespace ProteoformSuiteInternal
         public void make_theoretical_proteoforms()
         {
             theoreticals_by_accession.Clear();
+            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
+            populate_aa_mass_dictionary();
             add_topdown_sequences();
             if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
@@ -285,8 +285,8 @@ namespace ProteoformSuiteInternal
             Dictionary<double, List<TheoreticalProteoform>> mass_groupings = new Dictionary<double, List<TheoreticalProteoform>>();
             foreach (TheoreticalProteoform t in theoreticals)
             {
-                if (mass_groupings.ContainsKey(t.modified_mass)) mass_groupings[t.modified_mass].Add(t);
-                else mass_groupings.Add(t.modified_mass, new List<TheoreticalProteoform> { t });
+                if (mass_groupings.ContainsKey(Math.Round(t.modified_mass, 4))) mass_groupings[Math.Round(t.modified_mass, 4)].Add(t);
+                else mass_groupings.Add(Math.Round(t.modified_mass, 4), new List<TheoreticalProteoform> { t });
             }
             return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value.OrderByDescending(t => t.contaminant ? 1 : 0).ThenBy(t => t.topdown_theoretical ? 1 : 0))).ToArray();
         }

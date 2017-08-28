@@ -32,14 +32,12 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
-            dgv_other_topdown_ids.DataSource = null;
-            dgv_other_topdown_ids.Rows.Clear();
+            dgv_bottom_up_peptides.DataSource = null;
+            dgv_bottom_up_peptides.Rows.Clear();
             dgv_identified_experimentals.DataSource = null;
             dgv_identified_experimentals.Rows.Clear();
-            dgv_same_topdown_id.DataSource = null;
-            dgv_same_topdown_id.Rows.Clear();
-            dgv_other_topdown_ids.DataSource = null;
-            dgv_other_topdown_ids.Rows.Clear();
+            dgv_td_proteoforms.DataSource = null;
+            dgv_td_proteoforms.Rows.Clear();
         }
 
         public void InitializeParameterSet()
@@ -52,32 +50,29 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_identified_experimentals, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatIdentifiedProteoformTable(dgv_identified_experimentals);
+            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id && e.linked_proteoform_references != null)).Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
+            DisplayTopDownProteoform.FormatIdentifiedProteoformTable(dgv_td_proteoforms);
             tb_bottom_up.Text = "Bottom-Up Peptides";
-            tb_etd.Text = "Top-Down Pairs";
-            tb_other_td.Text = "Other Top-Down Proteoforms of Same Gene and Mass";
+            tb_not_td.Text = "Identified Experimental Proteoforms Not in Top-Down";
+            tb_topdown.Text = "Top-Down Proteoforms";
         }
 
-
-        private void identified_experimentals_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if ( e.RowIndex >= 0) display_td_bu_proteoforms(e.RowIndex);
-        }
 
         private void dgv_identified_proteoforms_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex >= 0) display_td_bu_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0) display_bu_peptides(e.RowIndex);
+        }
+
+        private void dgv_topdown_proteoforms_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0) display_bu_peptides(e.RowIndex);
         }
 
 
-        private void display_td_bu_proteoforms(int row_index)
+        private void display_bu_peptides(int row_index)
         {
             ExperimentalProteoform selected_experimental = (ExperimentalProteoform)((DisplayObject)this.dgv_identified_experimentals.Rows[row_index].DataBoundItem).display_object;
-            DisplayUtility.FillDataGridView(dgv_same_topdown_id, selected_experimental as TopDownProteoform != null ?  new List<DisplayTopDownProteoform>() {new DisplayTopDownProteoform(selected_experimental as TopDownProteoform) } : new List<DisplayTopDownProteoform>());
-            DisplayUtility.FillDataGridView(dgv_other_topdown_ids, Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(t => t.topdown_id && t.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == selected_experimental.gene_name.get_prefered_name(Lollipop.preferred_gene_label) && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
-                Math.Abs(t.modified_mass - selected_experimental.modified_mass) < (double)Sweet.lollipop.mass_tolerance).Select(t => new DisplayTopDownProteoform(t as TopDownProteoform)));
             DisplayUtility.FillDataGridView(dgv_bottom_up_peptides, selected_experimental.family.theoretical_proteoforms.Where(t => t.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == selected_experimental.gene_name.get_prefered_name(Lollipop.preferred_gene_label)).SelectMany(t => t.psm_list).Select(t => new DisplayBottomUpPSM(t)));
-            DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_other_topdown_ids);
-            DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_same_topdown_id);
             DisplayBottomUpPSM.FormatTopDownProteoformTable(dgv_bottom_up_peptides);
         }
 

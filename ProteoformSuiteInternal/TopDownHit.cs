@@ -76,7 +76,8 @@ namespace ProteoformSuiteInternal
             this.filename = h.filename;
             this.pvalue = pvalue;
             this.score = h.score;
-        }
+            this.pfr = pfr;
+    }
 
         public TopDownHit()
         {

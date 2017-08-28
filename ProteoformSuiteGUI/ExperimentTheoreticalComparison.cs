@@ -53,39 +53,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             shift_masses(); //check for shifts from presets (need to have peaks formed first)
             FillTablesAndCharts();
-            using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\inpeak.txt"))
-            {
-                foreach(var r in Sweet.lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).First().grouped_relations)
-                {
-                    if((r.connected_proteoforms[0] as ExperimentalProteoform).topdown_id)
-                    {
-                        TopDownProteoform t = r.connected_proteoforms[0] as TopDownProteoform;
-                        writer.WriteLine(t.accession + "\t" + t.topdown_ptm_description + "\t" + (r.connected_proteoforms[1] as TheoreticalProteoform).accession + "\t" + (r.connected_proteoforms[1] as TheoreticalProteoform).ptm_description + "\t" + t.theoretical_mass + "\t" + t.modified_mass);
-                    }
-                }
-            }
-
-            using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\notinpeak.txt"))
-            {
-                foreach (var e in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.relationships.Any(r => r.peak == Sweet.lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).First())))
-                {
-                    if(e.topdown_id)
-                    {
-                        TopDownProteoform t = e as TopDownProteoform;
-                        writer.WriteLine(t.accession + "\t" + t.topdown_ptm_description + "\t" + t.pfr + "\t" + t.theoretical_mass + "\t" + t.modified_mass);
-                    }
-                }
-            }
-            using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\et_peak_relations.txt"))
-            {
-                writer.WriteLine("accessionT\taccessionTD\tstartT\tstartTD\tendT\tendTD\tptmT\tptmTD");
-                foreach (var relation in Sweet.lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).First().grouped_relations)
-                {
-                    TopDownProteoform td = relation.connected_proteoforms[0] as TopDownProteoform;
-                    TheoreticalProteoform t = relation.connected_proteoforms[1] as TheoreticalProteoform;
-                    writer.WriteLine(t.accession + "\t" + td.accession + "\t" + t.begin + "\t" + td.begin + "\t" + t.end + "\t" + td.end + "\t" + t.ptm_description + "\t" + td.topdown_ptm_description);
-                }
-            }
         }
 
         public void FillTablesAndCharts()
