@@ -2,6 +2,9 @@
 using ProteoformSuiteInternal;
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Data;
+using System.Reflection;
 
 namespace ProteoformSuiteGUI
 {
@@ -111,30 +114,56 @@ namespace ProteoformSuiteGUI
         #endregion Public Properties
 
         #region Public Methods
-
-        public static void FormatTopdownHitsTable(DataGridView dgv)
+        public static void FormatTopDownHitsTable(DataGridView dgv)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.AllowUserToAddRows = false;
 
-            //round table values
-            dgv.Columns[nameof(reported_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(theoretical_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(retention_time)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(pvalue)].DefaultCellStyle.Format = "0.####";
-
-            //Headers
-            dgv.Columns[nameof(input_file_filename)].HeaderText = "Input Filename";
-            dgv.Columns[nameof(reported_mass)].HeaderText = "Reported Mass";
-            dgv.Columns[nameof(theoretical_mass)].HeaderText = "Theoreitcal Mass";
-            dgv.Columns[nameof(retention_time)].HeaderText = "Retention Time";
-            dgv.Columns[nameof(uniprot_id)].HeaderText = "Uniprot ID";
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(pvalue)].HeaderText = "P-Score";
-
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
         }
 
+        public static DataTable FormatTopDownHitsTable(List<DisplayComponent> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayComponent).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static bool visible(string property_name, bool current)
+        {
+            return current;
+        }
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(input_file_filename)) return "Input Filename";
+            if (property_name == nameof(reported_mass)) return "Reported Mass";
+            if (property_name == nameof(theoretical_mass)) return "Theoretical Mass";
+            if (property_name == nameof(uniprot_id)) return "Uniprot ID";
+            if (property_name == nameof(retention_time)) return "Retention Time";
+            if (property_name == nameof(pvalue)) return "P-value";
+            if (property_name == nameof(ptm_description)) return "PTM Description";
+            return null;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(reported_mass)) return "0.0000";
+            if (property_name == nameof(theoretical_mass)) return "0.0000";
+            if (property_name == nameof(retention_time)) return "0.00";
+            return null;
+        }
         #endregion
 
     }

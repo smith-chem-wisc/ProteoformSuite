@@ -117,15 +117,15 @@ namespace ProteoformSuiteInternal
         {
             string report = "";
 
-            report += Sweet.lollipop.unprocessed_exp_components.ToString() + "\tUnprocessed Raw Experimental Components" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Sum(f => f.reader.unprocessed_components).ToString() + "\tUnprocessed Raw Experimental Components" + Environment.NewLine;
             report += Sweet.lollipop.raw_experimental_components.Count.ToString() + "\tRaw Experimental Components" + Environment.NewLine;
-            report += Sweet.lollipop.missed_mono_merges_exp.ToString() + "\tMissed Monoisotopic Raw Experimental Components Merged" + Environment.NewLine;
-            report += Sweet.lollipop.harmonic_merges_exp.ToString() + "\tHarmonic Raw Experimental Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Sum(f => f.reader.missed_mono_merges).ToString() + "\tMissed Monoisotopic Raw Experimental Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Sum(f => f.reader.harmonic_merges).ToString() + "\tHarmonic Raw Experimental Components Merged" + Environment.NewLine;
             report += Environment.NewLine;
-            report += Sweet.lollipop.unprocessed_quant_components.ToString() + "\tUnprocessed Raw Quantitative Components" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Sum(f => f.reader.unprocessed_components).ToString() + "\tUnprocessed Raw Quantitative Components" + Environment.NewLine;
             report += Sweet.lollipop.raw_quantification_components.Count.ToString() + "\tRaw Quantitative Components" + Environment.NewLine;
-            report += Sweet.lollipop.missed_mono_merges_quant.ToString() + "\tMissed Monoisotopic Raw Quantitative Components Merged" + Environment.NewLine;
-            report += Sweet.lollipop.harmonic_merges_quant.ToString() + "\tHarmonic Raw Quantitative Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Sum(f => f.reader.missed_mono_merges).ToString() + "\tMissed Monoisotopic Raw Quantitative Components Merged" + Environment.NewLine;
+            report += Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Sum(f => f.reader.harmonic_merges).ToString() + "\tHarmonic Raw Quantitative Components Merged" + Environment.NewLine;
             report += Environment.NewLine;
 
             return report;
@@ -219,12 +219,13 @@ namespace ProteoformSuiteInternal
             report += Sweet.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0 && identified_exp_proteoforms > 0 ?
                 Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR" + Environment.NewLine :
                 "N/A\tProteoform FDR" + Environment.NewLine;
+            report += Environment.NewLine;
+
             int correct_td = Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references != null && p.correct_id);
             int incorrect_td = Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references != null && !p.correct_id);
             report += correct_td + "\tCorrectly Identified Top-Down Proteoforms" + Environment.NewLine;
             report += incorrect_td + "\tIncorrectly Identified Top-Down Proteoforms" + Environment.NewLine;
-            report += Environment.NewLine;
-
+            report += Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references == null) + "\tUnidentified Top-Down Proteoforms" + Environment.NewLine;
              identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => (!e.topdown_id || (e as TopDownProteoform).matching_experimental != null) && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
              avg_identified_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
                 Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => (!e.topdown_id || (e as TopDownProteoform).matching_experimental != null) && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) :
@@ -236,8 +237,8 @@ namespace ProteoformSuiteInternal
                 report += String.Join(", ", Sweet.lollipop.decoy_proteoform_communities.Select(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))))
                     + "\tIndividual Decoy Community Identified Deconvoluted Experimental Proteoforms" + Environment.NewLine;
             report += Sweet.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0 && identified_exp_proteoforms > 0 ?
-                Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR for Deconvoluted Experimental Proteofomrs" + Environment.NewLine :
-                "N/A\tProteoform FDR" + Environment.NewLine;
+                Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR for Deconvoluted Experimental Proteoforms" + Environment.NewLine :
+                "N/A\tProteoform FDR for Deconvoluted Experimental Proteoforms" + Environment.NewLine;
             report += Environment.NewLine;
             return report;
         }

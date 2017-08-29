@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -87,21 +92,51 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            //round table values
-            dgv.Columns[nameof(by)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(p_value)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(log_odds_ratio)].DefaultCellStyle.Format = "0.####";
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
+        }
 
-            //set column header
-            dgv.Columns[nameof(by)].HeaderText = "Benjamini-Yekutieli Corrected p-Value";
-            dgv.Columns[nameof(p_value)].HeaderText = "p-Value";
-            dgv.Columns[nameof(log_odds_ratio)].HeaderText = "Log Odds Ratio";
-            dgv.Columns[nameof(q_significantProteinsWithThisGoTerm)].HeaderText = "Significant Proteins With This Go-Term";
-            dgv.Columns[nameof(k_significantProteins)].HeaderText = "Total Significant Proteins";
-            dgv.Columns[nameof(m_backgroundProteinsWithThisGoTerm)].HeaderText = "Background Proteins With This Go-Term";
-            dgv.Columns[nameof(t_backgroundProteins)].HeaderText = "Total Background Proteins";
-        } 
+        public static DataTable FormatGridView(List<DisplayGoTermNumber> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayGoTermNumber).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
+        }
 
         #endregion
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(by)) return "Benjamini-Yekutieli Corrected p-Value";
+            if (property_name == nameof(p_value)) return "p-Value";
+            if (property_name == nameof(log_odds_ratio)) return "Log Odds Ratio";
+            if (property_name == nameof(q_significantProteinsWithThisGoTerm)) return "Significant Proteins With This Go-Term";
+            if (property_name == nameof(k_significantProteins)) return "Total Significant Proteins";
+            if (property_name == nameof(m_backgroundProteinsWithThisGoTerm)) return "Background Proteins With This Go-Term";
+            if (property_name == nameof(t_backgroundProteins)) return "Total Background Proteins";
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current)
+        {
+            return current;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(by)) return "E2";
+            if (property_name == nameof(p_value)) return "E2";
+            if (property_name == nameof(log_odds_ratio)) return "0.####";
+            return null;
+        }
+
+        #endregion Private Methods
     }
 }

@@ -112,6 +112,12 @@ namespace ProteoformSuiteInternal
             process_entries(expanded_proteins, variableModifications);
             process_decoys(expanded_proteins, variableModifications);
 
+            Parallel.ForEach(new ProteoformCommunity[] { Sweet.lollipop.target_proteoform_community }.Concat(Sweet.lollipop.decoy_proteoform_communities.Values), community =>
+            {
+                if (Sweet.lollipop.combine_theoretical_proteoforms_byMass) community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
+                add_theoreticals_to_accession_dictionary(community.theoretical_proteoforms, community.community_number);
+            });
+
             //read in BU results if available
             Sweet.lollipop.BottomUpPSMList.Clear();
             BottomUpReader.bottom_up_PTMs_not_in_dictionary.Clear();
@@ -120,11 +126,6 @@ namespace ProteoformSuiteInternal
                 Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path, theoreticals_by_accession.Values.ToList()));
             }
 
-            Parallel.ForEach(new ProteoformCommunity[] { Sweet.lollipop.target_proteoform_community }.Concat(Sweet.lollipop.decoy_proteoform_communities.Values), community =>
-            {
-                if (Sweet.lollipop.combine_theoretical_proteoforms_byMass) community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
-                add_theoreticals_to_accession_dictionary(community.theoretical_proteoforms, community.community_number);
-            });
         }
 
 
@@ -528,7 +529,8 @@ namespace ProteoformSuiteInternal
                 string giantProtein = GetOneGiantProtein(expanded_proteins, Sweet.lollipop.methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
                 Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);
-                new Random().Shuffle(shuffled_proteins); //randomize order of protein array
+                Random decoy_rng = Sweet.lollipop.useRandomSeed_decoys ? new Random(decoyNumber + Sweet.lollipop.randomSeed_decoys) : new Random(); // each decoy database needs to have a new random number generator
+                decoy_rng.Shuffle(shuffled_proteins); //randomize order of protein array
 
                 int prevLength = 0;
                 Parallel.ForEach(shuffled_proteins, p =>

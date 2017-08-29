@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using System;
 using System.Linq;
@@ -111,7 +116,7 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public string fragment
+        public string Fragment
         {
             get
             {
@@ -142,13 +147,11 @@ namespace ProteoformSuiteGUI
             get { return e.topdown_id; }
         }
 
-        public int bottomup_PSMs
+        public bool Adduct
         {
             get
             {
-                return e.linked_proteoform_references != null ?
-                           e.family.theoretical_proteoforms.Where(t => t.gene_name == e.gene_name).SelectMany(t => t.psm_list).Distinct().Count() :
-                           0;
+                return e.adduct;
             }
         }
         
@@ -163,76 +166,64 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            //NUMBER FORMATS
-            dgv.Columns[nameof(agg_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(agg_intensity)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(agg_rt)].DefaultCellStyle.Format = "0.##";
-
-            //HEADERS
-            dgv.Columns[nameof(Accession)].HeaderText = "Experimental Proteoform ID";
-            dgv.Columns[nameof(agg_mass)].HeaderText = "Aggregated Mass";
-            dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
-            dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated Retention Time";
-            dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
-            dgv.Columns[nameof(heavy_verification_count)].HeaderText = "Heavy Verification Component Count";
-            dgv.Columns[nameof(light_verification_count)].HeaderText = "Light Verification Component Count";
-            dgv.Columns[nameof(heavy_observation_count)].HeaderText = "Heavy Quantitative Component Count";
-            dgv.Columns[nameof(light_observation_count)].HeaderText = "Light Quantitative Component Count";
-            dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
-            dgv.Columns[nameof(mass_shifted)].HeaderText = "Manually Shifted Mass";
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
-            dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
-            dgv.Columns[nameof(manual_validation_verification)].HeaderText = "Abundant Component for Manual Validation of Identification Verification";
-            dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
-
-
-            //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled;
-            dgv.Columns[nameof(bottomup_PSMs)].Visible = false;
-            dgv.Columns[nameof(theoretical_accession)].Visible = false;
-            dgv.Columns[nameof(fragment)].Visible = false;
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }            
         }
 
-        public static void FormatIdentifiedProteoformTable(DataGridView dgv)
+        public static DataTable FormatAggregatesTable(List<DisplayExperimentalProteoform> display, string table_name)
         {
-            if (dgv.Columns.Count <= 0) return;
-
-            dgv.AllowUserToAddRows = false;
-            dgv.ReadOnly = true;
-
-            //NUMBER FORMATS
-            dgv.Columns[nameof(agg_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(agg_intensity)].DefaultCellStyle.Format = "0.####";
-
-            //HEADERS
-            dgv.Columns[nameof(Accession)].HeaderText = "Experimental Proteoform ID";
-            dgv.Columns[nameof(agg_mass)].HeaderText = "Aggregated Mass";
-            dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
-            dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated Retention Time";
-            dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
-            dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
-            dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
-            dgv.Columns[nameof(theoretical_accession)].HeaderText = "Theoretical Accession";
-            dgv.Columns[nameof(fragment)].HeaderText = "Fragment";
-            dgv.Columns[nameof(topdown_id)].HeaderText = "Top-Down Identified";
-            dgv.Columns[nameof(bottomup_PSMs)].HeaderText = "BottomUp PSMs Count";
-
-            //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled;
-            dgv.Columns[nameof(heavy_verification_count)].Visible = false;
-            dgv.Columns[nameof(light_verification_count)].Visible = false;
-            dgv.Columns[nameof(heavy_observation_count)].Visible = false;
-            dgv.Columns[nameof(light_observation_count)].Visible = false;
-            dgv.Columns[nameof(manual_validation_verification)].Visible = false;
-            dgv.Columns[nameof(manual_validation_quant)].Visible = false;
-            dgv.Columns[nameof(mass_shifted)].Visible = false;
-            dgv.Columns[nameof(Accepted)].Visible = false;
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayExperimentalProteoform).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
-        #endregion
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(Accession)) return "Experimental Proteoform ID";
+            if (property_name == nameof(agg_mass)) return "Aggregated Mass";
+            if (property_name == nameof(agg_intensity)) return "Aggregated Intensity";
+            if (property_name == nameof(agg_rt)) return "Aggregated RT";
+            if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
+            if (property_name == nameof(heavy_verification_count)) return "Heavy Verification Component Count";
+            if (property_name == nameof(light_verification_count)) return "Light Verification Component Count";
+            if (property_name == nameof(heavy_observation_count)) return "Heavy Quantitative Component Count";
+            if (property_name == nameof(light_observation_count)) return "Light Quantitative Component Count";
+            if (property_name == nameof(lysine_count)) return "Lysine Count";
+            if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
+            if (property_name == nameof(ptm_description)) return "PTM Description";
+            if (property_name == nameof(gene_name)) return "Gene Name";
+            if (property_name == nameof(theoretical_accession)) return "Theoretical Accession";
+            if (property_name == nameof(manual_validation_id)) return "Abundant Component for Manual Validation of Identification";
+            if (property_name == nameof(manual_validation_verification)) return "Abundant Component for Manual Validation of Identification Verification";
+            if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
+            if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current)
+        {
+            if (property_name == nameof(lysine_count)) return Sweet.lollipop.neucode_labeled;
+            else return current;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(agg_mass)) return "0.0000";
+            if (property_name == nameof(agg_intensity)) return "0.0000";
+            if (property_name == nameof(agg_rt)) return "0.00";
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

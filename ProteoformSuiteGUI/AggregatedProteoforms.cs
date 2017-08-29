@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using System.Data;
 
 namespace ProteoformSuiteGUI
 {
@@ -14,6 +15,12 @@ namespace ProteoformSuiteGUI
         ExperimentalProteoform selected_pf = null;
 
         #endregion Private Field
+
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
 
         #region Public Constructor
 
@@ -69,7 +76,7 @@ namespace ProteoformSuiteGUI
             else
             {
                 DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, (selected_pf as TopDownProteoform).topdown_hits.Select(h => new DisplayTopDownHit(h)));
-                DisplayTopDownHit.FormatTopdownHitsTable(dgv_AcceptNeuCdLtProteoforms);
+                DisplayTopDownHit.FormatTopDownHitsTable(dgv_AcceptNeuCdLtProteoforms);
             }
         }
 
@@ -178,9 +185,13 @@ namespace ProteoformSuiteGUI
             updateFiguresOfMerit();
         }
 
-        public List<DataGridView> GetDGVs()
+        public List<DataTable> SetTables()
         {
-            return new List<DataGridView>() { dgv_AggregatedProteoforms };
+            DataTables = new List<DataTable>
+            {
+                DisplayExperimentalProteoform.FormatAggregatesTable(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)).ToList(), "AggregatedProteoforms")
+            };
+            return DataTables;
         }
 
         public void FillTablesAndCharts()

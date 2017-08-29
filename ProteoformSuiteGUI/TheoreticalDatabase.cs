@@ -2,8 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -29,6 +30,12 @@ namespace ProteoformSuiteGUI
         bool initial_load = true;
 
         #endregion Private Fields
+
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
 
         #region Private Methods
 
@@ -78,9 +85,18 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        public List<DataGridView> GetDGVs()
+        public List<DataTable> SetTables()
         {
-            return new List<DataGridView>() { dgv_Database, dgv_unlocalizedModifications };
+            DataTables = new List<DataTable>
+            {
+                DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)).ToList(), "TargetDatabase"),
+                DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(Sweet.lollipop.theoretical_database.unlocalized_lookup.Values.Select(m => new DisplayUnlocalizedModification(m)).ToList(), "UnlocalizedModifications")
+            };
+            foreach (KeyValuePair<string, ProteoformCommunity> decoy_community in Sweet.lollipop.decoy_proteoform_communities)
+            {
+                DataTables.Add(DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(decoy_community.Value.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)).ToList(), decoy_community.Key));
+            }
+            return DataTables;
         }
 
         public void FillDataBaseTable(string table)
@@ -103,6 +119,8 @@ namespace ProteoformSuiteGUI
                 }
             }
             cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases);
+            cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed_decoys;
+            nud_randomSeed.Value = Sweet.lollipop.randomSeed_decoys;
         }
 
         public void InitializeParameterSet()
@@ -389,5 +407,14 @@ namespace ProteoformSuiteGUI
 
         #endregion Modification Names Private Methods
 
+        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.useRandomSeed_decoys = cb_useRandomSeed.Checked;
+        }
+
+        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
+        }
     }
 }

@@ -1,6 +1,10 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
 using System.Linq;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Reflection;
 
 namespace ProteoformSuiteGUI
 {
@@ -90,21 +94,14 @@ namespace ProteoformSuiteGUI
             get { return t.theoretical_mass; }
         }
 
-        public int bottomUpPSMcount
-        {
-            get
-            {
-                try
-                {
-                    return t.relationships.Sum(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().SelectMany(t => t.psm_list).Distinct().Count());
-                }
-                catch { return 0; }
-            }
-        }
-
         public double retentionTime
         {
             get { return t.agg_rt; }
+        }
+
+        public double best_c_score
+        {
+            get { return t.topdown_hits.Max(h => h.score); }
         }
 
         public int Observations
@@ -112,72 +109,72 @@ namespace ProteoformSuiteGUI
             get { return t.topdown_hits.Count; }
         }
 
-
         public string PFR
         {
             get { return t.pfr; }
-        }
-
-        public int bottomup_PSMs
-        {
-            get { return (t.linked_proteoform_references.First() as TheoreticalProteoform).psm_list.Count; }
         }
 
         #endregion Public Properties
 
         #region Public Methods
 
-        public static void FormatTopDownProteoformTable(DataGridView dgv)
+        public static void FormatTopDownTable(DataGridView dgv, bool identified_topdown)
         {
             if (dgv.Columns.Count <= 0) return;
 
+            dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            //round table values
-            dgv.Columns[nameof(modified_mass)].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(modified_mass)].HeaderText = "Modified Mass";
-            dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
-            dgv.Columns[nameof(retentionTime)].HeaderText = "Retention Time";
-            dgv.Columns[nameof(theoretical_mass)].HeaderText = "Theoretical Mass";
-            dgv.AllowUserToAddRows = false;
-
-            //VISIBILITY
-            dgv.Columns[nameof(bottomup_PSMs)].Visible = false;
-            dgv.Columns[nameof(theoretical_accession)].Visible = false;
-            dgv.Columns[nameof(correct_id)].Visible = false;
-            dgv.Columns[nameof(theoretical_ptm_description)].Visible = false;
-            dgv.Columns[nameof(theoretical_begin)].Visible = false;
-            dgv.Columns[nameof(theoretical_end)].Visible = false;
-
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible, identified_topdown);
+            }
         }
 
-        public static void FormatIdentifiedProteoformTable(DataGridView dgv)
+        public static DataTable FormatTopDownTable(List<DisplayTopDownProteoform> display, string table_name, bool identified)
         {
-            if (dgv.Columns.Count <= 0) return;
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayTopDownProteoform).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true, identified)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
+        }
 
-            dgv.AllowUserToAddRows = false;
-            dgv.ReadOnly = true;
+        public static string header(string name)
+        {
+            if (name == nameof(modified_mass)) return "Modified Mass";
+            if (name == nameof(ptm_description)) return "PTM Description";
+            if (name == nameof(retentionTime)) return "Retention Time";
+            if (name == nameof(theoretical_mass)) return "Theoretical Mass";
+            if (name == nameof(correct_id)) return "Correct ID";
+            if (name == nameof(theoretical_accession)) return "Theoretical Accession";
+            if (name == nameof(theoretical_ptm_description)) return "Theoretical PTM Description";
+            if (name == nameof(theoretical_begin)) return "Theoretical Begin";
+            if (name == nameof(theoretical_end)) return "Theoretical End";
+            if (name == nameof(best_c_score)) return "Best Hit C-Score";
+            return null;
+        }
 
-            dgv.Columns[nameof(modified_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(theoretical_mass)].DefaultCellStyle.Format = "0.####";
+        private static bool visible(string property_name, bool current, bool identified_topdown)
+        {
+            if(!identified_topdown)
+            {
+                if (property_name == nameof(theoretical_accession)) return false;
+                if (property_name == nameof(correct_id)) return false;
+                if (property_name == nameof(theoretical_ptm_description)) return false;
+                if (property_name == nameof(theoretical_begin)) return false;
+                if (property_name == nameof(theoretical_end)) return false;
+            }
+            return current;
+        }
 
-            //set column header
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(modified_mass)].HeaderText = "Modified Mass";
-            dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
-            dgv.Columns[nameof(retentionTime)].HeaderText = "Retention Time";
-            dgv.Columns[nameof(theoretical_mass)].HeaderText = "Theoretical Mass";
-            dgv.Columns[nameof(correct_id)].HeaderText = "Correct ID";
-            dgv.Columns[nameof(theoretical_accession)].HeaderText = "Theoretical Accession";
-            dgv.Columns[nameof(theoretical_ptm_description)].HeaderText = "Theoretical PTM Description";
-            dgv.Columns[nameof(theoretical_begin)].HeaderText = "Theoretical Begin";
-            dgv.Columns[nameof(theoretical_end)].HeaderText = "Theoretical End";
-            dgv.Columns[nameof(bottomup_PSMs)].HeaderText = "BottomUp PSMs Count";
-
-            dgv.AllowUserToAddRows = false;
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(modified_mass)) return "0.0000";
+            if (property_name == nameof(theoretical_mass)) return "0.0000";
+            if (property_name == nameof(retentionTime)) return "0.00";
+            return null;
         }
         #endregion
     }

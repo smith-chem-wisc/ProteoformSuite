@@ -1,4 +1,9 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Linq;
 using System;
@@ -107,11 +112,6 @@ namespace ProteoformSuiteGUI
         {
             get { return t.goTerm_IDs; }
         }
-
-        public int bottomUpPSMcount
-        {
-            get { return t.psm_list.Count;  }
-        }
         
         public string groupedAccessions
         {
@@ -132,28 +132,56 @@ namespace ProteoformSuiteGUI
             if (dgv.Columns.Count <= 0) return;
 
             dgv.ReadOnly = true;
-
-            //round table values
-            dgv.Columns[nameof(unmodified_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(ptm_mass)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(modified_mass)].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv.Columns[nameof(unmodified_mass)].HeaderText = "Unmodified Mass";
-            dgv.Columns[nameof(ptm_mass)].HeaderText = "PTM Mass";
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(modified_mass)].HeaderText = "Modified Mass";
-            dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
-            dgv.Columns[nameof(goTerm_IDs)].HeaderText = "GO Term IDs";
-            dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
-            dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
-            dgv.Columns[nameof(groupedAccessions)].HeaderText = "Grouped Theoretical Accessions";
-            dgv.Columns[nameof(topdown_theoretical)].HeaderText = "Top-Down Theoretical";
-
             dgv.AllowUserToAddRows = false;
+
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
+        }
+
+        public static DataTable FormatTheoreticalProteoformTable(List<DisplayTheoreticalProteoform> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayTheoreticalProteoform).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
         
         #endregion
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(unmodified_mass)) return "Unmodified Mass";
+            if (property_name == nameof(ptm_mass)) return "PTM Mass";
+            if (property_name == nameof(ptm_description)) return "PTM Description";
+            if (property_name == nameof(modified_mass)) return "Modified Mass";
+            if (property_name == nameof(lysine_count)) return "Lysine Count";
+            if (property_name == nameof(goTerm_IDs)) return "GO Term IDs";
+            if (property_name == nameof(gene_name)) return "Gene Name";
+            if (property_name == nameof(groupedAccessions)) return "Grouped Accessions";
+            if (property_name == nameof(topdown_theoretical)) return "Top-Down Theoretical";
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current)
+        {
+            return current;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(unmodified_mass)) return "0.####";
+            if (property_name == nameof(ptm_mass)) return "0.####";
+            if (property_name == nameof(modified_mass)) return "0.####";
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

@@ -42,7 +42,9 @@
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
+            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
             this.ckbx_Meth_Cleaved = new System.Windows.Forms.CheckBox();
@@ -108,6 +110,7 @@
             this.splitContainer8.Panel2.SuspendLayout();
             this.splitContainer8.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).BeginInit();
@@ -314,7 +317,9 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.nud_randomSeed);
             this.groupBox3.Controls.Add(this.cb_limitLargePtmSets);
+            this.groupBox3.Controls.Add(this.cb_useRandomSeed);
             this.groupBox3.Controls.Add(this.ckbx_OxidMeth);
             this.groupBox3.Controls.Add(this.nUD_MinPeptideLength);
             this.groupBox3.Controls.Add(this.ckbx_Meth_Cleaved);
@@ -337,6 +342,29 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
             // 
+            // nud_randomSeed
+            // 
+            this.nud_randomSeed.Location = new System.Drawing.Point(170, 105);
+            this.nud_randomSeed.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Name = "nud_randomSeed";
+            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
+            this.nud_randomSeed.TabIndex = 21;
+            this.nud_randomSeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
+            // 
             // cb_limitLargePtmSets
             // 
             this.cb_limitLargePtmSets.AutoSize = true;
@@ -349,6 +377,17 @@
             this.cb_limitLargePtmSets.Text = "Three or More Mods of a Kind Only";
             this.cb_limitLargePtmSets.UseVisualStyleBackColor = true;
             this.cb_limitLargePtmSets.CheckedChanged += new System.EventHandler(this.cb_limitLargePtmSets_CheckedChanged);
+            // 
+            // cb_useRandomSeed
+            // 
+            this.cb_useRandomSeed.AutoSize = true;
+            this.cb_useRandomSeed.Location = new System.Drawing.Point(51, 107);
+            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
+            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
+            this.cb_useRandomSeed.TabIndex = 20;
+            this.cb_useRandomSeed.Text = "Use Random Seed:";
+            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
+            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
             // 
             // ckbx_OxidMeth
             // 
@@ -366,7 +405,7 @@
             // 
             // nUD_MinPeptideLength
             // 
-            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(16, 109);
+            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(16, 127);
             this.nUD_MinPeptideLength.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MinPeptideLength.Name = "nUD_MinPeptideLength";
             this.nUD_MinPeptideLength.Size = new System.Drawing.Size(48, 20);
@@ -459,7 +498,7 @@
             // ckbx_combineIdenticalSequences
             // 
             this.ckbx_combineIdenticalSequences.AutoSize = true;
-            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(16, 138);
+            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(16, 151);
             this.ckbx_combineIdenticalSequences.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineIdenticalSequences.Name = "ckbx_combineIdenticalSequences";
             this.ckbx_combineIdenticalSequences.Size = new System.Drawing.Size(203, 17);
@@ -471,7 +510,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(69, 112);
+            this.label4.Location = new System.Drawing.Point(69, 130);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(136, 13);
@@ -481,7 +520,7 @@
             // ckbx_combineTheoreticalsByMass
             // 
             this.ckbx_combineTheoreticalsByMass.AutoSize = true;
-            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(16, 161);
+            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(16, 174);
             this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
             this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
@@ -813,6 +852,7 @@
             this.splitContainer8.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).EndInit();
@@ -883,5 +923,7 @@
         private System.Windows.Forms.SplitContainer splitContainer8;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.NumericUpDown nud_randomSeed;
+        private System.Windows.Forms.CheckBox cb_useRandomSeed;
     }
 }
