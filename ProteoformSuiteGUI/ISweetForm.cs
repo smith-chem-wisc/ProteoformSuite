@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using System.Data;
 using System.Collections.Generic;
 
 namespace ProteoformSuiteGUI
@@ -26,7 +27,8 @@ namespace ProteoformSuiteGUI
 
         void FillTablesAndCharts();
 
-        List<DataGridView> GetDGVs();
+        List<DataTable> DataTables { get; }
+        List<DataTable> SetTables();
 
     }
 }

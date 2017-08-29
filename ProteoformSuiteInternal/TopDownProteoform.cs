@@ -95,24 +95,16 @@ namespace ProteoformSuiteInternal
 
         public void set_correct_id()
         {
-            TheoreticalProteoform t = linked_proteoform_references.First() as TheoreticalProteoform;
-            bool matching_accession = t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(accession.Split('_')[0]);
-            bool same_begin_and_end = t.begin == begin && t.end == end;
-            bool same_ptm_set = true;
-            List<string> theoretical_ptms = t.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
-            List<string> td_ptms = ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
-            foreach(string m in theoretical_ptms.Distinct())
+            if (linked_proteoform_references == null) correct_id = false;
+            else
             {
-                if(td_ptms.Count(s => s == m) != theoretical_ptms.Count(s => s== m))
-                {
-                    same_ptm_set = false;
-                    break;
-                }
-            }
-            //check the other way in case extra PTMs in one list...
-            if(same_ptm_set)
-            {
-                foreach (string m in td_ptms.Distinct())
+                TheoreticalProteoform t = linked_proteoform_references.First() as TheoreticalProteoform;
+                bool matching_accession = t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(accession.Split('_')[0]);
+                bool same_begin_and_end = t.begin == begin && t.end == end;
+                bool same_ptm_set = true;
+                List<string> theoretical_ptms = t.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                List<string> td_ptms = ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                foreach (string m in theoretical_ptms.Distinct())
                 {
                     if (td_ptms.Count(s => s == m) != theoretical_ptms.Count(s => s == m))
                     {
@@ -120,8 +112,20 @@ namespace ProteoformSuiteInternal
                         break;
                     }
                 }
+                //check the other way in case extra PTMs in one list...
+                if (same_ptm_set)
+                {
+                    foreach (string m in td_ptms.Distinct())
+                    {
+                        if (td_ptms.Count(s => s == m) != theoretical_ptms.Count(s => s == m))
+                        {
+                            same_ptm_set = false;
+                            break;
+                        }
+                    }
+                }
+                correct_id = matching_accession && same_ptm_set && same_begin_and_end;
             }
-            correct_id = matching_accession && same_ptm_set && same_begin_and_end;
         }
     }
 }

@@ -27,16 +27,20 @@ namespace ProteoformSuiteGUI
 
         }
 
-        public List<DataGridView> GetDGVs()
+        public List<DataTable> DataTables { get; private set; }
+        public List<DataTable> SetTables()
         {
-            return new List<DataGridView> { dgv_TD_proteoforms };
+            DataTables = new List<DataTable>
+            {
+                DisplayTopDownProteoform.FormatTopDownTable(Sweet.lollipop.topdown_proteoforms.Select(e => new DisplayTopDownProteoform(e)).ToList(), "TopdownProteoforms", false)
+            };
+            return DataTables;
         }
-
-
+    
         public void FillTablesAndCharts()
         {
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
-            DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
+            DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
             mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.ptm_set.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
         }
@@ -94,16 +98,15 @@ namespace ProteoformSuiteGUI
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
             tb_tdProteoforms.Clear();
-            dgv_TD_family.DataSource = null;
-            dgv_TD_family.Rows.Clear();
             tb_tdProteoforms.Clear();
             tb_tableFilter.Clear();
+            rtb_sequence.Clear();
             if (clear_following)
             {
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as ExperimentExperimentComparison == null)
+                    if (sweet as RawExperimentalComponents == null)
                         sweet.ClearListsTablesFigures(false);
                 }
             }
@@ -141,15 +144,8 @@ namespace ProteoformSuiteGUI
         {
             if (e.RowIndex >= 0)
             {
-                dgv_TD_family.DataSource = null;
-
                 TopDownProteoform p = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
-                if (p.relationships != null)
-                    {
-                        DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships.Select(r => new DisplayProteoformRelation(r)));  //show T-TD and E-TD relations
-                        DisplayProteoformRelation.FormatRelationsGridView(dgv_TD_family, false, false, true);
-                    }
-                    get_proteoform_sequence(p);
+                get_proteoform_sequence(p);
             }
         }
 
@@ -240,7 +236,7 @@ namespace ProteoformSuiteGUI
                Sweet.lollipop.topdown_proteoforms :
                ExtensionMethods.filter(Sweet.lollipop.topdown_proteoforms, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, selected_td.OfType<TopDownProteoform>().Select(t => new DisplayTopDownProteoform(t)));
-            DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
+            DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
 
         }
 
@@ -249,6 +245,11 @@ namespace ProteoformSuiteGUI
             if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
             {
                 MessageBox.Show("Go back and load in top-down results.");
+                return;
+            }
+            if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+            {
+                MessageBox.Show("Go back and construct a theoretical database.");
                 return;
             }
             Sweet.lollipop.read_in_td_hits();

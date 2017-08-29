@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -379,32 +380,32 @@ namespace ProteoformSuiteGUI
 
         private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<DataGridView> grid_views = current_form.GetDGVs();
+            List<DataTable> data_tables = current_form.SetTables();
 
-            if (grid_views == null)
+            if (data_tables == null)
             {
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
                 return;
             }
             
-            DGVExcelWriter writer = new DGVExcelWriter();
-            writer.ExportToExcel(grid_views, (current_form as Form).Name);
+            ExcelWriter writer = new ExcelWriter();
+            writer.ExportToExcel(data_tables, (current_form as Form).Name);
             SaveExcelFile(writer, (current_form as Form).Name + "_table.xlsx");
         }
 
 
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DGVExcelWriter writer = new DGVExcelWriter();
-            Parallel.ForEach(forms, form =>
-            {
-                List<DataGridView> grid_views = form.GetDGVs();
-                writer.ExportToExcel(grid_views, (form as Form).Name);
-            });
+            ExcelWriter writer = new ExcelWriter();
+            if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButtons.OKCancel) == DialogResult.Cancel) return;
+            Parallel.ForEach(forms, form => form.SetTables());
+            writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<ISweetForm, List<DataTable>>(sweet, sweet.DataTables)).ToList());
+            Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as Form).Name));
+            if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButtons.OKCancel) == DialogResult.Cancel) return;
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
         }
 
-        private void SaveExcelFile(DGVExcelWriter writer, string filename)
+        private void SaveExcelFile(ExcelWriter writer, string filename)
         {
             saveExcelDialog.FileName = filename;
             DialogResult dr = saveExcelDialog.ShowDialog();

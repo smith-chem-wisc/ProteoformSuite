@@ -77,7 +77,7 @@ namespace Test
         {
             ModificationWithMass unmodification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, TerminusLocalization.Any, 0, null, null, null, null);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
-            PtmSet set = new PtmSet(new List<Ptm>());
+            PtmSet set = new PtmSet(new List<Ptm> { new Ptm() });
             return new TheoreticalProteoform(a, "", new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
         }
 
@@ -123,7 +123,9 @@ namespace Test
             h.sequence = "MSSSSSSSSSS";
             h.begin = 10;
             h.end = 20;
-            TopDownProteoform td = new TopDownProteoform(accession, h, new List<TopDownHit>() { h } );
+            TopDownProteoform td = new TopDownProteoform(accession, new List<TopDownHit>() { h } );
+            (td as ExperimentalProteoform).topdown_id = true;
+            td.accepted = true;
             return td;
         }
 

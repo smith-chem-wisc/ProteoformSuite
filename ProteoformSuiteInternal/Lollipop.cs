@@ -93,7 +93,6 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> {Purpose.RawFile },
             new List<Purpose> { Purpose.CalibrationTopDown }
-
         };
 
         public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination, bool user_directed)
@@ -147,12 +146,6 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = true;
         public double raw_component_mass_tolerance = 10;
-        public int unprocessed_exp_components = 0;
-        public int unprocessed_quant_components = 0;
-        public int missed_mono_merges_exp = 0;
-        public int missed_mono_merges_quant = 0;
-        public int harmonic_merges_exp = 0;
-        public int harmonic_merges_quant = 0;
 
         #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
 
@@ -285,18 +278,9 @@ namespace ProteoformSuiteInternal
 
         public void aggregate_td_hits(List<TopDownHit> top_down_hits)
         {
+            topdown_proteoforms.Clear();
             //get topdown hits that meet criteria
-            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && Math.Abs(h.reported_mass - h.theoretical_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * MONOISOTOPIC_UNIT_MASS) < max_mass_error && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
-
-            //need to loop through - if 2 hits are from same MS2 and have same exact p-value, only one should be reported. Choose higher score
-            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
-            while (unprocessed_td_hits.Count > 0)
-            {
-                TopDownHit root = unprocessed_td_hits[0];
-                remaining_td_hits.Add(root);
-                unprocessed_td_hits = unprocessed_td_hits.Except(unprocessed_td_hits.Where(h => h.pvalue == root.pvalue && h.ms2ScanNumber == root.ms2ScanNumber && h.filename == root.filename)).ToList();
-            }
-
+            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && Math.Abs(h.reported_mass - h.theoretical_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * MONOISOTOPIC_UNIT_MASS) < max_mass_error && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
             List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
             Parallel.ForEach(PFRs, pfr =>
             {
@@ -418,7 +402,7 @@ namespace ProteoformSuiteInternal
                 }
                 if (potential_matches.Count > 0)
                 {
-                    ExperimentalProteoform matching_experimental = potential_matches.OrderBy(p => Math.Abs(topdown.modified_mass - Math.Round(topdown.modified_mass - p.modified_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).First();
+                    ExperimentalProteoform matching_experimental = potential_matches.OrderBy(p => Math.Abs(topdown.modified_mass - Math.Round(topdown.modified_mass - p.modified_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).ThenBy(p => Math.Round(topdown.modified_mass - p.modified_mass, 0)).First();
                     topdown.matching_experimental = matching_experimental;
                     topdown.agg_intensity = matching_experimental.agg_intensity;
                     vetted_proteoforms.Remove(matching_experimental);
@@ -428,7 +412,7 @@ namespace ProteoformSuiteInternal
             }
             return vetted_proteoforms;
         }
-       
+
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
@@ -614,6 +598,9 @@ namespace ProteoformSuiteInternal
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
         public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
+        public bool useRandomSeed_decoys = false;
+        public int randomSeed_decoys = 1;
+
         #endregion THEORETICAL DATABASE Public Fields
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
@@ -828,8 +815,8 @@ namespace ProteoformSuiteInternal
         // Imputation
         public decimal backgroundShift = -1.8m;
         public decimal backgroundWidth = 0.5m;
-        public bool useRandomSeed = false;
-        public int randomSeed = 1;
+        public bool useRandomSeed_quant = false;
+        public int randomSeed_quant = 1;
 
         // Log2FC statistics
         public Log2FoldChangeAnalysis Log2FoldChangeAnalysis = new Log2FoldChangeAnalysis();
@@ -870,8 +857,8 @@ namespace ProteoformSuiteInternal
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
 
-            if (useRandomSeed)
-                seeded = new Random(randomSeed);
+            if (useRandomSeed_quant)
+                seeded = new Random(randomSeed_quant);
 
             computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
@@ -1144,6 +1131,19 @@ namespace ProteoformSuiteInternal
         public void clear_td()
         {
             Sweet.lollipop.topdown_proteoforms.Clear();
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
+            {
+                List<TheoreticalProteoform> topdown_theoreticals = community.theoretical_proteoforms.Where(t => t.topdown_theoretical).ToList();
+                community.theoretical_proteoforms = community.theoretical_proteoforms.Except(topdown_theoreticals).ToArray();
+                if (theoretical_database.theoreticals_by_accession.ContainsKey(community.community_number))
+                {
+                    Parallel.ForEach(theoretical_database.theoreticals_by_accession[community.community_number], list =>
+                    {
+                        list.Value.RemoveAll(t => t.topdown_theoretical);
+                    });
+                }
+            }
+
         }
 
         public void clear_all_families()

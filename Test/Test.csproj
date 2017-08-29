@@ -102,7 +102,7 @@
     <Compile Include="ConstructorsForTesting.cs" />
     <Compile Include="TestCalibration.cs" />
     <Compile Include="TestTopDown.cs" />
-    <Compile Include="ProteoformIdentification.cs" />
+    <Compile Include="TestProteoformIdentification.cs" />
     <Compile Include="TestAggregationMethods.cs" />
     <Compile Include="TestBigRational.cs" />
     <Compile Include="TestComponent.cs" />

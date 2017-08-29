@@ -1,16 +1,21 @@
 ﻿using ProteoformSuiteInternal;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
+
 
 namespace ProteoformSuiteGUI
 {
-    public class DisplayNeuCodePair
+    public class DisplayNeuCodePair : DisplayObject
     {
 
         #region Public Constructors
 
         public DisplayNeuCodePair(NeuCodePair c)
+            : base(c)
         {
             this.c = c;
         }
@@ -116,28 +121,58 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            //round table values
-            dgv.Columns[nameof(intensity_ratio)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(intensity_sum)].DefaultCellStyle.Format = "0.####";
-
-            //Headers
-            dgv.Columns[nameof(id_light)].HeaderText = "Light NeuCode Component ID";
-            dgv.Columns[nameof(id_heavy)].HeaderText = "Heavy NeuCode Component ID";
-            dgv.Columns[nameof(intensity_ratio)].HeaderText = "Intensity Ratio";
-            dgv.Columns[nameof(intensity_sum)].HeaderText = "Intensity Sum Overlapping Charge States";
-            dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
-            dgv.Columns[nameof(input_file_filename)].HeaderText = "Input Filename";
-            dgv.Columns[nameof(input_file_purpose)].HeaderText = "Input File Purpose";
-            dgv.Columns[nameof(input_file_uniqueId)].HeaderText = "Input File Unique ID";
-            dgv.Columns[nameof(scan_range)].HeaderText = "Scan Range";
-            dgv.Columns[nameof(mass)].HeaderText = "Corrected NeuCode Light Weighted Monoisotopic Mass";
-            dgv.Columns[nameof(mass_light)].HeaderText = "Light Weighted Monoisotopic Mass";
-            dgv.Columns[nameof(mass_heavy)].HeaderText = "Heavy Weighted Monoisotopic Mass";
-            dgv.Columns[nameof(rt_apex)].HeaderText = "Light Apex RT";
-            dgv.Columns[nameof(rt_apex_heavy)].HeaderText = "Heavy Apex RT";
+            foreach (DataGridViewColumn c in dgv.Columns)
+            {
+                string h = header(c.Name);
+                string n = number_format(c.Name);
+                c.HeaderText = h != null ? h : c.HeaderText;
+                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
+                c.Visible = visible(c.Name, c.Visible);
+            }
         }
 
-        #endregion
+        public static DataTable FormatNeuCodeTable(List<DisplayNeuCodePair> display, string table_name)
+        {
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayNeuCodePair).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
+            return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static string header(string property_name)
+        {
+            if (property_name == nameof(id_light)) return "Light NeuCode Component ID";
+            if (property_name == nameof(id_heavy)) return "Heavy NeuCode Component ID";
+            if (property_name == nameof(intensity_ratio)) return "Intensity Ratio";
+            if (property_name == nameof(intensity_sum)) return "Intensity Sum Overlapping Charge States";
+            if (property_name == nameof(lysine_count)) return "Lysine Count";
+            if (property_name == nameof(input_file_filename)) return "Input Filename";
+            if (property_name == nameof(input_file_purpose)) return "Input File Purpose";
+            if (property_name == nameof(input_file_uniqueId)) return "Input File Unique ID";
+            if (property_name == nameof(scan_range)) return "Scan Range";
+            if (property_name == nameof(mass)) return "Corrected NeuCode Light Weighted Monoisotopic Mass";
+            if (property_name == nameof(mass_light)) return "Light Weighted Monoisotopic Mass";
+            if (property_name == nameof(mass_heavy)) return "Heavy Weighted Monoisotopic Mass";
+            if (property_name == nameof(rt_apex)) return "Light Apex RT";
+            if (property_name == nameof(rt_apex_heavy)) return "Heavy Apex RT";
+            return null;
+        }
+
+        private static bool visible(string property_name, bool current)
+        {
+            return current;
+        }
+
+        private static string number_format(string property_name)
+        {
+            if (property_name == nameof(intensity_ratio)) return "0.####";
+            if (property_name == nameof(intensity_sum)) return "0.####";
+            return null;
+        }
+
+        #endregion Private Methods
 
     }
 }

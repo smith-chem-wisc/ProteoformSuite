@@ -26,6 +26,12 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Constructor
 
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        #endregion Public Property
+
         #region Public Methods
 
         public bool ReadyToRunTheGamut()
@@ -69,9 +75,10 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public List<DataGridView> GetDGVs()
+        public List<DataTable> SetTables()
         {
-            return new List<DataGridView>() { dgv_RawExpNeuCodePairs };
+            DataTables = new List<DataTable> { DisplayNeuCodePair.FormatNeuCodeTable(Sweet.lollipop.raw_neucode_pairs.Select(x => new DisplayNeuCodePair(x)).ToList(), "NeuCodePairs" ) };
+            return DataTables;
         }
 
         public void InitializeParameterSet()
