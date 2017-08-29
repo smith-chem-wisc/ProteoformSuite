@@ -89,6 +89,12 @@ namespace ProteoformSuiteInternal
         {
             //correct here for missed monoisotopic mass...
             this.agg_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            //if neucode labeled, correct masses to neucode light
+            if(Sweet.lollipop.neucode_labeled)
+            {
+                this.agg_mass = Sweet.lollipop.get_neucode_mass(this.agg_mass, this.sequence.Count(s => s == 'K'));
+                this.theoretical_mass = Sweet.lollipop.get_neucode_mass(this.theoretical_mass, this.sequence.Count(s => s == 'K'));
+            }
             this.modified_mass = this.agg_mass;
             this.agg_rt = topdown_hits.Select(h => h.ms2_retention_time).Average();
         }

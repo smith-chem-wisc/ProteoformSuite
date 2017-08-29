@@ -80,7 +80,6 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Raw Files (*.raw) | *.raw",
             "Excel Files (*.xlsx) | *.xlsx",
-  
         };
 
         public static List<Purpose>[] file_types = new List<Purpose>[]
@@ -276,9 +275,9 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public void aggregate_td_hits(List<TopDownHit> top_down_hits)
+        public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits)
         {
-            topdown_proteoforms.Clear();
+            List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
             List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && Math.Abs(h.reported_mass - h.theoretical_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * MONOISOTOPIC_UNIT_MASS) < max_mass_error && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
             List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
@@ -313,8 +312,15 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
-            theoretical_database.make_theoretical_proteoforms();
+            return topdown_proteoforms;
         }
+
+        //convert unlabeled mass to neucode light mass based on lysine count (used for topdown identifications)
+        public double get_neucode_mass(double unlabeled_mass, int lysine_count)
+        {
+            return (unlabeled_mass - lysine_count * 128.094963 + lysine_count * 136.109162);
+        }
+
         #endregion TOPDOWN 
 
         #region AGGREGATED PROTEOFORMS Public Fields
@@ -354,7 +360,7 @@ namespace ProteoformSuiteInternal
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
-            vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms);
+            vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms, topdown_proteoforms);
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
@@ -383,7 +389,7 @@ namespace ProteoformSuiteInternal
             }
         }
         
-        public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms)
+        public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
             foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)))
             {

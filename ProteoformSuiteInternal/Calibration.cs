@@ -187,7 +187,7 @@ namespace ProteoformSuiteInternal
                 {
                     //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes  
                     //if neucode labled, look for the light component mass 
-                    double hit_mass = (Sweet.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.theoretical_mass);
+                    double hit_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(identification.theoretical_mass, identification.sequence.Count(s => s == 'K')) : identification.theoretical_mass;
                     matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == raw_file.biological_replicate && c.input_file.fraction == raw_file.fraction
                && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
                && Math.Abs(c.rt_apex - identification.ms1_retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
@@ -298,7 +298,7 @@ namespace ProteoformSuiteInternal
                             double theMZ = a.ToMz(chargeToLookAt);
                             if (Sweet.lollipop.neucode_labeled)
                             {
-                                theMZ = (theMZ.ToMass(chargeToLookAt) - (identification.sequence.Count(s => s == 'K') * 128.094963) + ((identification.sequence.Count(s => s == 'K') * 136.109162))).ToMz(chargeToLookAt);
+                                theMZ = Sweet.lollipop.get_neucode_mass(theMZ.ToMass(chargeToLookAt), identification.sequence.Count(s => s == 'K')).ToMz(chargeToLookAt);
                             }
 
                             //10 ppm

@@ -121,7 +121,8 @@ namespace ProteoformSuiteGUI
         {
             if (Sweet.lollipop.top_down_hits.Count > 0)
             {
-                 Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+                Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+                Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
                 tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             }
         }
