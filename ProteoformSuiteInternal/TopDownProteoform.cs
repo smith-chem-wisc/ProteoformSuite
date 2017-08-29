@@ -67,7 +67,7 @@ namespace ProteoformSuiteInternal
             this.begin = t.begin;
             this.theoretical_mass = t.theoretical_mass;
             this.end = t.end;
-            this.topdown_hits = t.topdown_hits.Select(h => new TopDownHit(h)).ToList();
+            this.topdown_hits = t.topdown_hits.ToList();
             this.modified_mass = t.modified_mass;
             this.theoretical_mass = t.theoretical_mass;
             this.matching_experimental = t.matching_experimental;

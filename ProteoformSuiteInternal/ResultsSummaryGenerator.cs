@@ -453,9 +453,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Theoretical SGD ID", typeof(string));
             results.Columns.Add("Theoretical Gene Name", typeof(string));
 
-            foreach (TopDownProteoform td in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(t => t.linked_proteoform_references != null && t.topdown_id))
+            foreach (TopDownProteoform td in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(t => t.linked_proteoform_references != null && t.topdown_id))
             {
-
                 results.Rows.Add(
                    (td.linked_proteoform_references.First() as TheoreticalProteoform).accession,
                     td.accession,

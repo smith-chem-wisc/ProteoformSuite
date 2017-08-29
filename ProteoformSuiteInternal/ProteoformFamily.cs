@@ -116,7 +116,7 @@ namespace ProteoformSuiteInternal
             //checks if any experimentals have same mods as e's ptmset, except e has additional adduct only mods. 
             Parallel.ForEach(experimental_proteoforms, e =>
             {
-                (e as ExperimentalProteoform).adduct = e.ptm_set != null && e.ptm_set.ptm_combination.Any(m => m.modification.id == "Sulfate Adduct" || m.modification.id == "Acetone Artifact (Unconfirmed)" || m.modification.id == "Hydrogen Dodecyl Sulfate")
+                (e as ExperimentalProteoform).adduct = e.linked_proteoform_references != null && e.ptm_set.ptm_combination.Any(m => m.modification.id == "Sulfate Adduct" || m.modification.id == "Acetone Artifact (Unconfirmed)" || m.modification.id == "Hydrogen Dodecyl Sulfate")
                 && experimental_proteoforms.Any(l => l.linked_proteoform_references != null && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) && l.ptm_set.ptm_combination.Count() < e.ptm_set.ptm_combination.Count()
                 && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id) != e.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id))
                 .Count(p => p.modification.modificationType != "Deconvolution Error" && p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0);
