@@ -97,5 +97,29 @@ namespace Test
             Assert.AreEqual(0, e.ptm_set.mass);
             Assert.AreEqual(new Ptm().modification.id, e.ptm_description); // it's unmodified
         }
+
+        [Test]
+        public void adduct_experimental()
+        {
+            ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
+            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("Sulfate Adduct", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 97.97, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")) });
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1000, 0);
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1000, 0, true);
+            ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 1097.97, 0, true);
+            ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 97.97);
+            e.relationships.First().Accepted = true;
+            e2.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
+            e2.relationships.First().peak = new DeltaMassPeak(e2.relationships.First(), new HashSet<ProteoformRelation> { e2.relationships.First() }); // should assign the possible ptmset
+            ProteoformFamily fam = new ProteoformFamily(e);
+            fam.construct_family();
+            fam.identify_experimentals();
+            Assert.IsTrue(e2.adduct);
+            Assert.IsFalse(e.adduct);
+        }
     }
 }

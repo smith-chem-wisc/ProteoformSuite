@@ -58,27 +58,6 @@ namespace ProteoformSuiteInternal
             this.pvalue = pvalue;
         }
 
-        public TopDownHit(TopDownHit h)
-        {
-            this.file = h.file;
-            this.tdResultType = h.tdResultType;
-            this.accession = h.accession;
-            this.uniprot_id = h.uniprot_id;
-            this.name = h.name;
-            this.sequence = h.sequence;
-            this.begin = h.begin;
-            this.end = h.end;
-            this.ptm_list = h.ptm_list;
-            this.reported_mass = h.reported_mass;
-            this.theoretical_mass = h.theoretical_mass;
-            this.ms2ScanNumber = h.ms2ScanNumber; ;
-            this.ms2_retention_time = h.ms2_retention_time;
-            this.filename = h.filename;
-            this.pvalue = pvalue;
-            this.score = h.score;
-            this.pfr = pfr;
-    }
-
         public TopDownHit()
         {
 
