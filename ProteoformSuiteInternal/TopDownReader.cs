@@ -19,7 +19,7 @@ namespace ProteoformSuiteInternal
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
         {
-            aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses; //always use natural K mass
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, true, false, false).AA_Masses; //always use natural K mass
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);//This returns the entire sheet except for the header. Each row of cells is one List<string>

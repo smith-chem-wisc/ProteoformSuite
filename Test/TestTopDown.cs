@@ -30,7 +30,7 @@ namespace Test
             }
             Sweet.lollipop.clear_td();
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
 
             int count = Sweet.lollipop.topdown_proteoforms.Count();
             Assert.AreEqual(1, count); //both topdown hits should aggregate to a single proteoform
@@ -40,14 +40,14 @@ namespace Test
             //Test no aggregation outside retention time range
             tdhList[1].ms2_retention_time += Convert.ToDouble(Sweet.lollipop.retention_time_tolerance + 1);
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms.Count());
 
             //Test no aggregation different pfr
             tdhList[1].ms2_retention_time = tdhList[0].ms2_retention_time;
             tdhList[1].pfr = "12346";
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
 
             //if hit score below threshold, don't aggregate
@@ -55,7 +55,7 @@ namespace Test
             tdhList[1].score = 1;
             Sweet.lollipop.min_score_td = 3;
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
             Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms[0].topdown_hits.Count());
 
@@ -65,7 +65,7 @@ namespace Test
             tdhList[1].theoretical_mass = 102.1;
             Sweet.lollipop.max_mass_error = .015;
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
             Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms[0].topdown_hits.Count());
         }
@@ -90,7 +90,7 @@ namespace Test
             tdhList[9].ms2_retention_time = 52;
 
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
 
             int count = Sweet.lollipop.topdown_proteoforms.Count();
             Assert.AreEqual(1, count); //all topdown hits should aggregate to a single proteoform
@@ -113,7 +113,7 @@ namespace Test
             Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
             Assert.AreEqual(2, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10892.196, Math.Round(Sweet.lollipop.top_down_hits.OrderByDescending(h => h.ptm_list.Count).First().theoretical_mass, 3));
-            Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits);
             Assert.AreEqual(3, Sweet.lollipop.topdown_proteoforms.Count());
         }
 
@@ -229,6 +229,15 @@ namespace Test
             Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, 0);
             Assert.AreEqual(0, Math.Round(td3.modified_mass - td3.matching_experimental.modified_mass, 0));
             Assert.IsNull(td4.matching_experimental);
+        }
+
+        [Test]
+        public void TestConvertMassToNeucode()
+        {
+            double unlabeled_mass = 1000;
+            int kcount = 1;
+            double neucode_mass = Sweet.lollipop.get_neucode_mass(unlabeled_mass, kcount);
+            Assert.AreEqual(1008.01, Math.Round(neucode_mass, 2));
         }
     }
 }
