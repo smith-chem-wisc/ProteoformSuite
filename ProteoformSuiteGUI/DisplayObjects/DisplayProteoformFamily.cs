@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Linq;
 
 namespace ProteoformSuiteGUI
 {
