@@ -42,6 +42,13 @@ NL   0 or 97.976896
 MT   Unlocalized
 CF   H1 O3 P1
 //
+ID   Phospho, Phospho, Phospho
+TG   S or T or Y
+PP   Anywhere.
+MM   239.898993
+MT   Unlocalized
+CF   H3 O9 P3
+//
 ID   Missed Monoisotopic (-1)
 TG   Any
 PP   Anywhere.

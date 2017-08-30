@@ -291,7 +291,7 @@ namespace ProteoformSuiteInternal
             }
             if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
-            return families;
+           return families;
         }
 
         public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)

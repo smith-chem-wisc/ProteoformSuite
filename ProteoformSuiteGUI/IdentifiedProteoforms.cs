@@ -85,12 +85,12 @@ namespace ProteoformSuiteGUI
                     InputFile file = new InputFile(openFileDialog.FileName, Purpose.TopDown);
                     TopDownReader reader = new TopDownReader();
                     List<TopDownHit> hits = reader.ReadTDFile(file);
-                    List<TopDownProteoform> td_proteoforms = Sweet.lollipop.aggregate_td_hits(hits);
+                    List<TopDownProteoform> td_proteoforms = Sweet.lollipop.aggregate_td_hits(hits, Double.MaxValue, 0, true, true);
                     List<ExperimentalProteoform> experimentals = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !p.adduct) && !p.topdown_id).ToList();
                     experimentals = Sweet.lollipop.add_topdown_proteoforms(experimentals, td_proteoforms);
                     using (var writer = new System.IO.StreamWriter(saveFileDialog.FileName))
                     {
-                        writer.WriteLine("Experimental Accession\tExperimental Mass\tExperimental Retention Time\tTheoretical Accession\tTheoretical Description\tTheoretical Begin\tTheoretical End\tTheoretical PTM Description\tTop-Down Accession\tTop-Down Begin\tTop-Down End\tTop-Down PTM Description\tTop-Down Observed Mass\tTop-Down Retention Time");
+                        writer.WriteLine("Experimental Accession\tExperimental Mass\tExperimental Retention Time\tTheoretical Accession\tTheoretical Description\tTheoretical Begin\tTheoretical End\tTheoretical PTM Description\tTop-Down Accession\tTop-Down Begin\tTop-Down End\tTop-Down PTM Description\tTop-Down Observed Mass\tTop-Down Retention Time\tTop Top-Down C-Score");
                         foreach (ExperimentalProteoform ep in experimentals)
                         {
                             if(ep.topdown_id)
@@ -103,7 +103,7 @@ namespace ProteoformSuiteGUI
                                     string exp_ptm = exp.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", exp.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(p => p));
                                     string td_ptm = tdp.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", tdp.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(p => p));
                                     writer.WriteLine(exp.accession + "\t" + exp.agg_mass + "\t" + exp.agg_rt + "\t" + t.accession.Split('_')[0] + "\t" + t.description + "\t" + t.begin + "\t" + t.end + "\t" + exp_ptm
-                                         + "\t" + tdp.accession.Split('_')[0] + "\t" + tdp.begin + "\t" + tdp.end + "\t" + td_ptm  + "\t" + tdp.modified_mass + "\t" + tdp.agg_rt);
+                                         + "\t" + tdp.accession.Split('_')[0] + "\t" + tdp.begin + "\t" + tdp.end + "\t" + td_ptm  + "\t" + tdp.modified_mass + "\t" + tdp.agg_rt + "\t" + tdp.topdown_hits.Max(h => h.score));
                                 }
                             }
                             else
@@ -111,7 +111,7 @@ namespace ProteoformSuiteGUI
                                 string exp_ptm = ep.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", ep.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(p => p));
                                 TheoreticalProteoform t = ep.linked_proteoform_references.First() as TheoreticalProteoform;
                                 writer.WriteLine(ep.accession + "\t" + ep.agg_mass + "\t" + ep.agg_rt + "\t" + t.accession.Split('_')[0] + "\t" + t.description + "\t" + t.begin + "\t" + t.end + "\t" + exp_ptm
-                                     + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A");
+                                     + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A");
                             }
                         }
                     }

@@ -177,8 +177,7 @@ namespace ProteoformSuiteInternal
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
                         || m.modificationType == "AminoAcid" && !could_be_m_retention
-                        || (u != null ? u.require_proteoform_without_mod : false) && set.ptm_combination.Count > 1
-                        || (this as TopDownProteoform != null && m.modificationType != "Missing" && m.modificationType != "AminoAcid" && m.modificationType != "Deconvolution Error"))
+                        || (u != null ? u.require_proteoform_without_mod : false) && set.ptm_combination.Count > 1)
                     {
                         rank_sum = Int32.MaxValue;
                         break;
@@ -210,6 +209,7 @@ namespace ProteoformSuiteInternal
                     possible_ptmsets.Add(adjusted_ranksum);
                 }
             }
+
             return possible_ptmsets;
         }
 

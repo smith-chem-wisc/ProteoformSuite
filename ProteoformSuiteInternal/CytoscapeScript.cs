@@ -328,7 +328,7 @@ namespace ProteoformSuiteInternal
 
                     string total_intensity = quantitative != null ?
                         ep.quant.intensitySum == 0 ? mock_intensity : ((double)ep.quant.intensitySum).ToString() :
-                        ep.agg_intensity.ToString();
+                        ep.agg_intensity == 0 ? mock_intensity : ep.agg_intensity.ToString();
 
                     //Names and size
                     node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });

@@ -73,6 +73,7 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
+            this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -336,6 +337,7 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
+            this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_relations);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -453,7 +455,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(301, 87);
+            this.cb_geneCentric.Location = new System.Drawing.Point(302, 100);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 61;
@@ -463,7 +465,7 @@
             // 
             // cb_count_adducts_as_id
             // 
-            this.cb_count_adducts_as_id.Location = new System.Drawing.Point(300, 57);
+            this.cb_count_adducts_as_id.Location = new System.Drawing.Point(301, 73);
             this.cb_count_adducts_as_id.Name = "cb_count_adducts_as_id";
             this.cb_count_adducts_as_id.Size = new System.Drawing.Size(180, 24);
             this.cb_count_adducts_as_id.TabIndex = 0;
@@ -473,7 +475,7 @@
             // cb_buildAsQuantitative
             // 
             this.cb_buildAsQuantitative.AutoSize = true;
-            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(301, 110);
+            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(302, 123);
             this.cb_buildAsQuantitative.Name = "cb_buildAsQuantitative";
             this.cb_buildAsQuantitative.Size = new System.Drawing.Size(163, 17);
             this.cb_buildAsQuantitative.TabIndex = 58;
@@ -612,6 +614,14 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
+            // cb_remove_bad_relations
+            // 
+            this.cb_remove_bad_relations.Location = new System.Drawing.Point(301, 51);
+            this.cb_remove_bad_relations.Name = "cb_remove_bad_relations";
+            this.cb_remove_bad_relations.Size = new System.Drawing.Size(180, 24);
+            this.cb_remove_bad_relations.TabIndex = 68;
+            this.cb_remove_bad_relations.Text = "Remove Bad Relations";
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -693,5 +703,6 @@
         private System.Windows.Forms.CheckBox cb_orphans;
         private System.Windows.Forms.Button btn_inclusion_list_selected_families;
         private System.Windows.Forms.Button btn_inclusion_list_all_families;
+        private System.Windows.Forms.CheckBox cb_remove_bad_relations;
     }
 }

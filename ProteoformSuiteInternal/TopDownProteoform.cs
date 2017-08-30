@@ -52,7 +52,7 @@ namespace ProteoformSuiteInternal
             this.end = root.end;
             this.topdown_hits = hits;
             this.calculate_td_properties();
-            this.accession = accession + "_1_" + Math.Round(this.modified_mass, 2) + "_Da_" + begin + "to" + end;
+            this.accession = accession + "_" + begin + "to" + end + "_1TD";
             this.lysine_count = sequence.Count(s => s == 'K');
             this.topdown_id = true;
         }

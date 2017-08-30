@@ -164,12 +164,13 @@ namespace ProteoformSuiteGUI
 
             if (rb_chemicalCalibration.Checked)
             {
-                for (int i = 5; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 5; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 5; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]); bt_calibrate.Visible = true;
-                cmb_loadTable1.SelectedIndex = 4;
-                cmb_loadTable2.SelectedIndex = 5;
-                cmb_loadTable3.SelectedIndex = 6;
+                for (int i = 4; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+                bt_calibrate.Visible = true;
+                cmb_loadTable1.SelectedIndex = 5;
+                cmb_loadTable2.SelectedIndex = 6;
+                cmb_loadTable3.SelectedIndex = 7;
 
                 cmb_loadTable1.Enabled = false;
                 cmb_loadTable2.Enabled = false;

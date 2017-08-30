@@ -263,7 +263,6 @@ namespace ProteoformSuiteGUI
 
                     if (!open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes))
                     {
-                        MessageBox.Show("Error in method file. Generate a new method file.");
                         return null;
                     };
                 }
