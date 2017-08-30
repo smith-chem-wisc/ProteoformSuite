@@ -104,7 +104,7 @@ namespace Test
               null,
               CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
               f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
-            Assert.True(node_table.Contains("999.99_Da_50_min_ACC_1_999.99_Da_10to20"));
+            Assert.True(node_table.Contains("ACC"));
             Assert.True(node_table.Contains("999.99"));
 
             t.topdown_id = true;
