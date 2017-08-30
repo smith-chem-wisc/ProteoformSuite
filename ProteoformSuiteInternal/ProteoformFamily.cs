@@ -84,14 +84,14 @@ namespace ProteoformSuiteInternal
         public void identify_experimentals()
         {
             HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
-            Parallel.ForEach(theoretical_proteoforms, t =>
+            foreach(TheoreticalProteoform t in theoretical_proteoforms)
             {
                 lock (identified_experimentals)
                     foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
-            });
+            }
 
             //Continue looking for new experimental identifications until no more remain to be identified
             List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals).OrderBy(p => p.linked_proteoform_references.Count).ThenBy(p => p.relationships.Count > 0 ? (p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6) : 0).ThenByDescending(e => e.agg_intensity).ToList(); 
@@ -100,7 +100,7 @@ namespace ProteoformSuiteInternal
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
-                Parallel.ForEach(newly_identified_experimentals, id_experimental =>
+                foreach(ExperimentalProteoform id_experimental in newly_identified_experimentals)
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
                             foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);
                             }
-                });
+                }
                 newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
             }
 

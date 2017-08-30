@@ -143,6 +143,19 @@ namespace ProteoformSuiteInternal
                 field.SetValue(lollipop, Convert.ChangeType(value, type));
             }
 
+            List<FieldInfo> fields = lollipop_fields.Where(f => !f.IsLiteral &&
+                   (f.FieldType == typeof(int) ||
+                   f.FieldType == typeof(double) ||
+                   f.FieldType == typeof(string) ||
+                   f.FieldType == typeof(decimal) ||
+                   f.FieldType == typeof(bool))
+                   && !setting_elements.Any(s => GetAttribute(s, "field_name") == f.Name)).ToList();
+            if (fields.Count > 0)
+            {
+                warning_message += "The following parameters did not have a setting specified: " + String.Join(", ", fields.Select(f => f.Name)) + Environment.NewLine;
+                return false; //parameters in lollipop not specified in method file
+            }
+
             foreach (XElement action in action_elements)
             {
                 loaded_actions.Add(GetAttribute(action, "action"));

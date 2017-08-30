@@ -88,6 +88,14 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.construct_target_and_decoy_families();
+            if(cb_remove_bad_relations.Checked)
+            {
+                Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }).SelectMany(c => c.families.SelectMany(f => f.relations)), r =>
+                {
+                    if (r.connected_proteoforms[0].linked_proteoform_references == null || r.connected_proteoforms[1].linked_proteoform_references == null) r.Accepted = false;
+                });
+                Sweet.lollipop.construct_target_and_decoy_families();
+            }
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();

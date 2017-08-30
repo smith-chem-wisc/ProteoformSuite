@@ -275,7 +275,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits)
+        public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits, double max_mass_error, double min_score_td, bool biomarker, bool tight_abs_mass)
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
@@ -305,8 +305,8 @@ namespace ProteoformSuiteInternal
                         if (count > 0)
                         {
                             string[] old_accession = new_pf.accession.Split('_');
-                            count += topdown_proteoforms.Count(t => t.accession.Split('_')[2] == old_accession[2]);
-                            new_pf.accession = old_accession[0] + "_" + count + "_" + old_accession[2] + "_" + old_accession[3] + "_" + old_accession[4];
+                            count += topdown_proteoforms.Count(t => t.accession.Split('_')[0] == old_accession[0] && t.accession.Split('_')[1] == old_accession[1]);
+                            new_pf.accession = old_accession[0] + "_" + old_accession[1] + "_" + count + "TD";
                         }
                         topdown_proteoforms.Add(new_pf);
                     }
