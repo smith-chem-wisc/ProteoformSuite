@@ -37,19 +37,7 @@ namespace ProteoformSuiteInternal
                         int position = 1;
                         if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                         {
-                            ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.monoisotopicMass == 42.010565 && m.terminusLocalization == TerminusLocalization.NProt && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
-                            if (mod != null)
-                            {
-                                ptm_list.Add(new Ptm(position, mod));
-                            }
-                            else
-                            {
-                                lock (topdown_ptms)
-                                {
-                                    topdown_ptms.Add("N-terminal acetylation at " + cellStrings[4][0]);
-                                }
-                                add_topdown_hit = false;
-                            }
+                            ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == "N-terminal Acetyl").FirstOrDefault()));
                         }
                     }
                     //don't have example of c-term modification to write code

@@ -24,7 +24,13 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
+            tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
+            tb_tableFilter.Text = "";
+            tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
+            nUD_min_score_td.Value = (decimal)Sweet.lollipop.min_score_td;
+            cb_biomarker.Checked = Sweet.lollipop.biomarker;
+            cb_tight_abs_mass.Checked = Sweet.lollipop.tight_abs_mass;
         }
 
         public List<DataTable> DataTables { get; private set; }
@@ -42,7 +48,10 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
-            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.ptm_set.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
+            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptmset.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
+            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
+            tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
+            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr).Distinct().Count().ToString();
         }
 
         public void RunTheGamut(bool full_run)
@@ -98,7 +107,8 @@ namespace ProteoformSuiteGUI
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
             tb_tdProteoforms.Clear();
-            tb_tdProteoforms.Clear();
+            tb_td_hits.Clear();
+            tb_unique_PFRs.Clear();
             tb_tableFilter.Clear();
             rtb_sequence.Clear();
             if (clear_following)
@@ -121,9 +131,8 @@ namespace ProteoformSuiteGUI
         {
             if (Sweet.lollipop.top_down_hits.Count > 0)
             {
-                Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.max_mass_error, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+                Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
                 Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
-                tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             }
         }
 
@@ -159,7 +168,6 @@ namespace ProteoformSuiteGUI
             rtb_sequence.ZoomFactor = 3;
 
             int length = p.sequence.Length + 1;
-
             foreach (Ptm ptm in p.topdown_ptmset.ptm_combination.Where(m => m.position > 0))
             {
                 int i = 0;
@@ -243,6 +251,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_read_in_td_hits_Click(object sender, EventArgs e)
         {
+            ClearListsTablesFigures(true);
             if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
             {
                 MessageBox.Show("Go back and load in top-down results.");
@@ -254,12 +263,8 @@ namespace ProteoformSuiteGUI
                 return;
             }
             Sweet.lollipop.read_in_td_hits();
+            tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             MessageBox.Show("Successfully read in " + Sweet.lollipop.top_down_hits.Count + " top-down hits.");
-        }
-
-        private void nUD_max_mass_error_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.max_mass_error = (double)nUD_max_mass_error.Value;
         }
     }
 }

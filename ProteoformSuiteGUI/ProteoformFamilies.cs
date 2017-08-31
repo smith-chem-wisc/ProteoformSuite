@@ -40,6 +40,7 @@ namespace ProteoformSuiteGUI
             cb_buildAsQuantitative.Checked = false;
             cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
             cb_geneCentric.Checked = Lollipop.gene_centric_families;
+            
         }
 
         public void InitializeParameterSet()
@@ -61,6 +62,7 @@ namespace ProteoformSuiteGUI
             cmbx_geneLabel.SelectedIndex = 1;
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
+            
 
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
@@ -69,6 +71,9 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+
+            cb_remove_bad_relations.Checked = Sweet.lollipop.remove_bad_relations;
+            cb_count_adducts_as_id.Checked = Sweet.lollipop.count_adducts_as_identifications;
 
             initialize_every_time();
         }
@@ -88,17 +93,38 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.construct_target_and_decoy_families();
-            if(cb_remove_bad_relations.Checked)
+            if(Sweet.lollipop.remove_bad_relations)
             {
-                Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }).SelectMany(c => c.families.SelectMany(f => f.relations)), r =>
+                Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }).SelectMany(c => c.families.Where(f => f.theoretical_proteoforms.Count > 0).SelectMany(f => f.relations)), r =>
                 {
-                    if (r.connected_proteoforms[0].linked_proteoform_references == null || r.connected_proteoforms[1].linked_proteoform_references == null) r.Accepted = false;
+                    if ((r.connected_proteoforms[0].linked_proteoform_references == null && r.connected_proteoforms[1].linked_proteoform_references != null) || (r.connected_proteoforms[1].linked_proteoform_references == null && r.connected_proteoforms[0].linked_proteoform_references != null)) r.Accepted = false;
                 });
+                ClearListsTablesFigures(true);
                 Sweet.lollipop.construct_target_and_decoy_families();
             }
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\orphans.txt"))
+            {
+                writer.WriteLine("mass\tintensity\tcount\tchargeStateCount");
+                foreach(var e in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => !p.topdown_id && p.relationships.Count(r => r.Accepted) == 0))
+                {
+                    writer.WriteLine(e.modified_mass + "\t" + e.agg_intensity + "\t" + e.aggregated.Count + "\t" + e.aggregated.Max(p => p.charge_states.Count));
+                }
+            }
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\ambiguousrelations.txt"))
+            {
+                writer.WriteLine("mass\tintensity\tcount\tchargeStateCount");
+                foreach (var e in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.ambiguous))
+                {
+                    foreach(ProteoformRelation r in e.relationships.Where(r => r.Accepted && r.connected_proteoforms[0].linked_proteoform_references != null && r.connected_proteoforms[1].linked_proteoform_references != null && (r.connected_proteoforms[0].gene_name.get_prefered_name(Lollipop.preferred_gene_label) != e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                    || r.connected_proteoforms[1].gene_name.get_prefered_name(Lollipop.preferred_gene_label) != e.gene_name.get_prefered_name(Lollipop.preferred_gene_label))))
+                    {
+                        writer.WriteLine(e.accession + "\t" + r.DeltaMass + "\t" + r.connected_proteoforms[0].accession + "\t" + r.connected_proteoforms[1].accession);
+                    }
+                }
+            }
         }
 
         public void FillTablesAndCharts()
@@ -420,5 +446,10 @@ namespace ProteoformSuiteGUI
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Private Methods
+
+        private void cb_remove_bad_relations_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.remove_bad_relations = cb_remove_bad_relations.Checked;
+        }
     }
 }

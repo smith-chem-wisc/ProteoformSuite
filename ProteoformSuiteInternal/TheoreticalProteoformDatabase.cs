@@ -131,10 +131,12 @@ namespace ProteoformSuiteInternal
 
         private void add_theoreticals_to_accession_dictionary(TheoreticalProteoform[] theoreticals, int community_number)
         {
+            lock(theoreticals_by_accession) theoreticals_by_accession.Add(community_number, new Dictionary<string, List<TheoreticalProteoform>>());
             foreach (TheoreticalProteoform t in theoreticals)
             {
                 foreach (string t_accession in t.ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())
                 {
+                    if (t_accession == null) continue;
                     lock (theoreticals_by_accession)
                     {
                         if (theoreticals_by_accession[community_number].ContainsKey(t_accession)) theoreticals_by_accession[community_number][t_accession].Add(t);
@@ -513,7 +515,6 @@ namespace ProteoformSuiteInternal
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            theoreticals_by_accession.Add(-100, new Dictionary<string, List<TheoreticalProteoform>>());
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
             Sweet.lollipop.target_proteoform_community.community_number = -100;
@@ -525,7 +526,6 @@ namespace ProteoformSuiteInternal
             Parallel.For(0, Sweet.lollipop.decoy_databases, decoyNumber =>
             {
                 List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
-                theoreticals_by_accession.Add(decoyNumber, new Dictionary<string, List<TheoreticalProteoform>>());
                 string giantProtein = GetOneGiantProtein(expanded_proteins, Sweet.lollipop.methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
                 Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);

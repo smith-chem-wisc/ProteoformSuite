@@ -21,8 +21,6 @@ namespace ProteoformSuiteInternal
 
         #region Public Properties
 
-        public bool adduct = false;
-
         public List<IAggregatable> aggregated { get; set; } = new List<IAggregatable>();
 
         public List<Component> lt_verification_components { get; set; } = new List<Component>();
@@ -37,7 +35,7 @@ namespace ProteoformSuiteInternal
 
         public List<BiorepTechrepIntensity> biorepTechrepIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
 
-        public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>(); 
+        public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>();
 
         public QuantitativeProteoformValues quant { get; set; }
 
@@ -58,6 +56,10 @@ namespace ProteoformSuiteInternal
         public string manual_validation_quant { get; set; } = "";
 
         public bool topdown_id { get; set; }
+
+        public bool adduct { get; set; } 
+
+        public bool ambiguous { get; set; }
 
         #endregion Public Properties
 

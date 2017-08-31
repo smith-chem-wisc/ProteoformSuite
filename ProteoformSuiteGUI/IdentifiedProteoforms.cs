@@ -85,7 +85,7 @@ namespace ProteoformSuiteGUI
                     InputFile file = new InputFile(openFileDialog.FileName, Purpose.TopDown);
                     TopDownReader reader = new TopDownReader();
                     List<TopDownHit> hits = reader.ReadTDFile(file);
-                    List<TopDownProteoform> td_proteoforms = Sweet.lollipop.aggregate_td_hits(hits, Double.MaxValue, 0, true, true);
+                    List<TopDownProteoform> td_proteoforms = Sweet.lollipop.aggregate_td_hits(hits, 0, true, true);
                     List<ExperimentalProteoform> experimentals = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !p.adduct) && !p.topdown_id).ToList();
                     experimentals = Sweet.lollipop.add_topdown_proteoforms(experimentals, td_proteoforms);
                     using (var writer = new System.IO.StreamWriter(saveFileDialog.FileName))
