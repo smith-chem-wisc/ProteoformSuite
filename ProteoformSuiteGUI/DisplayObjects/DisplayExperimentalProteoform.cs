@@ -152,6 +152,14 @@ namespace ProteoformSuiteGUI
                 return e.adduct;
             }
         }
+
+        public bool Ambiguous
+        {
+            get
+            {
+                return e.ambiguous;
+            }
+        }
         
         #endregion Public Properties
 

@@ -13,7 +13,7 @@ MM   15.994915
 MT   Unlocalized
 CF   O1
 //
-ID   Acetyllysine
+ID   Acetyl
 TG   K
 PP   Anywhere.
 MM   42.010565
@@ -21,7 +21,7 @@ MT   Unlocalized
 CF   H2 C2 O1
 //
 ID   Carbamidomethyl of C
-TG   K
+TG   C
 PP   Anywhere.
 MM   57.021464
 MT   Unlocalized

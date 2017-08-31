@@ -236,6 +236,7 @@ N-acetylmethionine	Acetyl	1	False
 N-acetylserine	Acetyl	1	False
 N-acetylthreonine	Acetyl	1	False
 N-acetylvaline	Acetyl	1	False
+N-terminal Acetyl	Acetyl	1	False
 NeuAc(1) on N	NeuAc(1)	1	False
 NeuAc(1) on S	NeuAc(1)	1	False
 NeuAc(2) on S	NeuAc(2)	1	False

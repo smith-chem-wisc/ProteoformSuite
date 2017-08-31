@@ -217,7 +217,7 @@ namespace ProteoformSuiteInternal
 
         #region Private Methods
 
-        private void assign_pf_identity(Proteoform e, PtmSet set, ProteoformRelation r, int sign, PtmSet change)
+        private void assign_pf_identity(ExperimentalProteoform e, PtmSet set, ProteoformRelation r, int sign, PtmSet change)
         {
             if (r.represented_ptmset == null)
             {
@@ -230,6 +230,13 @@ namespace ProteoformSuiteInternal
                 e.linked_proteoform_references = new List<Proteoform>(this.linked_proteoform_references);
                 e.linked_proteoform_references.Add(this);
                 e.ptm_set = set;
+                e.ambiguous = false;
+            }
+            else
+            {
+                //if already been assigned -- check if gene name != this gene name ==> ambiguous
+                if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label))
+                    e.ambiguous = true;
             }
 
             if (e.gene_name == null)

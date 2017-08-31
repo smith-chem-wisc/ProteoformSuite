@@ -254,7 +254,6 @@ namespace ProteoformSuiteInternal
         #endregion NEUCODE PAIRS
 
         #region TOPDOWN 
-        public double max_mass_error = .015;
         public double min_score_td = 3.0;
         public bool biomarker = true;
         public bool tight_abs_mass = true;
@@ -275,11 +274,11 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits, double max_mass_error, double min_score_td, bool biomarker, bool tight_abs_mass)
+        public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits, double min_score_td, bool biomarker, bool tight_abs_mass)
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
-            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && Math.Abs(h.reported_mass - h.theoretical_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * MONOISOTOPIC_UNIT_MASS) < max_mass_error && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
             List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
             Parallel.ForEach(PFRs, pfr =>
             {
@@ -403,7 +402,7 @@ namespace ProteoformSuiteInternal
                     double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
                     double low = mass + shift - mass_tol;
                     double high = mass + shift + mass_tol;
-                    potential_matches.AddRange(vetted_proteoforms.Where(ep => !ep.topdown_id && ep.modified_mass >= low && ep.modified_mass <= high
+                    potential_matches.AddRange(vetted_proteoforms.Where(ep => !ep.topdown_id && ep.modified_mass >= low && ep.modified_mass <= high && (!neucode_labeled || ep.lysine_count == topdown.lysine_count)
                         && Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)));
                 }
                 if (potential_matches.Count > 0)
@@ -691,6 +690,7 @@ namespace ProteoformSuiteInternal
         public string family_build_folder_path = "";
         public static bool gene_centric_families = false;
         public static string preferred_gene_label = "";
+        public bool remove_bad_relations = false;
 
         public int deltaM_edge_display_rounding = 2;
 

@@ -50,6 +50,7 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btn_inclusion_list_selected_families = new System.Windows.Forms.Button();
             this.cb_orphans = new System.Windows.Forms.CheckBox();
@@ -73,7 +74,6 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -370,6 +370,15 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_remove_bad_relations
+            // 
+            this.cb_remove_bad_relations.Location = new System.Drawing.Point(301, 51);
+            this.cb_remove_bad_relations.Name = "cb_remove_bad_relations";
+            this.cb_remove_bad_relations.Size = new System.Drawing.Size(180, 24);
+            this.cb_remove_bad_relations.TabIndex = 68;
+            this.cb_remove_bad_relations.Text = "Remove Bad Relations";
+            this.cb_remove_bad_relations.CheckedChanged += new System.EventHandler(this.cb_remove_bad_relations_CheckedChanged);
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.btn_inclusion_list_selected_families);
@@ -613,14 +622,6 @@
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
-            // 
-            // cb_remove_bad_relations
-            // 
-            this.cb_remove_bad_relations.Location = new System.Drawing.Point(301, 51);
-            this.cb_remove_bad_relations.Name = "cb_remove_bad_relations";
-            this.cb_remove_bad_relations.Size = new System.Drawing.Size(180, 24);
-            this.cb_remove_bad_relations.TabIndex = 68;
-            this.cb_remove_bad_relations.Text = "Remove Bad Relations";
             // 
             // ProteoformFamilies
             // 

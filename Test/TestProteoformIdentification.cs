@@ -121,5 +121,55 @@ namespace Test
             Assert.IsTrue(e2.adduct);
             Assert.IsFalse(e.adduct);
         }
+
+        [Test]
+        public void ambiguous_experimentals()
+        {
+            Sweet.lollipop = new Lollipop();
+            Lollipop.preferred_gene_label = "primary";
+
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("", 100000, 0); // sequence with all serines
+            t1.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene1", "gene1") });
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+            ConstructorsForTesting.make_relation(t1, e1, ProteoformComparison.ExperimentalTheoretical, 0);
+
+            TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("", 100042.01, 0); // sequence with all serines
+            t2.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene2", "gene2") });
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 100042.01, 0, true);
+            ConstructorsForTesting.make_relation(t2, e2, ProteoformComparison.ExperimentalTheoretical, 0);
+
+            ConstructorsForTesting.make_relation(e2, e1, ProteoformComparison.ExperimentalExperimental, 42.01);
+
+            ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
+            PtmSet acetyl = new PtmSet(new List<Ptm>
+            {
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.011, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+            });
+
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+
+            // Proteoforms start without any modifications in the PtmSet
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+
+            e1.relationships.First().Accepted = true;
+            e1.relationships[1].Accepted = true;
+            e1.relationships.First().peak = new DeltaMassPeak(e1.relationships.First(), new HashSet<ProteoformRelation> { e1.relationships.First() });
+            e1.relationships[1].peak = new DeltaMassPeak(e1.relationships[1], new HashSet<ProteoformRelation> { e1.relationships[1] });
+            e2.relationships.First().Accepted = true;
+            e2.relationships.First().peak = new DeltaMassPeak(e2.relationships.First(), new HashSet<ProteoformRelation> { e2.relationships.First() });
+
+            ProteoformFamily fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            fam.identify_experimentals();
+
+            Assert.AreEqual(2, fam.experimental_proteoforms.Count);
+            Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
+            Assert.AreEqual(2, fam.gene_names.Count);
+            Assert.IsTrue(e2.ambiguous);
+            Assert.IsFalse(e1.ambiguous);
+        }
     }
 }

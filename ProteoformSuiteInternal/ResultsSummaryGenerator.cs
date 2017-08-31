@@ -208,11 +208,18 @@ namespace ProteoformSuiteInternal
             double avg_identified_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
                 Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) : 
                 -1;
+            int ambiguous_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.ambiguous);
+            double avg_ambiguous_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
+                Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.ambiguous && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) :
+                -1;
             report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;
             int identified_exp_proteoforms_not_in_td = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
             report += identified_exp_proteoforms_not_in_td.ToString() + "\tIdentified Experimental Proteoforms Not Identified in Top-Down" + Environment.NewLine;
+            report += ambiguous_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms That Are Ambiguous" + Environment.NewLine;
             report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")
                     + "\tAverage Identified Experimental Proteoforms by Decoys" + Environment.NewLine;
+            report += (avg_ambiguous_decoy_proteoforms > 0 ? Math.Round(avg_ambiguous_decoy_proteoforms, 2).ToString() : "N/A")
+                + "\tAverage Identified Experimental Proteoforms by Decoys That Are Ambiguous" + Environment.NewLine;
             if (avg_identified_decoy_proteoforms > 0)
                 report += String.Join(", ", Sweet.lollipop.decoy_proteoform_communities.Select(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))))
                     + "\tIndividual Decoy Community Identified Experimental Proteoforms" + Environment.NewLine;
@@ -226,7 +233,8 @@ namespace ProteoformSuiteInternal
             report += correct_td + "\tCorrectly Identified Top-Down Proteoforms" + Environment.NewLine;
             report += incorrect_td + "\tIncorrectly Identified Top-Down Proteoforms" + Environment.NewLine;
             report += Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references == null) + "\tUnidentified Top-Down Proteoforms" + Environment.NewLine;
-             identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => (!e.topdown_id || (e as TopDownProteoform).matching_experimental != null) && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
+            report += Environment.NewLine;
+            identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => (!e.topdown_id || (e as TopDownProteoform).matching_experimental != null) && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
              avg_identified_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
                 Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => (!e.topdown_id || (e as TopDownProteoform).matching_experimental != null) && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) :
                 -1;
@@ -393,6 +401,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
+            results.Columns.Add("Ambiguous", typeof(bool));
             results.Columns.Add((Sweet.lollipop.numerator_condition == "" ? "Condition #1" : Sweet.lollipop.numerator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add((Sweet.lollipop.denominator_condition == "" ? "Condition #2" : Sweet.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add("Statistically Significant", typeof(bool));
@@ -415,6 +424,7 @@ namespace ProteoformSuiteInternal
                     e.modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
+                    e.ambiguous,
                     get_tusher_values(e.quant, analysis).numeratorIntensitySum,
                     get_tusher_values(e.quant, analysis).denominatorIntensitySum,
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
