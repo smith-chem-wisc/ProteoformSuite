@@ -108,8 +108,8 @@ namespace ProteoformSuiteInternal
                 bool matching_accession = t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(accession.Split('_')[0]);
                 bool same_begin_and_end = t.begin == begin && t.end == end;
                 bool same_ptm_set = true;
-                List<string> theoretical_ptms = t.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
-                List<string> td_ptms = ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                List<string> theoretical_ptms = ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                List<string> td_ptms = topdown_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
                 foreach (string m in theoretical_ptms.Distinct())
                 {
                     if (td_ptms.Count(s => s == m) != theoretical_ptms.Count(s => s == m))

@@ -31,6 +31,7 @@ namespace ProteoformSuiteGUI
             nUD_min_score_td.Value = (decimal)Sweet.lollipop.min_score_td;
             cb_biomarker.Checked = Sweet.lollipop.biomarker;
             cb_tight_abs_mass.Checked = Sweet.lollipop.tight_abs_mass;
+            nUD_td_rt_tolerance.Value = (decimal)Sweet.lollipop.td_retention_time_tolerance;
         }
 
         public List<DataTable> DataTables { get; private set; }
@@ -103,11 +104,15 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
+            if (!clear_following)
+            {
+                tb_td_hits.Clear();
+                Sweet.lollipop.top_down_hits.Clear(); //only want to clear if cleared theo database
+            }
             Sweet.lollipop.clear_td();
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
             tb_tdProteoforms.Clear();
-            tb_td_hits.Clear();
             tb_unique_PFRs.Clear();
             tb_tableFilter.Clear();
             rtb_sequence.Clear();
@@ -265,6 +270,11 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.read_in_td_hits();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             MessageBox.Show("Successfully read in " + Sweet.lollipop.top_down_hits.Count + " top-down hits.");
+        }
+
+        private void nUD_td_rt_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.td_retention_time_tolerance = (double)nUD_td_rt_tolerance.Value;
         }
     }
 }

@@ -257,6 +257,7 @@ namespace ProteoformSuiteInternal
         public double min_score_td = 3.0;
         public bool biomarker = true;
         public bool tight_abs_mass = true;
+        public double td_retention_time_tolerance = 5; //min
         public List<TopDownHit> top_down_hits = new List<TopDownHit>();
         public List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
         public TopDownReader topdownReader = new TopDownReader();
@@ -278,7 +279,7 @@ namespace ProteoformSuiteInternal
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
-            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ThenBy(h => h.pvalue).ThenBy(h => h.reported_mass).ToList();
             List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
             Parallel.ForEach(PFRs, pfr =>
             {
@@ -290,8 +291,8 @@ namespace ProteoformSuiteInternal
                     TopDownHit root = hits_by_pfr[0];
                     //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
                     //find topdownhits within RT tol --> first average
-                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance)).Select(h => h.ms2_retention_time).Average();
-                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
+                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(td_retention_time_tolerance)).Select(h => h.ms2_retention_time).Average();
+                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(td_retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
                     root = hits_to_aggregate[0];
                     //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
                     TopDownProteoform new_pf = new TopDownProteoform(root.accession, hits_to_aggregate);
@@ -390,7 +391,7 @@ namespace ProteoformSuiteInternal
         
         public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
-            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)))
+            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pvalue)).ThenBy(t => t.agg_mass))
             {
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();

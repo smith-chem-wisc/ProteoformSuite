@@ -284,8 +284,8 @@ namespace Test
             t.begin = 10;
             td.end = 20;
             t.end = 30;
-            t.ptm_set = new PtmSet(new List<Ptm>());
             td.ptm_set = new PtmSet(new List<Ptm>());
+            td.topdown_ptmset = new PtmSet(new List<Ptm>());
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //no PTMs diff end fail
@@ -303,17 +303,17 @@ namespace Test
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
             //same begin and end, T has more PTMs
-            t.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end TD has more of a PTM type
-            t.ptm_set = new PtmSet(new List<Ptm>());
-            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.ptm_set = new PtmSet(new List<Ptm>());
+            td.topdown_ptmset = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end and PTMs
-            t.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.topdown_ptmset = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
         }

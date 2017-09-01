@@ -46,6 +46,8 @@
             this.tb_td_hits = new System.Windows.Forms.TextBox();
             this.tb_unique_PFRs = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nUD_td_rt_tolerance = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -56,6 +58,7 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_td_rt_tolerance)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -72,8 +75,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.rtb_sequence);
-            this.splitContainer1.Size = new System.Drawing.Size(1021, 595);
-            this.splitContainer1.SplitterDistance = 465;
+            this.splitContainer1.Size = new System.Drawing.Size(1021, 629);
+            this.splitContainer1.SplitterDistance = 492;
             this.splitContainer1.TabIndex = 1;
             // 
             // dgv_TD_proteoforms
@@ -82,7 +85,7 @@
             this.dgv_TD_proteoforms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_TD_proteoforms.Location = new System.Drawing.Point(0, 0);
             this.dgv_TD_proteoforms.Name = "dgv_TD_proteoforms";
-            this.dgv_TD_proteoforms.Size = new System.Drawing.Size(1021, 465);
+            this.dgv_TD_proteoforms.Size = new System.Drawing.Size(1021, 492);
             this.dgv_TD_proteoforms.TabIndex = 0;
             this.dgv_TD_proteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_TD_proteoforms_CellContentClick);
             // 
@@ -92,7 +95,7 @@
             this.rtb_sequence.Location = new System.Drawing.Point(0, 0);
             this.rtb_sequence.Name = "rtb_sequence";
             this.rtb_sequence.ReadOnly = true;
-            this.rtb_sequence.Size = new System.Drawing.Size(1021, 126);
+            this.rtb_sequence.Size = new System.Drawing.Size(1021, 133);
             this.rtb_sequence.TabIndex = 2;
             this.rtb_sequence.Text = "";
             // 
@@ -105,6 +108,8 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.Controls.Add(this.label3);
+            this.splitContainer3.Panel1.Controls.Add(this.nUD_td_rt_tolerance);
             this.splitContainer3.Panel1.Controls.Add(this.label6);
             this.splitContainer3.Panel1.Controls.Add(this.tb_unique_PFRs);
             this.splitContainer3.Panel1.Controls.Add(this.label4);
@@ -123,8 +128,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer1);
-            this.splitContainer3.Size = new System.Drawing.Size(1021, 703);
-            this.splitContainer3.SplitterDistance = 104;
+            this.splitContainer3.Size = new System.Drawing.Size(1021, 742);
+            this.splitContainer3.SplitterDistance = 109;
             this.splitContainer3.TabIndex = 2;
             // 
             // bt_read_in_td_hits
@@ -157,7 +162,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(295, 11);
+            this.label5.Location = new System.Drawing.Point(271, 11);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 13);
             this.label5.TabIndex = 14;
@@ -168,7 +173,7 @@
             this.cb_biomarker.AutoSize = true;
             this.cb_biomarker.Checked = true;
             this.cb_biomarker.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_biomarker.Location = new System.Drawing.Point(298, 53);
+            this.cb_biomarker.Location = new System.Drawing.Point(274, 68);
             this.cb_biomarker.Name = "cb_biomarker";
             this.cb_biomarker.Size = new System.Drawing.Size(73, 17);
             this.cb_biomarker.TabIndex = 11;
@@ -181,7 +186,7 @@
             this.cb_tight_abs_mass.AutoSize = true;
             this.cb_tight_abs_mass.Checked = true;
             this.cb_tight_abs_mass.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_tight_abs_mass.Location = new System.Drawing.Point(298, 33);
+            this.cb_tight_abs_mass.Location = new System.Drawing.Point(274, 48);
             this.cb_tight_abs_mass.Name = "cb_tight_abs_mass";
             this.cb_tight_abs_mass.Size = new System.Drawing.Size(122, 17);
             this.cb_tight_abs_mass.TabIndex = 10;
@@ -192,7 +197,7 @@
             // nUD_min_score_td
             // 
             this.nUD_min_score_td.DecimalPlaces = 1;
-            this.nUD_min_score_td.Location = new System.Drawing.Point(369, 7);
+            this.nUD_min_score_td.Location = new System.Drawing.Point(402, 9);
             this.nUD_min_score_td.Name = "nUD_min_score_td";
             this.nUD_min_score_td.Size = new System.Drawing.Size(75, 20);
             this.nUD_min_score_td.TabIndex = 9;
@@ -205,7 +210,7 @@
             // 
             // bt_td_relations
             // 
-            this.bt_td_relations.Location = new System.Drawing.Point(298, 74);
+            this.bt_td_relations.Location = new System.Drawing.Point(298, 84);
             this.bt_td_relations.Name = "bt_td_relations";
             this.bt_td_relations.Size = new System.Drawing.Size(179, 23);
             this.bt_td_relations.TabIndex = 2;
@@ -265,11 +270,34 @@
             this.label6.TabIndex = 22;
             this.label6.Text = "Top-Down Hits";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(271, 31);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(129, 13);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "Ret. Time Tolerance (min)";
+            // 
+            // nUD_td_rt_tolerance
+            // 
+            this.nUD_td_rt_tolerance.DecimalPlaces = 2;
+            this.nUD_td_rt_tolerance.Location = new System.Drawing.Point(402, 31);
+            this.nUD_td_rt_tolerance.Name = "nUD_td_rt_tolerance";
+            this.nUD_td_rt_tolerance.Size = new System.Drawing.Size(75, 20);
+            this.nUD_td_rt_tolerance.TabIndex = 23;
+            this.nUD_td_rt_tolerance.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.nUD_td_rt_tolerance.ValueChanged += new System.EventHandler(this.nUD_td_rt_tolerance_ValueChanged);
+            // 
             // TopDown
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1021, 703);
+            this.ClientSize = new System.Drawing.Size(1021, 742);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer3);
             this.Name = "TopDown";
@@ -286,6 +314,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_td_rt_tolerance)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -310,5 +339,7 @@
         private System.Windows.Forms.TextBox tb_unique_PFRs;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tb_td_hits;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown nUD_td_rt_tolerance;
     }
 }

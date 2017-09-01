@@ -92,6 +92,9 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
+            //reaccept relations in peaks --> may have unaccepted if previously removed bad relations
+            Parallel.ForEach(Sweet.lollipop.et_relations.Concat(Sweet.lollipop.ee_relations).Concat(Sweet.lollipop.ed_relations.Values.SelectMany(d => d)).Concat(Sweet.lollipop.ef_relations.Values.SelectMany(d => d)),
+                r => r.Accepted = r.peak.Accepted);
             Sweet.lollipop.construct_target_and_decoy_families();
             if(Sweet.lollipop.remove_bad_relations)
             {
@@ -105,26 +108,6 @@ namespace ProteoformSuiteGUI
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\orphans.txt"))
-            {
-                writer.WriteLine("mass\tintensity\tcount\tchargeStateCount");
-                foreach(var e in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => !p.topdown_id && p.relationships.Count(r => r.Accepted) == 0))
-                {
-                    writer.WriteLine(e.modified_mass + "\t" + e.agg_intensity + "\t" + e.aggregated.Count + "\t" + e.aggregated.Max(p => p.charge_states.Count));
-                }
-            }
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\ambiguousrelations.txt"))
-            {
-                writer.WriteLine("mass\tintensity\tcount\tchargeStateCount");
-                foreach (var e in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.ambiguous))
-                {
-                    foreach(ProteoformRelation r in e.relationships.Where(r => r.Accepted && r.connected_proteoforms[0].linked_proteoform_references != null && r.connected_proteoforms[1].linked_proteoform_references != null && (r.connected_proteoforms[0].gene_name.get_prefered_name(Lollipop.preferred_gene_label) != e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                    || r.connected_proteoforms[1].gene_name.get_prefered_name(Lollipop.preferred_gene_label) != e.gene_name.get_prefered_name(Lollipop.preferred_gene_label))))
-                    {
-                        writer.WriteLine(e.accession + "\t" + r.DeltaMass + "\t" + r.connected_proteoforms[0].accession + "\t" + r.connected_proteoforms[1].accession);
-                    }
-                }
-            }
         }
 
         public void FillTablesAndCharts()
