@@ -66,12 +66,12 @@ namespace ProteoformSuiteGUI
 
         public string theoretical_accession
         {
-            get { return t.linked_proteoform_references.First().accession; }
+            get { return t.linked_proteoform_references.First().accession.Split('_')[0]; }
         }
 
         public string theoretical_ptm_description
         {
-            get { return t.linked_proteoform_references.First().ptm_description; }
+            get { return t.ptm_description; }
         }
 
         public int theoretical_begin
