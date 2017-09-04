@@ -1,0 +1,379 @@
+accession_1	lysine_ct	accession_2	delta_mass	modification	
+12652.75_Da_E6 Q08245_2full113_1G_P4_1T Acetyl	20	Q08245_2full113_1G_P4_1T Acetyl	0.00	0.00
+12750.73_Da_E421 Q08245_2full113_1G_P12_1T Acetyl; Phospho; Water Adduct	20	12652.75_Da_E6 Q08245_2full113_1G_P4_1T Acetyl	97.97	97.97 Sulfate Adduct
+12652.74_Da_E394 Q08245_2full113_1G_P4_1T Acetyl	20	Q08245_2full113_1G_P4_1T Acetyl	0.00	0.00
+12750.73_Da_E421 Q08245_2full113_1G_P12_1T Acetyl; Phospho; Water Adduct	20	Q08245_2full113_1G_P12_1T Acetyl; Phospho	18.02	18.02 Water Adduct
+12636.71_Da_E724 Q08245_2full113_1G_P19_1T Acetyl; Ammonia loss; Deamidation	20	Q08245_2full113_1G_P19_1T Acetyl; Ammonia loss	0.98	0.98 Deamidation
+12732.69_Da_E1034 Q08245_2full113_1G_P29_1T Acetyl; Sulfonation	20	12636.71_Da_E724 Q08245_2full113_1G_P19_1T Acetyl; Ammonia loss; Deamidation	95.96	95.96 Phospho; Ox
+12732.69_Da_E1034 Q08245_2full113_1G_P29_1T Acetyl; Sulfonation	20	Q08245_2full113_1G_P29_1T Acetyl; Sulfonation	0.00	0.00
+16219.18_Da_E90 P0CX30_2full145_2G_P1_1T Ox; Ox	22	P0CX30_2full145_2G_P1_1T Unmodified	31.98	31.98 Ox; Ox
+14291.87_Da_E88 P02294_2full131_1G_P4_1T Acetyl	19	P02294_2full131_1G_P4_1T Acetyl	0.00	0.00
+14307.87_Da_E273 P02294_2full131_1G_P6_1T Acetyl; Ox	19	14291.87_Da_E88 P02294_2full131_1G_P4_1T Acetyl	16.00	16.00 Ox
+14333.89_Da_E215 P02294_2full131_1G_P8_1T Acetyl; Acetyl	19	14291.87_Da_E88 P02294_2full131_1G_P4_1T Acetyl	42.01	42.01 Acetyl
+14375.9_Da_E376 P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	19	14291.87_Da_E88 P02294_2full131_1G_P4_1T Acetyl	84.02	84.02 Acetyl; Acetyl
+14291.86_Da_E126 P02294_2full131_1G_P4_1T Acetyl	19	P02294_2full131_1G_P4_1T Acetyl	0.00	0.00
+14307.87_Da_E273 P02294_2full131_1G_P6_1T Acetyl; Ox	19	P02294_2full131_1G_P6_1T Acetyl; Ox	0.00	0.00
+14349.87_Da_E1066 P02294_2full131_1G_P8_1T Acetyl; Acetyl; Ox	19	14307.87_Da_E273 P02294_2full131_1G_P6_1T Acetyl; Ox	42.01	42.01 Acetyl
+14333.89_Da_E215 P02294_2full131_1G_P8_1T Acetyl; Acetyl	19	14307.87_Da_E273 P02294_2full131_1G_P6_1T Acetyl; Ox	26.02	26.02
+14333.89_Da_E215 P02294_2full131_1G_P8_1T Acetyl; Acetyl	19	P02294_2full131_1G_P8_1T Acetyl; Acetyl	0.00	0.00
+14349.87_Da_E1066 P02294_2full131_1G_P8_1T Acetyl; Acetyl; Ox	19	14333.89_Da_E215 P02294_2full131_1G_P8_1T Acetyl; Acetyl	16.00	16.00 Ox
+14375.9_Da_E376 P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	19	14333.89_Da_E215 P02294_2full131_1G_P8_1T Acetyl; Acetyl	42.01	42.01 Acetyl
+14417.91_Da_E647 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	19	14333.89_Da_E215 P02294_2full131_1G_P8_1T Acetyl; Acetyl	84.02	84.02 Acetyl; Acetyl
+14375.9_Da_E376 P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	19	P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	0.00	0.00
+14417.91_Da_E647 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	19	14375.9_Da_E376 P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	42.01	42.01 Acetyl
+14375.9_Da_E376 P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	19	14349.87_Da_E1066 P02294_2full131_1G_P8_1T Acetyl; Acetyl; Ox	26.02	26.02
+14459.91_Da_E1738 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl; Acetyl	19	14375.9_Da_E376 P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	84.02	84.02 Acetyl; Acetyl
+14291.86_Da_E126 P02294_2full131_1G_P4_1T Acetyl	19	14249.85_Da_E414 P02294_2full131_1G_P1_1T Unmodified	42.01	42.01 Acetyl
+14236.87_Da_E518 P02294_2full131_1G_P6_1T Acetyl; Ox; Missing Alanine (A)	19	P02294_2full131_1G_P6_1T Acetyl; Ox	-71.00	-71.00 Missing Alanine (A)
+14349.87_Da_E1066 P02294_2full131_1G_P8_1T Acetyl; Acetyl; Ox	19	P02294_2full131_1G_P8_1T Acetyl; Acetyl	15.99	15.99 Ox
+14417.91_Da_E647 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	19	P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	0.00	0.00
+14459.91_Da_E1738 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl; Acetyl	19	14417.91_Da_E647 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	42.01	42.01 Acetyl
+14459.91_Da_E1738 P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl; Acetyl	19	P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	42.00	42.00 Acetyl
+14249.85_Da_E414 P02294_2full131_1G_P1_1T Unmodified	19	P02294_2full131_1G_P1_1T Unmodified	0.00	0.00
+11401.55_Da_E115 P02309_2full103_1G_P9_1T Acetyl; Acetyl; Missed Monoisotopic (-1)	11	P02309_2full103_1G_P9_1T Acetyl; Acetyl	-1.00	-1.00 Missed Monoisotopic (-1)
+11401.55_Da_E115 P02309_2full103_1G_P9_1T Acetyl; Acetyl; Missed Monoisotopic (-1)	11	11359.55_Da_E511 P02309_2full103_1G_P4_1T Acetyl; Missed Monoisotopic (-1)	42.01	42.01 Acetyl
+11443.56_Da_E223 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	11401.55_Da_E115 P02309_2full103_1G_P9_1T Acetyl; Acetyl; Missed Monoisotopic (-1)	42.01	42.01 Acetyl
+11579.49_Da_E362 P02309_2full103_1G_P9_1T Acetyl; Acetyl; Missed Monoisotopic (-1); Sulfate Adduct; Phospho	11	11401.55_Da_E115 P02309_2full103_1G_P9_1T Acetyl; Acetyl; Missed Monoisotopic (-1)	177.94	177.94 Sulfate Adduct; Phospho
+11485.57_Da_E327 P02309_2full103_1G_P11_1T Acetyl; Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	11401.55_Da_E115 P02309_2full103_1G_P9_1T Acetyl; Acetyl; Missed Monoisotopic (-1)	84.02	84.02 Acetyl; Acetyl
+11359.55_Da_E511 P02309_2full103_1G_P4_1T Acetyl; Missed Monoisotopic (-1)	11	P02309_2full103_1G_P4_1T Acetyl	-1.00	-1.00 Missed Monoisotopic (-1)
+11443.56_Da_E223 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	11359.55_Da_E511 P02309_2full103_1G_P4_1T Acetyl; Missed Monoisotopic (-1)	84.02	84.02 Acetyl; Acetyl
+11443.56_Da_E223 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl	-1.00	-1.00 Missed Monoisotopic (-1)
+11485.57_Da_E327 P02309_2full103_1G_P11_1T Acetyl; Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	11443.56_Da_E223 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	42.01	42.01 Acetyl
+11527.58_Da_E612 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1); Acetyl; Acetyl	11	11443.56_Da_E223 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	84.02	84.02 Acetyl; Acetyl
+11485.57_Da_E327 P02309_2full103_1G_P11_1T Acetyl; Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	P02309_2full103_1G_P11_1T Acetyl; Acetyl; Acetyl; Acetyl	-1.00	-1.00 Missed Monoisotopic (-1)
+11527.58_Da_E612 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1); Acetyl; Acetyl	11	11485.57_Da_E327 P02309_2full103_1G_P11_1T Acetyl; Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	42.01	42.01 Acetyl
+11443.56_Da_E1230 P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl; Missed Monoisotopic (-1)	11	P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl	-1.00	-1.00 Missed Monoisotopic (-1)
+15793.01_Da_E55 P04456_2full142_1G_P1_1T Unmodified	22	P04456_2full142_1G_P1_1T Unmodified	0.00	0.00
+15891.09_Da_E498 P04456_2full142_1G_P1_1T Acetone Artifact	22	15793.01_Da_E55 P04456_2full142_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+15809.01_Da_E97 P04456_2full142_1G_P4_1T Ox	22	15793.01_Da_E55 P04456_2full142_1G_P1_1T Unmodified	16.00	16.00 Ox
+15793.01_Da_E55 P04456_2full142_1G_P1_1T Unmodified	22	15679.93_Da_E190 P04456_2full142_1G_P1_1T Missing Isoleucine (I)	113.09	113.09 Missing Isoleucine (I)
+15825.01_Da_E886 P04456_2full142_1G_P14_1T Ox; Ox	22	15793.01_Da_E55 P04456_2full142_1G_P1_1T Unmodified	31.99	31.99 Ox; Ox
+15679.93_Da_E190 P04456_2full142_1G_P1_1T Missing Isoleucine (I)	22	P04456_2full142_1G_P1_1T Unmodified	-113.08	-113.08 Missing Isoleucine (I)
+15793.03_Da_E1303 P04456_2full142_1G_P1_1T Unmodified	22	P04456_2full142_1G_P1_1T Unmodified	0.00	0.00
+15891.09_Da_E498 P04456_2full142_1G_P1_1T Acetone Artifact	22	P04456_2full142_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+15891.09_Da_E498 P04456_2full142_1G_P1_1T Acetone Artifact	22	15809.01_Da_E97 P04456_2full142_1G_P4_1T Ox	82.07	82.07
+15891.09_Da_E498 P04456_2full142_1G_P1_1T Acetone Artifact	22	15679.93_Da_E190 P04456_2full142_1G_P1_1T Missing Isoleucine (I)	211.15	211.15
+15809.01_Da_E97 P04456_2full142_1G_P4_1T Ox	22	P04456_2full142_1G_P4_1T Ox	0.00	0.00
+15825.01_Da_E886 P04456_2full142_1G_P14_1T Ox; Ox	22	15809.01_Da_E97 P04456_2full142_1G_P4_1T Ox	16.00	16.00 Ox
+15809.01_Da_E97 P04456_2full142_1G_P4_1T Ox	22	15679.93_Da_E190 P04456_2full142_1G_P1_1T Missing Isoleucine (I)	129.08	129.08
+15809.01_Da_E97 P04456_2full142_1G_P4_1T Ox	22	15711.95_Da_E1964 P04456_2full142_1G_P1_1T Missing Isoleucine (I); Ox; Ox	97.07	97.07 Missing Isoleucine (I); Ox
+15711.95_Da_E1964 P04456_2full142_1G_P1_1T Missing Isoleucine (I); Ox; Ox	22	15679.93_Da_E190 P04456_2full142_1G_P1_1T Missing Isoleucine (I)	32.02	32.02 Ox; Ox
+15825.01_Da_E886 P04456_2full142_1G_P14_1T Ox; Ox	22	P04456_2full142_1G_P14_1T Ox; Ox	0.00	0.00
+14314.89_Da_E91 P02293_2full131_1G_P4_1T Acetyl	20	P02293_2full131_1G_P4_1T Acetyl	0.00	0.00
+14314.89_Da_E91 P02293_2full131_1G_P4_1T Acetyl	20	14272.89_Da_E159 P02293_2full131_1G_P1_1T Unmodified	42.01	42.01 Acetyl
+14356.9_Da_E287 P02293_2full131_1G_P8_1T Acetyl; Acetyl	20	14314.89_Da_E91 P02293_2full131_1G_P4_1T Acetyl	42.01	42.01 Acetyl
+14398.91_Da_E515 P02293_2full131_1G_P9_1T Acetyl; Acetyl; Acetyl	20	14314.89_Da_E91 P02293_2full131_1G_P4_1T Acetyl	84.02	84.02 Acetyl; Acetyl
+14272.89_Da_E159 P02293_2full131_1G_P1_1T Unmodified	20	P02293_2full131_1G_P1_1T Unmodified	0.00	0.00
+14356.9_Da_E287 P02293_2full131_1G_P8_1T Acetyl; Acetyl	20	P02293_2full131_1G_P8_1T Acetyl; Acetyl	0.00	0.00
+14398.91_Da_E515 P02293_2full131_1G_P9_1T Acetyl; Acetyl; Acetyl	20	14356.9_Da_E287 P02293_2full131_1G_P8_1T Acetyl; Acetyl	42.01	42.01 Acetyl
+14398.91_Da_E515 P02293_2full131_1G_P9_1T Acetyl; Acetyl; Acetyl	20	P02293_2full131_1G_P9_1T Acetyl; Acetyl; Acetyl	0.00	0.00
+14356.89_Da_E442 P02293_2full131_1G_P8_1T Acetyl; Acetyl	20	P02293_2full131_1G_P8_1T Acetyl; Acetyl	0.00	0.00
+15261.81_Da_E14 P36105_2full138_1G_P4_1T Acetyl	17	P36105_2full138_1G_P4_1T Acetyl	0.00	0.00
+15359.89_Da_E135 P36105_2full138_1G_P4_1T Acetyl; Acetone Artifact	17	15261.81_Da_E14 P36105_2full138_1G_P4_1T Acetyl	98.07	98.07 Acetone Artifact
+15277.81_Da_E169 P36105_2full138_1G_P8_1T Acetyl; Ox	17	15261.81_Da_E14 P36105_2full138_1G_P4_1T Acetyl	16.00	16.00 Ox
+15261.81_Da_E14 P36105_2full138_1G_P4_1T Acetyl	17	15204.8_Da_E108 P38754_2full138_1G_P2_1T Ox; Ammonia loss	57.03	57.03 Methyl; Missing Alanine (A)
+15261.81_Da_E14 P36105_2full138_1G_P4_1T Acetyl	17	15247.8_Da_E39 P38754_2full138_1G_P4_1T Acetyl	14.02	14.02 Carbamidomethyl; Missing Alanine (A)
+15287.83_Da_E464	17	15261.81_Da_E14 P36105_2full138_1G_P4_1T Acetyl	26.02	26.02
+15359.89_Da_E135 P36105_2full138_1G_P4_1T Acetyl; Acetone Artifact	17	P36105_2full138_1G_P4_1T Acetyl	98.07	98.07 Acetone Artifact
+15261.8_Da_E1848 P36105_2full138_1G_P4_1T Acetyl	17	P36105_2full138_1G_P4_1T Acetyl	-0.02	-0.02
+15359.89_Da_E135 P36105_2full138_1G_P4_1T Acetyl; Acetone Artifact	17	15277.81_Da_E169 P36105_2full138_1G_P8_1T Acetyl; Ox	82.07	82.07
+15359.89_Da_E135 P36105_2full138_1G_P4_1T Acetyl; Acetone Artifact	17	15204.8_Da_E108 P38754_2full138_1G_P2_1T Ox; Ammonia loss	155.09	155.09 Acetone Artifact; Carbamidomethyl
+15359.89_Da_E135 P36105_2full138_1G_P4_1T Acetyl; Acetone Artifact	17	15344.86_Da_E270	15.02	15.02
+15277.81_Da_E169 P36105_2full138_1G_P8_1T Acetyl; Ox	17	P36105_2full138_1G_P8_1T Acetyl; Ox	0.00	0.00
+15277.81_Da_E169 P36105_2full138_1G_P8_1T Acetyl; Ox	17	15247.8_Da_E39 P38754_2full138_1G_P4_1T Acetyl	30.01	30.01 Carbamidomethyl; Missing Serine (S)
+15204.8_Da_E108 P38754_2full138_1G_P2_1T Ox; Ammonia loss	17	P38754_2full138_1G_P2_1T Ox	-17.00	-17.00 Ammonia loss
+15302.88_Da_E364 P38754_2full138_1G_P2_1T Ox; Ammonia loss; Acetone Artifact	17	15204.8_Da_E108 P38754_2full138_1G_P2_1T Ox; Ammonia loss	98.07	98.07 Acetone Artifact
+15247.8_Da_E39 P38754_2full138_1G_P4_1T Acetyl	17	P38754_2full138_1G_P4_1T Acetyl	0.00	0.00
+15287.83_Da_E464	17	15247.8_Da_E39 P38754_2full138_1G_P4_1T Acetyl	40.03	40.03
+15344.86_Da_E270	17	15247.8_Da_E39 P38754_2full138_1G_P4_1T Acetyl	97.07	97.07
+15344.86_Da_E270	17	15287.83_Da_E464	57.03	57.03
+15344.86_Da_E270	17	15231.77_Da_E591	113.09	113.09
+21687.45_Da_E880	13	21671.46_Da_E99	16.00	16.00
+6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	13	P05747_2full59_1G_P1_1T Unmodified	0.00	0.00
+6735.92_Da_E810 P05747_2full59_1G_P1_1T Acetone Artifact	13	6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	13	6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	16.00	16.00 Ox
+6877.75_Da_E1289	13	6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	239.90	239.90
+6669.85_Da_E358 P05747_2full59_1G_P1_1T Ox; Ox	13	6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	31.99	31.99 Ox; Ox
+6751.93_Da_E1990 P05747_2full59_1G_P1_1T Acetone Artifact; Ox	13	6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	114.06	114.06 Acetone Artifact; Ox
+6721.91_Da_E1143 P05747_2full59_1G_P1_1T Acetyl; Acetyl	13	6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	84.05	84.05 Acetyl; Acetyl
+6637.86_Da_E7 P05747_2full59_1G_P1_1T Unmodified	13	6620.83_Da_E255 P05747_2full59_1G_P1_1T Ammonia loss	17.03	17.03 Ammonia loss
+6637.85_Da_E686 P05747_2full59_1G_P1_1T Unmodified	13	P05747_2full59_1G_P1_1T Unmodified	0.00	0.00
+6637.85_Da_E68 P05747_2full59_1G_P1_1T Unmodified	13	P05747_2full59_1G_P1_1T Unmodified	0.00	0.00
+6637.85_Da_E1609 P05747_2full59_1G_P1_1T Unmodified	13	P05747_2full59_1G_P1_1T Unmodified	0.00	0.00
+6637.85_Da_E2190 P05747_2full59_1G_P1_1T Unmodified	13	P05747_2full59_1G_P1_1T Unmodified	0.00	0.00
+6735.92_Da_E810 P05747_2full59_1G_P1_1T Acetone Artifact	13	P05747_2full59_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6735.93_Da_E447 P05747_2full59_1G_P1_1T Acetone Artifact	13	P05747_2full59_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6735.81_Da_E1323 P05747_2full59_1G_P1_1T Sulfate Adduct	13	P05747_2full59_1G_P1_1T Unmodified	97.96	97.96 Sulfate Adduct
+6735.81_Da_E864 P05747_2full59_1G_P1_1T Sulfate Adduct	13	P05747_2full59_1G_P1_1T Unmodified	97.96	97.96 Sulfate Adduct
+6669.85_Da_E358 P05747_2full59_1G_P1_1T Ox; Ox	13	P05747_2full59_1G_P1_1T Unmodified	31.98	31.98 Ox; Ox
+6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	13	P05747_2full59_1G_P1_1T Unmodified	15.99	15.99 Ox
+6653.85_Da_E1317 P05747_2full59_1G_P1_1T Ox	13	P05747_2full59_1G_P1_1T Unmodified	15.99	15.99 Ox
+6620.83_Da_E783 P05747_2full59_1G_P1_1T Ammonia loss	13	P05747_2full59_1G_P1_1T Unmodified	-17.03	-17.03 Ammonia loss
+6620.83_Da_E255 P05747_2full59_1G_P1_1T Ammonia loss	13	P05747_2full59_1G_P1_1T Unmodified	-17.03	-17.03 Ammonia loss
+6620.83_Da_E2036 P05747_2full59_1G_P1_1T Ammonia loss	13	P05747_2full59_1G_P1_1T Unmodified	-17.03	-17.03 Ammonia loss
+6751.93_Da_E1990 P05747_2full59_1G_P1_1T Acetone Artifact; Ox	13	6735.92_Da_E810 P05747_2full59_1G_P1_1T Acetone Artifact	16.00	16.00 Ox
+6735.92_Da_E810 P05747_2full59_1G_P1_1T Acetone Artifact	13	6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	82.07	82.07
+6735.92_Da_E810 P05747_2full59_1G_P1_1T Acetone Artifact	13	6721.91_Da_E1143 P05747_2full59_1G_P1_1T Acetyl; Acetyl	14.02	14.02 Carbamidomethyl; Missing Alanine (A)
+6735.92_Da_E810 P05747_2full59_1G_P1_1T Acetone Artifact	13	6703.89_Da_E1758 P05747_2full59_1G_P1_1T Acetyl; Acetyl; Water loss	32.02	32.02 Ox; Ox
+6751.93_Da_E1990 P05747_2full59_1G_P1_1T Acetone Artifact; Ox	13	6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	98.07	98.07 Acetone Artifact
+6669.85_Da_E358 P05747_2full59_1G_P1_1T Ox; Ox	13	6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	16.00	16.00 Ox
+6721.91_Da_E1143 P05747_2full59_1G_P1_1T Acetyl; Acetyl	13	6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	68.05	68.05
+6653.85_Da_E288 P05747_2full59_1G_P1_1T Ox	13	6627.83_Da_E2012	26.02	26.02
+7055.69_Da_E1712	13	6877.75_Da_E1289	177.94	177.94
+6669.85_Da_E358 P05747_2full59_1G_P1_1T Ox; Ox	13	6627.83_Da_E2012	42.01	42.01
+6751.93_Da_E1990 P05747_2full59_1G_P1_1T Acetone Artifact; Ox	13	6669.85_Da_E358 P05747_2full59_1G_P1_1T Ox; Ox	82.07	82.07
+6687.86_Da_E601 P05747_2full59_1G_P1_1T Ox; Ox; Water Adduct	13	6669.85_Da_E358 P05747_2full59_1G_P1_1T Ox; Ox	18.01	18.01 Water Adduct
+6751.93_Da_E1990 P05747_2full59_1G_P1_1T Acetone Artifact; Ox	13	6721.91_Da_E1143 P05747_2full59_1G_P1_1T Acetyl; Acetyl	30.01	30.01 Acetone Artifact; Missing Lysine (K)
+6721.91_Da_E1143 P05747_2full59_1G_P1_1T Acetyl; Acetyl	13	6703.89_Da_E1758 P05747_2full59_1G_P1_1T Acetyl; Acetyl; Water loss	18.01	18.01 Water loss
+6678.87_Da_E1393 P05747_2full59_1G_P1_1T Ammonia loss; Acetyl; Ox	13	6620.83_Da_E255 P05747_2full59_1G_P1_1T Ammonia loss	58.04	58.04 Acetyl; Ox
+6620.83_Da_E255 P05747_2full59_1G_P1_1T Ammonia loss	13	6603.81_Da_E1733 P05747_2full59_1G_P1_1T Ammonia loss; Ammonia loss	17.03	17.03 Ammonia loss
+6637.85_Da_E686 P05747_2full59_1G_P1_1T Unmodified	13	6620.83_Da_E2036 P05747_2full59_1G_P1_1T Ammonia loss	17.03	17.03 Ammonia loss
+6735.93_Da_E447 P05747_2full59_1G_P1_1T Acetone Artifact	13	6637.85_Da_E68 P05747_2full59_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6653.85_Da_E1317 P05747_2full59_1G_P1_1T Ox	13	6637.85_Da_E68 P05747_2full59_1G_P1_1T Unmodified	16.00	16.00 Ox
+6877.75_Da_E712	13	6637.85_Da_E68 P05747_2full59_1G_P1_1T Unmodified	239.90	239.90
+6735.81_Da_E1323 P05747_2full59_1G_P1_1T Sulfate Adduct	13	6637.85_Da_E68 P05747_2full59_1G_P1_1T Unmodified	97.97	97.97 Sulfate Adduct
+6637.85_Da_E68 P05747_2full59_1G_P1_1T Unmodified	13	6620.83_Da_E783 P05747_2full59_1G_P1_1T Ammonia loss	17.03	17.03 Ammonia loss
+6735.93_Da_E447 P05747_2full59_1G_P1_1T Acetone Artifact	13	6653.85_Da_E1317 P05747_2full59_1G_P1_1T Ox	82.07	82.07
+6670.84_Da_E1699 P05747_2full59_1G_P1_1T Ox; Deamidation; Ox	13	6653.85_Da_E1317 P05747_2full59_1G_P1_1T Ox	17.00	17.00 Deamidation; Ox
+6678.87_Da_E1479 P05747_2full59_1G_P1_1T Ammonia loss; Acetyl; Ox	13	6620.83_Da_E783 P05747_2full59_1G_P1_1T Ammonia loss	58.04	58.04 Acetyl; Ox
+6703.89_Da_E1758 P05747_2full59_1G_P1_1T Acetyl; Acetyl; Water loss	13	6603.81_Da_E1733 P05747_2full59_1G_P1_1T Ammonia loss; Ammonia loss	100.08	100.08
+6687.86_Da_E601 P05747_2full59_1G_P1_1T Ox; Ox; Water Adduct	13	6603.81_Da_E1733 P05747_2full59_1G_P1_1T Ammonia loss; Ammonia loss	84.05	84.05 Acetyl; Acetyl
+7055.69_Da_E1577	13	6877.75_Da_E712	177.94	177.94
+15343.84_Da_E1125 P61830_2full136_1G_P1_1T Unmodified	16	P61830_2full136_1G_P1_1T Unmodified	0.00	0.00
+15426.92_Da_E177 P61830_2full136_1G_P43_1T Methyl, Methyl; Methyl, Methyl; Methyl, Methyl; Missed Monoisotopic (-1)	16	P61830_2full136_1G_P43_1T Methyl, Methyl; Methyl, Methyl; Methyl, Methyl	-1.00	-1.00 Missed Monoisotopic (-1)
+15426.92_Da_E177 P61830_2full136_1G_P43_1T Methyl, Methyl; Methyl, Methyl; Methyl, Methyl; Missed Monoisotopic (-1)	16	15412.9_Da_E366 P61830_2full136_1G_P40_1T Methyl, Methyl, Methyl; Methyl, Methyl; Missed Monoisotopic (-1)	14.02	14.02 Carbamidomethyl; Missing Alanine (A)
+15412.9_Da_E366 P61830_2full136_1G_P40_1T Methyl, Methyl, Methyl; Methyl, Methyl; Missed Monoisotopic (-1)	16	P61830_2full136_1G_P40_1T Methyl, Methyl, Methyl; Methyl, Methyl	-1.00	-1.00 Missed Monoisotopic (-1)
+15330.85_Da_E589 P61830_2full136_1G_P29_1T Methyl, Methyl, Methyl; Ox; Missing Alanine (A)	16	P61830_2full136_1G_P29_1T Methyl, Methyl, Methyl; Ox	-71.04	-71.04 Missing Alanine (A)
+6687.64_Da_E192 Q6Q547_2full58_1G_P1_1T Retained Met	7	Q6Q547_2full58_1G_P1_1T Unmodified	131.03	131.03 Retained Met
+6785.72_Da_E1718 Q6Q547_2full58_1G_P1_1T Retained Met; Acetone Artifact	7	6687.64_Da_E192 Q6Q547_2full58_1G_P1_1T Retained Met	98.07	98.07 Acetone Artifact
+6703.63_Da_E300 Q6Q547_2full58_1G_P2_1T Ox; Retained Met	7	6687.64_Da_E192 Q6Q547_2full58_1G_P1_1T Retained Met	16.00	16.00 Ox
+6719.63_Da_E1026 Q6Q547_2full58_1G_P2_1T Ox; Retained Met; Ox	7	6687.64_Da_E192 Q6Q547_2full58_1G_P1_1T Retained Met	31.99	31.99 Ox; Ox
+6687.64_Da_E1348 Q6Q547_2full58_1G_P1_1T Retained Met	7	Q6Q547_2full58_1G_P1_1T Unmodified	131.03	131.03 Retained Met
+6785.72_Da_E1718 Q6Q547_2full58_1G_P1_1T Retained Met; Acetone Artifact	7	6703.63_Da_E300 Q6Q547_2full58_1G_P2_1T Ox; Retained Met	82.07	82.07
+6703.63_Da_E300 Q6Q547_2full58_1G_P2_1T Ox; Retained Met	7	Q6Q547_2full58_1G_P2_1T Ox	131.03	131.03 Retained Met
+6719.63_Da_E1026 Q6Q547_2full58_1G_P2_1T Ox; Retained Met; Ox	7	6703.63_Da_E300 Q6Q547_2full58_1G_P2_1T Ox; Retained Met	16.00	16.00 Ox
+6719.63_Da_E1026 Q6Q547_2full58_1G_P2_1T Ox; Retained Met; Ox	7	Q6Q547_2full58_1G_P2_1T Ox	147.03	147.03 Retained Met; Ox
+6703.64_Da_E1908 Q6Q547_2full58_1G_P2_1T Ox; Retained Met	7	6687.64_Da_E1348 Q6Q547_2full58_1G_P1_1T Retained Met	16.00	16.00 Ox
+6703.64_Da_E1908 Q6Q547_2full58_1G_P2_1T Ox; Retained Met	7	Q6Q547_2full58_1G_P2_1T Ox	131.03	131.03 Retained Met
+13978.85_Da_E15 P04912_2full132_1G_P3_2T Acetyl; Missed Monoisotopic (-1)	11	P04912_2full132_1G_P3_2T Acetyl	-1.00	-1.00 Missed Monoisotopic (-1)
+14218.75_Da_E758 P04912_2full132_1G_P3_2T Acetyl; Missed Monoisotopic (-1); Phospho; Phospho; Phospho	11	13978.85_Da_E15 P04912_2full132_1G_P3_2T Acetyl; Missed Monoisotopic (-1)	239.90	239.90 Phospho; Phospho; Phospho
+14062.87_Da_E278 P04912_2full132_1G_P3_2T Acetyl; Missed Monoisotopic (-1); Acetyl; Acetyl	11	13978.85_Da_E15 P04912_2full132_1G_P3_2T Acetyl; Missed Monoisotopic (-1)	84.02	84.02 Acetyl; Acetyl
+14062.87_Da_E278 P04912_2full132_1G_P3_2T Acetyl; Missed Monoisotopic (-1); Acetyl; Acetyl	11	14004.82_Da_E1010	58.04	58.04
+14004.82_Da_E1010	11	13920.77_Da_E621	84.05	84.05
+13920.83_Da_E138 P04912_2full132_1G_P1_2T Ammonia loss	11	P04912_2full132_1G_P1_2T Unmodified	-17.00	-17.00 Ammonia loss
+13713.56_Da_E52 P39938_2full119_1G_P1_1T Unmodified	15	P39938_2full119_1G_P1_1T Unmodified	0.00	0.00
+13729.56_Da_E146 P39938_2full119_1G_P2_1T Ox	15	13713.56_Da_E52 P39938_2full119_1G_P1_1T Unmodified	16.00	16.00 Ox
+13713.56_Da_E52 P39938_2full119_1G_P1_1T Unmodified	15	13599.5_Da_E271 P39939_2full119_1G_P1_1T Missing Leucine (L); Carbamidomethyl	114.06	114.06 Acetone Artifact; Ox
+13729.56_Da_E146 P39938_2full119_1G_P2_1T Ox	15	P39938_2full119_1G_P2_1T Ox	0.00	0.00
+13599.5_Da_E271 P39939_2full119_1G_P1_1T Missing Leucine (L); Carbamidomethyl	15	13542.47_Da_E583 P39939_2full119_1G_P1_1T Missing Leucine (L)	57.03	57.03 Carbamidomethyl
+13655.55_Da_E139 P39939_2full119_1G_P1_1T Unmodified	15	13542.47_Da_E583 P39939_2full119_1G_P1_1T Missing Leucine (L)	113.09	113.09 Missing Leucine (L)
+13655.55_Da_E139 P39939_2full119_1G_P1_1T Unmodified	15	P39939_2full119_1G_P1_1T Unmodified	0.00	0.00
+8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	8	P52870_2full82_1G_P1_1T Unmodified	42.00	42.00 Acetyl
+8778.95_Da_E750 P52870_2full82_1G_P1_1T Acetyl; Acetone Artifact	8	8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	98.07	98.07 Acetone Artifact
+8947.03_Da_E316 P52870_2full82_1G_P1_1T Acetyl; Hydrogen Dodecyl Sulfate	8	8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	266.15	266.15 Hydrogen Dodecyl Sulfate
+8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	8	8638.87_Da_E512 P52870_2full82_1G_P1_1T Unmodified	42.01	42.01 Acetyl
+9213.18_Da_E831 P52870_2full82_1G_P1_1T Acetyl; Hydrogen Dodecyl Sulfate; Hydrogen Dodecyl Sulfate	8	8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	532.31	532.31 Hydrogen Dodecyl Sulfate; Hydrogen Dodecyl Sulfate
+8760.84_Da_E460 P52870_2full82_1G_P1_1T Acetyl; Phospho	8	8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	79.97	79.97 Phospho
+8764.94_Da_E1321 P52870_2full82_1G_P1_1T Acetyl; Acetyl; Acetyl	8	8680.88_Da_E66 P52870_2full82_1G_P1_1T Acetyl	84.05	84.05 Acetyl; Acetyl
+8638.87_Da_E512 P52870_2full82_1G_P1_1T Unmodified	8	P52870_2full82_1G_P1_1T Unmodified	0.00	0.00
+8947.03_Da_E316 P52870_2full82_1G_P1_1T Acetyl; Hydrogen Dodecyl Sulfate	8	8778.95_Da_E750 P52870_2full82_1G_P1_1T Acetyl; Acetone Artifact	168.08	168.08 Acetyl; Acetyl; Acetyl; Acetyl
+8778.95_Da_E750 P52870_2full82_1G_P1_1T Acetyl; Acetone Artifact	8	8764.94_Da_E1321 P52870_2full82_1G_P1_1T Acetyl; Acetyl; Acetyl	14.02	14.02 Methyl
+9213.18_Da_E831 P52870_2full82_1G_P1_1T Acetyl; Hydrogen Dodecyl Sulfate; Hydrogen Dodecyl Sulfate	8	8947.03_Da_E316 P52870_2full82_1G_P1_1T Acetyl; Hydrogen Dodecyl Sulfate	266.15	266.15 Hydrogen Dodecyl Sulfate
+8638.87_Da_E512 P52870_2full82_1G_P1_1T Unmodified	8	8551.84_Da_E848 P52870_2full82_1G_P1_1T Missing Serine (S)	87.03	87.03 Missing Serine (S)
+8764.94_Da_E1321 P52870_2full82_1G_P1_1T Acetyl; Acetyl; Acetyl	8	8664.86_Da_E959	100.08	100.08
+14003.3_Da_E20 P0CX85_2full120_2G_P1_1T Unmodified	22	P0CX85_2full120_2G_P1_1T Unmodified	0.00	0.00
+14003.3_Da_E20 P0CX85_2full120_2G_P1_1T Unmodified	22	13932.26_Da_E222 P0CX85_2full120_2G_P1_1T Missing Alanine (A)	71.03	71.03 Missing Alanine (A)
+14101.28_Da_E69 P0CX85_2full120_2G_P2_1T Phospho; Water Adduct	22	14003.3_Da_E20 P0CX85_2full120_2G_P1_1T Unmodified	97.97	97.97 Sulfate Adduct
+14043.33_Da_E216	22	14003.3_Da_E20 P0CX85_2full120_2G_P1_1T Unmodified	40.03	40.03
+13932.26_Da_E222 P0CX85_2full120_2G_P1_1T Missing Alanine (A)	22	P0CX85_2full120_2G_P1_1T Unmodified	-71.04	-71.04 Missing Alanine (A)
+14003.29_Da_E1698 P0CX85_2full120_2G_P1_1T Unmodified	22	P0CX85_2full120_2G_P1_1T Unmodified	0.00	0.00
+14101.28_Da_E69 P0CX85_2full120_2G_P2_1T Phospho; Water Adduct	22	P0CX85_2full120_2G_P2_1T Phospho	18.02	18.02 Water Adduct
+6501.75_Da_E275	12	6430.71_Da_E1562	71.03	71.03
+6599.71_Da_E1722	12	6501.75_Da_E275	97.97	97.97
+6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	8	P04650_2full51_1G_P1_1T Unmodified	0.00	0.00
+6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	16.00	16.00 Ox
+6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	8	6199.6_Da_E426 P04650_2full51_1G_P1_1T Missing Alanine (A)	71.03	71.03 Missing Alanine (A)
+6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	113.09	113.09 Missing Isoleucine (I)
+6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	31.99	31.99 Ox; Ox
+6368.59_Da_E470 P04650_2full51_1G_P1_1T Sulfate Adduct	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	97.97	97.97 Sulfate Adduct
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	114.06	114.06 Acetone Artifact; Ox
+6318.61_Da_E474 P04650_2full51_1G_P12_1T Ox; Ox; Ox	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	47.99	47.99 Ox; Ox; Ox
+6354.69_Da_E756 P04650_2full51_1G_P1_1T Missing Alanine (A); Acetone Artifact; Carbamidomethyl	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	84.05	84.05 Acetyl; Acetyl
+6384.62_Da_E411 P04650_2full51_1G_P1_1T Sulfate Adduct; Ox	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	113.98	113.98 Sulfate Adduct; Ox
+6310.66_Da_E1787	8	6270.63_Da_E10 P04650_2full51_1G_P1_1T Unmodified	40.03	40.03
+6199.6_Da_E426 P04650_2full51_1G_P1_1T Missing Alanine (A)	8	P04650_2full51_1G_P1_1T Unmodified	-71.04	-71.04 Missing Alanine (A)
+6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	8	P04650_2full51_1G_P1_1T Unmodified	-113.08	-113.08 Missing Isoleucine (I)
+6157.54_Da_E1727 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	8	P04650_2full51_1G_P1_1T Unmodified	-113.08	-113.08 Missing Isoleucine (I)
+6270.63_Da_E743 P04650_2full51_1G_P1_1T Unmodified	8	P04650_2full51_1G_P1_1T Unmodified	0.00	0.00
+6368.7_Da_E1761 P04650_2full51_1G_P1_1T Acetone Artifact	8	P04650_2full51_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	8	P04650_2full51_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6368.59_Da_E470 P04650_2full51_1G_P1_1T Sulfate Adduct	8	P04650_2full51_1G_P1_1T Unmodified	97.96	97.96 Sulfate Adduct
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	16.00	16.00 Ox
+6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	82.07	82.07
+6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	8	6310.66_Da_E1787	58.04	58.04
+6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	211.15	211.15
+6368.7_Da_E320 P04650_2full51_1G_P1_1T Acetone Artifact	8	6354.69_Da_E756 P04650_2full51_1G_P1_1T Missing Alanine (A); Acetone Artifact; Carbamidomethyl	14.02	14.02 Carbamidomethyl; Missing Alanine (A)
+6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	8	P04650_2full51_1G_P2_1T Ox	0.00	0.00
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	98.07	98.07 Acetone Artifact
+6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	16.00	16.00 Ox
+6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	8	6215.59_Da_E1679 P04650_2full51_1G_P2_1T Ox; Missing Alanine (A)	71.03	71.03 Missing Alanine (A)
+6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	8	6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	113.09	113.09 Missing Isoleucine (I)
+6318.61_Da_E474 P04650_2full51_1G_P12_1T Ox; Ox; Ox	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	31.99	31.99 Ox; Ox
+6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	129.08	129.08
+6334.61_Da_E777 P04650_2full51_1G_P12_1T Ox; Ox; Ox; Ox	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	47.99	47.99 Ox; Ox; Ox
+6400.59_Da_E1591 P04650_2full51_1G_P14_1T Ammonia loss; Ox; Retained Met	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	113.98	113.98 Sulfate Adduct; Ox
+6384.62_Da_E411 P04650_2full51_1G_P1_1T Sulfate Adduct; Ox	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	97.99	97.99 Sulfate Adduct
+6354.69_Da_E756 P04650_2full51_1G_P1_1T Missing Alanine (A); Acetone Artifact; Carbamidomethyl	8	6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	68.05	68.05
+6286.63_Da_E56 P04650_2full51_1G_P2_1T Ox	8	6199.6_Da_E426 P04650_2full51_1G_P1_1T Missing Alanine (A)	87.03	87.03
+6215.59_Da_E1679 P04650_2full51_1G_P2_1T Ox; Missing Alanine (A)	8	6199.6_Da_E426 P04650_2full51_1G_P1_1T Missing Alanine (A)	16.00	16.00 Ox
+6354.69_Da_E756 P04650_2full51_1G_P1_1T Missing Alanine (A); Acetone Artifact; Carbamidomethyl	8	6199.6_Da_E426 P04650_2full51_1G_P1_1T Missing Alanine (A)	155.09	155.09 Acetone Artifact; Carbamidomethyl
+6199.6_Da_E426 P04650_2full51_1G_P1_1T Missing Alanine (A)	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	42.05	42.05 Acetyl
+6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	16.00	16.00 Ox
+6215.59_Da_E1679 P04650_2full51_1G_P2_1T Ox; Missing Alanine (A)	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	58.04	58.04 Acetyl; Ox
+6189.54_Da_E818 P04650_2full51_1G_P6_1T Ox; Ox; Missing Isoleucine (I)	8	6157.54_Da_E429 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	31.99	31.99 Ox; Ox
+6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	8	P04650_2full51_1G_P6_1T Ox; Ox	0.00	0.00
+6318.61_Da_E474 P04650_2full51_1G_P12_1T Ox; Ox; Ox	8	6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	16.00	16.00 Ox
+6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	8	6189.54_Da_E818 P04650_2full51_1G_P6_1T Ox; Ox; Missing Isoleucine (I)	113.09	113.09 Missing Isoleucine (I)
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	82.07	82.07
+6334.61_Da_E777 P04650_2full51_1G_P12_1T Ox; Ox; Ox; Ox	8	6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	31.99	31.99 Ox; Ox
+6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	8	6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	129.08	129.08
+6400.59_Da_E1591 P04650_2full51_1G_P14_1T Ammonia loss; Ox; Retained Met	8	6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	97.97	97.97 Sulfate Adduct
+6302.62_Da_E81 P04650_2full51_1G_P6_1T Ox; Ox	8	6215.59_Da_E1679 P04650_2full51_1G_P2_1T Ox; Missing Alanine (A)	87.03	87.03
+6400.59_Da_E1591 P04650_2full51_1G_P14_1T Ammonia loss; Ox; Retained Met	8	6368.59_Da_E470 P04650_2full51_1G_P1_1T Sulfate Adduct	31.99	31.99 Ox; Ox
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	P04650_2full51_1G_P2_1T Ox	98.07	98.07 Acetone Artifact
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	211.15	211.15
+6384.7_Da_E788 P04650_2full51_1G_P2_1T Ox; Acetone Artifact	8	6354.69_Da_E756 P04650_2full51_1G_P1_1T Missing Alanine (A); Acetone Artifact; Carbamidomethyl	30.01	30.01 Pyrrolidinone
+6318.61_Da_E474 P04650_2full51_1G_P12_1T Ox; Ox; Ox	8	P04650_2full51_1G_P12_1T Ox; Ox	15.99	15.99 Ox
+6334.61_Da_E777 P04650_2full51_1G_P12_1T Ox; Ox; Ox; Ox	8	6318.61_Da_E474 P04650_2full51_1G_P12_1T Ox; Ox; Ox	16.00	16.00 Ox
+6318.61_Da_E474 P04650_2full51_1G_P12_1T Ox; Ox; Ox	8	6189.54_Da_E818 P04650_2full51_1G_P6_1T Ox; Ox; Missing Isoleucine (I)	129.08	129.08
+6270.63_Da_E743 P04650_2full51_1G_P1_1T Unmodified	8	6157.54_Da_E1727 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	113.09	113.09 Missing Isoleucine (I)
+6286.62_Da_E1338 P04650_2full51_1G_P4_1T Ox	8	6157.54_Da_E1727 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	129.08	129.08
+6368.7_Da_E1761 P04650_2full51_1G_P1_1T Acetone Artifact	8	6157.54_Da_E1727 P04650_2full51_1G_P1_1T Missing Isoleucine (I)	211.15	211.15
+6368.7_Da_E1761 P04650_2full51_1G_P1_1T Acetone Artifact	8	6270.63_Da_E743 P04650_2full51_1G_P1_1T Unmodified	98.07	98.07 Acetone Artifact
+6286.62_Da_E1338 P04650_2full51_1G_P4_1T Ox	8	6270.63_Da_E743 P04650_2full51_1G_P1_1T Unmodified	16.00	16.00 Ox
+6302.62_Da_E1697 P04650_2full51_1G_P6_1T Ox; Ox	8	6270.63_Da_E743 P04650_2full51_1G_P1_1T Unmodified	31.99	31.99 Ox; Ox
+6310.66_Da_E2103	8	6270.63_Da_E743 P04650_2full51_1G_P1_1T Unmodified	40.03	40.03
+6368.7_Da_E1761 P04650_2full51_1G_P1_1T Acetone Artifact	8	6286.62_Da_E1338 P04650_2full51_1G_P4_1T Ox	82.07	82.07
+6368.7_Da_E1761 P04650_2full51_1G_P1_1T Acetone Artifact	8	6310.66_Da_E2103	58.04	58.04
+6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	8	P04650_2full51_1G_P2_1T Ox	-113.08	-113.08 Missing Isoleucine (I)
+6215.59_Da_E1679 P04650_2full51_1G_P2_1T Ox; Missing Alanine (A)	8	P04650_2full51_1G_P2_1T Ox	-71.04	-71.04 Missing Alanine (A)
+6215.59_Da_E1679 P04650_2full51_1G_P2_1T Ox; Missing Alanine (A)	8	6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	42.05	42.05 Acetyl
+6189.54_Da_E818 P04650_2full51_1G_P6_1T Ox; Ox; Missing Isoleucine (I)	8	6173.54_Da_E656 P04650_2full51_1G_P2_1T Ox; Missing Isoleucine (I)	16.00	16.00 Ox
+6334.61_Da_E777 P04650_2full51_1G_P12_1T Ox; Ox; Ox; Ox	8	P04650_2full51_1G_P12_1T Ox; Ox	31.98	31.98 Ox; Ox
+6400.59_Da_E1591 P04650_2full51_1G_P14_1T Ammonia loss; Ox; Retained Met	8	P04650_2full51_1G_P14_1T Ammonia loss; Ox	131.00	131.00 Retained Met
+6189.54_Da_E818 P04650_2full51_1G_P6_1T Ox; Ox; Missing Isoleucine (I)	8	P04650_2full51_1G_P6_1T Ox; Ox	-113.08	-113.08 Missing Isoleucine (I)
+6302.62_Da_E1697 P04650_2full51_1G_P6_1T Ox; Ox	8	P04650_2full51_1G_P6_1T Ox; Ox	0.00	0.00
+6286.62_Da_E1338 P04650_2full51_1G_P4_1T Ox	8	P04650_2full51_1G_P4_1T Ox	0.00	0.00
+6302.62_Da_E1697 P04650_2full51_1G_P6_1T Ox; Ox	8	6286.62_Da_E1338 P04650_2full51_1G_P4_1T Ox	16.00	16.00 Ox
+6384.62_Da_E1901 P04650_2full51_1G_P5_1T Ammonia loss; Retained Met	8	6286.62_Da_E1338 P04650_2full51_1G_P4_1T Ox	97.99	97.99 Sulfate Adduct
+6384.62_Da_E1901 P04650_2full51_1G_P5_1T Ammonia loss; Retained Met	8	P04650_2full51_1G_P5_1T Ammonia loss	131.03	131.03 Retained Met
+14265.87_Da_E860	18	14249.88_Da_E326	16.00	16.00
+21772.95_Da_E307 P05738_2full191_1G_P1_1T Retained Met	20	P05738_2full191_1G_P1_1T Unmodified	131.03	131.03 Retained Met
+10784.83_Da_E370 P11632_2full93_1G_P1_1T Unmodified	15	P11632_2full93_1G_P1_1T Unmodified	0.00	0.00
+10800.83_Da_E611 P11632_2full93_1G_P3_1T Ox	15	10784.83_Da_E370 P11632_2full93_1G_P1_1T Unmodified	16.00	16.00 Ox
+10784.83_Da_E370 P11632_2full93_1G_P1_1T Unmodified	15	10713.79_Da_E505 P11632_2full93_1G_P1_1T Missing Alanine (A)	71.03	71.03 Missing Alanine (A)
+10784.83_Da_E370 P11632_2full93_1G_P1_1T Unmodified	15	10600.71_Da_E445 P11632_2full93_1G_P1_1T Missing Alanine (A); Missing Leucine (L)	184.12	184.12 Missing Leucine (L); Missing Alanine (A)
+10713.79_Da_E505 P11632_2full93_1G_P1_1T Missing Alanine (A)	15	P11632_2full93_1G_P1_1T Unmodified	-71.04	-71.04 Missing Alanine (A)
+10800.83_Da_E611 P11632_2full93_1G_P3_1T Ox	15	P11632_2full93_1G_P3_1T Ox	0.00	0.00
+10800.83_Da_E611 P11632_2full93_1G_P3_1T Ox	15	10729.79_Da_E710 P11632_2full93_1G_P3_1T Ox; Missing Alanine (A)	71.03	71.03 Missing Alanine (A)
+10800.83_Da_E611 P11632_2full93_1G_P3_1T Ox	15	10713.79_Da_E505 P11632_2full93_1G_P1_1T Missing Alanine (A)	87.03	87.03
+10729.79_Da_E710 P11632_2full93_1G_P3_1T Ox; Missing Alanine (A)	15	10713.79_Da_E505 P11632_2full93_1G_P1_1T Missing Alanine (A)	16.00	16.00 Ox
+10713.79_Da_E505 P11632_2full93_1G_P1_1T Missing Alanine (A)	15	10600.71_Da_E445 P11632_2full93_1G_P1_1T Missing Alanine (A); Missing Leucine (L)	113.09	113.09 Missing Leucine (L)
+10729.79_Da_E710 P11632_2full93_1G_P3_1T Ox; Missing Alanine (A)	15	10600.71_Da_E445 P11632_2full93_1G_P1_1T Missing Alanine (A); Missing Leucine (L)	129.08	129.08
+10729.79_Da_E710 P11632_2full93_1G_P3_1T Ox; Missing Alanine (A)	15	P11632_2full93_1G_P3_1T Ox	-71.04	-71.04 Missing Alanine (A)
+12570.13_Da_E18 P0CX27_2full106_2G_P3_1T Methyl; Methyl	23	P0CX27_2full106_2G_P3_1T Methyl; Methyl	0.00	0.00
+12668.2_Da_E100 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact	23	12570.13_Da_E18 P0CX27_2full106_2G_P3_1T Methyl; Methyl	98.07	98.07 Acetone Artifact
+12570.13_Da_E18 P0CX27_2full106_2G_P3_1T Methyl; Methyl	23	12513.1_Da_E597 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetyl; Missing Valine (V)	57.03	57.03 Acetyl; Missing Valine (V)
+12810.02_Da_E488	23	12570.13_Da_E18 P0CX27_2full106_2G_P3_1T Methyl; Methyl	239.90	239.90
+12654.19_Da_E233 P0CX27_2full106_2G_P2_1T Methyl; Acetone Artifact	23	12570.13_Da_E18 P0CX27_2full106_2G_P3_1T Methyl; Methyl	84.05	84.05 Acetyl; Acetyl
+12638.17_Da_E1203 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact; Pyrrolidinone	23	12570.13_Da_E18 P0CX27_2full106_2G_P3_1T Methyl; Methyl	68.05	68.05 Acetone Artifact; Pyrrolidinone
+12668.2_Da_E100 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact	23	P0CX27_2full106_2G_P3_1T Methyl; Methyl	98.07	98.07 Acetone Artifact
+12586.16_Da_E302 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Ox	23	P0CX27_2full106_2G_P3_1T Methyl; Methyl	16.02	16.02 Ox
+12668.2_Da_E100 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact	23	12513.1_Da_E597 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetyl; Missing Valine (V)	155.09	155.09 Acetone Artifact; Carbamidomethyl
+12668.2_Da_E100 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact	23	12654.19_Da_E233 P0CX27_2full106_2G_P2_1T Methyl; Acetone Artifact	14.02	14.02 Methyl
+12668.2_Da_E100 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact	23	12638.17_Da_E1203 P0CX27_2full106_2G_P3_1T Methyl; Methyl; Acetone Artifact; Pyrrolidinone	30.01	30.01 Pyrrolidinone
+12654.19_Da_E233 P0CX27_2full106_2G_P2_1T Methyl; Acetone Artifact	23	P0CX27_2full106_2G_P2_1T Methyl	98.07	98.07 Acetone Artifact
+4868.97_Da_E667	10	4712.87_Da_E1403	156.10	156.10
+4712.87_Da_E1403	10	4556.77_Da_E1695	156.10	156.10
+12009.27_Da_E706 P38804_2full111_1G_P1_1T Acetyl	12	P38804_2full111_1G_P1_1T Unmodified	42.00	42.00 Acetyl
+15468.92_Da_E616	15	15397.89_Da_E672	71.03	71.03
+10168.14_Da_E1817	11	10110.11_Da_E843	58.04	58.04
+14783.46_Da_E45 P38061_2full130_1G_P1_1T Unmodified	19	P38061_2full130_1G_P1_1T Unmodified	0.00	0.00
+14799.46_Da_E179 P38061_2full130_1G_P2_1T Ox	19	14783.46_Da_E45 P38061_2full130_1G_P1_1T Unmodified	16.00	16.00 Ox
+14881.42_Da_E241 P38061_2full130_1G_P1_1T Sulfate Adduct	19	14783.46_Da_E45 P38061_2full130_1G_P1_1T Unmodified	97.97	97.97 Sulfate Adduct
+14881.42_Da_E241 P38061_2full130_1G_P1_1T Sulfate Adduct	19	P38061_2full130_1G_P1_1T Unmodified	97.96	97.96 Sulfate Adduct
+14799.46_Da_E179 P38061_2full130_1G_P2_1T Ox	19	P38061_2full130_1G_P2_1T Ox	0.00	0.00
+14767.43_Da_E789 P38061_2full130_1G_P23_1T Ammonia loss; Deamidation	19	P38061_2full130_1G_P23_1T Ammonia loss; Deamidation	0.00	0.00
+6151.52_Da_E1534	11	5967.4_Da_E1115	184.12	184.12
+22568.66_Da_E581 P40212_2full199_1G_P13_1T Methyl; Methyl	20	P40212_2full199_1G_P13_1T Methyl; Methyl	-0.02	-0.02
+20739.77_Da_E1019	8	20724.79_Da_E1071	14.99	14.99
+15831.83_Da_E95	15	15773.8_Da_E770	58.04	58.04
+5040.74_Da_E1368	7	4942.78_Da_E551	97.97	97.97
+11080.43_Da_E1197	13	11065.42_Da_E813	14.99	14.99
+3407.21_Da_E2137 P0CX87_2full25_2G_P1_1T Retained Met; Ox	7	P0CX87_2full25_2G_P1_1T Unmodified	147.03	147.03 Retained Met; Ox
+3407.21_Da_E2137 P0CX87_2full25_2G_P1_1T Retained Met; Ox	7	3391.21_Da_E1583 P0CX87_2full25_2G_P1_1T Retained Met	16.00	16.00 Ox
+3391.21_Da_E1583 P0CX87_2full25_2G_P1_1T Retained Met	7	P0CX87_2full25_2G_P1_1T Unmodified	131.03	131.03 Retained Met
+3391.21_Da_E2033 P0CX87_2full25_2G_P1_1T Retained Met	7	P0CX87_2full25_2G_P1_1T Unmodified	131.03	131.03 Retained Met
+9974.17_Da_E993	10	9942.15_Da_E2180	32.02	32.02
+10042.21_Da_E1586	10	9942.15_Da_E2180	100.08	100.08
+10042.21_Da_E1586	10	9974.17_Da_E993	68.05	68.05
+Q08245_2full113_1G_P4_1T Acetyl	20	YOL109W		
+Q08245_2full113_1G_P12_1T Acetyl; Phospho	20	YOL109W		
+Q08245_2full113_1G_P19_1T Acetyl; Ammonia loss	20	YOL109W		
+Q08245_2full113_1G_P29_1T Acetyl; Sulfonation	20	YOL109W		
+P0CX30_2full145_2G_P1_1T Unmodified	22	YPR132W		
+P02294_2full131_1G_P4_1T Acetyl	19	YBL002W		
+P02294_2full131_1G_P6_1T Acetyl; Ox	19	YBL002W		
+P02294_2full131_1G_P8_1T Acetyl; Acetyl	19	YBL002W		
+P02294_2full131_1G_P11_1T Acetyl; Acetyl; Acetyl	19	YBL002W		
+P02294_2full131_1G_P14_1T Acetyl; Acetyl; Acetyl; Acetyl	19	YBL002W		
+P02294_2full131_1G_P1_1T Unmodified	19	YBL002W		
+P02309_2full103_1G_P9_1T Acetyl; Acetyl	11	YBR009C		
+P02309_2full103_1G_P4_1T Acetyl	11	YBR009C		
+P02309_2full103_1G_P10_1T Acetyl; Acetyl; Acetyl	11	YBR009C		
+P02309_2full103_1G_P11_1T Acetyl; Acetyl; Acetyl; Acetyl	11	YBR009C		
+P04456_2full142_1G_P1_1T Unmodified	22	YOL127W		
+P04456_2full142_1G_P4_1T Ox	22	YOL127W		
+P04456_2full142_1G_P14_1T Ox; Ox	22	YOL127W		
+P02293_2full131_1G_P4_1T Acetyl	20	YDR224C		
+P02293_2full131_1G_P1_1T Unmodified	20	YDR224C		
+P02293_2full131_1G_P8_1T Acetyl; Acetyl	20	YDR224C		
+P02293_2full131_1G_P9_1T Acetyl; Acetyl; Acetyl	20	YDR224C		
+P36105_2full138_1G_P4_1T Acetyl	17	YKL006W		
+P36105_2full138_1G_P8_1T Acetyl; Ox	17	YKL006W		
+P38754_2full138_1G_P2_1T Ox	17	YHL001W		
+P38754_2full138_1G_P4_1T Acetyl	17	YHL001W		
+P05747_2full59_1G_P1_1T Unmodified	13	YFR032C-A		
+P61830_2full136_1G_P1_1T Unmodified	16	YBR010W		
+P61830_2full136_1G_P43_1T Methyl, Methyl; Methyl, Methyl; Methyl, Methyl	16	YBR010W		
+P61830_2full136_1G_P40_1T Methyl, Methyl, Methyl; Methyl, Methyl	16	YBR010W		
+P61830_2full136_1G_P29_1T Methyl, Methyl, Methyl; Ox	16	YBR010W		
+Q6Q547_2full58_1G_P1_1T Unmodified	7	YHR072W-A		
+Q6Q547_2full58_1G_P2_1T Ox	7	YHR072W-A		
+P04912_2full132_1G_P3_2T Acetyl	11	YBL003C		
+P04912_2full132_1G_P1_2T Unmodified	11	YBL003C		
+P39938_2full119_1G_P1_1T Unmodified	15	YGL189C		
+P39938_2full119_1G_P2_1T Ox	15	YGL189C		
+P39939_2full119_1G_P1_1T Unmodified	15	YER131W		
+P52870_2full82_1G_P1_1T Unmodified	8	YER087C-B		
+P0CX85_2full120_2G_P1_1T Unmodified	22	YDL136W		
+P0CX85_2full120_2G_P2_1T Phospho	22	YDL136W		
+P04650_2full51_1G_P1_1T Unmodified	8	YJL189W		
+P04650_2full51_1G_P2_1T Ox	8	YJL189W		
+P04650_2full51_1G_P6_1T Ox; Ox	8	YJL189W		
+P04650_2full51_1G_P12_1T Ox; Ox	8	YJL189W		
+P04650_2full51_1G_P14_1T Ammonia loss; Ox	8	YJL189W		
+P04650_2full51_1G_P4_1T Ox	8	YJL189W		
+P04650_2full51_1G_P5_1T Ammonia loss	8	YJL189W		
+P05738_2full191_1G_P1_1T Unmodified	20	YGL147C		
+P11632_2full93_1G_P1_1T Unmodified	15	YPR052C		
+P11632_2full93_1G_P3_1T Ox	15	YPR052C		
+P0CX27_2full106_2G_P3_1T Methyl; Methyl	23	YNL162W		
+P0CX27_2full106_2G_P2_1T Methyl	23	YNL162W		
+P38804_2full111_1G_P1_1T Unmodified	12	YHR087W		
+P38061_2full130_1G_P1_1T Unmodified	19	YBL092W		
+P38061_2full130_1G_P2_1T Ox	19	YBL092W		
+P38061_2full130_1G_P23_1T Ammonia loss; Deamidation	19	YBL092W		
+P40212_2full199_1G_P13_1T Methyl; Methyl	20	YMR142C		
+P0CX87_2full25_2G_P1_1T Unmodified	7	YDL133C-A		
