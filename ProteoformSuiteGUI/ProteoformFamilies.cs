@@ -94,7 +94,7 @@ namespace ProteoformSuiteGUI
             ClearListsTablesFigures(true);
             //reaccept relations in peaks --> may have unaccepted if previously removed bad relations
             Parallel.ForEach(Sweet.lollipop.et_relations.Concat(Sweet.lollipop.ee_relations).Concat(Sweet.lollipop.ed_relations.Values.SelectMany(d => d)).Concat(Sweet.lollipop.ef_relations.Values.SelectMany(d => d)),
-                r => r.Accepted = r.peak.Accepted);
+                r => r.Accepted = r.peak != null ? r.peak.Accepted : false);
             Sweet.lollipop.construct_target_and_decoy_families();
             if(Sweet.lollipop.remove_bad_relations)
             {

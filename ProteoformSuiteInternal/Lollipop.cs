@@ -980,6 +980,8 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public List<Component> calibration_components = new List<Component>();
         public List<string> filenames_did_not_calibrate = new List<string>();
+        public bool calibration_use_random_seed = false;
+        public int calibration_random_seed = 1;
 
         public void read_in_calibration_td_hits()
         {

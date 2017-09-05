@@ -38,6 +38,8 @@ namespace ProteoformSuiteGUI
             tb_resultsFolder.Text = Sweet.lollipop.results_folder;
             rb_neucode.Checked = Sweet.lollipop.neucode_labeled;
             rb_unlabeled.Checked = !rb_neucode.Checked;
+            nud_randomSeed.Value = Sweet.lollipop.calibration_random_seed;
+            cb_useRandomSeed.Checked = Sweet.lollipop.calibration_use_random_seed;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
         }
 
@@ -148,7 +150,6 @@ namespace ProteoformSuiteGUI
             cmb_loadTable1.SelectedIndex = 0;
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
-            bt_calibrate.Visible = false;
 
             cmb_loadTable1.Enabled = true;
             cmb_loadTable2.Enabled = true;
@@ -159,7 +160,6 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 3;
                 cmb_loadTable3.SelectedIndex = 2;
-                bt_calibrate.Visible = false;
             }
 
             if (rb_chemicalCalibration.Checked)
@@ -168,6 +168,8 @@ namespace ProteoformSuiteGUI
                 for (int i = 4; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
                 for (int i = 4; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
                 bt_calibrate.Visible = true;
+                cb_useRandomSeed.Visible = true;
+                nud_randomSeed.Visible = true;
                 cmb_loadTable1.SelectedIndex = 5;
                 cmb_loadTable2.SelectedIndex = 6;
                 cmb_loadTable3.SelectedIndex = 7;
@@ -175,6 +177,12 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.Enabled = false;
                 cmb_loadTable2.Enabled = false;
                 cmb_loadTable3.Enabled = false;
+            }
+            else
+            {
+                bt_calibrate.Visible = false;
+                cb_useRandomSeed.Visible = false;
+                nud_randomSeed.Visible = false;
             }
 
 
@@ -574,5 +582,14 @@ namespace ProteoformSuiteGUI
 
         #endregion Cell Validation Methods
 
+        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.calibration_random_seed = (int)nud_randomSeed.Value;
+        }
+
+        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.calibration_use_random_seed = cb_useRandomSeed.Checked;
+        }
     }
 }
