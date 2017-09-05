@@ -35,36 +35,38 @@ namespace ProteoformSuiteInternal
 
             //need to reset m/z in case same td hits used for multiple calibration raw files... 
             Parallel.ForEach(all_topdown_hits, h => h.mz = h.reported_mass.ToMz(h.charge));
-
+            int round = 0;
             for (int linearCalibrationRound = 1; ; linearCalibrationRound++)
             {
                 dataPointAcquisitionResult = GetDataPoints();
                 // go until same # training points as previous round
                 if (linearCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
                     break;
+                round++;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
-                CalibrateLinear(dataPointAcquisitionResult.Ms1List);
+                CalibrateLinear(dataPointAcquisitionResult.Ms1List, round);
             }
 
             trainingPointCounts = new List<int>();
             for (int forestCalibrationRound = 1; ; forestCalibrationRound++)
             {
-                CalibrationFunction calibrationFunction = CalibrateRF(dataPointAcquisitionResult);
+                CalibrationFunction calibrationFunction = CalibrateRF(dataPointAcquisitionResult, round);
                 dataPointAcquisitionResult = GetDataPoints();
                 if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
                     break;
+                round++;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
             }
             return true;
         }
 
-        private CalibrationFunction CalibrateRF(DataPointAquisitionResults res)
+        private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, int round)
         {
-            var rnd = new Random();
+            Random decoy_rng = Sweet.lollipop.calibration_use_random_seed ? new Random(round + Sweet.lollipop.randomSeed_decoys) : new Random(); //new random generator for each round of calibration
+            var shuffledMs1TrainingPoints = res.Ms1List.OrderBy(item => decoy_rng.Next()).ToList();
 
-            var shuffledMs1TrainingPoints = res.Ms1List.OrderBy(item => rnd.Next()).ToList();
 
             var trainList1 = shuffledMs1TrainingPoints.Take((int)(shuffledMs1TrainingPoints.Count * 0.75)).ToList();
             var testList1 = shuffledMs1TrainingPoints.Skip((int)(shuffledMs1TrainingPoints.Count * 0.75)).ToList();
@@ -118,11 +120,11 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private void CalibrateLinear(List<LabeledMs1DataPoint> res)
+        private void CalibrateLinear(List<LabeledMs1DataPoint> res, int round)
         {
-            var rnd = new Random();
+            Random decoy_rng = Sweet.lollipop.calibration_use_random_seed ? new Random(round + Sweet.lollipop.randomSeed_decoys) : new Random(); //new random generator for each round of 
 
-            var shuffledMs1TrainingPoints = res.OrderBy(item => rnd.Next()).ToList();
+            var shuffledMs1TrainingPoints = res.OrderBy(item => decoy_rng.Next()).ToList();
 
             var trainList1 = shuffledMs1TrainingPoints.Take((int)(shuffledMs1TrainingPoints.Count * 0.75)).ToList();
             var testList1 = shuffledMs1TrainingPoints.Skip((int)(shuffledMs1TrainingPoints.Count * 0.75)).ToList();

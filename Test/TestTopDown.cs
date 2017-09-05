@@ -93,7 +93,7 @@ namespace Test
         public void TestTopdownReader()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.carbamidomethylation = true;
+            Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.clear_td();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);

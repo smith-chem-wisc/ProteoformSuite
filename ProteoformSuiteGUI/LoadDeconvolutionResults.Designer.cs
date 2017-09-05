@@ -76,7 +76,6 @@
             this.lb_filter3 = new System.Windows.Forms.Label();
             this.splitContainer16 = new System.Windows.Forms.SplitContainer();
             this.splitContainer24 = new System.Windows.Forms.SplitContainer();
-            this.bt_calibrate = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer27 = new System.Windows.Forms.SplitContainer();
             this.tb_resultsFolder = new System.Windows.Forms.TextBox();
@@ -86,6 +85,10 @@
             this.splitContainer26 = new System.Windows.Forms.SplitContainer();
             this.btn_fullRun = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
+            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
+            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
+            this.splitContainer17 = new System.Windows.Forms.SplitContainer();
+            this.bt_calibrate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -193,6 +196,11 @@
             this.splitContainer26.Panel1.SuspendLayout();
             this.splitContainer26.Panel2.SuspendLayout();
             this.splitContainer26.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer17)).BeginInit();
+            this.splitContainer17.Panel1.SuspendLayout();
+            this.splitContainer17.Panel2.SuspendLayout();
+            this.splitContainer17.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer3
@@ -879,7 +887,7 @@
             // 
             // splitContainer24.Panel1
             // 
-            this.splitContainer24.Panel1.Controls.Add(this.bt_calibrate);
+            this.splitContainer24.Panel1.Controls.Add(this.splitContainer17);
             // 
             // splitContainer24.Panel2
             // 
@@ -887,18 +895,6 @@
             this.splitContainer24.Size = new System.Drawing.Size(850, 42);
             this.splitContainer24.SplitterDistance = 283;
             this.splitContainer24.TabIndex = 0;
-            // 
-            // bt_calibrate
-            // 
-            this.bt_calibrate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bt_calibrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.bt_calibrate.Location = new System.Drawing.Point(0, 0);
-            this.bt_calibrate.Name = "bt_calibrate";
-            this.bt_calibrate.Size = new System.Drawing.Size(283, 42);
-            this.bt_calibrate.TabIndex = 39;
-            this.bt_calibrate.Text = "Calibrate";
-            this.bt_calibrate.UseVisualStyleBackColor = true;
-            this.bt_calibrate.Click += new System.EventHandler(this.bt_calibrate_Click);
             // 
             // groupBox2
             // 
@@ -1016,6 +1012,71 @@
             this.bt_clearResults.Text = "Clear Results";
             this.bt_clearResults.UseVisualStyleBackColor = true;
             this.bt_clearResults.Click += new System.EventHandler(this.bt_clearResults_Click);
+            // 
+            // nud_randomSeed
+            // 
+            this.nud_randomSeed.Location = new System.Drawing.Point(3, 20);
+            this.nud_randomSeed.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Name = "nud_randomSeed";
+            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
+            this.nud_randomSeed.TabIndex = 59;
+            this.nud_randomSeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_randomSeed.Visible = false;
+            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
+            // 
+            // cb_useRandomSeed
+            // 
+            this.cb_useRandomSeed.AutoSize = true;
+            this.cb_useRandomSeed.Location = new System.Drawing.Point(3, 4);
+            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
+            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
+            this.cb_useRandomSeed.TabIndex = 58;
+            this.cb_useRandomSeed.Text = "Use Random Seed:";
+            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
+            this.cb_useRandomSeed.Visible = false;
+            this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
+            // 
+            // splitContainer17
+            // 
+            this.splitContainer17.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer17.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer17.Name = "splitContainer17";
+            // 
+            // splitContainer17.Panel1
+            // 
+            this.splitContainer17.Panel1.Controls.Add(this.nud_randomSeed);
+            this.splitContainer17.Panel1.Controls.Add(this.cb_useRandomSeed);
+            // 
+            // splitContainer17.Panel2
+            // 
+            this.splitContainer17.Panel2.Controls.Add(this.bt_calibrate);
+            this.splitContainer17.Size = new System.Drawing.Size(283, 42);
+            this.splitContainer17.SplitterDistance = 136;
+            this.splitContainer17.TabIndex = 0;
+            // 
+            // bt_calibrate
+            // 
+            this.bt_calibrate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bt_calibrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.bt_calibrate.Location = new System.Drawing.Point(0, 0);
+            this.bt_calibrate.Name = "bt_calibrate";
+            this.bt_calibrate.Size = new System.Drawing.Size(143, 42);
+            this.bt_calibrate.TabIndex = 40;
+            this.bt_calibrate.Text = "Calibrate";
+            this.bt_calibrate.UseVisualStyleBackColor = true;
             // 
             // LoadDeconvolutionResults
             // 
@@ -1141,6 +1202,12 @@
             this.splitContainer26.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer26)).EndInit();
             this.splitContainer26.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
+            this.splitContainer17.Panel1.ResumeLayout(false);
+            this.splitContainer17.Panel1.PerformLayout();
+            this.splitContainer17.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer17)).EndInit();
+            this.splitContainer17.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1202,6 +1269,9 @@
         private System.Windows.Forms.RadioButton rb_unlabeled;
         private System.Windows.Forms.RadioButton rb_standardOptions;
         private System.Windows.Forms.RadioButton rb_chemicalCalibration;
+        private System.Windows.Forms.SplitContainer splitContainer17;
+        private System.Windows.Forms.NumericUpDown nud_randomSeed;
+        private System.Windows.Forms.CheckBox cb_useRandomSeed;
         private System.Windows.Forms.Button bt_calibrate;
     }
 }
