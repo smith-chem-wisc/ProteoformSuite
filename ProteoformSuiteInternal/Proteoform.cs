@@ -231,6 +231,7 @@ namespace ProteoformSuiteInternal
                 e.linked_proteoform_references.Add(this);
                 e.ptm_set = set;
                 e.ambiguous = false;
+
             }
             else
             {

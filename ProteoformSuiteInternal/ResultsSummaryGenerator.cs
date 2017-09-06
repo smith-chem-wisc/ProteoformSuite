@@ -215,7 +215,7 @@ namespace ProteoformSuiteInternal
             report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;
             int identified_exp_proteoforms_not_in_td = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
             report += identified_exp_proteoforms_not_in_td.ToString() + "\tIdentified Experimental Proteoforms Not Identified in Top-Down" + Environment.NewLine;
-            report += ambiguous_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms That Are Possibly " + Environment.NewLine;
+            report += ambiguous_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms That Are Possibly Ambiguous" + Environment.NewLine;
             report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")
                     + "\tAverage Identified Experimental Proteoforms by Decoys" + Environment.NewLine;
             report += (avg_ambiguous_decoy_proteoforms > 0 ? Math.Round(avg_ambiguous_decoy_proteoforms, 2).ToString() : "N/A")
