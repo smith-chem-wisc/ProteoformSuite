@@ -136,8 +136,10 @@ namespace Test
             TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("", 100042.01, 0); // sequence with all serines
             t2.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene2", "gene2") });
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 100042.01, 0, true);
+            ExperimentalProteoform e3 = ConstructorsForTesting.ExperimentalProteoform("", 100042.01, 0, true);
+            ConstructorsForTesting.make_relation(e3, e1, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(e3, e2, ProteoformComparison.ExperimentalExperimental, 0);
             ConstructorsForTesting.make_relation(t2, e2, ProteoformComparison.ExperimentalTheoretical, 0);
-
             ConstructorsForTesting.make_relation(e2, e1, ProteoformComparison.ExperimentalExperimental, 42.01);
 
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
@@ -154,22 +156,36 @@ namespace Test
                 { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
             };
 
-            e1.relationships.First().Accepted = true;
-            e1.relationships[1].Accepted = true;
-            e1.relationships.First().peak = new DeltaMassPeak(e1.relationships.First(), new HashSet<ProteoformRelation> { e1.relationships.First() });
-            e1.relationships[1].peak = new DeltaMassPeak(e1.relationships[1], new HashSet<ProteoformRelation> { e1.relationships[1] });
-            e2.relationships.First().Accepted = true;
-            e2.relationships.First().peak = new DeltaMassPeak(e2.relationships.First(), new HashSet<ProteoformRelation> { e2.relationships.First() });
 
+            acetyl = new PtmSet(new List<Ptm>
+            {
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.011, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+            });
+
+             set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+
+            // Proteoforms start without any modifications in the PtmSet
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+            for (int i = 0; i < 3; i++)
+            {
+                e1.relationships[i].Accepted = true;
+                e1.relationships[i].peak = new DeltaMassPeak(e1.relationships[i], new HashSet<ProteoformRelation> { e1.relationships[i] });
+                e2.relationships[i].Accepted = true;
+                e2.relationships[i].peak = new DeltaMassPeak(e2.relationships[i], new HashSet<ProteoformRelation> { e2.relationships[i] });
+            }
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             fam.identify_experimentals();
-
-            Assert.AreEqual(2, fam.experimental_proteoforms.Count);
+            Assert.AreEqual(3, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsTrue(e2.ambiguous);
+            Assert.IsFalse(e2.ambiguous); //dont have same path length so not ambiguous
             Assert.IsFalse(e1.ambiguous);
+            Assert.IsTrue(e3.ambiguous);
+
         }
     }
 }

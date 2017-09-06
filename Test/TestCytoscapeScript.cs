@@ -106,15 +106,6 @@ namespace Test
               f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
             Assert.True(node_table.Contains("ACC"));
             Assert.True(node_table.Contains("999.99"));
-
-            t.topdown_id = true;
-            t.topdown_ptmset = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
-            t.linked_proteoform_references = new List<Proteoform>() { ConstructorsForTesting.make_a_theoretical() };
-            node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f },
-              null,
-              CytoscapeScript.color_scheme_names[0], Lollipop.node_labels[1], Lollipop.edge_labels[0], Lollipop.node_positioning[0], 2,
-              f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
-            Assert.True(node_table.Contains("Acetylation@15"));
         }
 
         [Test]

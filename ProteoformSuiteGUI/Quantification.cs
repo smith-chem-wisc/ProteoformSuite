@@ -41,6 +41,7 @@ namespace ProteoformSuiteGUI
 
         public List<DataTable> SetTables()
         {
+            if(selected_tusher_analysis == null) return new List<DataTable>();
             //Quantification values for selected tusher analysis
             DataTables = new List<DataTable>
             {
