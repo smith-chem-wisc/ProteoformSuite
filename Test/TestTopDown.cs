@@ -26,7 +26,7 @@ namespace Test
                 t.sequence = "SEQUENCE";
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
-                t.pvalue = 1 / (i + 1);
+                t.pscore = 1 / (i + 1);
             }
             Sweet.lollipop.clear_td();
             Sweet.lollipop.top_down_hits = tdhList;
@@ -71,7 +71,7 @@ namespace Test
                 t.ms2_retention_time = 50;
                 t.accession = "accession";
                 t.sequence = "sequence";
-                t.pvalue = (double) 1 / (i + 1);
+                t.pscore = (double) 1 / (i + 1);
                 t.ptm_list = new List<Ptm>();
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
@@ -281,25 +281,25 @@ namespace Test
             td.linked_proteoform_references = new List<Proteoform>() { t };
             //no PTMs diff begin fail
             td.begin = 10;
-            t.begin = 10;
+            td.topdown_begin = 10;
             td.end = 20;
-            t.end = 30;
+            td.topdown_end = 30;
             td.ptm_set = new PtmSet(new List<Ptm>());
             td.topdown_ptmset = new PtmSet(new List<Ptm>());
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //no PTMs diff end fail
             td.begin = 10;
-            t.begin = 20;
+            td.topdown_begin = 20;
             td.end = 30;
-            t.end = 30;
+            td.topdown_end = 30;
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //no PTMs same pass
             td.begin = 10;
-            t.begin = 10;
+            td.topdown_begin = 10;
             td.end = 30;
-            t.end = 30;
+            td.topdown_end = 30;
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
             //same begin and end, T has more PTMs

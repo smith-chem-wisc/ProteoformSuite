@@ -46,12 +46,12 @@ namespace ProteoformSuiteGUI
 
         public int Begin
         {
-            get { return t.begin; }
+            get { return t.topdown_begin; }
         }
 
         public int End
         {
-            get { return t.end; }
+            get { return t.topdown_end; }
         }
 
         public string ptm_description
@@ -76,12 +76,12 @@ namespace ProteoformSuiteGUI
 
         public int theoretical_begin
         {
-            get { return (t.linked_proteoform_references.First() as TheoreticalProteoform).begin; }
+            get { return t.begin; }
         }
 
         public int theoretical_end
         {
-            get { return (t.linked_proteoform_references.First() as TheoreticalProteoform).end; }
+            get { return t.end; }
         }
 
         public double modified_mass
@@ -112,6 +112,16 @@ namespace ProteoformSuiteGUI
         public string PFR
         {
             get { return t.pfr; }
+        }
+
+        public string family_id
+        {
+            get { return t.family != null ? t.family.family_id.ToString() : ""; }
+        }
+
+        public string manual_id
+        {
+            get { return t.manual_validation_id; }
         }
 
         #endregion Public Properties
@@ -153,6 +163,8 @@ namespace ProteoformSuiteGUI
             if (name == nameof(theoretical_begin)) return "Theoretical Begin";
             if (name == nameof(theoretical_end)) return "Theoretical End";
             if (name == nameof(best_c_score)) return "Best Hit C-Score";
+            if (name == nameof(manual_id)) return "Best Hit Info";
+            if (name == nameof(family_id)) return "Family ID";
             return null;
         }
 
@@ -165,6 +177,7 @@ namespace ProteoformSuiteGUI
                 if (property_name == nameof(theoretical_ptm_description)) return false;
                 if (property_name == nameof(theoretical_begin)) return false;
                 if (property_name == nameof(theoretical_end)) return false;
+                if (property_name == nameof(family_id)) return false;
             }
             return current;
         }

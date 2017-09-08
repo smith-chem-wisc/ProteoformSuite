@@ -41,9 +41,9 @@ namespace ProteoformSuiteInternal
 
         internal override void Train<LabeledDataPoint>(IEnumerable<LabeledDataPoint> trainingList)
         {
-            var rand = new Random();
+            var rand = Sweet.lollipop.calibration_use_random_seed ? new Random(Sweet.lollipop.calibration_random_seed) : new Random();
             List<LabeledDataPoint> trainingListHere = trainingList.ToList();
-            Parallel.For(0, RegressionTrees.Length, i =>
+            for (int i = 0; i < RegressionTrees.Length; i++)
             {
                 List<LabeledDataPoint> subsampledTrainingPoints = new List<LabeledDataPoint>();
                 for (int j = 0; j < trainingListHere.Count; j++)
@@ -52,7 +52,7 @@ namespace ProteoformSuiteInternal
                     subsampledTrainingPoints.Add(trainingListHere[index]);
                 }
                 RegressionTrees[i].Train(subsampledTrainingPoints);
-            });
+            }
         }
 
         internal override double Predict(double[] t)

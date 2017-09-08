@@ -32,6 +32,12 @@
             this.dgv_TD_proteoforms = new System.Windows.Forms.DataGridView();
             this.rtb_sequence = new System.Windows.Forms.RichTextBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nUD_td_rt_tolerance = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tb_unique_PFRs = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tb_td_hits = new System.Windows.Forms.TextBox();
             this.bt_read_in_td_hits = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tb_tableFilter = new System.Windows.Forms.TextBox();
@@ -42,12 +48,6 @@
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.tb_td_hits = new System.Windows.Forms.TextBox();
-            this.tb_unique_PFRs = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.nUD_td_rt_tolerance = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -57,8 +57,8 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_td_rt_tolerance)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -76,7 +76,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.rtb_sequence);
             this.splitContainer1.Size = new System.Drawing.Size(1021, 629);
-            this.splitContainer1.SplitterDistance = 492;
+            this.splitContainer1.SplitterDistance = 491;
             this.splitContainer1.TabIndex = 1;
             // 
             // dgv_TD_proteoforms
@@ -85,7 +85,7 @@
             this.dgv_TD_proteoforms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_TD_proteoforms.Location = new System.Drawing.Point(0, 0);
             this.dgv_TD_proteoforms.Name = "dgv_TD_proteoforms";
-            this.dgv_TD_proteoforms.Size = new System.Drawing.Size(1021, 492);
+            this.dgv_TD_proteoforms.Size = new System.Drawing.Size(1021, 491);
             this.dgv_TD_proteoforms.TabIndex = 0;
             this.dgv_TD_proteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_TD_proteoforms_CellContentClick);
             // 
@@ -95,7 +95,7 @@
             this.rtb_sequence.Location = new System.Drawing.Point(0, 0);
             this.rtb_sequence.Name = "rtb_sequence";
             this.rtb_sequence.ReadOnly = true;
-            this.rtb_sequence.Size = new System.Drawing.Size(1021, 133);
+            this.rtb_sequence.Size = new System.Drawing.Size(1021, 134);
             this.rtb_sequence.TabIndex = 2;
             this.rtb_sequence.Text = "";
             // 
@@ -131,6 +131,63 @@
             this.splitContainer3.Size = new System.Drawing.Size(1021, 742);
             this.splitContainer3.SplitterDistance = 109;
             this.splitContainer3.TabIndex = 2;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(271, 31);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(129, 13);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "Ret. Time Tolerance (min)";
+            // 
+            // nUD_td_rt_tolerance
+            // 
+            this.nUD_td_rt_tolerance.DecimalPlaces = 2;
+            this.nUD_td_rt_tolerance.Location = new System.Drawing.Point(402, 31);
+            this.nUD_td_rt_tolerance.Name = "nUD_td_rt_tolerance";
+            this.nUD_td_rt_tolerance.Size = new System.Drawing.Size(75, 20);
+            this.nUD_td_rt_tolerance.TabIndex = 23;
+            this.nUD_td_rt_tolerance.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUD_td_rt_tolerance.ValueChanged += new System.EventHandler(this.nUD_td_rt_tolerance_ValueChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(529, 9);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(78, 13);
+            this.label6.TabIndex = 22;
+            this.label6.Text = "Top-Down Hits";
+            // 
+            // tb_unique_PFRs
+            // 
+            this.tb_unique_PFRs.Location = new System.Drawing.Point(623, 28);
+            this.tb_unique_PFRs.Name = "tb_unique_PFRs";
+            this.tb_unique_PFRs.ReadOnly = true;
+            this.tb_unique_PFRs.Size = new System.Drawing.Size(100, 20);
+            this.tb_unique_PFRs.TabIndex = 21;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(529, 30);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(70, 13);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "Unique PFRs";
+            // 
+            // tb_td_hits
+            // 
+            this.tb_td_hits.Location = new System.Drawing.Point(623, 4);
+            this.tb_td_hits.Name = "tb_td_hits";
+            this.tb_td_hits.ReadOnly = true;
+            this.tb_td_hits.Size = new System.Drawing.Size(100, 20);
+            this.tb_td_hits.TabIndex = 19;
             // 
             // bt_read_in_td_hits
             // 
@@ -236,63 +293,6 @@
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(529, 30);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(70, 13);
-            this.label4.TabIndex = 20;
-            this.label4.Text = "Unique PFRs";
-            // 
-            // tb_td_hits
-            // 
-            this.tb_td_hits.Location = new System.Drawing.Point(623, 4);
-            this.tb_td_hits.Name = "tb_td_hits";
-            this.tb_td_hits.ReadOnly = true;
-            this.tb_td_hits.Size = new System.Drawing.Size(100, 20);
-            this.tb_td_hits.TabIndex = 19;
-            // 
-            // tb_unique_PFRs
-            // 
-            this.tb_unique_PFRs.Location = new System.Drawing.Point(623, 28);
-            this.tb_unique_PFRs.Name = "tb_unique_PFRs";
-            this.tb_unique_PFRs.ReadOnly = true;
-            this.tb_unique_PFRs.Size = new System.Drawing.Size(100, 20);
-            this.tb_unique_PFRs.TabIndex = 21;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(529, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(78, 13);
-            this.label6.TabIndex = 22;
-            this.label6.Text = "Top-Down Hits";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(271, 31);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(129, 13);
-            this.label3.TabIndex = 24;
-            this.label3.Text = "Ret. Time Tolerance (min)";
-            // 
-            // nUD_td_rt_tolerance
-            // 
-            this.nUD_td_rt_tolerance.DecimalPlaces = 2;
-            this.nUD_td_rt_tolerance.Location = new System.Drawing.Point(402, 31);
-            this.nUD_td_rt_tolerance.Name = "nUD_td_rt_tolerance";
-            this.nUD_td_rt_tolerance.Size = new System.Drawing.Size(75, 20);
-            this.nUD_td_rt_tolerance.TabIndex = 23;
-            this.nUD_td_rt_tolerance.Value = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            this.nUD_td_rt_tolerance.ValueChanged += new System.EventHandler(this.nUD_td_rt_tolerance_ValueChanged);
-            // 
             // TopDown
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -313,8 +313,8 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_td_rt_tolerance)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -160,7 +160,12 @@ namespace ProteoformSuiteGUI
                 return e.ambiguous;
             }
         }
-        
+
+        public string family_id
+        {
+            get { return e.family != null ? e.family.family_id.ToString() : ""; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -212,6 +217,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(manual_validation_verification)) return "Abundant Component for Manual Validation of Identification Verification";
             if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
             if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
+            if (property_name == nameof(family_id)) return "Family ID";
             return null;
         }
 

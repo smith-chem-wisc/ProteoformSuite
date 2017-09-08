@@ -21,7 +21,7 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }
-        public double pvalue { get; set; }
+        public double pscore { get; set; }
         public double reported_mass { get; set; } //reported in TD results file
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
         public double ms1_retention_time { get; set; }
 
 
-        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pvalue, double score)
+        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score)
         {
             this.pfr = pfr;
             this.file = file;
@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
             this.ms2_retention_time = retention_time;
             this.filename = filename;
             this.score = score;
-            this.pvalue = pvalue;
+            this.pscore = pscore;
         }
 
         public TopDownHit()

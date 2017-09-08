@@ -168,6 +168,7 @@ namespace Test
             f = new ProteoformFamily(td);
             f.construct_family();
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f };
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { td };
             lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.TusherAnalysis1)).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 2);
             lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.topdown_results_dataframe()).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);

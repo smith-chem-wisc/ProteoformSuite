@@ -164,15 +164,15 @@ namespace ProteoformSuiteGUI
 
             if (rb_chemicalCalibration.Checked)
             {
-                for (int i = 4; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 4; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 4; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 7; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 7; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
                 bt_calibrate.Visible = true;
                 cb_useRandomSeed.Visible = true;
                 nud_randomSeed.Visible = true;
-                cmb_loadTable1.SelectedIndex = 5;
-                cmb_loadTable2.SelectedIndex = 6;
-                cmb_loadTable3.SelectedIndex = 7;
+                cmb_loadTable1.SelectedIndex = 4;
+                cmb_loadTable2.SelectedIndex = 5;
+                cmb_loadTable3.SelectedIndex = 6;
 
                 cmb_loadTable1.Enabled = false;
                 cmb_loadTable2.Enabled = false;
@@ -184,8 +184,6 @@ namespace ProteoformSuiteGUI
                 cb_useRandomSeed.Visible = false;
                 nud_randomSeed.Visible = false;
             }
-
-
 
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
             lb_filter2.Text = Lollipop.file_lists[cmb_loadTable2.SelectedIndex];
@@ -431,14 +429,14 @@ namespace ProteoformSuiteGUI
         {
             DisplayUtility.FillDataGridView(dgv_loadFiles2, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[cmb_loadTable2.SelectedIndex]);
-            lb_filter2.Text = cmb_loadTable1.SelectedItem.ToString();
+            lb_filter2.Text = cmb_loadTable2.SelectedItem.ToString();
         }
 
         private void cmb_loadTable3_SelectedIndexChanged(object sender, EventArgs e)
         {
             DisplayUtility.FillDataGridView(dgv_loadFiles3, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[cmb_loadTable3.SelectedIndex]);
-            lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
+            lb_filter3.Text = cmb_loadTable3.SelectedItem.ToString();
         }
 
         private void bt_calibrate_Click(object sender, EventArgs e)

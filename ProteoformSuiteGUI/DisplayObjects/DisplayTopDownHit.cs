@@ -96,9 +96,9 @@ namespace ProteoformSuiteGUI
             get { return h.name; }
         }
 
-        public double pvalue
+        public double pscore
         {
-            get { return h.pvalue; }
+            get { return h.pscore; }
         }
 
         public double Score
@@ -152,7 +152,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(theoretical_mass)) return "Theoretical Mass";
             if (property_name == nameof(uniprot_id)) return "Uniprot ID";
             if (property_name == nameof(retention_time)) return "Retention Time";
-            if (property_name == nameof(pvalue)) return "P-value";
+            if (property_name == nameof(pscore)) return "P-Score";
             if (property_name == nameof(ptm_description)) return "PTM Description";
             return null;
         }
