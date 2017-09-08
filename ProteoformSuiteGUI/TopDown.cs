@@ -76,7 +76,7 @@ namespace ProteoformSuiteGUI
                     return;
                 }
             }
-            if (Sweet.lollipop.top_down_hits.Count == 0) Sweet.lollipop.read_in_td_hits();
+            else Sweet.lollipop.read_in_td_hits();
             ClearListsTablesFigures(true);
             AggregateTdHits();
             if (!full_run)

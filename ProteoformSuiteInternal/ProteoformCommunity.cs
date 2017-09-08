@@ -141,9 +141,9 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
             List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true, Environment.CurrentDirectory, true);
-            ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
-            to_shuffle.Shuffle();
-            return to_shuffle.Take(Sweet.lollipop.ee_relations.Count).ToList();
+            Random random = Sweet.lollipop.useRandomSeed_decoys ? new Random(community_number + Sweet.lollipop.randomSeed_decoys) : new Random(); //new random generator for each round of 
+            var shuffled = all_ef_relations.OrderBy(item => random.Next()).ToList();
+            return shuffled.Take(Sweet.lollipop.ee_relations.Count).ToList();
         }
 
 

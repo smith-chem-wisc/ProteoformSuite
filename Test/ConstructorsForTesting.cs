@@ -37,7 +37,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             PtmSet set = new PtmSet(p.OneBasedPossibleLocalizedModifications.SelectMany(m => m.Value.OfType<ModificationWithMass>().SelectMany(mmm => new List<Ptm> { new Ptm(0, mmm) })).ToList());
-            return new TheoreticalProteoform(a, "", new List<ProteinWithGoTerms> { p }, 100, 0, set, true, true, dict);
+            return new TheoreticalProteoform(a, "", p.BaseSequence,  new List<ProteinWithGoTerms> { p }, 100, 0, set, true, true, dict);
         }
 
         public static TheoreticalProteoform make_a_theoretical()
@@ -48,7 +48,7 @@ namespace Test
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
-            return new TheoreticalProteoform("T1", "T1_1", new List<ProteinWithGoTerms> { p1 }, 100, 0, set, true, false, new Dictionary<InputFile, Protein[]>());
+            return new TheoreticalProteoform("T1", "T1_1", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, 100, 0, set, true, false, new Dictionary<InputFile, Protein[]>());
         }
 
         public static TheoreticalProteoform make_a_theoretical(string a, string d, double mass, ProteinWithGoTerms p, Dictionary<InputFile, Protein[]> dict)
@@ -59,7 +59,7 @@ namespace Test
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
-            return new TheoreticalProteoform(a, d, new List<ProteinWithGoTerms> { p }, mass, 0, set, true, false, dict);
+            return new TheoreticalProteoform(a, d, p1.BaseSequence,  new List<ProteinWithGoTerms> { p }, mass, 0, set, true, false, dict);
         }
 
         public static TheoreticalProteoform make_a_theoretical(string a, string d, double mass, Dictionary<InputFile, Protein[]> dict)
@@ -70,15 +70,15 @@ namespace Test
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
-            return new TheoreticalProteoform(a, d, new List<ProteinWithGoTerms> { p1 }, mass, 0, set, true, false, dict);
+            return new TheoreticalProteoform(a, d, p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, 0, set, true, false, dict);
         }
 
         public static TheoreticalProteoform make_a_theoretical(string a, double mass, int lysine_count)
         {
             ModificationWithMass unmodification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, TerminusLocalization.Any, 0, null, null, null, null);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm() });
-            return new TheoreticalProteoform(a, "", new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
+            return new TheoreticalProteoform(a, "", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
         }
 
 

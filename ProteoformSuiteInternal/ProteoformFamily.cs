@@ -94,7 +94,7 @@ namespace ProteoformSuiteInternal
             }
 
             //Continue looking for new experimental identifications until no more remain to be identified
-            List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals).OrderBy(p => p.relationships.Count > 0 ? (p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6) : 0).ThenBy(p => p.modified_mass).ToList(); 
+            List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals).OrderBy(p => p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6).ThenBy(p => p.modified_mass).ToList(); 
             int last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {

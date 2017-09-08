@@ -35,6 +35,8 @@ namespace ProteoformSuiteInternal
                         String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
             }
         }
+        public int begin { get; set; }
+        public int end { get; set; }
 
         public ProteoformFamily family { get; set; }
         public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
@@ -79,7 +81,8 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
-            foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).Distinct().ToList())
+            //do relations first closest to candidate ptmset delta mass, then in order of relation delta mass (need to do in same order every round)
+            foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).OrderBy(r => r.candidate_ptmset != null ? Math.Abs(r.candidate_ptmset.mass - r.DeltaMass) : r.DeltaMass * 1e6).Distinct().ToList())
             {
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
                 if (e == null) continue; // Looking at an ET pair, expecting an EE pair
@@ -116,7 +119,7 @@ namespace ProteoformSuiteInternal
                 // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
                 if (best_addition == null && best_loss == null && Math.Abs(r.peak.DeltaMass) <= mass_tolerance)
                 {
-                    lock (r) lock (e) assign_pf_identity(e, ptm_set, r, sign, null);
+                    lock (r) lock (e) assign_pf_identity(e, ptm_set, r, sign, null, theoretical_base);
                     identified.Add(e);
                 }
 
@@ -140,7 +143,7 @@ namespace ProteoformSuiteInternal
                 }
 
                 lock (r) lock (e)
-                        assign_pf_identity(e, with_mod_change, r, sign, best_loss != null ? best_loss : best_addition);
+                        assign_pf_identity(e, with_mod_change, r, sign, best_loss != null ? best_loss : best_addition, theoretical_base);
                 identified.Add(e);
             }
             return identified;
@@ -152,8 +155,6 @@ namespace ProteoformSuiteInternal
             List<ModificationWithMass> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
 
-            int n_terminal_degraded_aas = degraded_aas_count(theoretical_base.sequence, ptm_set, true);
-            int c_terminal_degraded_aas = degraded_aas_count(theoretical_base.sequence, ptm_set, false);
             foreach (PtmSet set in possible_peak_assignments)
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
@@ -171,8 +172,8 @@ namespace ProteoformSuiteInternal
                     }
 
                     bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
-                    bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[n_terminal_degraded_aas].ToString();
-                    bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[theoretical_base.sequence.Length - c_terminal_degraded_aas - 1].ToString();
+                    bool motif_matches_n_terminus = begin >= 1 && begin - 1 < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[begin - 1].ToString();
+                    bool motif_matches_c_terminus = end >= 1 && end - 1 < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[end - 1].ToString();
 
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
@@ -217,7 +218,7 @@ namespace ProteoformSuiteInternal
 
         #region Private Methods
 
-        private void assign_pf_identity(ExperimentalProteoform e, PtmSet set, ProteoformRelation r, int sign, PtmSet change)
+        private void assign_pf_identity(ExperimentalProteoform e, PtmSet set, ProteoformRelation r, int sign, PtmSet change, TheoreticalProteoform theoretical_base)
         {
             if (r.represented_ptmset == null)
             {
@@ -230,13 +231,38 @@ namespace ProteoformSuiteInternal
                 e.linked_proteoform_references = new List<Proteoform>(this.linked_proteoform_references);
                 e.linked_proteoform_references.Add(this);
                 e.ptm_set = set;
-                e.ambiguous = false;
-
+                e.ambiguous = this as ExperimentalProteoform != null ? (this as ExperimentalProteoform).ambiguous : false;
+                e.begin = this.begin;
+                e.end = this.end;
+                List<Ptm> remove = new List<Ptm>();
+                foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "Missing"))
+                {
+                    if (theoretical_base.sequence[this.begin - 1].ToString() == mod.modification.motif.Motif)
+                    {
+                        e.begin++;
+                        remove.Add(mod); //dont have in ptmset --> change the begin & end
+                    }
+                    else if (theoretical_base.sequence[this.end - 1].ToString() == mod.modification.motif.Motif)
+                    {
+                        e.end--;
+                        remove.Add(mod);
+                    }
+                }
+                foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "AminoAcid"))
+                {
+                    if (theoretical_base.sequence[this.begin].ToString() == mod.modification.motif.Motif)
+                    {
+                        e.begin--;
+                        remove.Add(mod);
+                    }
+                }
+                foreach(var ptm in remove) e.ptm_set.ptm_combination.Remove(ptm);
             }
             else
             {
                 //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
                 if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                    || e.ptm_set.same_ptmset(set) //would've been assigned same ptmset...
                     && e.linked_proteoform_references.Count == this.linked_proteoform_references.Count + 1)
                     e.ambiguous = true;
             }
@@ -246,24 +272,6 @@ namespace ProteoformSuiteInternal
             else
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
         }
-
-        private int degraded_aas_count(string seq, PtmSet set, bool from_beginning)
-        {
-            List<string> missing_aas = set.ptm_combination.Select(ptm => ptm.modification).Where(m => m.modificationType == "Missing").Select(m => m.motif.Motif).ToList();
-            int degraded = 0;
-            if (missing_aas.Count != 0)
-            {
-                foreach (char c in from_beginning ? seq.ToCharArray() : seq.ToCharArray().Reverse())
-                {
-                    if (missing_aas.Contains(c.ToString().ToUpper()))
-                        degraded++;
-                    else break;
-                }
-            }
-            return degraded;
-        }
-
         #endregion Private Methods
-
     }
 }

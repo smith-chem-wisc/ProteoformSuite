@@ -72,7 +72,6 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
-            cb_remove_bad_relations.Checked = Sweet.lollipop.remove_bad_relations;
             cb_count_adducts_as_id.Checked = Sweet.lollipop.count_adducts_as_identifications;
 
             initialize_every_time();
@@ -92,19 +91,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
-            //reaccept relations in peaks --> may have unaccepted if previously removed bad relations
-            Parallel.ForEach(Sweet.lollipop.et_relations.Concat(Sweet.lollipop.ee_relations).Concat(Sweet.lollipop.ed_relations.Values.SelectMany(d => d)).Concat(Sweet.lollipop.ef_relations.Values.SelectMany(d => d)),
-                r => r.Accepted = r.peak != null ? r.peak.Accepted : false);
             Sweet.lollipop.construct_target_and_decoy_families();
-            if(Sweet.lollipop.remove_bad_relations)
-            {
-                Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }).SelectMany(c => c.families.Where(f => f.theoretical_proteoforms.Count > 0).SelectMany(f => f.relations)), r =>
-                {
-                    if ((r.connected_proteoforms[0].linked_proteoform_references == null && r.connected_proteoforms[1].linked_proteoform_references != null) || (r.connected_proteoforms[1].linked_proteoform_references == null && r.connected_proteoforms[0].linked_proteoform_references != null)) r.Accepted = false;
-                });
-                ClearListsTablesFigures(true);
-                Sweet.lollipop.construct_target_and_decoy_families();
-            }
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
@@ -429,10 +416,5 @@ namespace ProteoformSuiteGUI
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Private Methods
-
-        private void cb_remove_bad_relations_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.remove_bad_relations = cb_remove_bad_relations.Checked;
-        }
     }
 }

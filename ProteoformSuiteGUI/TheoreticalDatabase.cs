@@ -142,6 +142,14 @@ namespace ProteoformSuiteGUI
 
             ckbx_combineIdenticalSequences.Checked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.Checked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
+            cb_limitLargePtmSets.Checked = Sweet.lollipop.theoretical_database.limit_triples_and_greater;
+            cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed_decoys;
+            nud_randomSeed.Value = Sweet.lollipop.randomSeed_decoys;
+            ckbx_OxidMeth.Checked = Sweet.lollipop.methionine_oxidation;
+            ckbx_Meth_Cleaved.Checked = Sweet.lollipop.methionine_cleavage;
+            ckbx_Carbam.Checked = Sweet.lollipop.carbamidomethylation;
+            ckbx_combineIdenticalSequences.Checked = Sweet.lollipop.combine_identical_sequences;
+            ckbx_combineTheoreticalsByMass.Checked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
 
             tb_modTypesToExclude.Text = String.Join(",", Sweet.lollipop.mod_types_to_exclude);
 
@@ -189,7 +197,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as RawExperimentalComponents == null)
+                    if (sweet as RawExperimentalComponents == null && (Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Any(e => e.topdown_id) || sweet as AggregatedProteoforms == null))
                     {
                         sweet.ClearListsTablesFigures(false);
                     }
@@ -308,9 +316,12 @@ namespace ProteoformSuiteGUI
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
-            IEnumerable<object> selected_theoreticals = tb_tableFilter.Text == "" ?
-                Sweet.lollipop.target_proteoform_community.theoretical_proteoforms :
-                ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, tb_tableFilter.Text);
+            List<TheoreticalProteoform> theoreticals_to_display = cmbx_DisplayWhichDB.SelectedItem.ToString() == "Target" ?
+                 Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.ToList()
+                 : Sweet.lollipop.decoy_proteoform_communities[cmbx_DisplayWhichDB.SelectedItem.ToString()].theoretical_proteoforms.ToList();
+            IEnumerable <object> selected_theoreticals = tb_tableFilter.Text == "" ?
+                theoreticals_to_display :
+                ExtensionMethods.filter(theoreticals_to_display, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals.OfType<TheoreticalProteoform>().Select(t => new DisplayTheoreticalProteoform(t)));
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }

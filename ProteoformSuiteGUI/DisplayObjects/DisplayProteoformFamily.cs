@@ -36,7 +36,7 @@ namespace ProteoformSuiteGUI
 
         public int experimental_count
         {
-            get { return f.experimental_proteoforms.Count; }
+            get { return f.experimental_proteoforms.Count(p => !p.topdown_id); }
         }
 
         public string experimentals_list
