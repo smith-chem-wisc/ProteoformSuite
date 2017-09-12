@@ -9,7 +9,7 @@ The latest release and vignette can be found [here](https://github.com/smith-che
 
 Video tutorial on how to use Proteoform Suite:
 
-[![Proteoform Suite Tutorial](https://img.youtube.com/vi/SWVjQsvQocA/0.jpg)](https://www.youtube.com/watch?v=SWVjQsvQocA&t=2527s)
+[![Proteoform Suite Tutorial](https://img.youtube.com/vi/P17Y_aNYbAM/0.jpg)](https://youtu.be/P17Y_aNYbAM)
 
 ## Functionality
 * Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
