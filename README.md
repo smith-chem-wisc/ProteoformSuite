@@ -1,14 +1,15 @@
-# ProteoformSuite
+# Proteoform Suite
+Software for proteoform identification, quantification, GO analyis, and facilitation of proteoform family visualization.
 [![Build status](https://ci.appveyor.com/api/projects/status/qbc3xy4b35otnsxe/branch/master?svg=true)](https://ci.appveyor.com/project/stefanks/proteoform-suite/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/smith-chem-wisc/proteoform-suite/badge.svg?branch=master)](https://coveralls.io/github/smith-chem-wisc/proteoform-suite?branch=master)
 
-## License
+## Latest Release and Vignette
 
-The software is currently released under the [GNU GPLv3](http://www.gnu.org/licenses/gpl.txt).
+The latest release and vignette can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/latest).
 
-Copyright 2016
-# ProteoformSuite
-Software for proteoform identification, quantification, GO analyis, and facilitation of proteoform family visualization.
+Video tutorial on how to use Proteoform Suite:
+
+[![Proteoform Suite Tutorial](https://img.youtube.com/vi/SWVjQsvQocA/0.jpg)](https://www.youtube.com/watch?v=SWVjQsvQocA&t=2527s)
 
 ## Functionality
 * Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
@@ -32,7 +33,7 @@ The following files must be obtained and installed:
 * for thermo .RAW files: [Thermo MSFileReader](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader)
 
 ### System Requirements and Usage for Release Version
-- 16 GB of RAM is recommended
+- 8 GB of RAM is recommended for yeast; more RAM is required for larger databases.
 - For visualization of proteoform families: Need to have [Cytoscape 3.5.0](http://cytoscape.org/).
 - For visualization of quantitative proteoform families: Need to install enhancedGraphics in Cytoscape using the App Manager under the Tools menu. 
 - For thermo .RAW files: Need to have [Thermo MSFileReader 3.1 SP2](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader) installed.
@@ -53,3 +54,9 @@ The following files must be obtained and installed:
 * [Global Identification of Protein Post-translational Modifications in a Single-Pass Database Search--J. Proteome Res., 2015, 14 (11), pp 4714–4720](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.5b00599)
 
 * [A Proteomics Search Algorithm Specifically Designed for High-Resolution Tandem Mass Spectra--J. Proteome Res., 2013, 12 (3), pp 1377–1386](http://pubs.acs.org/doi/abs/10.1021/pr301024c)
+
+## License
+
+The software is currently released under the [GNU GPLv3](http://www.gnu.org/licenses/gpl.txt).
+
+Copyright 2016
