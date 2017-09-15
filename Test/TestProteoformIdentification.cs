@@ -140,15 +140,15 @@ namespace Test
             Sweet.lollipop = new Lollipop();
             Lollipop.preferred_gene_label = "primary";
 
-            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("", 100000, 0); // sequence with all serines
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("T1", 100000, 0); // sequence with all serines
             t1.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene1", "gene1") });
-            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", 10000, 0, true);
             ConstructorsForTesting.make_relation(t1, e1, ProteoformComparison.ExperimentalTheoretical, 0);
 
-            TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("", 100042.01, 0); // sequence with all serines
+            TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("T2", 100042.01, 0); // sequence with all serines
             t2.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene2", "gene2") });
-            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 100042.01, 0, true);
-            ExperimentalProteoform e3 = ConstructorsForTesting.ExperimentalProteoform("", 100042.01, 0, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", 100042.01, 0, true);
+            ExperimentalProteoform e3 = ConstructorsForTesting.ExperimentalProteoform("E3", 100042.01, 0, true);
             ConstructorsForTesting.make_relation(e3, e1, ProteoformComparison.ExperimentalExperimental, 42.01);
             ConstructorsForTesting.make_relation(e3, e2, ProteoformComparison.ExperimentalExperimental, 0);
             ConstructorsForTesting.make_relation(t2, e2, ProteoformComparison.ExperimentalTheoretical, 0);
