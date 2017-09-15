@@ -320,8 +320,7 @@ namespace Test
         //    Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "BU_result_sliced-raw_5ppmAroundZero.mzid") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
         //    Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
         //    Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-        //    Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
-        //    Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+        //    Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "BU_result_sliced-raw_5ppmAroundZero.mzid"), Sweet.lollipop.theoretical_database.theoreticals_by_accession.Values.ToList()));
 
         //    Assert.AreEqual(2, Sweet.lollipop.BottomUpPSMList.Count);
         //    Assert.AreEqual(1, Sweet.lollipop.BottomUpPSMList.Count(p => p.modifications.Count > 0));
