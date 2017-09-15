@@ -410,7 +410,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
             results.Columns.Add("Ambiguous", typeof(bool));
-            results.Columns.Add("Family ID", typeof(int));
+            results.Columns.Add("Family ID", typeof(string));
             results.Columns.Add((Sweet.lollipop.numerator_condition == "" ? "Condition #1" : Sweet.lollipop.numerator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add((Sweet.lollipop.denominator_condition == "" ? "Condition #2" : Sweet.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add("Statistically Significant", typeof(bool));
@@ -436,7 +436,7 @@ namespace ProteoformSuiteInternal
                     e.agg_rt,
                     e.agg_intensity,
                     e.ambiguous,
-                    e.family.family_id,
+                    e.family != null ? e.family.family_id.ToString() : "",
                     get_tusher_values(e.quant, analysis).numeratorIntensitySum,
                     get_tusher_values(e.quant, analysis).denominatorIntensitySum,
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
