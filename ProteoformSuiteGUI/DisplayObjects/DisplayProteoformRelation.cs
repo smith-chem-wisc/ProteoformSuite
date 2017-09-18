@@ -316,6 +316,7 @@ namespace ProteoformSuiteGUI
                 if (property_name == nameof(agg_intensity_1)) return "Experimental Aggregated Intensity";
                 if (property_name == nameof(agg_RT_1)) return "Experimental Aggregated RT";
                 if (property_name == nameof(manual_validation_id_1)) return "Abundant Exp. Component for Manual Validation";
+                if (property_name == nameof(TheoreticalDescription)) return "Theoretical Description";
             }
 
             //EE formatting
@@ -373,6 +374,8 @@ namespace ProteoformSuiteGUI
                 if (property_name == nameof(RelationType)) return false;
                 if (property_name == nameof(Name)) return false;
                 if (property_name == nameof(Fragment)) return false;
+                if (property_name == nameof(PTMDescription)) return false;
+                if (property_name == nameof(TheoreticalDescription)) return false;
             }
             if (property_name == nameof(LysineCount)) return Sweet.lollipop.neucode_labeled;
             return current;
