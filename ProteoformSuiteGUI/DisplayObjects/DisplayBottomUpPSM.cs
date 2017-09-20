@@ -1,85 +1,85 @@
-﻿using ProteoformSuiteInternal;
-using System.Windows.Forms;
+﻿//using ProteoformSuiteInternal;
+//using System.Windows.Forms;
 
-namespace ProteoformSuiteGUI
-{
-    public class DisplayBottomUpPSM : DisplayObject
-    {
+//namespace ProteoformSuiteGUI
+//{
+//    public class DisplayBottomUpPSM : DisplayObject
+//    {
 
-        #region Public Constructors
+//        #region Public Constructors
 
-        public DisplayBottomUpPSM(BottomUpPSM t)
-            : base(t)
-        {
-            this.t = t;
-        }
+//        public DisplayBottomUpPSM(BottomUpPSM t)
+//            : base(t)
+//        {
+//            this.t = t;
+//        }
 
-        #endregion
+//        #endregion
 
-        #region Private Fields
+//        #region Private Fields
 
-        private BottomUpPSM t;
+//        private BottomUpPSM t;
 
-        #endregion
+//        #endregion
 
-        #region Public Properties
+//        #region Public Properties
 
-        public string Accession
-        {
-            get { return t.protein_accession; }
-        }
+//        public string Accession
+//        {
+//            get { return t.protein_accession; }
+//        }
 
-        public string Description
-        {
-            get { return t.protein_description; }
-        }
+//        public string Description
+//        {
+//            get { return t.protein_description; }
+//        }
 
-        public string Sequence
-        {
-            get { return t.sequence_with_modifications; }
-        }
+//        public string Sequence
+//        {
+//            get { return t.sequence_with_modifications; }
+//        }
 
-        public string Begin
-        {
-            get { return t.start_residue; }
-        }
+//        public string Begin
+//        {
+//            get { return t.start_residue; }
+//        }
 
-        public string End
-        {
-            get { return t.stop_residue; }
-        }
+//        public string End
+//        {
+//            get { return t.stop_residue; }
+//        }
 
-        public double precursor_mass_error
-        {
-            get { return t.precursor_mass_error; }
-        }
+//        public double precursor_mass_error
+//        {
+//            get { return t.precursor_mass_error; }
+//        }
 
-        public string ptm_description
-        {
-            get { return t.ptm_descriptions; }
-        }
+//        public string ptm_description
+//        {
+//            get { return t.ptm_descriptions; }
+//        }
 
-        #endregion Public Properties
+//        #endregion Public Properties
 
-        #region Public Methods
+//        #region Public Methods
 
-        public static void FormatTopDownProteoformTable(DataGridView dgv)
-        {
-            if (dgv.Columns.Count <= 0) return;
+//        public static void FormatTopDownProteoformTable(DataGridView dgv)
+//        {
+//            if (dgv.Columns.Count <= 0) return;
 
-            dgv.ReadOnly = true;
+//            dgv.ReadOnly = true;
 
-            //round table values
-            dgv.Columns[nameof(precursor_mass_error)].DefaultCellStyle.Format = "0.####";
+//            //round table values
+//            dgv.Columns[nameof(precursor_mass_error)].DefaultCellStyle.Format = "0.####";
 
-            //set column header
-            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
-            dgv.Columns[nameof(precursor_mass_error)].HeaderText = "Precursor Mass Error";
+//            //set column header
+//            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
+//            dgv.Columns[nameof(precursor_mass_error)].HeaderText = "Precursor Mass Error";
         
-            dgv.AllowUserToAddRows = false;
-        }
+//            dgv.AllowUserToAddRows = false;
+//        }
 
-        #endregion
+//        #endregion
 
-    }
-}
+//    }
+//}

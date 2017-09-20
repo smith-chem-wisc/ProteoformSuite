@@ -609,7 +609,7 @@ namespace ProteoformSuiteInternal
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
-        public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
+        //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         public bool useRandomSeed_decoys = false;
         public int randomSeed_decoys = 1;
 
