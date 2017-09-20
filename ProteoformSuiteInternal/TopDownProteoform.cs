@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _topdown_ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                    String.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
+                    String.Join(", ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
             }
         }
         public string topdown_ptm_description { get; set; }
@@ -44,7 +44,7 @@ namespace ProteoformSuiteInternal
             TopDownHit root = hits[0];
             this.name = root.name;
             this.pfr = root.pfr;
-            this._topdown_ptm_set = new PtmSet(root.ptm_list);
+            this.topdown_ptm_set = new PtmSet(root.ptm_list);
             this.uniprot_id = root.uniprot_id;
             this.sequence = root.sequence;
             this.topdown_begin = root.begin;
@@ -62,6 +62,7 @@ namespace ProteoformSuiteInternal
             this.root = t.root;
             this.name = t.name;
             this.ptm_set = new PtmSet(t.ptm_set.ptm_combination);
+            this.topdown_ptm_set = t.topdown_ptm_set;
             this.uniprot_id = t.uniprot_id;
             this.sequence = t.sequence;
             this.begin = t.begin;

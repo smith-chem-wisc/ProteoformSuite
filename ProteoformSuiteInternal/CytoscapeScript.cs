@@ -244,7 +244,7 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
                     edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
-                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
+                        delta_mass + " " + String.Join(", ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
                         delta_mass
                 );
             }
@@ -416,7 +416,7 @@ namespace ProteoformSuiteInternal
                           + " " + e.begin + "to" + e.end + " " +
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
-                            String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                            String.Join(", ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
                 return name;
             }
 
