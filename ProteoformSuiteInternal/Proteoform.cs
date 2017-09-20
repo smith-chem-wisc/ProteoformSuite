@@ -171,7 +171,7 @@ namespace ProteoformSuiteInternal
                         continue;
                     }
 
-                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
+                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && this.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
                     bool motif_matches_n_terminus = begin >= 1 && begin - 1 < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[begin - 1].ToString();
                     bool motif_matches_c_terminus = end >= 1 && end - 1 < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[end - 1].ToString();
 
@@ -250,7 +250,7 @@ namespace ProteoformSuiteInternal
                 }
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "AminoAcid"))
                 {
-                    if (theoretical_base.sequence[this.begin].ToString() == mod.modification.motif.Motif)
+                    if (theoretical_base.sequence[this.begin - 2].ToString() == mod.modification.motif.Motif)
                     {
                         e.begin--;
                         remove.Add(mod);

@@ -136,6 +136,58 @@ namespace Test
             Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
         }
 
+        [Test]
+        public void other_method_file_issue()
+        {
+            //have a name other than setting or action
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            Assert.IsTrue(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning1));
+            string[] edit = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"));
+            edit[2] =  "  <badname field_type=\"System.Boolean\" field_name=\"badfieldname\" field_value=\"True\" />";
+
+            File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), edit);
+            Assert.IsFalse(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning2));
+
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            edit = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"));
+            string[] new_edit = new string[edit.Length + 1];
+            new_edit[0] = edit[0];
+            new_edit[1] = edit[1];
+            new_edit[2] = "  <setting field_type=\"System.Boolean\" field_name=\"badfieldname\" field_value=\"True\" />";
+            for (int i = 3; i < edit.Length + 1; i++)
+            {
+                new_edit[i] = edit[i - 1];
+            }
+            string message;
+            File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), new_edit);
+            Assert.IsTrue(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+            Assert.AreEqual("Setting badfieldname has changed, and it was not changed to preset System.Boolean True in the current run\r\n", message);
+
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            edit = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"));
+            new_edit = new string[edit.Length - 1];
+            new_edit[0] = edit[0];
+            new_edit[1] = edit[1];
+            for (int i = 2; i < edit.Length - 1; i++)
+            {
+                new_edit[i] = edit[i + 1];
+            }
+            File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), new_edit);
+            Assert.IsFalse(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+            Assert.AreEqual("The following parameters did not have a setting specified: neucode_labeled\r\n" , message);
+
+            Sweet.add_file_action(new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx"), Purpose.TopDown));
+            using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
+                file.WriteLine(Sweet.save_method());
+            edit = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"));
+            edit[81] = "  <action action=\"badaction file filepath with purpose TopDown\" />";
+            File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), edit);
+            Assert.IsFalse(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+        }
+
         #endregion Methods and Settings
 
         #region Results Summary
@@ -185,6 +237,7 @@ namespace Test
             GoTermNumber g = new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
             g.by = -1;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Add(g);
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { ConstructorsForTesting.TopDownProteoform("td1", 1000, 10) };
             ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp(), Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, Sweet.lollipop.TusherAnalysis1 as TusherAnalysis);
         }
 

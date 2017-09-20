@@ -245,7 +245,7 @@ namespace ProteoformSuiteInternal
             int unique_td = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr).Distinct().Count();
             report += unique_td + "\tUnique Top-Down Proteoforms Identifications (TDPortal)"  + Environment.NewLine;
             List<string> topdown_ids = Sweet.lollipop.topdown_proteoforms
-               .Select(p => p.accession.Split('_')[0] + "_" + p.topdown_begin + "_" + p.topdown_end + "_" + String.Join(";", p.topdown_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m))).ToList();
+               .Select(p => p.accession.Split('_')[0] + "_" + p.topdown_begin + "_" + p.topdown_end + "_" + String.Join(";", p.topdown_ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m))).ToList();
             int unique_experimental_ids_not_in_td = experimental_ids.Where(e => !topdown_ids.Contains(e)).Distinct().Count();
             report += unique_experimental_ids_not_in_td + "\tUnique  Intact-Mass Experimental Proteoforms Identifications Not Identified in Top-Down" + Environment.NewLine;
             int total_unique = unique_td + unique_experimental_ids_not_in_td;
@@ -410,6 +410,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
             results.Columns.Add("Ambiguous", typeof(bool));
+            results.Columns.Add("Adduct", typeof(bool));
+            results.Columns.Add("Contaminant", typeof(bool));
             results.Columns.Add("Family ID", typeof(string));
             results.Columns.Add((Sweet.lollipop.numerator_condition == "" ? "Condition #1" : Sweet.lollipop.numerator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add((Sweet.lollipop.denominator_condition == "" ? "Condition #2" : Sweet.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
@@ -436,6 +438,8 @@ namespace ProteoformSuiteInternal
                     e.agg_rt,
                     e.agg_intensity,
                     e.ambiguous,
+                    e.adduct,
+                    (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant,
                     e.family != null ? e.family.family_id.ToString() : "",
                     get_tusher_values(e.quant, analysis).numeratorIntensitySum,
                     get_tusher_values(e.quant, analysis).denominatorIntensitySum,
@@ -469,7 +473,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Theoretical PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type Unlocalized", typeof(string));
-            results.Columns.Add("Mass Difference", typeof(double));
+            results.Columns.Add("Mass Error", typeof(double));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Best Scoring Hit", typeof(string));
@@ -489,9 +493,9 @@ namespace ProteoformSuiteInternal
                     td.topdown_begin + " to " + td.topdown_end,
                     td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", td.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
                     td.topdown_ptm_description,
-                    td.topdown_ptmset.ptm_combination.Count == 0 ?
-                        "Unmodified" :   String.Join("; ", td.topdown_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
-                    td.linked_proteoform_references == null ? 0 :  td.modified_mass - td.linked_proteoform_references.Last().modified_mass,
+                    td.topdown_ptm_set.ptm_combination.Count == 0 ?
+                        "Unmodified" :   String.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
+                    td.modified_mass - td.theoretical_mass,
                     td.modified_mass,
                     td.agg_rt,
                     td.manual_validation_id,

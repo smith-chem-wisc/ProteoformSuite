@@ -201,5 +201,30 @@ namespace Test
             Assert.AreEqual(0, sets2.Count(s => s.ptm_combination.Count == 3));
         }
         
+        [Test]
+        public void test_same_ptmset()
+        {
+            PtmSet set1 = new PtmSet(new List<Ptm>()
+            {
+                new Ptm(1, ConstructorsForTesting.get_modWithMass("id1", 5)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id2", 6)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id4", 6))
+            });
+            PtmSet set2 = new PtmSet(new List<Ptm>()
+            {
+                new Ptm(1, ConstructorsForTesting.get_modWithMass("id1", 5)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id2", 6)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id4", 6))
+            });
+            Assert.IsTrue(set1.same_ptmset(set2));
+            set2 = new PtmSet(new List<Ptm>()
+            {
+                new Ptm(1, ConstructorsForTesting.get_modWithMass("id1", 5)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id2", 6)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id3", 6))
+            });
+            Assert.IsFalse(set1.same_ptmset(set2));
+            Assert.IsFalse(set2.same_ptmset(set1));
+        }
     }
 }

@@ -38,6 +38,57 @@ namespace Test
             Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e2.begin);
             Assert.AreEqual(11, e2.end);
+            Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
+
+            t = ConstructorsForTesting.make_a_theoretical("", 100087.03, 0); // sequence with all serines
+            t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
+            t.sequence = "SAAAAAAAAAAA";
+             e = ConstructorsForTesting.ExperimentalProteoform("", 100087.03, 0, true);
+             e2 = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+            ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 87.03);
+            ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
+            t.relationships.First().Accepted = true;
+            t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
+            t.identify_connected_experimentals(new List<PtmSet> { set_unmodified }, new List<ModificationWithMass>());
+            e.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
+            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<ModificationWithMass> { set.ptm_combination.First().modification });
+            Assert.IsNotNull(e.linked_proteoform_references);
+            Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
+            Assert.AreEqual(1, e.begin);
+            Assert.AreEqual(12, e.end);
+            Assert.IsNotNull(e2.linked_proteoform_references);
+            Assert.AreEqual(2, e2.begin);
+            Assert.AreEqual(12, e2.end);
+            Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
+
+            t = ConstructorsForTesting.make_a_theoretical("", 100087.03, 0); // sequence with all serines
+            t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
+            t.sequence = "MSAAAAAAAAAA";
+            t.begin = 2;
+             e = ConstructorsForTesting.ExperimentalProteoform("", 100087.03, 0, true);
+             e2 = ConstructorsForTesting.ExperimentalProteoform("", 100200.03, 0, true);
+            ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 113);
+            ModificationMotif.TryGetMotif("M", out motif);
+             set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("M retention", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 113, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "AminoAcid")) });
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
+            ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
+            t.relationships.First().Accepted = true;
+            t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
+            t.identify_connected_experimentals(new List<PtmSet> { set_unmodified }, new List<ModificationWithMass>());
+            e.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
+            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<ModificationWithMass> { set.ptm_combination.First().modification });
+            Assert.IsNotNull(e.linked_proteoform_references);
+            Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
+            Assert.AreEqual(2, e.begin);
+            Assert.AreEqual(12, e.end);
+            Assert.IsNotNull(e2.linked_proteoform_references);
+            Assert.AreEqual(1, e2.begin);
+            Assert.AreEqual(12, e2.end);
+            Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
+
         }
 
         [Test]

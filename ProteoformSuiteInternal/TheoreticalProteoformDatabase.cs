@@ -130,7 +130,7 @@ namespace ProteoformSuiteInternal
 
         private void add_theoreticals_to_accession_dictionary(TheoreticalProteoform[] theoreticals, int community_number)
         {
-            lock(theoreticals_by_accession) theoreticals_by_accession.Add(community_number, new Dictionary<string, List<TheoreticalProteoform>>());
+            lock (theoreticals_by_accession) theoreticals_by_accession.Add(community_number, new Dictionary<string, List<TheoreticalProteoform>>());
             foreach (TheoreticalProteoform t in theoreticals)
             {
                 foreach (string t_accession in t.ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())
@@ -327,7 +327,9 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            //if topdown protein (added new sequence) only add PTMs of the protein... 
+            //if topdown protein (added new sequence) only add PTMs of the protein
+            //these are the PTMs of the top-down proteoform sequence used to make the protein
+            //other top-down proteoforms with this sesquence and different PTM types will be added when add_topdown_theoreticals.
             List<PtmSet> unique_ptm_groups = prot.topdown_protein? new List<PtmSet>() { new PtmSet(prot.OneBasedPossibleLocalizedModifications.SelectMany(m => m.Value.Select(p => new Ptm(m.Key, (ModificationWithMass)p))).ToList(), Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2) }  : PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
@@ -353,27 +355,30 @@ namespace ProteoformSuiteInternal
             add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);
             lock (theoretical_proteoforms) theoretical_proteoforms.AddRange(new_theoreticals);
         }
-        
+
         //if protein sequence doesn't exist, need to add...
         public void add_topdown_sequences()
         {
             List<ProteinWithGoTerms> new_proteins = new List<ProteinWithGoTerms>();
-            foreach(TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.OrderBy(t => t.modified_mass))
+            foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.OrderBy(t => t.modified_mass))
             {
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0])).ToList();
                 if (candidate_theoreticals.Count > 0)
                 {
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0]) && p.BaseSequence == topdown.sequence))
                     {
-                        Dictionary<int, List<Modification>> mods = new Dictionary<int, List<Modification>>();
-                        foreach (Ptm ptm in topdown.topdown_ptmset.ptm_combination)
-                        {
-                            if (mods.ContainsKey(ptm.position)) mods[ptm.position].Add(ptm.modification);
-                            else mods.Add(ptm.position, new List<Modification>() { ptm.modification });
-                        }
                         int count = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence) + new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
-                        ProteinWithGoTerms p = new ProteinWithGoTerms(topdown.sequence, topdown.accession.Split('_')[0] + "_" + topdown.topdown_begin + "frag" + topdown.topdown_end + (count > 0 ? "_" + count: "") , candidate_theoreticals.First().GeneNames.ToList(), mods, new List<ProteolysisProduct>() { new ProteolysisProduct(topdown.topdown_begin, topdown.topdown_end, "full") }, candidate_theoreticals.First().Name, candidate_theoreticals.First().FullName, false, false, candidate_theoreticals.First().DatabaseReferences, candidate_theoreticals.First().GoTerms);
+                        ProteinWithGoTerms p = new ProteinWithGoTerms(topdown.sequence, topdown.accession.Split('_')[0] + "_" + topdown.topdown_begin + "frag" + topdown.topdown_end + (count > 0 ? "_" + count : ""), candidate_theoreticals.First().GeneNames.ToList(), new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct>() { new ProteolysisProduct(topdown.topdown_begin, topdown.topdown_end, "full") }, candidate_theoreticals.First().Name, candidate_theoreticals.First().FullName, false, false, candidate_theoreticals.First().DatabaseReferences, candidate_theoreticals.First().GoTerms);
                         p.topdown_protein = true;
+                        //add the ptm's of the top-down proteoform
+                        foreach (Ptm ptm in topdown.topdown_ptm_set.ptm_combination.Where(m => m.position >= p.ProteolysisProducts.First().OneBasedBeginPosition && m.position <= p.ProteolysisProducts.First().OneBasedEndPosition))
+                        {
+                            if (p.OneBasedPossibleLocalizedModifications.ContainsKey(ptm.position))
+                            {
+                                p.OneBasedPossibleLocalizedModifications[ptm.position].Add(ptm.modification);
+                            }
+                            else p.OneBasedPossibleLocalizedModifications.Add(ptm.position, new List<Modification>() { ptm.modification });
+                        }
                         new_proteins.Add(p);
                     }
                 }
@@ -382,17 +387,17 @@ namespace ProteoformSuiteInternal
             expanded_proteins = expanded_proteins.Concat(new_proteins).ToArray();
         }
 
-        public void add_topdown_theoreticals(ProteinWithGoTerms prot, string seq, string accession, double unmodified_mass, int decoy_number, int lysine_count, List<TheoreticalProteoform> new_theoreticals, int ptm_set_counter, Dictionary<double,int> mod_ranks, int added_ptm_penalty)
+        public void add_topdown_theoreticals(ProteinWithGoTerms prot, string seq, string accession, double unmodified_mass, int decoy_number, int lysine_count, List<TheoreticalProteoform> new_theoreticals, int ptm_set_counter, Dictionary<double, int> mod_ranks, int added_ptm_penalty)
         {
-            foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0])).OrderBy(t => t.gene_name).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
+            foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0])
+                && p.sequence == prot.BaseSequence).OrderBy(t => t.gene_name).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
-                if (!new_theoreticals.Any(t => topdown.topdown_ptmset.ptm_combination.Count == t.ptm_set.ptm_combination.Count && topdown.topdown_ptmset.ptm_combination.All(m => topdown.topdown_ptmset.ptm_combination.Count(ptm => ptm.modification.id == m.modification.id) == t.ptm_set.ptm_combination.Count(ptm => ptm.modification.id == m.modification.id))))
+                if (!new_theoreticals.Any(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set)))
                 {
-                    //if all ptms are within the sequence...
-                    if (topdown.ptm_set.ptm_combination.All(p => p.position >= prot.ProteolysisProducts.First().OneBasedBeginPosition && p.position <= prot.ProteolysisProducts.First().OneBasedEndPosition))
+                    if (topdown.topdown_ptm_set.ptm_combination.All(p => p.position >= prot.ProteolysisProducts.First().OneBasedBeginPosition && p.position <= prot.ProteolysisProducts.First().OneBasedEndPosition))
                     {
                         //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
-                        PtmSet ptm_set = new PtmSet(topdown.topdown_ptmset.ptm_combination, mod_ranks, added_ptm_penalty);
+                        PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
                         TheoreticalProteoform t =
                         new TheoreticalProteoform(
                             accession + "_P" + ptm_set_counter.ToString(),

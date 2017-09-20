@@ -161,6 +161,14 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public bool Contaminant
+        {
+            get
+            {
+                return (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant;
+            }
+        }
+
         public string family_id
         {
             get { return e.family != null ? e.family.family_id.ToString() : ""; }
