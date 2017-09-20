@@ -165,7 +165,7 @@ namespace ProteoformSuiteInternal
                 return false;
 
             if (add_files)  add_files_from_presets(lollipop.input_files); 
-            else update_files_from_presets(lollipop.input_files);
+            update_files_from_presets(lollipop.input_files);
             return true;
         }
 
@@ -226,7 +226,7 @@ namespace ProteoformSuiteInternal
                 string property = findproperty.Match(change_file).Groups[1].ToString();
                 string typefullname = findtype.Match(change_file).Groups[1].ToString();
                 string value = findto.Match(change_file).Groups[1].ToString();
-                InputFile file = destination.FirstOrDefault(f => Path.GetFileName(f.complete_path) == filename); //match the filename, not the path, in case it changed folders
+                InputFile file = destination.FirstOrDefault(f => Path.GetFileName(f.complete_path) == filename && Path.GetExtension(f.complete_path) == Path.GetExtension(findchangefile.Match(change_file).Groups[1].ToString())); //match the filename, not the path, in case it changed folders
                 PropertyInfo propertyinfo = typeof(InputFile).GetProperties().FirstOrDefault(p => p.Name == property);
                 Type type = Type.GetType(typefullname);
 
