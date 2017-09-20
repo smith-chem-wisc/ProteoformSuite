@@ -49,7 +49,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
-            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptmset.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
+            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
             tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr).Distinct().Count().ToString();
@@ -173,8 +173,9 @@ namespace ProteoformSuiteGUI
             rtb_sequence.ZoomFactor = 3;
 
             int length = p.sequence.Length + 1;
-            foreach (Ptm ptm in p.topdown_ptmset.ptm_combination.Where(m => m.position > 0))
+            foreach (Ptm ptm in p.topdown_ptm_set.ptm_combination)
             {
+                int position_in_sequence = ptm.position + 1 - p.begin;
                 int i = 0;
                 Color color;
                 try
@@ -188,7 +189,7 @@ namespace ProteoformSuiteGUI
                     color = colors[0];
                 } //just make color blue if > 20 unique PTMs
 
-                rtb_sequence.SelectionStart = ptm.position - 1;
+                rtb_sequence.SelectionStart = position_in_sequence - 1;
                 rtb_sequence.SelectionLength = 1;
                 rtb_sequence.SelectionColor = color;
           

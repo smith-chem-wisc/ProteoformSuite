@@ -285,7 +285,7 @@ namespace Test
             td.end = 20;
             td.topdown_end = 30;
             td.ptm_set = new PtmSet(new List<Ptm>());
-            td.topdown_ptmset = new PtmSet(new List<Ptm>());
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>());
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //no PTMs diff end fail
@@ -308,12 +308,12 @@ namespace Test
             Assert.IsFalse(td.correct_id);
             //same begin and end TD has more of a PTM type
             td.ptm_set = new PtmSet(new List<Ptm>());
-            td.topdown_ptmset = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end and PTMs
             td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
-            td.topdown_ptmset = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
         }
@@ -322,25 +322,30 @@ namespace Test
         public void test_add_topdown_theoreticals()
         {
             Sweet.lollipop = new Lollipop();
-            TopDownProteoform t = ConstructorsForTesting.TopDownProteoform("P0CE92_1", 1000, 10); //sequence not in database
+            TopDownProteoform t = ConstructorsForTesting.TopDownProteoform("P32329_1", 1000, 10); //sequence not in database
             TopDownProteoform t2 = ConstructorsForTesting.TopDownProteoform("BADACCESSION", 1000, 10); //accession not in database
-            TopDownProteoform t3 = ConstructorsForTesting.TopDownProteoform("P0CE92_2", 1000, 10); //ptmset not in database w/ this sequence...
-            TopDownProteoform t4 = ConstructorsForTesting.TopDownProteoform("P0CE92_3", 1000, 10); //in database --> won't make a theoretical proteoform
-            t3.sequence = "MVKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLAQYYMFQAAHPTETYPVEVAEAVFNYGDFTTMLTGIAPDQVTRMITGVPWYSSRLKPAISSALSKDGIYTIAN";
-            t4.sequence = "MVKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLAQYYMFQAAHPTETYPVEVAEAVFNYGDFTTMLTGIAPDQVTRMITGVPWYSSRLKPAISSALSKDGIYTIAN";
-            t.sequence = "MVKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA";
-            t.ptm_set = new PtmSet(new List<Ptm>());
+            TopDownProteoform t3 = ConstructorsForTesting.TopDownProteoform("P32329_3", 1000, 10); //ptmset not in database w/ this sequence...
+            TopDownProteoform t4 = ConstructorsForTesting.TopDownProteoform("P32329_4", 1000, 10); //in database --> won't make a theoretical proteoform
+            TopDownProteoform t5 = ConstructorsForTesting.TopDownProteoform("P32329_5", 1000, 10); //will have sequence not in database with ptmset
+            t3.sequence = "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR";
+            t4.sequence = "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR";
+            t.sequence = "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA";
+            t5.sequence = "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA";
             t.accepted = true;
             t2.accepted = true;
             t3.accepted = true;
             t4.accepted = true;
-            t3.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            t5.accepted = true;
+            t3.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(70, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            t5.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.methionine_cleavage = true;
             Sweet.lollipop.natural_lysine_isotope_abundance = true;
             Sweet.lollipop.neucode_light_lysine = false;
             Sweet.lollipop.neucode_heavy_lysine = false;
+            Sweet.lollipop.combine_identical_sequences = false;
+            Sweet.lollipop.combine_theoretical_proteoforms_byMass = false;
             Sweet.lollipop.max_ptms = 3;
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.min_peptide_length = 7;
@@ -352,16 +357,24 @@ namespace Test
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(28, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
-            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { t, t2, t3, t4 };
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { t, t2, t3, t4, t5 };
             Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
             Assert.IsTrue(t.accepted);
             Assert.IsFalse(t2.accepted);
             Assert.IsTrue(t3.accepted);
             Assert.IsTrue(t4.accepted);
-            Assert.AreEqual(30, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.topdown_theoretical));
+            Assert.IsTrue(t5.accepted);
+            Assert.AreEqual(26, Sweet.lollipop.theoretical_database.expanded_proteins.Length); //should have new topdown protein added
+            Assert.AreEqual(1, Sweet.lollipop.theoretical_database.expanded_proteins.Count(p => p.topdown_protein)); //only add 1 new sequence
+            Assert.AreEqual("VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA", Sweet.lollipop.theoretical_database.expanded_proteins.Where(p => p.topdown_protein).First().BaseSequence);
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.topdown_theoretical));
+            Assert.AreEqual(31, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.ExpandedProteinList.Any(e => e.topdown_protein)));
 
+            List<TheoreticalProteoform> td_theoreticals = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.topdown_theoretical).OrderBy(p => p.accession).ToList();
+            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_set.ptm_combination.Count == 0));
+            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_description == "Acetylation"));
+            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_description == "Acetylation"));
         }
-
     }
 }

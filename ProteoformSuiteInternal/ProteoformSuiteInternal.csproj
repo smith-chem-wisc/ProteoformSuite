@@ -165,7 +165,6 @@
     <Compile Include="StatisticalAnalysis\QuantificationDistributions.cs" />
     <Compile Include="StatisticalAnalysis\QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />
-    <Compile Include="SafeRandom.cs" />
     <Compile Include="StatisticalAnalysis\TusherAnalysis.cs" />
     <Compile Include="StatisticalAnalysis\TusherStatisitic.cs" />
     <Compile Include="StatisticalAnalysis\TusherValues.cs" />
