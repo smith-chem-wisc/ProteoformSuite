@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace ProteoformSuiteInternal
 {
@@ -41,26 +42,35 @@ namespace ProteoformSuiteInternal
                 - ptm_combination.Count(ptm => Sweet.lollipop.theoretical_database.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
         }
 
-        public bool same_ptmset(PtmSet that)
+        public bool same_ptmset(PtmSet that, bool unlocalized)
         {
-            List<string> this_ptms = this.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
-            List<string> that_ptms = that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
-            if (this_ptms.Count != that_ptms.Count) return false;
-            foreach (string m in this_ptms.Distinct())
+            if (unlocalized)
             {
-                if (that_ptms.Count(s => s == m) != this_ptms.Count(s => s == m))
-                {
-                    return false;
-                }
+                string this_ptms = String.Join(", ", ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m));
+                string that_ptms = String.Join(", ", that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m));
+                return this_ptms == that_ptms;
             }
-            foreach (string m in that_ptms.Distinct())
+            else
             {
-                if (that_ptms.Count(s => s == m) != this_ptms.Count(s => s == m))
+                List<string> this_ptms = this.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                List<string> that_ptms = that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                if (this_ptms.Count != that_ptms.Count) return false;
+                foreach (string m in this_ptms.Distinct())
                 {
-                    return false;
+                    if (that_ptms.Count(s => s == m) != this_ptms.Count(s => s == m))
+                    {
+                        return false;
+                    }
                 }
+                foreach (string m in that_ptms.Distinct())
+                {
+                    if (that_ptms.Count(s => s == m) != this_ptms.Count(s => s == m))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
         }
 
 
