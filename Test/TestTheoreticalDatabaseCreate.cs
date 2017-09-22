@@ -140,7 +140,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.methionine_oxidation = false;
-            Sweet.lollipop.mod_types_to_exclude = Sweet.lollipop.mod_types_to_exclude.Concat(new string[] { "Uniprot" }).ToArray();
+            Sweet.lollipop.mod_types_to_exclude = Sweet.lollipop.mod_types_to_exclude.Concat(new string[] { "UniProt" }).ToArray();
             Sweet.lollipop.methionine_cleavage = true;
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.input_files.Clear();

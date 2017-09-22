@@ -1,295 +1,331 @@
+(3R)-3-hydroxyarginine	Hydrox	1	False
+(3R)-3-hydroxyasparagine	Hydrox	1	False
+(3R)-3-hydroxyaspartate	Hydrox	1	False
+(3S)-3-hydroxyhistidine	Hydrox	1	False
+(3R,4R)-3,4-dihydroxyproline	Hydrox, Hydrox	2	False
+(3R,4R)-4,5-dihydroxyisoleucine	Hydrox, Hydrox	2	False
+(3R,4S)-3,4-dihydroxyproline	Hydrox, Hydrox	2	False
+(3R,4S)-4-hydroxyisoleucine	Hydrox	1	False
+(3S)-3-hydroxyasparagine	Hydrox	1	False
+(3S)-3-hydroxyaspartate	Hydrox	1	False
+(3S,4R)-3,4-dihydroxyisoleucine	Hydrox, Hydrox	2	False
+(4R)-5-hydroxyleucine	Hydrox	1	False
+(4R)-4,5-dihydroxyleucine	Hydrox, Hydrox	2	False
+(E)-2,3-didehydrotyrosine	(E)-2,3-didehydrotyrosine	1	False
+(Z)-2,3-didehydrotyrosine	(Z)-2,3-didehydrotyrosine	1	False
+1-amino-2-propanone	1-amino-2-propanone	1	False
 1-thioglycine	1-thioglycine	1	False
 2,3-didehydroalanine (Cys)	2,3-didehydroalanine (Cys)	1	False
+2,3-didehydroalanine (Ser)	2,3-didehydroalanine (Ser)	1	False
+(E)-2,3-didehydrobutyrine	(E)-2,3-didehydrobutyrine	1	False
+(Z)-2,3-didehydrobutyrine	(Z)-2,3-didehydrobutyrine	1	False
+2,3-didehydrobutyrine	2,3-didehydrobutyrine	1	False
+2,3-didehydrotyrosine	2,3-didehydrotyrosine	1	False
+2',4',5'-topaquinone	2',4',5'-topaquinone	1	False
+2-(S-cysteinyl)pyruvic acid O-phosphothioketal	2-(S-cysteinyl)pyruvic acid O-phosphothioketal	1	False
+2-methylglutamine	Methyl	1	False
+2'-methylsulfonyltryptophan	2'-methylsulfonyltryptophan	1	False
+2-oxobutanoic acid	2-oxobutanoic acid	1	False
+3,4-dihydroxyarginine	Hydrox, Hydrox	2	False
+3',4'-dihydroxyphenylalanine	Hydrox	1	False
+3,4-dihydroxyproline	Hydrox, Hydrox	2	False
+3'-geranyl-2',N2-cyclotryptophan	3'-geranyl-2',N2-cyclotryptophan	1	False
+3-hydroxyasparagine	Hydrox	1	False
+3-hydroxyaspartate	Hydrox	1	False
+3-hydroxyphenylalanine	Hydrox	1	False
+3-hydroxyproline	Hydrox	1	False
+3-hydroxytryptophan	Hydrox	1	False
+3-hydroxyvaline	Hydrox	1	False
+3-methylthioaspartic acid	3-methylthioaspartic acid	1	False
+3'-nitrotyrosine	3'-nitrotyrosine	1	False
+3-oxoalanine (Cys)	3-oxoalanine (Cys)	1	False
+3-oxoalanine (Ser)	3-oxoalanine (Ser)	1	False
+3-phenyllactic acid	3-phenyllactic acid	1	False
+4,5,5'-trihydroxyleucine	4,5,5'-trihydroxyleucine	1	False
+4,5-dihydroxylysine	Hydrox, Hydrox	2	False
 4-aspartylphosphate	Phospho	1	False
-Acetone Artifact (Unconfirmed)	Acetone Artifact	1	False
-Acetyl	Acetyl	1	False
-Acetylation+Methionine	Retained Acetylated Methionine	2	False
-Acetyllysine	Acetyl	1	False
-Acetylserine	Acetyl	1	False
-Alanine (A)	Alanine (A)	1	False
-Ammonia loss	Ammonia loss	1	True
-Arginine (R)	Arginine (R)	1	False
-Asparagine (N)	Asparagine (N)	1	False
-Aspartic Acid (D)	Aspartic Acid (D)	1	False
+4-carboxyglutamate	Carbox	1	False
+4-hydroxyarginine	Hydrox	1	False
+4-hydroxyglutamate	Hyrdox	1	False
+4-hydroxyproline	Hydrox	1	False
+5-glutamyl 2-aminoadipic acid	5-glutamyl 2-aminoadipic acid	1	False
+5-glutamyl glycerylphosphorylethanolamine	5-glutamyl glycerylphosphorylethanolamine	1	False
+5-glutamyl N2-ornithine	5-glutamyl N2-ornithine	1	False
+5-glutamyl glutamate	5-glutamyl glutamate	1	False
+5-glutamyl N2-lysine	5-glutamyl N2-lysine	1	False
+5-hydroxy-3-methylproline (Ile)	5-hydroxy-3-methylproline (Ile)	1	False
+5-hydroxylysine	Hydrox	1	False
+(5R)-5-hydroxylysine	Hydrox	1	False
+(5S)-5-hydroxylysine	Hydrox	1	False
+5-methylarginine	Methyl	1	False
+6'-bromotryptophan	6'-bromotryptophan	1	False
+5'-chlorotryptophan	5'-chlorotryptophan	1	False
+6'-chlorotryptophan	6'-chlorotryptophan	1	False
+7'-hydroxytryptophan	Hydrox	1	False
+ADP-ribosylarginine	ADP-ribosylarginine	1	False
+ADP-ribosylasparagine	ADP-ribosylasparagine	1	False
+ADP-ribosyl aspartic acid	ADP-ribosyl aspartic acid	1	False
+ADP-ribosylcysteine	ADP-ribosylcysteine	1	False
+ADP-ribosylserine	ADP-ribosylserine	1	False
+Alanine amide	Amide	1	False
+Allysine	Allysine	1	False
+Aminomalonic acid (Ser)	Aminomalonic acid (Ser)	1	False
+Arginine amide	Amide	1	False
+Asparagine amide	Amide	1	False
+Aspartic acid 1-[(3-aminopropyl)(5'-adenosyl)phosphono]amide	Aspartic acid 1-[(3-aminopropyl)(5'-adenosyl)phosphono]amide	1	False
+Aspartic acid 1-amide	Amide	1	False
+Aspartyl aldehyde	Aspartyl aldehyde	1	False
 Asymmetric dimethylarginine	Methyl, Methyl	2	False
-Bacillosamine on Nxs	Bacillosamine	1	False
-Carbamidomethyl	Carbamidomethyl	1	False
-Carboxymethyl	Carboxymethyl	1	False
-Carboxymethyl+Methionine	Retained Carboxmethylmethionine	2	False
-CHDH	Hydrogen Tetradecyl Sulfate	1	False
-CHDHminus2methylenes	Hydrogen Dodecyl Sulfate	1	False
-Cysteine (C)	Cysteine (C)	1	False
+Beta-decarboxylated aspartate	Beta-decarboxylated aspartate	1	False
+Bromohistidine	Bromohistidine	1	False
+Cholesterol glycine ester	Cholesterol glycine ester	1	False
+Cis-14-hydroxy-10,13-dioxo-7-heptadecenoic acid aspartate ester	Cis-14-hydroxy-10,13-dioxo-7-heptadecenoic acid aspartate ester	1	False
+Citrulline	Citrulline	1	False
+CysO-cysteine adduct	CysO-cysteine adduct	1	False
+Cysteine amide	Amide	1	False
+Cysteine methyl disulfide	Cysteine methyl disulfide	1	False
 Cysteine methyl ester	Methyl	1	False
+Cysteine persulfide	Cysteine persulfide	1	False
+Cysteine sulfenic acid (-SOH)	Cysteine sulfenic acid (-SOH)	1	False
 Cysteine sulfinic acid (-SO2H)	Cysteine sulfinic acid (-SO2H)	1	False
-Deamidation on N	Deamidation	1	False
-Deamidation on Q	Deamidation	1	False
-Dehydroalanine from Cysteine	Dehydroalanine from Cysteine	1	False
-dHex on S	dHex	1	False
-dHex on T	dHex	1	False
-dHex(1)Hex(3)HexNAc(2) on Nxs	dHex(1)Hex(3)HexNAc(2)	1	False
-dHex(1)Hex(3)HexNAc(2) on S	dHex(1)Hex(3)HexNAc(2)	1	False
-dHex(1)Hex(3)HexNAc(2) on T	dHex(1)Hex(3)HexNAc(2)	1	False
-DiMethyl on A	Methyl, Methyl	2	False
-DiMethyl on K	Methyl, Methyl	2	False
-DiMethyl on N	Methyl, Methyl	2	False
-DiMethyl on R	Methyl, Methyl	2	False
-Dioxidation	Ox, Ox	2	False
-Dioxidation on P	Ox, Ox	2	False
-Dioxidation on W	Ox, Ox	2	False
+D-4-hydroxyvaline	Hydrox	1	False
+D-alanine (Ser)	D-alanine (Ser)	1	False
+Deamidated asparagine	Deamidated asparagine	1	False
+Deamidated glutamine	Deamidated glutamine	1	False
+Decarboxylated threonine	Decarboxylated threonine	1	False
+Diiodotyrosine	Diiodotyrosine	1	False
+Dimethylated arginine	Methyl, Methyl	2	False
 Diphthamide	Diphthamide	1	False
-Farnesylation	Farnesylation	1	False
-Galactosyl	Galactosyl	1	False
-GG of K	GG of K	1	False
-Glucosylgalactosyl	Glucosylgalactosyl	1	False
-Glucuronyl on T	Glucuronyl	1	False
-Glutamic Acid (E)	Glutamic Acid (E)	1	False
-Glutamine (Q)	Glutamine (Q)	1	False
-Glycine (G)	Glycine (G)	1	False
-H-2 O1  on I	H-2 O1	1	False
-H-2 O1  on L	H-2 O1	1	False
-H-2 O1  on P	H-2 O1	1	False
-H-2 O1  on S	H-2 O1	1	False
-H-2 O1  on W	H-2 O1	1	False
-H-2 O1 �on I	H-2 O1	1	False
-H-2 O1 �on L	H-2 O1	1	False
-H-2 O1 �on P	H-2 O1	1	False
-H-2 O1 �on S	H-2 O1	1	False
-H-2 O1 �on W	H-2 O1	1	False
-Hex	Hex	1	False
-Hex on C	Hex	1	False
-Hex on K	Hex	1	False
-Hex on Nxs	Hex	1	False
-Hex on R	Hex	1	False
-Hex on S	Hex	1	False
-Hex on T	Hex	1	False
-Hex on Y	Hex	1	False
-Hex(1) on S	Hex(1)	1	False
-Hex(1) on T	Hex(1)	1	False
-Hex(1)Fuc(1) on T	Hex(1)Fuc(1)	1	False
-Hex(1)HexNAc(1) on N	Hex(1)HexNAc(1)	1	False
-Hex(1)HexNAc(1) on S	Hex(1)HexNAc(1)	1	False
-Hex(1)HexNAc(1) on T	Hex(1)HexNAc(1)	1	False
-Hex(1)HexNAc(1)NeuAc(1) on Nxt	Hex(1)HexNAc(1)NeuAc(1)	1	False
-Hex(1)HexNAc(1)NeuAc(1) on S	Hex(1)HexNAc(1)NeuAc(1)	1	False
-Hex(1)HexNAc(1)NeuAc(1) on T	Hex(1)HexNAc(1)NeuAc(1)	1	False
-Hex(1)HexNAc(1)NeuAc(1)NeuGc(1) on S	Hex(1)HexNAc(1)NeuAc(1)NeuGc(1)	1	False
-Hex(1)HexNAc(1)NeuAc(1)NeuGc(1) on T	Hex(1)HexNAc(1)NeuAc(1)NeuGc(1)	1	False
-Hex(1)HexNAc(1)NeuAc(2) on Nxs	Hex(1)HexNAc(1)NeuAc(2)	1	False
-Hex(1)HexNAc(1)NeuAc(2) on Nxt	Hex(1)HexNAc(1)NeuAc(2)	1	False
-Hex(1)HexNAc(1)NeuAc(2) on S	Hex(1)HexNAc(1)NeuAc(2)	1	False
-Hex(1)HexNAc(1)NeuAc(2) on T	Hex(1)HexNAc(1)NeuAc(2)	1	False
-Hex(1)HexNAc(1)NeuGc(1) on S	Hex(1)HexNAc(1)NeuGc(1)	1	False
-Hex(1)HexNAc(1)NeuGc(1) on T	Hex(1)HexNAc(1)NeuGc(1)	1	False
-Hex(1)HexNAc(2) on N	Hex(1)HexNAc(2)	1	False
-Hex(1)NeuAc(1) on N	Hex(1)NeuAc(1)	1	False
-Hex(1)NeuAc(1) on T	Hex(1)NeuAc(1)	1	False
-Hex(2) on N	Hex(2)	1	False
-Hex(2) on S	Hex(2)	1	False
-Hex(2) on T	Hex(2)	1	False
-Hex(2)HexNAc(2) on Nxt	Hex(2)HexNAc(2)	1	False
-Hex(2)HexNAc(2) on S	Hex(2)HexNAc(2)	1	False
-Hex(2)HexNAc(2) on T	Hex(2)HexNAc(2)	1	False
-Hex(2)HexNAc(2)dHex(1) on Nxt	Hex(2)HexNAc(2)dHex(1)	1	False
-Hex(2)HexNAc(2)dHex(1) on S	Hex(2)HexNAc(2)dHex(1)	1	False
-Hex(2)HexNAc(2)dHex(1) on T	Hex(2)HexNAc(2)dHex(1)	1	False
-Hex(3)HexNAc(3) on S	Hex(3)HexNAc(3)	1	False
-Hex(3)HexNAc(3) on T	Hex(3)HexNAc(3)	1	False
-Hex(3)HexNAc(4)NeuAc(1) on N	Hex(3)HexNAc(4)NeuAc(1)	1	False
-Hex(3)HexNAc(4)NeuAc(1) on S	Hex(3)HexNAc(4)NeuAc(1)	1	False
-Hex(3)HexNAc(4)NeuAc(1) on T	Hex(3)HexNAc(4)NeuAc(1)	1	False
-Hex(3)HexNAc(5)NeuAc(1) on S	Hex(3)HexNAc(5)NeuAc(1)	1	False
-Hex(3)HexNAc(6) on N	Hex(3)HexNAc(6)	1	False
-Hex(3)HexNAc(6) on S	Hex(3)HexNAc(6)	1	False
-Hex(3)HexNAc(6)Fuc(1) on N	Hex(3)HexNAc(6)Fuc(1)	1	False
-Hex(3)HexNAc(6)Fuc(1) on S	Hex(3)HexNAc(6)Fuc(1)	1	False
-Hex(3)HexNAc(6)NeuAc(1) on N	Hex(3)HexNAc(6)NeuAc(1)	1	False
-Hex(3)HexNAc(6)NeuAc(1) on S	Hex(3)HexNAc(6)NeuAc(1)	1	False
-Hex(3)HexNAc(6)NeuAc(1) on T	Hex(3)HexNAc(6)NeuAc(1)	1	False
-Hex(4)HexNAc(3) on N	Hex(4)HexNAc(3)	1	False
-Hex(4)HexNAc(3) on S	Hex(4)HexNAc(3)	1	False
-Hex(4)HexNAc(3) on T	Hex(4)HexNAc(3)	1	False
-Hex(4)HexNAc(4)Fuc(1)NeuAc(1) on N	Hex(4)HexNAc(4)Fuc(1)NeuAc(1)	1	False
-Hex(4)HexNAc(4)Fuc(1)NeuAc(1) on S	Hex(4)HexNAc(4)Fuc(1)NeuAc(1)	1	False
-Hex(4)HexNAc(4)Fuc(1)NeuAc(1) on T	Hex(4)HexNAc(4)Fuc(1)NeuAc(1)	1	False
-Hex(4)HexNAc(5) on N	Hex(4)HexNAc(5)	1	False
-Hex(4)HexNAc(5) on S	Hex(4)HexNAc(5)	1	False
-Hex(4)HexNAc(5) on T	Hex(4)HexNAc(5)	1	False
-Hex(4)HexNAc(5)Fuc(1)NeuAc(1) on N	Hex(4)HexNAc(5)Fuc(1)NeuAc(1)	1	False
-Hex(4)HexNAc(5)Fuc(1)NeuAc(1) on S	Hex(4)HexNAc(5)Fuc(1)NeuAc(1)	1	False
-Hex(4)HexNAc(5)Fuc(1)NeuAc(1) on T	Hex(4)HexNAc(5)Fuc(1)NeuAc(1)	1	False
-Hex(4)HexNAc(5)Fuc(1)NeuAc(2) on N	Hex(4)HexNAc(5)Fuc(1)NeuAc(2)	1	False
-Hex(4)HexNAc(5)Fuc(1)NeuAc(2) on S	Hex(4)HexNAc(5)Fuc(1)NeuAc(2)	1	False
-Hex(4)HexNAc(5)Fuc(1)NeuAc(2) on T	Hex(4)HexNAc(5)Fuc(1)NeuAc(2)	1	False
-Hex(4)HexNAc(5)NeuAc(1) on N	Hex(4)HexNAc(5)NeuAc(1)	1	False
-Hex(4)HexNAc(5)NeuAc(1) on S	Hex(4)HexNAc(5)NeuAc(1)	1	False
-Hex(4)HexNAc(5)NeuAc(1) on T	Hex(4)HexNAc(5)NeuAc(1)	1	False
-Hex(4)HexNAc(5)NeuAc(2) on S	Hex(4)HexNAc(5)NeuAc(2)	1	False
-Hex(4)HexNAc(5)NeuAc(2) on T	Hex(4)HexNAc(5)NeuAc(2)	1	False
-Hex(5)HexNAc(2) on Nxs	Hex(5)HexNAc(2)	1	False
-Hex(5)HexNAc(2) on S	Hex(5)HexNAc(2)	1	False
-Hex(5)HexNAc(2) on T	Hex(5)HexNAc(2)	1	False
-Hex(5)HexNAc(3) on N	Hex(5)HexNAc(3)	1	False
-Hex(5)HexNAc(3) on T	Hex(5)HexNAc(3)	1	False
-Hex(5)HexNAc(4)Fuc(1) on S	Hex(5)HexNAc(4)Fuc(1)	1	False
-Hex(5)HexNAc(5)Fuc(1) on N	Hex(5)HexNAc(5)Fuc(1)	1	False
-Hex(5)HexNAc(5)Fuc(1) on S	Hex(5)HexNAc(5)Fuc(1)	1	False
-Hex(5)HexNAc(5)Fuc(1) on T	Hex(5)HexNAc(5)Fuc(1)	1	False
-Hex(5)HexNAc(6)Fuc(1) on N	Hex(5)HexNAc(6)Fuc(1)	1	False
-Hex(5)HexNAc(6)Fuc(1) on S	Hex(5)HexNAc(6)Fuc(1)	1	False
-Hex(5)HexNAc(6)Fuc(1) on T	Hex(5)HexNAc(6)Fuc(1)	1	False
-Hex(5)HexNAc(6)Fuc(1)NeuAc(2) on N	Hex(5)HexNAc(6)Fuc(1)NeuAc(2)	1	False
-Hex(5)HexNAc(6)Fuc(1)NeuAc(2) on S	Hex(5)HexNAc(6)Fuc(1)NeuAc(2)	1	False
-Hex(5)HexNAc(6)Fuc(1)NeuAc(2) on T	Hex(5)HexNAc(6)Fuc(1)NeuAc(2)	1	False
-Hex(5)HexNAc(6)Fuc(1)NeuAc(3) on N	Hex(5)HexNAc(6)Fuc(1)NeuAc(3)	1	False
-Hex(5)HexNAc(6)Fuc(1)NeuAc(3) on S	Hex(5)HexNAc(6)Fuc(1)NeuAc(3)	1	False
-Hex(5)HexNAc(6)Fuc(1)NeuAc(3) on T	Hex(5)HexNAc(6)Fuc(1)NeuAc(3)	1	False
-Hex(5)HexNAc(6)Fuc(2)NeuAc(1) on N	Hex(5)HexNAc(6)Fuc(2)NeuAc(1)	1	False
-Hex(5)HexNAc(6)Fuc(2)NeuAc(1) on S	Hex(5)HexNAc(6)Fuc(2)NeuAc(1)	1	False
-Hex(5)HexNAc(6)Fuc(2)NeuAc(1) on T	Hex(5)HexNAc(6)Fuc(2)NeuAc(1)	1	False
-Hex(5)HexNAc(6)NeuAc(1) on N	Hex(5)HexNAc(6)NeuAc(1)	1	False
-Hex(5)HexNAc(6)NeuAc(1) on S	Hex(5)HexNAc(6)NeuAc(1)	1	False
-Hex(5)HexNAc(6)NeuAc(1) on T	Hex(5)HexNAc(6)NeuAc(1)	1	False
-Hex(5)HexNAc(6)NeuAc(2) on N	Hex(5)HexNAc(6)NeuAc(2)	1	False
-Hex(5)HexNAc(6)NeuAc(2) on S	Hex(5)HexNAc(6)NeuAc(2)	1	False
-Hex(5)HexNAc(6)NeuAc(2) on T	Hex(5)HexNAc(6)NeuAc(2)	1	False
-Hex(6)HexNAc(2) on Nxs	Hex(6)HexNAc(2)	1	False
-Hex(6)HexNAc(7) on N	Hex(6)HexNAc(7) on N	1	False
-Hex(6)HexNAc(7) on S	Hex(6)HexNAc(7) on S	1	False
-Hex(6)HexNAc(7) on T	Hex(6)HexNAc(7) on T	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(2) on N	Hex(6)HexNAc(7)Fuc(1)NeuAc(2)	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(3) on N	Hex(6)HexNAc(7)Fuc(1)NeuAc(3)	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(3) on S	Hex(6)HexNAc(7)Fuc(1)NeuAc(3)	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(3) on T	Hex(6)HexNAc(7)Fuc(1)NeuAc(3)	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(4) on N	Hex(6)HexNAc(7)Fuc(1)NeuAc(4)	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(4) on S	Hex(6)HexNAc(7)Fuc(1)NeuAc(4)	1	False
-Hex(6)HexNAc(7)Fuc(1)NeuAc(4) on T	Hex(6)HexNAc(7)Fuc(1)NeuAc(4)	1	False
-HexNAc on Nxc	HexNAc	1	False
-HexNAc on S	HexNAc	1	False
-HexNAc on T	HexNAc	1	False
-HexNAc(1)dHex(1) on Nxs	HexNAc(1)dHex(1)	1	False
-HexNAc(1)dHex(1) on Nxt	HexNAc(1)dHex(1)	1	False
-HexNAc(1)dHex(1) on S	HexNAc(1)dHex(1)	1	False
-HexNAc(1)dHex(1) on T	HexNAc(1)dHex(1)	1	False
-HexNAc(1)Fuc(1) on S	HexNAc(1)Fuc(1)	1	False
-HexNAc(1)NeuAc(1) on S	HexNAc(1)NeuAc(1)	1	False
-HexNAc(1)NeuAc(1) on T	HexNAc(1)NeuAc(1)	1	False
-HexNAc(2) on S	HexNAc(2)	1	False
-HexNAc(2) on T	HexNAc(2)	1	False
-Histidine (H)	Histidine (H)	1	False
-Hydrogen Dodecyl Sulfate	Hydrogen Dodecyl Sulfate	1	False
+D-serine (Cys)	D-serine (Cys)	1	False
+FMN phosphoryl serine	FMN phosphoryl serine	1	False
+FMN phosphoryl threonine	FMN phosphoryl threonine	1	False
+Glutamate methyl ester (Gln)	Glutamate methyl ester (Gln)	1	False
+Glutamate methyl ester (Glu)	Glutamate methyl ester (Glu)	1	False
+Glutamic acid 1-amide	Amide	1	False
+Glutamine amide	Amide	1	False
+Glycine amide	Amide	1	False
+Glycyl adenylate	Glycyl adenylate	1	False
+Histidine amide	Amide	1	False
+Hydroxyproline	Hydrox	1	False
 Hypusine	Hypusine	1	False
-Isoleucine (I)	Isoleucine (I)	1	False
-Leucine (L)	Leucine (L)	1	False
+Iodotyrosine	Iodotyrosine	1	False
+Isoleucine amide	Amide	1	False
+Lactic acid	Lactic acid	1	False
+Leucine amide	Amide	1	False
 Leucine methyl ester	Methyl	1	False
-Lysine (K)	Lysine (K)	1	False
+Lysine amide	Amide	1	False
 Lysine methyl ester	Methyl	1	False
-Met loss + acetaldehyde	Met Loss + Acetaldehyde	2	False
-Met loss + Acetylation	Met Loss + Acetylation	2	False
-Methionine (M)	Retained Met	1	False
-Methyl on D	Methyl	1	False
-Methyl on E	Methyl	1	False
-Methyl on H	Methyl	1	False
-Methyl on K	Methyl	1	False
-Methyl on N	Methyl	1	False
-Methyl on Q	Methyl	1	False
-Methyl on R	Methyl	1	False
-Methyl on S	Methyl	1	False
-Methyl on V	Methyl	1	False
-Missed Monoisotopic (+1)	Missed Monoisotopic (+1)	1	False
-Missed Monoisotopic (-1)	Missed Monoisotopic (-1)	1	False
-Missing Alanine (A)	Missing Alanine (A)	1	False
-Missing Arginine (R)	Missing Arginine (R)	1	False
-Missing Asparagine (N)	Missing Asparagine (N)	1	False
-Missing Aspartic Acid (D)	Missing Aspartic Acid (D)	1	False
-Missing Cysteine (C)	Missing Cysteine (C)	1	False
-Missing Glutamic Acid (E)	Missing Glutamic Acid (E)	1	False
-Missing Glutamine (Q)	Missing Glutamine (Q)	1	False
-Missing Glycine (G)	Missing Glycine (G)	1	False
-Missing Histidine (H)	Missing Histidine (H)	1	False
-Missing Isoleucine (I)	Missing Isoleucine (I)	1	False
-Missing Leucine (L)	Missing Leucine (L)	1	False
-Missing Lysine (K)	Missing Lysine (K)	1	False
-Missing Methionine (M)	Missing Methionine (M)	1	False
-Missing Phenylalanine (F)	Missing Phenylalanine (F)	1	False
-Missing Proline (P)	Missing Proline (P)	1	False
-Missing Selenocysteine (U)	Missing Selenocysteine (U)	1	False
-Missing Serine (S)	Missing Serine (S)	1	False
-Missing Threonine (T)	Missing Threonine (T)	1	False
-Missing Tryptophan (W)	Missing Tryptophan (W)	1	False
-Missing Tyrosine (Y)	Missing Tyrosine (Y)	1	False
-Missing Valine (V)	Missing Valine (V)	1	False
-Myristoylation of C	Myristoylation	1	False
-Myristoylation of G	Myristoylation	1	False
-Myristoylation of K	Myristoylation	1	False
+Lysino-D-alanine (Lys)	Lysino-D-alanine (Lys)	1	False
+Methionine amide	Amide	1	False
+Methionine sulfone	Methionine sulfone	1	False
+Methionine (R)-sulfoxide	Methionine (R)-sulfoxide	1	False
+Methionine (S)-sulfoxide	Methionine (S)-sulfoxide	1	False
+Methionine sulfoxide	Methionine sulfoxide	1	False
+(4R)-5-oxoleucine	(4R)-5-oxoleucine	1	False
+Methylhistidine	Methyl	1	False
+N,N,N-trimethylalanine	Methyl, Methyl, Methyl	3	False
 N,N,N-trimethylglycine	Methyl, Methyl, Methyl	3	False
-N,N-dimethylproline	Methyl, Methyl	2	False
+N,N,N-trimethylmethionine	Methyl, Methyl, Methyl	3	False
+N,N,N-trimethylserine	Methyl, Methyl, Methyl	3	False
+N,N-dimethylalanine	Methyl, Methyl	2	False
+N,N-dimethylglycine	Methyl, Methyl	2	False
+N,N-dimethylleucine	Methyl, Methyl	2	False
+N,N-dimethylproline	N,N-dimethylproline	2	False
+N,N-dimethylserine	Methyl, Methyl	2	False
+N2-acetylarginine	Acetyl	1	False
+N2-succinyltryptophan	Succinyl	1	False
+N2,N2-dimethylarginine	Methyl, Methyl	2	False
+N4,N4-dimethylasparagine	Methyl, Methyl	2	False
+N4-methylasparagine	Methyl	1	False
+N5-methylarginine	Methyl	1	False
+N5-methylglutamine	Methyl	1	False
+N6-(ADP-ribosyl)lysine	N6-(ADP-ribosyl)lysine	1	False
 N6-(pyridoxal phosphate)lysine	N6-(pyridoxal phosphate)lysine	1	False
+N6-(retinylidene)lysine	N6-(retinylidene)lysine	1	False
+N6,N6,N6-trimethyl-5-hydroxylysine	N6,N6,N6-trimethyl-5-hydroxylysine	1	False
 N6,N6,N6-trimethyllysine	Methyl, Methyl, Methyl	3	False
 N6,N6-dimethyllysine	Methyl, Methyl	2	False
+N6-1-carboxyethyl lysine	N6-1-carboxyethyl lysine	1	False
 N6-acetyllysine	Acetyl	1	False
 N6-biotinyllysine	Biotinyl	1	False
-N6-carboxylysine	N6-carboxylysine	1	False
+N6-carboxylysine	Carbox	1	False
+N6-crotonyllysine	N6-crotonyllysine	1	False
+N6-formyllysine	Formyl	1	False
 N6-lipoyllysine	N6-lipoyllysine	1	False
+N6-malonyllysine	N6-malonyllysine	1	False
 N6-methyllysine	Methyl	1	False
+N6-myristoyl lysine	N6-myristoyl lysine	1	False
+N6-palmitoyl lysine	N6-palmitoyl lysine	1	False
+N6-poly(methylaminopropyl)lysine	N6-poly(methylaminopropyl)lysine	1	False
+N6-succinyllysine	Succinyl	1	False
+N6-glutaryllysine	N6-glutaryllysine	1	False
+N6-(beta-hydroxybutyrate)lysine	N6-(beta-hydroxybutyrate)lysine	1	False
+N-[(12R)-12-hydroxymyristoyl]cysteine	N-[(12R)-12-hydroxymyristoyl]cysteine	1	False
+N-(12-oxomyristoyl)cysteine	N-(12-oxomyristoyl)cysteine	1	False
 N-acetylalanine	Acetyl	1	False
+N-acetylaspartate	Acetyl	1	False
+N-acetylcysteine	Acetyl	1	False
+N-acetylglutamate	Acetyl	1	False
+N-acetylglycine	Acetyl	1	False
+N-acetylisoleucine	Acetyl	1	False
 N-acetylmethionine	Acetyl	1	False
+N-acetylproline	Acetyl	1	False
 N-acetylserine	Acetyl	1	False
 N-acetylthreonine	Acetyl	1	False
+N-acetyltyrosine	Acetyl	1	False
 N-acetylvaline	Acetyl	1	False
-N-terminal Acetyl	Acetyl	1	False
-NeuAc(1) on N	NeuAc(1)	1	False
-NeuAc(1) on S	NeuAc(1)	1	False
-NeuAc(2) on S	NeuAc(2)	1	False
-NeuAc(2) on T	NeuAc(2)	1	False
-N-formylmethionine	N-formylmethionine	1	False
+N-carbamoylalanine	N-carbamoylalanine	1	False
+N-D-glucuronoyl glycine	N-D-glucuronoyl glycine	1	False
+N-formylglycine	Formyl	1	False
+N-formylmethionine	Formyl	1	False
+Nitrated tyrosine	Nitrated tyrosine	1	False
+N-methylalanine	Methyl	1	False
+N-methylglycine	Methyl	1	False
+N-methylisoleucine	Methyl	1	False
+N-methylleucine	Methyl	1	False
+N-methylmethionine	Methyl	1	False
+N-methylphenylalanine	Methyl	1	False
+N-methylproline	Methyl	1	False
+N-methylserine	Methyl	1	False
+N-methyltyrosine	Methyl	1	False
+N-myristoyl glycine	N-myristoyl glycine	1	False
+N-palmitoyl cysteine	N-palmitoyl cysteine	1	False
+N-palmitoyl glycine	N-palmitoyl glycine	1	False
+N-pyruvate 2-iminyl-cysteine	N-pyruvate 2-iminyl-cysteine	1	False
+N-pyruvate 2-iminyl-valine	N-pyruvate 2-iminyl-valine	1	False
+O-(2-aminoethylphosphoryl)serine	O-(2-aminoethylphosphoryl)serine	1	False
+O-(2-cholinephosphoryl)serine	O-(2-cholinephosphoryl)serine	1	False
 O-(pantetheine 4'-phosphoryl)serine	O-(pantetheine 4'-phosphoryl)serine	1	False
-Oxidation	Ox	1	False
-Oxidation and then loss of oxidized M side chain	Oxidation and then loss of oxidized M side chain	1	False
-Oxidation of M	Ox	1	False
-Oxidation of W to Kynurenine	Oxidation of W to Kynurenine	1	False
-Oxidation on D	Ox	1	False
-Oxidation on E	Ox	1	False
-Oxidation on F	Ox	1	False
-Oxidation on H	Ox	1	False
-Oxidation on P	Ox	1	False
-Oxidation on V	Ox	1	False
-Oxidation on W	Ox	1	False
-Oxidation on Y	Ox	1	False
-Palmitoylation of C	Palmitoylation	1	False
-Palmitoylation on K	Palmitoylation	1	False
-Palmitoylation on S	Palmitoylation	1	False
-Palmitoylation on T	Palmitoylation	1	False
-Phenylalanine (F)	Phenylalanine (F)	1	False
-Phospho on S	Phospho	1	False
-Phospho on T	Phospho	1	False
-Phospho on Y	Phospho	1	False
+O-(phosphoribosyl dephospho-coenzyme A)serine	O-(phosphoribosyl dephospho-coenzyme A)serine	1	False
+O-(sn-1-glycerophosphoryl)serine	O-(sn-1-glycerophosphoryl)serine	1	False
+O-8alpha-FAD tyrosine	O-8alpha-FAD tyrosine	1	False
+O-acetylserine	Acetyl	1	False
+O-acetylthreonine	Acetyl	1	False
+O-AMP-tyrosine	O-AMP-tyrosine	1	False
+O-AMP-threonine	O-AMP-threonine	1	False
+O-decanoyl threonine	O-decanoyl threonine	1	False
+O-decanoyl serine	O-decanoyl serine	1	False
+Omega-hydroxyceramide glutamate ester	Omega-hydroxyceramide glutamate ester	1	False
+Omega-N-methylarginine	Methyl	1	False
+O-methylthreonine	Methyl	1	False
+O-octanoyl serine	O-octanoyl serine	1	False
+O-octanoyl threonine	O-octanoyl threonine	1	False
+O-palmitoyl serine	O-palmitoyl serine	1	False
+O-palmitoyl threonine	O-palmitoyl threonine	1	False
+O-UMP-histidine	O-UMP-histidine	1	False
+O-UMP-serine	O-UMP-serine	1	False
+O-UMP-threonine	O-UMP-threonine	1	False
+O-UMP-tyrosine	O-UMP-tyrosine	1	False
+Phenylalanine amide	Amide	1	False
+Phosphatidylethanolamine amidated glycine	Phosphatidylethanolamine amidated glycine	1	False
+Phosphoarginine	Phospho	1	False
+Phosphocysteine	Phospho	1	False
 Phosphohistidine	Phospho	1	False
 Phosphoserine	Phospho	1	False
 Phosphothreonine	Phospho	1	False
 Phosphotyrosine	Phospho	1	False
-Proline (P)	Proline (P)	1	False
-Proline Oxidation to pyroglutamic acid	Proline Oxidation to Pyroglutamic Acid	1	False
+Proline amide	Amide	1	False
 Pros-8alpha-FAD histidine	Pros-8alpha-FAD histidine	1	False
-Pyrrolidinone	Pyrrolidinone	1	False
+Pros-methylhistidine	Methyl	1	False
+Pros-phosphohistidine	Phospho	1	False
+Pyrrolidone carboxylic acid	Pyrrolidone carboxylic acid	1	False
+Pyrrolidone carboxylic acid (Glu)	Pyrrolidone carboxylic acid (Glu)	1	False
+Pyruvic acid (Cys)	Pyruvic acid (Cys)	1	False
 Pyruvic acid (Ser)	Pyruvic acid (Ser)	1	False
+S-(15-deoxy-Delta12,14-prostaglandin J2-9-yl)cysteine	S-(15-deoxy-Delta12,14-prostaglandin J2-9-yl)cysteine	1	False
+S-(4-hydroxycinnamyl)cysteine	S-(4-hydroxycinnamyl)cysteine	1	False
+S-(coelenterazin-3a-yl)cysteine	S-(coelenterazin-3a-yl)cysteine	1	False
 S-(dipyrrolylmethanemethyl)cysteine	S-(dipyrrolylmethanemethyl)cysteine	1	False
-Selenocysteine (U)	Selenocysteine (U)	1	False
-Serine (S)	Serine (S)	1	False
+S-12-hydroxyfarnesyl cysteine	S-12-hydroxyfarnesyl cysteine	1	False
+S-4a-FMN cysteine	S-4a-FMN cysteine	1	False
+S-6-FMN cysteine	S-6-FMN cysteine	1	False
+S-8alpha-FAD cysteine	S-8alpha-FAD cysteine	1	False
+S-archaeol cysteine	S-archaeol cysteine	1	False
+S-bacillithiol cysteine disulfide	S-bacillithiol cysteine disulfide	1	False
+S-cysteinyl cysteine	S-cysteinyl cysteine	1	False
+S-diacylglycerol cysteine	S-diacylglycerol cysteine	1	False
+Serine amide	Amide	1	False
+Serine microcin E492 siderophore ester	Serine microcin E492 siderophore ester	1	False
+S-farnesyl cysteine	S-farnesyl cysteine	1	False
+S-geranylgeranyl cysteine	S-geranylgeranyl cysteine	1	False
 S-glutathionyl cysteine	S-glutathionyl cysteine	1	False
 S-methylcysteine	Methyl	1	False
-Sulfate Adduct	Sulfate Adduct	1	False
-Sulfonation on S	Sulfonation	1	False
-Sulfonation on T	Sulfonation	1	False
-Sulfonation on Y	Sulfonation	1	False
-Threonine (T)	Threonine (T)	1	False
-Topaquinone	Topaquinone	1	False
-TriMethylation	Methyl, Methyl, Methyl	3	False
-Trioxidation of C	Ox, Ox, Ox	3	False
+S-nitrosocysteine	S-nitrosocysteine	1	False
+S-palmitoyl cysteine	S-palmitoyl cysteine	1	False
+S-selanylcysteine	S-selanylcysteine	1	False
+S-stearoyl cysteine	S-stearoyl cysteine	1	False
+Sulfoserine	Sulfo	1	False
+Sulfothreonine	Sulfo	1	False
+Sulfotyrosine	Sulfo	1	False
+Symmetric dimethylarginine	Methyl, Methyl	2	False
+Tele-(1,2,3-trihydroxypropan-2-yl)histidine	Tele-(1,2,3-trihydroxypropan-2-yl)histidine	1	False
+Tele-8alpha-FAD histidine	Tele-8alpha-FAD histidine	1	False
+Tele-8alpha-FMN histidine	Tele-8alpha-FMN histidine	1	False
+Tele-methylhistidine	Methyl	1	False
+Tele-phosphohistidine	Phospho	1	False
+Threonine amide	Amide	1	False
+Threonine methyl ester	Methyl	1	False
+Thyroxine	Thyroxine	1	False
+Triiodothyronine	Triiodothyronine	1	False
+Tryptophan amide	Amide	1	False
+Tryptophylquinone	Tryptophylquinone	1	False
+Tyrosine amide	Amide	1	False
+Valine amide	Amide	1	False
+L-isoglutamyl histamine	L-isoglutamyl histamine	1	False
+O-palmitoleyl serine	O-palmitoleyl serine	1	False
 Tryptophan (W)	Tryptophan (W)	1	False
-Tryptophan oxidation to hydroxykynurenin	Tryptophan oxidation to hydroxykynurenin	1	False
-Tryptophan oxidation to oxolactone	Tryptophan oxidation to oxolactone	1	False
 Tyrosine (Y)	Tyrosine (Y)	1	False
-Unmodified	Unmodified	1	False
+Arginine (R)	Arginine (R)	1	False
+Selenocysteine (U)	Selenocysteine (U)	1	False
+Phenylalanine (F)	Phenylalanine (F)	1	False
+Histidine (H)	Histidine (H)	1	False
+Methionine (M)	Retained Met	1	False
+Glutamic Acid (E)	Glutamic Acid (E)	1	False
+Lysine (K)	Lysine (K)	1	False
+Glutamine (Q)	Glutamine (Q)	1	False
+Aspartic Acid (D)	Aspartic Acid (D)	1	False
+Asparagine (N)	Asparagine (N)	1	False
+Isoleucine (I)	Isoleucine (I)	1	False
+Leucine (L)	Leucine (L)	1	False
+Cysteine (C)	Cysteine (C)	1	False
+Threonine (T)	Threonine (T)	1	False
 Valine (V)	Valine (V)	1	False
+Proline (P)	Proline (P)	1	False
+Serine (S)	Serine (S)	1	False
+Alanine (A)	Alanine (A)	1	False
+Glycine (G)	Glycine (G)	1	False
+Sulfate Adduct	Sulfate Adduct	1	False
+Acetone Artifact (Unconfirmed)	Acetone Artifact	1	False
+Hydrogen Dodecyl Sulfate	Hydrogen Dodecyl Sulfate	1	False
+N-terminal Acetyl	Acetyl	1	False
+GPI anchor	GPI anchor	1	False
 Water Adduct	Water Adduct	1	False
-Water loss	Water loss	1	False
+Carbamidomethyl of C	Carbamidomethyl of C	1	False
+Phospho, Phospho, Phospho on S	Phospho, Phospho, Phospho	3	False
+Phospho, Phospho, Phospho on T	Phospho, Phospho, Phospho	3	False
+Phospho, Phospho, Phospho on Y	Phospho, Phospho, Phospho	3	False
+Missed Monoisotopic (-1)	Missed Monoisotopic (-1)	1	False
+Missed Monoisotopic (+1)	Missed Monoisotopic (+1)	1	False
+Missing Tryptophan (W)	Missing Tryptophan (W)	1	False
+Missing Tyrosine (Y)	Missing Tyrosine (Y)	1	False
+Missing Arginine (R)	Missing Arginine (R)	1	False
+Missing Selenocysteine (U)	Missing Selenocysteine (U)	1	False
+Missing Phenylalanine (F)	Missing Phenylalanine (F)	1	False
+Missing Histidine (H)	Missing Histidine (H)	1	False
+Missing Methionine (M)	Missing Methionine (M)	1	False
+Missing Glutamic Acid (E)	Missing Glutamic Acid (E)	1	False
+Missing Lysine (K)	Missing Lysine (K)	1	False
+Missing Glutamine (Q)	Missing Glutamine (Q)	1	False
+Missing Aspartic Acid (D)	Missing Aspartic Acid (D)	1	False
+Missing Asparagine (N)	Missing Asparagine (N)	1	False
+Missing Isoleucine (I)	Missing Isoleucine (I)	1	False
+Missing Leucine (L)	Missing Leucine (L)	1	False
+Missing Cysteine (C)	Missing Cysteine (C)	1	False
+Missing Threonine (T)	Missing Threonine (T)	1	False
+Missing Valine (V)	Missing Valine (V)	1	False
+Missing Proline (P)	Missing Proline (P)	1	False
+Missing Serine (S)	Missing Serine (S)	1	False
+Missing Alanine (A)	Missing Alanine (A)	1	False
+Missing Glycine (G)	Missing Glycine (G)	1	False
+Oxidation of M	Ox	1	False
+Unmodified	Unmodified	1	False

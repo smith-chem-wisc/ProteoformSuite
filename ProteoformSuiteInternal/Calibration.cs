@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IO.Thermo;
 using Chemistry;
+using Spectra;
 using System.IO;
 using ClosedXML.Excel;
 using System.Text.RegularExpressions;
@@ -114,8 +115,8 @@ namespace ProteoformSuiteInternal
             }
             foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
             {
-                Func<IMzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime });
-                a.TransformByApplyingFunctionToSpectra(theFunc);
+                Func<Spectra.IPeak, double> theFunc = x => x.X - bestCf.Predict(new double[] { x.X, a.RetentionTime });
+                a.MassSpectrum.ReplaceXbyApplyingFunction(theFunc);
             }
         }
 
@@ -312,8 +313,8 @@ namespace ProteoformSuiteInternal
                                 continue;
                             }
 
-                            var closestPeak = fullMS1spectrum.GetClosestPeak(theMZ);
-                            var closestPeakMZ = closestPeak.Mz;
+                            var closestPeak = fullMS1spectrum.GetClosestPeakXvalue(theMZ);
+                            var closestPeakMZ = closestPeak;
 
                             var theTuple = Tuple.Create(closestPeakMZ, ms1ScanNumber);
                             if (!peaksAddedHashSet.Contains(theTuple))

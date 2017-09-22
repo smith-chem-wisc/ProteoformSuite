@@ -177,7 +177,7 @@ namespace Test
             //need to make decon error top "deconvolution error"
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("S", out motif);
-            ModificationWithMass m = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -1.0023, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Deconvolution Error");
+            ModificationWithMass m = new ModificationWithMass("id", "modtype", motif, TerminusLocalization.Any, 1);
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(-1, m) });
             Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(set);
@@ -185,7 +185,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.Add(-1.0, new List<PtmSet>() { set });
 
             //need missing error
-            ModificationWithMass m2 = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -87.03, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Missing");
+            ModificationWithMass m2 = new ModificationWithMass("id", "modtype", motif, TerminusLocalization.Any, 1);
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m2);
             PtmSet set2 = new PtmSet(new List<Ptm> { new Ptm(-1, m2) });
             Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(set2);
@@ -303,17 +303,19 @@ namespace Test
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
             //same begin and end, T has more PTMs
-            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("K", out motif);
+            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end TD has more of a PTM type
             td.ptm_set = new PtmSet(new List<Ptm>());
-            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end and PTMs
-            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
-            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
         }
@@ -336,8 +338,12 @@ namespace Test
             t3.accepted = true;
             t4.accepted = true;
             t5.accepted = true;
-            t3.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(70, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
-            t5.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            t3.topdown_begin = 68;
+            t3.topdown_end = 128;
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("K", out motif);
+            t3.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(10, new ModificationWithMass("Acetylation", "Unlocalized", motif, TerminusLocalization.Any, 79.96, null, null, null, null)) });
+            t5.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "Unloaclized", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.methionine_cleavage = true;
@@ -367,14 +373,14 @@ namespace Test
             Assert.AreEqual(26, Sweet.lollipop.theoretical_database.expanded_proteins.Length); //should have new topdown protein added
             Assert.AreEqual(1, Sweet.lollipop.theoretical_database.expanded_proteins.Count(p => p.topdown_protein)); //only add 1 new sequence
             Assert.AreEqual("VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA", Sweet.lollipop.theoretical_database.expanded_proteins.Where(p => p.topdown_protein).First().BaseSequence);
-            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.topdown_theoretical));
-            Assert.AreEqual(31, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.ExpandedProteinList.Any(e => e.topdown_protein)));
-
             List<TheoreticalProteoform> td_theoreticals = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.topdown_theoretical).OrderBy(p => p.accession).ToList();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => !p.topdown_theoretical && p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_set.ptm_combination.Count == 0));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_set.ptm_combination.Count == 0));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_description == "Acetylation"));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_description == "Acetylation"));
+            Assert.AreEqual(31, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.ExpandedProteinList.Any(e => e.topdown_protein)));
+
         }
     }
 }

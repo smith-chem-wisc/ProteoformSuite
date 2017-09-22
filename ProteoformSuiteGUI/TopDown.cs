@@ -175,7 +175,7 @@ namespace ProteoformSuiteGUI
             int length = p.sequence.Length + 1;
             foreach (Ptm ptm in p.topdown_ptm_set.ptm_combination)
             {
-                int position_in_sequence = ptm.position + 1 - p.begin;
+                int position_in_sequence = ptm.position + 1 - p.topdown_begin;
                 int i = 0;
                 Color color;
                 try

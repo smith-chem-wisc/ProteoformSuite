@@ -165,7 +165,8 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant;
+                return e.linked_proteoform_references != null ? (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant 
+                    : false;
             }
         }
 

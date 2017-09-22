@@ -19,7 +19,7 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 87.03);
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
-            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("missing serine", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -87.03, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Missing")) });
+            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("missing serine", "Missing", motif, TerminusLocalization.Any, -87.03)) });
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
@@ -70,7 +70,7 @@ namespace Test
              e2 = ConstructorsForTesting.ExperimentalProteoform("", 100200.03, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 113);
             ModificationMotif.TryGetMotif("M", out motif);
-             set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("M retention", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 113, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "AminoAcid")) });
+             set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("M retention", "AminoAcid", motif, TerminusLocalization.Any, 113)) });
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
@@ -85,9 +85,9 @@ namespace Test
             Assert.AreEqual(2, e.begin);
             Assert.AreEqual(12, e.end);
             Assert.IsNotNull(e2.linked_proteoform_references);
+            Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e2.begin);
             Assert.AreEqual(12, e2.end);
-            Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
 
         }
 
@@ -100,18 +100,18 @@ namespace Test
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01)),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01)),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01))
             });
             PtmSet set2 = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01)),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01))
             });
             PtmSet set3 = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01))
             });
             e.ptm_set = set;
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
@@ -139,8 +139,8 @@ namespace Test
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set_not_quite_zero = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.011, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
-                new Ptm(0, new ModificationWithMass("acetyl loss", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, -42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.01)),
+                new Ptm(0, new ModificationWithMass("acetyl loss", "", motif, TerminusLocalization.Any, -42.01)),
             });
 
             PtmSet set_unmodified = new PtmSet(new List<Ptm>{ new Ptm() });
@@ -165,7 +165,7 @@ namespace Test
         public void adduct_experimental()
         {
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
-            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("Sulfate Adduct", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 97.97, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")) });
+            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("Sulfate Adduct", "", motif, TerminusLocalization.Any, 97.97)) });
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
@@ -208,7 +208,7 @@ namespace Test
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet acetyl = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.011, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.011))
             });
 
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
@@ -222,7 +222,7 @@ namespace Test
 
             acetyl = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.011, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.011))
             });
 
              set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });

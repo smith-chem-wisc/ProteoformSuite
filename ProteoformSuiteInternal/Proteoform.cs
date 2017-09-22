@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" : 
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" : 
-                        String.Join(", ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
             }
         }
         public int begin { get; set; }
@@ -106,8 +106,8 @@ namespace ProteoformSuiteInternal
                 foreach (PtmSet set in all_possible_ptmsets)
                 {
                     bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
-                    List<ModificationWithMass> these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
-                    List<ModificationWithMass> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
+                    List<ModificationWithMass> these_mods =  ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
+                    List<ModificationWithMass> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList();
                     bool can_be_removed = those_mods.All(m => these_mods.Contains(m));
                     bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
@@ -171,9 +171,9 @@ namespace ProteoformSuiteInternal
                         continue;
                     }
 
-                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && this.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
-                    bool motif_matches_n_terminus = begin >= 1 && begin - 1 < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[begin - 1].ToString();
-                    bool motif_matches_c_terminus = end >= 1 && end - 1 < theoretical_base.sequence.Length && m.motif.Motif == theoretical_base.sequence[end - 1].ToString();
+                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.ToString() == "M" && theoretical_base.begin == 2 && this.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
+                    bool motif_matches_n_terminus = begin >= 1 && begin - 1 < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[begin - 1].ToString();
+                    bool motif_matches_c_terminus = end >= 1 && end - 1 < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[end - 1].ToString();
 
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
@@ -237,12 +237,12 @@ namespace ProteoformSuiteInternal
                 List<Ptm> remove = new List<Ptm>();
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "Missing"))
                 {
-                    if (theoretical_base.sequence[this.begin - 1].ToString() == mod.modification.motif.Motif)
+                    if (theoretical_base.sequence[this.begin - 1].ToString() == mod.modification.motif.ToString())
                     {
                         e.begin++;
                         remove.Add(mod); //dont have in ptmset --> change the begin & end
                     }
-                    else if (theoretical_base.sequence[this.end - 1].ToString() == mod.modification.motif.Motif)
+                    else if (theoretical_base.sequence[this.end - 1].ToString() == mod.modification.motif.ToString())
                     {
                         e.end--;
                         remove.Add(mod);
@@ -250,7 +250,7 @@ namespace ProteoformSuiteInternal
                 }
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "AminoAcid"))
                 {
-                    if (theoretical_base.sequence[this.begin - 2].ToString() == mod.modification.motif.Motif)
+                    if (theoretical_base.sequence[this.begin - 2].ToString() == mod.modification.motif.ToString())
                     {
                         e.begin--;
                         remove.Add(mod);

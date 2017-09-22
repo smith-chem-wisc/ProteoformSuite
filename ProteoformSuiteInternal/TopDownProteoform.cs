@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _topdown_ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                    String.Join(", ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
+                    String.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
             }
         }
         public string topdown_ptm_description { get; set; }
@@ -110,7 +110,7 @@ namespace ProteoformSuiteInternal
                 TheoreticalProteoform t = linked_proteoform_references.First() as TheoreticalProteoform;
                 bool matching_accession = t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(accession.Split('_')[0]);
                 bool same_begin_and_end = begin == topdown_begin && end == topdown_end;
-                bool same_ptm_set = topdown_ptm_set.same_ptmset(ptm_set);
+                bool same_ptm_set = topdown_ptm_set.same_ptmset(ptm_set, true);
                 correct_id = matching_accession && same_ptm_set && same_begin_and_end;
             }
         }
