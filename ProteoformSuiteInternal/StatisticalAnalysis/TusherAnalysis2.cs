@@ -49,11 +49,13 @@ namespace ProteoformSuiteInternal
                 else conditionBiorep_intensities.Add(key2, new List<double> { bi.intensity_sum });
             }
 
-            // Mixing bias normalization
+            // If Neucode Labeled: Mixing bias normalization
             conditionBiorep_sums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum());
+            //otherwise, tech rep normalize
             foreach (BiorepTechrepIntensity bi in allOriginalBiorepIntensities)
             {
-                double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value);
+                double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / 
+                    (Sweet.lollipop.neucode_labeled ? conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value) : conditionBiorep_sums.Average(kv => kv.Value));
                 bi.intensity_sum = bi.intensity_sum / norm_divisor;
             }
 
