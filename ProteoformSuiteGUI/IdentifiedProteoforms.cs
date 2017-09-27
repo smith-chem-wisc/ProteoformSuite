@@ -75,7 +75,7 @@ namespace ProteoformSuiteGUI
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                              MessageBox.Show("Save comparison results file.");
+                MessageBox.Show("Save comparison results file.");
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Title = "Top-Down Comparison Results";
                 saveFileDialog.Filter = "Text Files (*.tsv) | *.tsv";

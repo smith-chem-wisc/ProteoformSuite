@@ -13,7 +13,7 @@ namespace ProteoformSuiteInternal
         {
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("X", out motif);
-            modification =  new ModificationWithMass("Unmodified", "Unlocalized", motif, TerminusLocalization.Any, 0,
+            modification =  new ModificationWithMass("Unmodified", "Unmodified", motif, TerminusLocalization.Any, 0,
            new Dictionary<string, IList<string>>(), new List<string>(), new List<double>(), new List<double>());
         }
 

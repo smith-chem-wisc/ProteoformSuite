@@ -1010,8 +1010,11 @@ namespace ProteoformSuiteInternal
                     {
                         int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(hit.ms2_retention_time);
                         hit.ms2ScanNumber = scanNum;
-                        hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
-                        hit.mz = hit.reported_mass.ToMz(hit.charge);
+                        if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum < myMsDataFile.NumSpectra)
+                        {
+                            hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
+                            hit.mz = hit.reported_mass.ToMz(hit.charge);
+                        }
                         while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
                         hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
                         hit.technical_replicate = raw_file.technical_replicate;
