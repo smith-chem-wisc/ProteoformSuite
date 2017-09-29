@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
             else
             {
                 TheoreticalProteoform t = linked_proteoform_references.First() as TheoreticalProteoform;
-                bool matching_accession = t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(accession.Split('_')[0]);
+                bool matching_accession = t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(accession.Split('_')[0].Split('-')[0]);
                 bool same_begin_and_end = begin == topdown_begin && end == topdown_end;
                 bool same_ptm_set = topdown_ptm_set.same_ptmset(ptm_set, true);
                 correct_id = matching_accession && same_ptm_set && same_begin_and_end;
