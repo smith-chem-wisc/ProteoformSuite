@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-16"?>
-<proteoform_suite documentVersion="0.01" id="2017-09-15-13-49-03">
+<proteoform_suite documentVersion="0.01" id="2017-10-05-15-54-45">
   <setting field_type="System.Boolean" field_name="neucode_labeled" field_value="False" />
-  <setting field_type="System.Double" field_name="raw_component_mass_tolerance" field_value="10" />
+  <setting field_type="System.Double" field_name="raw_component_mass_tolerance" field_value="5" />
   <setting field_type="System.Decimal" field_name="max_intensity_ratio" field_value="6" />
   <setting field_type="System.Decimal" field_name="min_intensity_ratio" field_value="1.4" />
   <setting field_type="System.Decimal" field_name="max_lysine_ct" field_value="26.2" />
@@ -9,11 +9,11 @@
   <setting field_type="System.Double" field_name="min_score_td" field_value="3" />
   <setting field_type="System.Boolean" field_name="biomarker" field_value="True" />
   <setting field_type="System.Boolean" field_name="tight_abs_mass" field_value="True" />
-  <setting field_type="System.Double" field_name="td_retention_time_tolerance" field_value="10" />
+  <setting field_type="System.Double" field_name="td_retention_time_tolerance" field_value="5" />
   <setting field_type="System.String" field_name="decoy_community_name_prefix" field_value="Decoy_Proteoform_Community_" />
   <setting field_type="System.Boolean" field_name="validate_proteoforms" field_value="True" />
-  <setting field_type="System.Double" field_name="mass_tolerance" field_value="10" />
-  <setting field_type="System.Double" field_name="retention_time_tolerance" field_value="10" />
+  <setting field_type="System.Double" field_name="mass_tolerance" field_value="5" />
+  <setting field_type="System.Double" field_name="retention_time_tolerance" field_value="5" />
   <setting field_type="System.Int32" field_name="maximum_missed_monos" field_value="3" />
   <setting field_type="System.Int32" field_name="maximum_missed_lysines" field_value="2" />
   <setting field_type="System.Int32" field_name="min_agg_count" field_value="1" />
@@ -25,7 +25,7 @@
   <setting field_type="System.Boolean" field_name="natural_lysine_isotope_abundance" field_value="True" />
   <setting field_type="System.Boolean" field_name="neucode_light_lysine" field_value="False" />
   <setting field_type="System.Boolean" field_name="neucode_heavy_lysine" field_value="False" />
-  <setting field_type="System.Int32" field_name="max_ptms" field_value="3" />
+  <setting field_type="System.Int32" field_name="max_ptms" field_value="2" />
   <setting field_type="System.Int32" field_name="decoy_databases" field_value="10" />
   <setting field_type="System.Int32" field_name="min_peptide_length" field_value="7" />
   <setting field_type="System.Double" field_name="ptmset_mass_tolerance" field_value="1E-05" />
@@ -38,15 +38,15 @@
   <setting field_type="System.Boolean" field_name="useRandomSeed_decoys" field_value="True" />
   <setting field_type="System.Int32" field_name="randomSeed_decoys" field_value="1" />
   <setting field_type="System.Double" field_name="ee_max_mass_difference" field_value="300" />
-  <setting field_type="System.Double" field_name="ee_max_RetentionTime_difference" field_value="5" />
+  <setting field_type="System.Double" field_name="ee_max_RetentionTime_difference" field_value="2.5" />
   <setting field_type="System.Double" field_name="et_low_mass_difference" field_value="-1" />
   <setting field_type="System.Double" field_name="et_high_mass_difference" field_value="1" />
   <setting field_type="System.Double" field_name="no_mans_land_lowerBound" field_value="0.22" />
   <setting field_type="System.Double" field_name="no_mans_land_upperBound" field_value="0.88" />
-  <setting field_type="System.Double" field_name="peak_width_base_et" field_value="0.02" />
-  <setting field_type="System.Double" field_name="peak_width_base_ee" field_value="0.02" />
+  <setting field_type="System.Double" field_name="peak_width_base_et" field_value="0.025" />
+  <setting field_type="System.Double" field_name="peak_width_base_ee" field_value="0.025" />
   <setting field_type="System.Double" field_name="min_peak_count_et" field_value="1000" />
-  <setting field_type="System.Double" field_name="min_peak_count_ee" field_value="60" />
+  <setting field_type="System.Double" field_name="min_peak_count_ee" field_value="90" />
   <setting field_type="System.Int32" field_name="relation_group_centering_iterations" field_value="2" />
   <setting field_type="System.Boolean" field_name="count_adducts_as_identifications" field_value="False" />
   <setting field_type="System.String" field_name="family_build_folder_path" field_value="" />
@@ -79,38 +79,32 @@
   <setting field_type="System.String" field_name="results_folder" field_value="" />
   <setting field_type="System.Boolean" field_name="gene_centric_families" field_value="True" />
   <setting field_type="System.String" field_name="preferred_gene_label" field_value="Ordered Locus, e.g. YLR113W" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 97.9682730195264" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 14.9917359005479" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 4.0059425350027" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 16.0119220879689" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 15.9796196320963" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 5.00731429632229" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 32.995290375616" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 17.0218649025806" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 10.0121896488038" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 6.00984148347508" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 30.0197078062222" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 32.008667947448" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 81.9762305488452" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 15.0085463416148" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 27.9853105793729" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 30.9864336874029" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 7.00927635526384" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 0.00724557689847923" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 97.9848731248859" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 250.154134684745" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 11.016962745836" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 42.0228725917662" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 98.0683917659778" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 27.0011462524012" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 43.9701612181576" />
-  <action action="accept ExperimentalExperimental peak with delta-mass 79.9639719727452" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 195.940082409625" />
-  <action action="accept ExperimentalExperimental peak with delta-mass 163.070372112508" />
-  <action action="accept ExperimentalExperimental peak with delta-mass 147.059054232832" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 18.0170966208298" />
-  <action action="unaccept ExperimentalExperimental peak with delta-mass 47.9833192326715" />
-  <action action="accept ExperimentalExperimental peak with delta-mass 131.037840708502" />
-  <action action="accept ExperimentalExperimental peak with delta-mass 115.064097432362" />
-  <action action="accept ExperimentalExperimental peak with delta-mass 18.0170966208298" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 97.9673287991789" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 4.00509674376558" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 17.0196916877798" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 16.0165056738856" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 5.00601549150544" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 6.01110568957728" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 81.9756392878363" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 15.9752733385678" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 16.9991814310328" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 10.0143721827652" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 32.9983542768239" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 7.01518015485828" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 45.0509389618033" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 30.990158696355" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 195.934534639822" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 30.0039821953258" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 15.0147639470563" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 97.9891536391529" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 8.01074512314253" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 27.989878624876" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 96.9659494751578" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 47.9896602053206" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 11.9908565689899" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 98.0700051157793" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 79.9639275123407" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 239.8979478344" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 163.065522636518" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 27.989878624876" />
 </proteoform_suite>
