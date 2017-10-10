@@ -389,5 +389,15 @@ namespace Test
             r.nearby_relations = new List<ProteoformRelation>();
             Assert.Throws<ArgumentException>(() => c.accept_deltaMass_peaks(new List<ProteoformRelation> { r }, new List<ProteoformRelation>()));
         }
+
+        [Test]
+        public static void no_relations_doesnt_crash()
+        {
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("e1");
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("e2");
+            ConstructorsForTesting.make_relation(e1, e2);
+            DeltaMassPeak p = e1.relationships.First().peak;
+            Assert.AreEqual(0, p.count_nearby_decoys(new List<ProteoformRelation>()));
+        }
     }
 }

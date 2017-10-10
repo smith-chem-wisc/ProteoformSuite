@@ -108,6 +108,7 @@ namespace ProteoformSuiteInternal
 
         public int count_nearby_decoys(List<ProteoformRelation> all_relations)
         {
+            if (all_relations.Count == 0) return 0;
             double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? 
                 DeltaMass - Sweet.lollipop.peak_width_base_et / 2 : 
                 DeltaMass - Sweet.lollipop.peak_width_base_ee / 2;
