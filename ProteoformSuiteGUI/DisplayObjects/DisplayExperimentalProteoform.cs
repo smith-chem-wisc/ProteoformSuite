@@ -91,7 +91,7 @@ namespace ProteoformSuiteGUI
 
         public string ptm_description
         {
-            get { return e.ptm_description; }
+            get { return e.linked_proteoform_references != null ? e.ptm_description : ""; }
         }
 
         public int Begin
