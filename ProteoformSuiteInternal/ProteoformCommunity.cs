@@ -244,10 +244,8 @@ namespace ProteoformSuiteInternal
         public List<ProteoformFamily> construct_families()
         {
             ProteoformFamily.reset_family_counter();
-            List<Proteoform> proteoforms = new List<Proteoform>();
-            proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
             Parallel.ForEach(experimental_proteoforms, e => e.ambiguous = false); //need to reset all as falsely ambigous
-            Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
+            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToArray());
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
             List<Thread> active = new List<Thread>();
