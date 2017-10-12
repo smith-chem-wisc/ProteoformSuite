@@ -226,22 +226,20 @@ namespace ProteoformSuiteInternal
             report += Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references == null) + "\tUnidentified Top-Down Proteoforms" + Environment.NewLine;
             report += Environment.NewLine;
 
-            int identified_exp_proteoforms_intact = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && !(e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
+            int identified_exp_proteoforms_intact = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
             report += identified_exp_proteoforms_intact.ToString() + "\tIdentified Intact-Mass Experimental Proteoforms" + Environment.NewLine;
-            int ambiguous_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && !(e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant && e.ambiguous);
+            int ambiguous_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.ambiguous);
             report += ambiguous_exp_proteoforms.ToString() + "\tIdentified Intact-Mass Experimental Proteoforms That Are Possibly Ambiguous" + Environment.NewLine;
-            int contaminants = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
-            report += contaminants.ToString() + "\tContaminant Intact-Mass Experimental Proteoforms";
             report += Environment.NewLine;
 
             List<string> td_proteins = Sweet.lollipop.topdown_proteoforms.Select(t => t.accession.Split('_')[0].Split('-')[0]).Distinct().ToList();
             report += td_proteins.Count() + "\tUnique Top-Down Protein Identifications (TDPortal)" + Environment.NewLine;
-            List<string> intact_mass_proteins = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && !(e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(p => p.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0]).Distinct().ToList();
+            List<string> intact_mass_proteins = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(p => p.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0]).Distinct().ToList();
             report += td_proteins.Concat(intact_mass_proteins).Distinct().Count() + "\tTotal Unique Protein Identifications" + Environment.NewLine;
             report += Environment.NewLine;
 
             //get list of experimental accession, begin, end, and PTMs
-            List<string> experimental_ids = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && !(e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
+            List<string> experimental_ids = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
                 .Select(p => String.Join(",", (p.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(e => e.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + "_" + p.begin + "_" + p.end + "_" + String.Join(", ", p.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m))).ToList();
             report += experimental_ids.Distinct().Count() + "\tUnique Intact-Mass Experimental Proteoforms Identifications" + Environment.NewLine;
             int unique_td = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr).Distinct().Count();
