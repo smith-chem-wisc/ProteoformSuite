@@ -99,8 +99,10 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.gene_name != null ?
+                    (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != null ?
                     e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) :
-                    "";
+                    "")
+                    :  "";
             }
         }
 
