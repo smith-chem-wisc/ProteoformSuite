@@ -621,7 +621,7 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() > 0 ? quantitative != null ?
+                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms.Where(e => !e.topdown_id)).Count() > 0 ? quantitative != null ?
                     (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
                     all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity) : 1e6;
                 writer.WriteStartElement("node");

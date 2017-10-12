@@ -44,7 +44,7 @@ namespace ProteoformSuiteInternal
 
         public bool same_ptmset(PtmSet that, bool unlocalized)
         {
-            if (unlocalized)
+            if (unlocalized) //methyl,methyl,methyl = methyl; methyl; methyl, etc
             {
                 string this_ptms = String.Join(", ", ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m));
                 string that_ptms = String.Join(", ", that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m));

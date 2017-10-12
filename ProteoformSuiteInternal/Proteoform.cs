@@ -261,7 +261,7 @@ namespace ProteoformSuiteInternal
             else
             {
                 //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
-                if ((e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label) // || !e.ptm_set.same_ptmset(set)) //would've been assigned same ptmset...
+                if ((e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                     && e.linked_proteoform_references.Count == this.linked_proteoform_references.Count + 1))
                     e.ambiguous = true;
             }

@@ -94,6 +94,15 @@ namespace ProteoformSuiteGUI
             get { return e.ptm_description; }
         }
 
+        public int Begin
+        {
+            get { return e.begin; }
+        }
+
+        public int End
+        {
+            get { return e.end; }
+        }
         public string gene_name
         {
             get
