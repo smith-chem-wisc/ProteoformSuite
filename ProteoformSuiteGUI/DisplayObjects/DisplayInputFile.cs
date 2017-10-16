@@ -164,7 +164,7 @@ namespace ProteoformSuiteGUI
 
             foreach (DataGridViewColumn c in dgv.Columns)
             {
-                string h = header(c.Name);
+                string h = header(c.Name, dgv_purposes);
                 c.HeaderText = h != null ? h : c.HeaderText;
                 c.Visible = visible(c.Name, c.Visible, dgv_purposes);
             }
@@ -179,7 +179,7 @@ namespace ProteoformSuiteGUI
 
         public static DataTable FormatInputFileTable(List<DisplayInputFile> display, string table_name, IEnumerable<Purpose> dgv_purposes)
         {
-            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayInputFile).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true, dgv_purposes)));
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayInputFile).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name, dgv_purposes), visible(x.Name, true, dgv_purposes)));
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
@@ -188,13 +188,13 @@ namespace ProteoformSuiteGUI
         #region Private Methods
 
 
-        private static string header(string property_name)
+        private static string header(string property_name, IEnumerable<Purpose> dgv_purposes)
         {
             if (property_name == nameof(UniqueId)) return "File ID";
             if (property_name == nameof(complete_path)) return "File Path";
             if (property_name == nameof(biological_replicate)) return "Biological Replicate";
             if (property_name == nameof(TechnicalReplicate)) return "Technical Replicate";
-            if (property_name == nameof(lt_condition)) return Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
+            if (property_name == nameof(lt_condition)) return (Sweet.lollipop.neucode_labeled && !dgv_purposes.Contains(Purpose.CalibrationIdentification) && !dgv_purposes.Contains(Purpose.RawFile)) ? "NeuCode Light Condition" : "Condition";
             if (property_name == nameof(hv_condition)) return "NeuCode Heavy Condition";
             if (property_name == nameof(ContaminantDB)) return "Contaminant Database";
             return null;
@@ -203,10 +203,10 @@ namespace ProteoformSuiteGUI
         private static bool visible(string property_name, bool current, IEnumerable<Purpose> dgv_purposes)
         {
             if (property_name == nameof(Labeling)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(biological_replicate)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            if (property_name == nameof(biological_replicate)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             if (property_name == nameof(Fraction)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             if (property_name == nameof(TechnicalReplicate)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             if (property_name == nameof(hv_condition)) return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             if (property_name == nameof(ContaminantDB)) return dgv_purposes.Contains(Purpose.ProteinDatabase);
             return current;

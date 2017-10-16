@@ -32,6 +32,7 @@ namespace ProteoformSuiteInternal
         public string biological_replicate { get; set; } = "";
         public string technical_replicate { get; set; } = "";
         public string fraction { get; set; } = "";
+        public string condition { get; set; } = "";
         public double mz { get; set; }
         public int charge { get; set; }
         public double ms1_retention_time { get; set; }

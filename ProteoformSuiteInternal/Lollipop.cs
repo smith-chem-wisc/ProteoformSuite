@@ -1020,6 +1020,7 @@ namespace ProteoformSuiteInternal
                         hit.technical_replicate = raw_file.technical_replicate;
                         hit.biological_replicate = raw_file.biological_replicate;
                         hit.fraction = raw_file.fraction;
+                        hit.condition = raw_file.lt_condition;
                     });
                 }
             }
@@ -1027,30 +1028,34 @@ namespace ProteoformSuiteInternal
 
         public string calibrate_files()
         {
-            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == ""))
-                return "Label fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
-            if (input_files.Where(f => f.purpose == Purpose.RawFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.RawFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate)))
+            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
+                return "Label condition, fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
+            if (input_files.Where(f => f.purpose == Purpose.RawFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.RawFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
-            if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == ""))
+            if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
                 return "Error: need to input all raw files for top-down hits. Make sure the filenames match.";
-            foreach (string biological_replicate in input_files.Select(f => f.biological_replicate).Distinct())
+            foreach (string condition in input_files.Select(f => f.lt_condition.Distinct()))
             {
-                foreach (string fraction in input_files.Where(f => f.biological_replicate == biological_replicate).Select(f => f.fraction).Distinct())
+                foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())
                 {
-                    Calibration calibration = new Calibration();
-                    process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
-                    foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction))
+                    foreach (string fraction in input_files.Where(f => f.lt_condition == condition && f.biological_replicate == biological_replicate).Select(f => f.fraction).Distinct())
                     {
-                        bool calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction).ToList());
-                        if (calibrated)
+                        Calibration calibration = new Calibration();
+                        calibration_components.Clear();
+                        process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
+                        foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
-                            //determine component and td hit shifts
-                            determine_shifts(raw_file);
-                            //calibrate component xlsx files
-                            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == raw_file.biological_replicate && f.fraction == raw_file.fraction && f.technical_replicate == raw_file.technical_replicate)) Calibration.calibrate_components_in_xlsx(f);
+                            bool calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && h.condition == raw_file.lt_condition).ToList());
+                            if (calibrated)
+                            {
+                                //determine component and td hit shifts
+                                determine_shifts(raw_file);
+                                //calibrate component xlsx files
+                                foreach (InputFile f in input_files.Where(f => f.lt_condition == raw_file.lt_condition && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == raw_file.biological_replicate && f.fraction == raw_file.fraction && f.technical_replicate == raw_file.technical_replicate)) Calibration.calibrate_components_in_xlsx(f);
+                            }
+                            else filenames_did_not_calibrate.Add(raw_file.filename);
                         }
-                        else filenames_did_not_calibrate.Add(raw_file.filename);
                     }
                 }
             }
@@ -1064,7 +1069,7 @@ namespace ProteoformSuiteInternal
         public void determine_shifts(InputFile raw_file)
         {
             //calibrate components with same topdown file, biological replicate, fraction, and technical replicate
-            Parallel.ForEach(calibration_components.Where(c => c.input_file.biological_replicate == raw_file.biological_replicate && c.input_file.fraction == raw_file.fraction && c.input_file.technical_replicate == raw_file.technical_replicate), c =>
+            Parallel.ForEach(calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && c.input_file.biological_replicate == raw_file.biological_replicate && c.input_file.fraction == raw_file.fraction && c.input_file.technical_replicate == raw_file.technical_replicate), c =>
             {
                 foreach (ChargeState cs in c.charge_states)
                 {
@@ -1077,7 +1082,6 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
-
             });
 
             //get topdown shifts if this rawfile is the same name as the topdown hit's file
