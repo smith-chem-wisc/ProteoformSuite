@@ -188,7 +188,7 @@ namespace ProteoformSuiteInternal
                     //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes  
                     //if neucode labled, look for the light component mass 
                     double hit_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(identification.theoretical_mass, identification.sequence.Count(s => s == 'K')) : identification.theoretical_mass;
-                    matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && c.input_file.biological_replicate == raw_file.biological_replicate && c.input_file.fraction == raw_file.fraction
+                    matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && (Sweet.lollipop.neucode_labeled || c.input_file.biological_replicate == raw_file.biological_replicate) && c.input_file.fraction == raw_file.fraction
                && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
                && Math.Abs(c.rt_apex - identification.ms1_retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
                     if (matching_component == null) continue;
