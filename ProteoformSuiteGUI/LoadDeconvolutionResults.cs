@@ -144,9 +144,9 @@ namespace ProteoformSuiteGUI
             cmb_loadTable1.Items.Clear();
             cmb_loadTable2.Items.Clear();
             cmb_loadTable3.Items.Clear();
-            for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 4; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 4; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 5; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 5; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 5; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
             cmb_loadTable1.SelectedIndex = 0;
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
@@ -164,9 +164,9 @@ namespace ProteoformSuiteGUI
 
             if (rb_chemicalCalibration.Checked)
             {
-                for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 4; i < 7; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 4; i < 7; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 5; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 5; i < 7; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 5; i < 7; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
                 bt_calibrate.Visible = true;
                 cb_useRandomSeed.Visible = true;
                 nud_randomSeed.Visible = true;
