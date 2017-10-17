@@ -51,8 +51,8 @@ namespace ProteoformSuiteInternal
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
             "Top-Down Results (Unlabeled) (.xlsx)",
+             "Raw Files (.raw)",
             "Uncalibrated Proteoform Identification Results (.xlsx)",
-            "Raw Files (.raw)",
              "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
         };
 
@@ -62,8 +62,8 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
-            new List<string> { ".xlsx" },
             new List<string> {".raw"},
+            new List<string> { ".xlsx" },
             new List<string> { ".xlsx" }
 
         };
@@ -74,8 +74,8 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
+             "Raw Files (*.raw) | *.raw",
             "Excel Files (*.xlsx) | *.xlsx",
-            "Raw Files (*.raw) | *.raw",
             "Excel Files (*.xlsx) | *.xlsx",
         };
 
@@ -85,8 +85,8 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
             new List<Purpose> { Purpose.TopDown },
-            new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> {Purpose.RawFile },
+            new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> { Purpose.CalibrationTopDown }
         };
 
@@ -1035,7 +1035,7 @@ namespace ProteoformSuiteInternal
             get_td_hit_chargestates();
             if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
                 return "Error: need to input all raw files for top-down hits. Make sure the filenames match.";
-            foreach (string condition in input_files.Select(f => f.lt_condition.Distinct()))
+            foreach (string condition in input_files.Select(f => f.lt_condition).Distinct())
             {
                 foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())
                 {

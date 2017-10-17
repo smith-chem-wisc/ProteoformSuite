@@ -270,6 +270,7 @@ namespace ProteoformSuiteInternal
                 e.gene_name = this.gene_name;
             else
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
+
         }
         #endregion Private Methods
     }
