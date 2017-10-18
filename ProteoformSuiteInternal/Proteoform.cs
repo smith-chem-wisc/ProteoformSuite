@@ -105,7 +105,7 @@ namespace ProteoformSuiteInternal
                     bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
                     List<ModificationWithMass> these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
                     List<ModificationWithMass> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
-                    bool can_be_removed = those_mods.All(m => these_mods.Contains(m));
+                    bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.id == m1.id) >= those_mods.Count(m2 => m2.id == m1.id)); //# of each mod in current set must be greater than or equal to # in set to remove.
                     bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                     {
