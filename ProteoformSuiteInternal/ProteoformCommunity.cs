@@ -295,27 +295,22 @@ namespace ProteoformSuiteInternal
             }
             if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
-            if (community_number < 0 && experimental_proteoforms.Any(e => !e.topdown_id && e.linked_proteoform_references != null)) quantify_experimentals();
+            //if (community_number < 0 && experimental_proteoforms.Any(e => !e.topdown_id && e.linked_proteoform_references != null)) quantify_experimentals();
             return families;
         }
 
         private void quantify_experimentals()
         {
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\testflashflq.txt"))
+            if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.RawFile)) return;
+            for (int tr = 1; tr <= 2; tr++)
             {
                 FlashLFQEngine engine = new FlashLFQEngine();
-                engine.PassFilePaths(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Select(f => f.complete_path).ToArray());
-                engine.ReadPeriodicTable(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-                engine.ParseArgs(new string[]
-                {
-                    "--ppm " + Sweet.lollipop.mass_tolerance,
-                    "--sil true",
-                    "--pau false",
-                    "--mbr false"
-                });
+
                 HashSet<InputFile> files_to_quantitate = new HashSet<InputFile>();
                 Dictionary<string, List<ExperimentalProteoform>> quantified_experimentals = new Dictionary<string, List<ExperimentalProteoform>>();
-                foreach (ExperimentalProteoform e in experimental_proteoforms.Where(p => !p.topdown_id && p.linked_proteoform_references != null))
+
+                foreach (ExperimentalProteoform e in experimental_proteoforms.Where(p => (!p.topdown_id || (p as TopDownProteoform).matching_experimental != null) && p.linked_proteoform_references != null
+                && p.aggregated.Select(a => a.input_file).Select(f => f.technical_replicate).Distinct().Count() == 2))
                 {
                     TheoreticalProteoform t = e.linked_proteoform_references.First() as TheoreticalProteoform;
                     string base_sequence = e.begin == 1 && t.begin == 2 ? "M" + t.sequence.Substring(0, e.end - 1) :
@@ -323,41 +318,44 @@ namespace ProteoformSuiteInternal
 
                     string full_sequence = e.GetSequenceWithChemicalFormula(base_sequence);
                     if (full_sequence != null)
-                    { 
+                    {
+
                         double theoretical_mass = new Proteomics.Peptide(full_sequence).MonoisotopicMass;
 
-                        foreach (InputFile component_file in e.aggregated.Select(a => a.input_file).Distinct())
+                        List<IAggregatable> components = e.topdown_id ? (e as TopDownProteoform).matching_experimental.aggregated.ToList() : e.aggregated.ToList();
+                        foreach (InputFile component_file in components.Select(a => a.input_file).Distinct())
                         {
+                            if (component_file.technical_replicate != tr.ToString()) continue;
                             foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile && f.lt_condition == component_file.lt_condition && f.biological_replicate == component_file.biological_replicate &&
                             f.fraction == component_file.fraction && f.technical_replicate == component_file.technical_replicate))
                             {
-                                using (ThermoDynamicData dynamicThermo = ThermoDynamicData.InitiateDynamicConnection(file.complete_path))
+                                foreach (Component c in components.Where(c => c.input_file == component_file))
                                 {
-                                    foreach (var c in e.aggregated.Where(c => c.input_file == component_file))
+                                    double rt = Convert.ToDouble(c.rt_range.Split('-')[0]);
+                                    while (rt <= Convert.ToDouble(c.rt_range.Split('-')[0]))
                                     {
-
-                                        int scan = Convert.ToInt32(c.scan_range.Split('-')[0]);
-                                        while (scan <= Convert.ToInt32(c.scan_range.Split('-')[1]))
-                                        {
-                                            if (scan < dynamicThermo.NumSpectra)
-                                            {
-                                                double rt = dynamicThermo.GetOneBasedScan(scan).RetentionTime;
-
-                                                engine.AddIdentification(Path.GetFileNameWithoutExtension(file.complete_path), base_sequence, full_sequence, theoretical_mass, rt, c.charge_states.Min(cs => cs.charge_count), new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0] });
-                                                engine.AddIdentification(Path.GetFileNameWithoutExtension(file.complete_path), base_sequence, full_sequence, theoretical_mass, rt, c.charge_states.Max(cs => cs.charge_count), new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0] });
-                                            }
-                                            scan++;
-                                        }
+                                        engine.AddIdentification(Path.GetFileNameWithoutExtension(file.complete_path), base_sequence, full_sequence, theoretical_mass, rt, c.charge_states.Min(cs => cs.charge_count), new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0] });
+                                        engine.AddIdentification(Path.GetFileNameWithoutExtension(file.complete_path), base_sequence, full_sequence, theoretical_mass, rt, c.charge_states.Max(cs => cs.charge_count), new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0] });
+                                        rt += .01;
                                     }
                                 }
                                 files_to_quantitate.Add(file);
-                                if (quantified_experimentals.ContainsKey(full_sequence)) quantified_experimentals[full_sequence].Add(e);
-                                else quantified_experimentals.Add(full_sequence, new List<ExperimentalProteoform>() { e });
                             }
+                            if (quantified_experimentals.ContainsKey(full_sequence)) quantified_experimentals[full_sequence].Add(e);
+                            else quantified_experimentals.Add(full_sequence, new List<ExperimentalProteoform>() { e });
                         }
                     }
                 }
                 if (files_to_quantitate.Count == 0) return;
+                engine.ReadPeriodicTable(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+                engine.PassFilePaths(files_to_quantitate.Select(f => f.complete_path).ToArray());
+                engine.ParseArgs(new string[]
+                {
+                    "--ppm " + Sweet.lollipop.mass_tolerance,
+                    "--sil true",
+                    "--pau false",
+                    "--mbr false"
+                });
                 engine.ConstructIndexTemplateFromIdentifications();
                 Parallel.ForEach(files_to_quantitate, f =>
                 {
@@ -371,12 +369,10 @@ namespace ProteoformSuiteInternal
                     foreach (var e in quantified_experimentals[i.Sequence])
                     {
                         e.flash_flq_intensity = i.intensitiesByFile.Sum();
-                        writer.WriteLine((e.linked_proteoform_references.First() as TheoreticalProteoform).description + "\t" + i.Sequence + "\t" + new Proteomics.Peptide(i.Sequence).MonoisotopicMass + "\t" + e.ptm_description + "\t" + (e.linked_proteoform_references.First() as TheoreticalProteoform).sequence + "\t" + e.agg_mass + "\t" + e.begin + "\t" + e.end + "\t" + e.agg_intensity + "\t" + e.aggregated.Count() + "\t" + e.aggregated.OrderBy(c => c.charge_states.Min(s => s.charge_count)).First().intensity_sum + "\t" + e.aggregated.OrderBy(c => c.charge_states.Min(s => s.charge_count)).First().charge_states.OrderBy(c => c.charge_count).First().intensity + "\t" + e.flash_flq_intensity);
                     }
                 }
             }
         }
-
 
         public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)
         {
