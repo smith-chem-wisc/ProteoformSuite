@@ -63,6 +63,10 @@ namespace ProteoformSuiteGUI
             this.nUD_mass_tolerance = new System.Windows.Forms.NumericUpDown();
             this.rtb_raw_components_counts = new System.Windows.Forms.RichTextBox();
             this.dgv_chargeStates = new System.Windows.Forms.DataGridView();
+            this.label10 = new System.Windows.Forms.Label();
+            this.nUD_min_cs = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.nUD_min_rel_ab = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -92,6 +96,8 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_rel_ab)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -236,6 +242,10 @@ namespace ProteoformSuiteGUI
             // 
             // splitContainer4.Panel1
             // 
+            this.splitContainer4.Panel1.Controls.Add(this.label11);
+            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_rel_ab);
+            this.splitContainer4.Panel1.Controls.Add(this.label10);
+            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_cs);
             this.splitContainer4.Panel1.Controls.Add(this.cb_deconvolute);
             this.splitContainer4.Panel1.Controls.Add(this.label9);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_min_num_scans);
@@ -260,7 +270,7 @@ namespace ProteoformSuiteGUI
             // 
             this.splitContainer4.Panel2.Controls.Add(this.rtb_raw_components_counts);
             this.splitContainer4.Size = new System.Drawing.Size(381, 355);
-            this.splitContainer4.SplitterDistance = 273;
+            this.splitContainer4.SplitterDistance = 325;
             this.splitContainer4.TabIndex = 0;
             // 
             // cb_deconvolute
@@ -277,7 +287,7 @@ namespace ProteoformSuiteGUI
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(136, 254);
+            this.label9.Location = new System.Drawing.Point(136, 303);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(205, 13);
             this.label9.TabIndex = 17;
@@ -286,7 +296,7 @@ namespace ProteoformSuiteGUI
             // 
             // nUD_min_num_scans
             // 
-            this.nUD_min_num_scans.Location = new System.Drawing.Point(10, 250);
+            this.nUD_min_num_scans.Location = new System.Drawing.Point(10, 299);
             this.nUD_min_num_scans.Name = "nUD_min_num_scans";
             this.nUD_min_num_scans.Size = new System.Drawing.Size(120, 20);
             this.nUD_min_num_scans.TabIndex = 16;
@@ -296,7 +306,7 @@ namespace ProteoformSuiteGUI
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(136, 228);
+            this.label8.Location = new System.Drawing.Point(136, 277);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(241, 13);
             this.label8.TabIndex = 15;
@@ -305,7 +315,7 @@ namespace ProteoformSuiteGUI
             // 
             // nUD_min_num_CS
             // 
-            this.nUD_min_num_CS.Location = new System.Drawing.Point(10, 226);
+            this.nUD_min_num_CS.Location = new System.Drawing.Point(10, 275);
             this.nUD_min_num_CS.Name = "nUD_min_num_CS";
             this.nUD_min_num_CS.Size = new System.Drawing.Size(120, 20);
             this.nUD_min_num_CS.TabIndex = 14;
@@ -315,7 +325,7 @@ namespace ProteoformSuiteGUI
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(136, 204);
+            this.label7.Location = new System.Drawing.Point(136, 253);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(89, 13);
             this.label7.TabIndex = 13;
@@ -324,7 +334,7 @@ namespace ProteoformSuiteGUI
             // 
             // nUD_intensity_ratio_limit
             // 
-            this.nUD_intensity_ratio_limit.Location = new System.Drawing.Point(10, 200);
+            this.nUD_intensity_ratio_limit.Location = new System.Drawing.Point(10, 249);
             this.nUD_intensity_ratio_limit.Maximum = new decimal(new int[] {
             -727379968,
             232,
@@ -339,16 +349,16 @@ namespace ProteoformSuiteGUI
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(136, 178);
+            this.label6.Location = new System.Drawing.Point(136, 203);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(158, 13);
+            this.label6.Size = new System.Drawing.Size(137, 13);
             this.label6.TabIndex = 11;
-            this.label6.Text = "Maximum assumed charge state";
+            this.label6.Text = "Max. assumed charge state";
             this.label6.Visible = false;
             // 
             // nUD_max_cs
             // 
-            this.nUD_max_cs.Location = new System.Drawing.Point(10, 174);
+            this.nUD_max_cs.Location = new System.Drawing.Point(10, 199);
             this.nUD_max_cs.Name = "nUD_max_cs";
             this.nUD_max_cs.Size = new System.Drawing.Size(120, 20);
             this.nUD_max_cs.TabIndex = 10;
@@ -398,9 +408,9 @@ namespace ProteoformSuiteGUI
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(136, 100);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(118, 13);
+            this.label3.Size = new System.Drawing.Size(121, 13);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Max retention time (min)";
+            this.label3.Text = "Max. retention time (min)";
             this.label3.Visible = false;
             // 
             // nUD_max_RT
@@ -422,9 +432,9 @@ namespace ProteoformSuiteGUI
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(136, 74);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(115, 13);
+            this.label2.Size = new System.Drawing.Size(118, 13);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Min retention time (min)";
+            this.label2.Text = "Min. retention time (min)";
             this.label2.Visible = false;
             // 
             // nUD_min_RT
@@ -459,7 +469,7 @@ namespace ProteoformSuiteGUI
             this.rtb_raw_components_counts.Location = new System.Drawing.Point(0, 0);
             this.rtb_raw_components_counts.Name = "rtb_raw_components_counts";
             this.rtb_raw_components_counts.ReadOnly = true;
-            this.rtb_raw_components_counts.Size = new System.Drawing.Size(381, 78);
+            this.rtb_raw_components_counts.Size = new System.Drawing.Size(381, 26);
             this.rtb_raw_components_counts.TabIndex = 0;
             this.rtb_raw_components_counts.Text = "";
             // 
@@ -473,6 +483,50 @@ namespace ProteoformSuiteGUI
             this.dgv_chargeStates.RowTemplate.Height = 28;
             this.dgv_chargeStates.Size = new System.Drawing.Size(737, 355);
             this.dgv_chargeStates.TabIndex = 0;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(137, 178);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(134, 13);
+            this.label10.TabIndex = 21;
+            this.label10.Text = "Min. assumed charge state";
+            this.label10.Visible = false;
+            // 
+            // nUD_min_cs
+            // 
+            this.nUD_min_cs.Location = new System.Drawing.Point(11, 174);
+            this.nUD_min_cs.Name = "nUD_min_cs";
+            this.nUD_min_cs.Size = new System.Drawing.Size(120, 20);
+            this.nUD_min_cs.TabIndex = 20;
+            this.nUD_min_cs.Visible = false;
+            this.nUD_min_cs.ValueChanged += new System.EventHandler(this.nUD_min_cs_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(136, 229);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(138, 13);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "Min. relative abundance (%)";
+            this.label11.Visible = false;
+            // 
+            // nUD_min_rel_ab
+            // 
+            this.nUD_min_rel_ab.DecimalPlaces = 2;
+            this.nUD_min_rel_ab.Location = new System.Drawing.Point(10, 225);
+            this.nUD_min_rel_ab.Maximum = new decimal(new int[] {
+            -727379968,
+            232,
+            0,
+            0});
+            this.nUD_min_rel_ab.Name = "nUD_min_rel_ab";
+            this.nUD_min_rel_ab.Size = new System.Drawing.Size(120, 20);
+            this.nUD_min_rel_ab.TabIndex = 22;
+            this.nUD_min_rel_ab.Visible = false;
+            this.nUD_min_rel_ab.ValueChanged += new System.EventHandler(this.nUD_min_rel_ab_ValueChanged);
             // 
             // RawExperimentalComponents
             // 
@@ -517,6 +571,8 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_rel_ab)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -554,5 +610,9 @@ namespace ProteoformSuiteGUI
         private Label label5;
         private NumericUpDown nUD_decon_tolerance;
         private CheckBox cb_deconvolute;
+        private Label label11;
+        private NumericUpDown nUD_min_rel_ab;
+        private Label label10;
+        private NumericUpDown nUD_min_cs;
     }
 }

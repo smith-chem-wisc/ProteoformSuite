@@ -177,8 +177,10 @@ namespace ProteoformSuiteInternal
         public double max_RT = 90;
         public double aggregation_tolerance_ppm = 5;
         public double deconvolution_tolerance_ppm = 5;
+        public int min_assumed_cs = 5;
         public int max_assumed_cs = 50;
         public double intensity_ratio_limit = 5;
+        public double min_relative_abundance = .1;
         public int min_num_cs_deconvolution_component = 3; //min number of CS for decon feature to become a component
         public int min_num_scans_deconvolution_component = 3; //min number of scans for decon feature to become a component
 
@@ -192,12 +194,12 @@ namespace ProteoformSuiteInternal
             int id = 0;
             List<Component> new_components = new List<Component>();
             IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                ThermoStaticData.LoadAllStaticData(raw_file.complete_path, null, min_relative_abundance / 100) :
                 null;
-            if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
+            if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path, null, min_relative_abundance /100 );
             int min_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(min_RT);
             int max_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(max_RT);
-            List<DeconvolutionFeatureWithMassesAndScans> deconvoluted_features = myMsDataFile.Deconvolute(min_scan, max_scan, max_assumed_cs, deconvolution_tolerance_ppm, intensity_ratio_limit, aggregation_tolerance_ppm,
+            List<DeconvolutionFeatureWithMassesAndScans> deconvoluted_features = myMsDataFile.Deconvolute(min_scan, max_scan, min_assumed_cs, max_assumed_cs, deconvolution_tolerance_ppm, intensity_ratio_limit, aggregation_tolerance_ppm,
                b => b.MsnOrder == 1).ToList();
             Parallel.ForEach(deconvoluted_features, feature =>
             {
@@ -205,13 +207,13 @@ namespace ProteoformSuiteInternal
                 {
                     Component component = new Component();
                     //make charge state
-                    List<string> charges = feature.OneLineString().Split('\t')[7].Split(',').Distinct().ToList();
+                    List<int> charges = feature.groups.SelectMany(g => g.AllCharges).Distinct().ToList(); 
                     if (charges.Count >= min_num_cs_deconvolution_component)
                     {
-                        foreach (string charge in charges)
+                        foreach (int charge in charges)
                         {
                             List<string> charge_row = new List<string>();
-                            charge_row.Add(charge);
+                            charge_row.Add(charge.ToString());
                             charge_row.Add((feature.TotalIntensity / charges.Count).ToString());
                             charge_row.Add((feature.Mass.ToMz(Convert.ToInt32(charge)).ToString()));
                             charge_row.Add(feature.Mass.ToString());
