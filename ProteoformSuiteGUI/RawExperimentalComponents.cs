@@ -43,19 +43,39 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
                 (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
 
-            Parallel.Invoke
-            (
-                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
-                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
-            );
+            if (cb_deconvolute.Checked)
+            {
+                Parallel.Invoke
+                (
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => !f.quantitative).ToList(), Sweet.lollipop.raw_experimental_components, Purpose.RawFile, true),
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.quantitative).ToList(), Sweet.lollipop.raw_quantification_components, Purpose.RawFile, true)
+                );
+            }
+            else
+            {
+                Parallel.Invoke
+                (
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
+                );
+            }
 
             FillTablesAndCharts();
         }
 
         public void InitializeParameterSet()
         {
-            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
+            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0 
+                || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.RawFile).Where(f => f.quantitative).Count() > 0;
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
+            nUD_min_RT.Value = (decimal)Sweet.lollipop.min_RT;
+            nUD_max_RT.Value = (decimal)Sweet.lollipop.max_RT;
+            nUD_agg_tolerance.Value = (decimal)Sweet.lollipop.aggregation_tolerance_ppm;
+            nUD_decon_tolerance.Value = (decimal)Sweet.lollipop.deconvolution_tolerance_ppm;
+            nUD_max_cs.Value = Sweet.lollipop.max_assumed_cs;
+            nUD_intensity_ratio_limit.Value = (decimal)Sweet.lollipop.intensity_ratio_limit;
+            nUD_min_num_CS.Value = Sweet.lollipop.min_num_cs_deconvolution_component;
+            nUD_min_num_scans.Value = Sweet.lollipop.min_num_scans_deconvolution_component;
             FillTablesAndCharts();
         }
 
@@ -161,6 +181,67 @@ namespace ProteoformSuiteGUI
         private void nUD_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.raw_component_mass_tolerance = Convert.ToDouble(nUD_mass_tolerance.Value);
+        }
+
+        private void nUD_min_RT_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_RT = Convert.ToDouble(nUD_min_RT.Value);
+        }
+
+        private void nUD_max_RT_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_RT = Convert.ToDouble(nUD_max_RT.Value);
+        }
+
+        private void nUD_agg_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.aggregation_tolerance_ppm = Convert.ToDouble(nUD_agg_tolerance.Value);
+        }
+
+        private void nUD_decon_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.deconvolution_tolerance_ppm = Convert.ToDouble(nUD_decon_tolerance.Value);
+        }
+
+        private void nUD_max_cs_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_assumed_cs = Convert.ToInt32(nUD_max_cs.Value);
+        }
+
+        private void nUD_intensity_ratio_limit_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.intensity_ratio_limit = Convert.ToDouble(nUD_intensity_ratio_limit.Value);
+        }
+
+        private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_num_cs_deconvolution_component = Convert.ToInt32(nUD_min_num_CS.Value);
+        }
+
+        private void nUD_min_num_scans_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_num_scans_deconvolution_component = Convert.ToInt32(nUD_min_num_scans.Value);
+        }
+
+        private void cb_deconvolute_CheckedChanged(object sender, EventArgs e)
+        {
+            nUD_min_RT.Visible = cb_deconvolute.Checked;
+            nUD_max_RT.Visible = cb_deconvolute.Checked;
+            nUD_agg_tolerance.Visible = cb_deconvolute.Checked;
+            nUD_decon_tolerance.Visible = cb_deconvolute.Checked;
+            nUD_max_cs.Visible = cb_deconvolute.Checked;
+            nUD_intensity_ratio_limit.Visible = cb_deconvolute.Checked;
+            nUD_min_num_CS.Visible = cb_deconvolute.Checked;
+            nUD_min_num_scans.Visible = cb_deconvolute.Checked;
+
+            label2.Visible = cb_deconvolute.Checked;
+            label3.Visible = cb_deconvolute.Checked;
+            label4.Visible = cb_deconvolute.Checked;
+            label5.Visible = cb_deconvolute.Checked;
+            label6.Visible = cb_deconvolute.Checked;
+            label7.Visible = cb_deconvolute.Checked;
+            label8.Visible = cb_deconvolute.Checked;
+            label9.Visible = cb_deconvolute.Checked;
         }
     }
 }
