@@ -10,6 +10,7 @@ using UsefulProteomicsDatabases;
 using Chemistry;
 using MassSpectrometry;
 using IO.Thermo;
+using IO.MzML;
 
 namespace ProteoformSuiteInternal
 {
@@ -51,7 +52,7 @@ namespace ProteoformSuiteInternal
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
             "Top-Down Results (Unlabeled) (.xlsx)",
-             "Raw Files (.raw)",
+             "Raw Files (.raw, .mzml)",
             "Uncalibrated Proteoform Identification Results (.xlsx)",
              "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
         };
@@ -62,7 +63,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
-            new List<string> {".raw"},
+            new List<string> {".raw", ".mzML"},
             new List<string> { ".xlsx" },
             new List<string> { ".xlsx" }
 
@@ -74,7 +75,7 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
-             "Raw Files (*.raw) | *.raw",
+            "Raw Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
         };
@@ -150,7 +151,7 @@ namespace ProteoformSuiteInternal
         {
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
-                List<Component> someComponents = file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics);
+                List<Component> someComponents = purpose == Purpose.RawFile? deconvolute_file(file) : file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics);
                 lock (destination) destination.AddRange(someComponents);
             });
 
@@ -169,6 +170,78 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion RAW EXPERIMENTAL COMPONENTS
+
+        #region DECONVOLUTION Public Fields
+
+        public double min_RT = 40;
+        public double max_RT = 90;
+        public double aggregation_tolerance_ppm = 5;
+        public double deconvolution_tolerance_ppm = 5;
+        public int max_assumed_cs = 50;
+        public double intensity_ratio_limit = 5;
+        public int min_num_cs_deconvolution_component = 3; //min number of CS for decon feature to become a component
+        public int min_num_scans_deconvolution_component = 3; //min number of scans for decon feature to become a component
+
+
+        #endregion DECONVOLUTION Public Fields
+
+        #region DECONVOLUTION
+        public List<Component> deconvolute_file(InputFile raw_file)
+        {
+            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            int id = 0;
+            List<Component> new_components = new List<Component>();
+            IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
+                ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                null;
+            if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
+            int min_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(min_RT);
+            int max_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(max_RT);
+            List<DeconvolutionFeatureWithMassesAndScans> deconvoluted_features = myMsDataFile.Deconvolute(min_scan, max_scan, max_assumed_cs, deconvolution_tolerance_ppm, intensity_ratio_limit, aggregation_tolerance_ppm,
+               b => b.MsnOrder == 1).ToList();
+            Parallel.ForEach(deconvoluted_features, feature =>
+            {
+                if (feature.MaxScanIndex - feature.MinScanIndex + 1 >= min_num_scans_deconvolution_component)
+                {
+                    Component component = new Component();
+                    //make charge state
+                    List<string> charges = feature.OneLineString().Split('\t')[7].Split(',').Distinct().ToList();
+                    if (charges.Count >= min_num_cs_deconvolution_component)
+                    {
+                        foreach (string charge in charges)
+                        {
+                            List<string> charge_row = new List<string>();
+                            charge_row.Add(charge);
+                            charge_row.Add((feature.TotalIntensity / charges.Count).ToString());
+                            charge_row.Add((feature.Mass.ToMz(Convert.ToInt32(charge)).ToString()));
+                            charge_row.Add(feature.Mass.ToString());
+                            component.add_charge_state(charge_row);
+                        }
+                        component.input_file = raw_file;
+                        component.id = raw_file.UniqueId.ToString() + "_" + id;
+                        id++;
+                        component.reported_delta_mass = feature.Mass;
+                        component.intensity_reported = feature.TotalIntensity;
+
+
+                        component.num_detected_intervals = feature.MaxScanIndex - feature.MinScanIndex + 1;
+                        component.reported_delta_mass = 0;
+                        component.relative_abundance = 0;
+                        component.scan_range = feature.MinScanIndex + "-" + feature.MaxScanIndex;
+                        component.rt_range = feature.MinElutionTime + "-" + feature.MaxElutionTime;
+                        component.rt_apex = (feature.MinElutionTime + feature.MaxElutionTime) / 2;
+                        component.accepted = true;
+                        component.calculate_properties();
+                        lock (new_components) new_components.Add(component);
+                    }
+                }
+            });
+            raw_file.reader.unprocessed_components += new_components.Count;
+            new_components = raw_file.reader.remove_monoisotopic_duplicates_harmonics_from_same_scan(new_components);
+            raw_file.reader.scan_ranges = new HashSet<string>(new_components.Select(c => c.scan_range)).ToList();
+            return new_components;
+        }
+        #endregion DECONVOLUTION
 
         #region NEUCODE PAIRS Public Fields
 
@@ -1005,7 +1078,10 @@ namespace ProteoformSuiteInternal
             {
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
-                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
+                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
+                        ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                        null;
+                    if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
                     Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
                     {
                         int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(hit.ms2_retention_time);

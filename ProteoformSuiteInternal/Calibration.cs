@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IO.Thermo;
+using IO.MzML;
 using Chemistry;
 using Spectra;
 using System.IO;
@@ -31,7 +32,10 @@ namespace ProteoformSuiteInternal
 
             var trainingPointCounts = new List<int>();
 
-            myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
+            IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
+                ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                null;
+            if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
             DataPointAquisitionResults dataPointAcquisitionResult = null;
 
             //need to reset m/z in case same td hits used for multiple calibration raw files... 

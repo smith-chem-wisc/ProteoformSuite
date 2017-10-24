@@ -89,6 +89,19 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public bool Quantitative
+        {
+            get
+            {
+                return file.quantitative;
+            }
+            set
+            {
+                Sweet.change_file(file, file.quantitative, nameof(file.quantitative), file.quantitative.ToString(), value.ToString());
+                file.quantitative = value;
+            }
+        }
+
         public string lt_condition
         {
             get
@@ -209,6 +222,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             if (property_name == nameof(hv_condition)) return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             if (property_name == nameof(ContaminantDB)) return dgv_purposes.Contains(Purpose.ProteinDatabase);
+            if (property_name == nameof(Quantitative)) return dgv_purposes.Contains(Purpose.RawFile);
             return current;
         }
 
