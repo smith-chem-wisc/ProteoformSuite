@@ -354,7 +354,9 @@ namespace ProteoformSuiteInternal
                     "--pau false",
                     "--mbr false",
                     "--chg true",
-                    "--int true"
+                    "--int true",
+                    "-rmm false"
+               
             });
             engine.ConstructIndexTemplateFromIdentifications();
             Parallel.ForEach(files_to_quantitate, f =>
