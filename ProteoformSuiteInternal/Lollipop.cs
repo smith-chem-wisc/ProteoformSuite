@@ -183,7 +183,7 @@ namespace ProteoformSuiteInternal
         public double min_relative_abundance = .1;
         public int min_num_cs_deconvolution_component = 3; //min number of CS for decon feature to become a component
         public int min_num_scans_deconvolution_component = 3; //min number of scans for decon feature to become a component
-
+        public int num_scans_average = 5;
 
         #endregion DECONVOLUTION Public Fields
 
@@ -199,6 +199,10 @@ namespace ProteoformSuiteInternal
             if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path, null, min_relative_abundance /100 );
             int min_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(min_RT);
             int max_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(max_RT);
+            if (num_scans_average > 0)
+            {
+                myMsDataFile = new SummedMsDataFile(myMsDataFile, 5, aggregation_tolerance_ppm);
+            }
             List<DeconvolutionFeatureWithMassesAndScans> deconvoluted_features = myMsDataFile.Deconvolute(min_scan, max_scan, min_assumed_cs, max_assumed_cs, deconvolution_tolerance_ppm, intensity_ratio_limit, aggregation_tolerance_ppm,
                b => b.MsnOrder == 1).ToList();
             Parallel.ForEach(deconvoluted_features, feature =>
@@ -207,14 +211,28 @@ namespace ProteoformSuiteInternal
                 {
                     Component component = new Component();
                     //make charge state
-                    List<int> charges = feature.groups.SelectMany(g => g.AllCharges).Distinct().ToList(); 
-                    if (charges.Count >= min_num_cs_deconvolution_component)
+                    List<int> charges = feature.groups.SelectMany(g => g.AllCharges).Distinct().OrderBy(c => c).ToList();
+
+                    int highest_consecutive_charges = 1;
+                    int consecutive = 1;
+                    for (int i = 1; i < charges.Count; i++)
+                    {
+                        if ((Math.Abs(charges[i - 1] - charges[i])== 1)) consecutive++;
+                        else
+                        {
+                            if(consecutive > highest_consecutive_charges) highest_consecutive_charges = consecutive;
+                            consecutive = 1;
+                        }
+                    }
+                    if (consecutive > highest_consecutive_charges) highest_consecutive_charges = consecutive;
+
+                    if (highest_consecutive_charges >= min_num_cs_deconvolution_component)
                     {
                         foreach (int charge in charges)
                         {
                             List<string> charge_row = new List<string>();
                             charge_row.Add(charge.ToString());
-                            charge_row.Add((feature.TotalIntensity / charges.Count).ToString());
+                            charge_row.Add((feature.TotalNormalizedIntensity / charges.Count).ToString());
                             charge_row.Add((feature.Mass.ToMz(Convert.ToInt32(charge)).ToString()));
                             charge_row.Add(feature.Mass.ToString());
                             component.add_charge_state(charge_row);
@@ -223,7 +241,7 @@ namespace ProteoformSuiteInternal
                         component.id = raw_file.UniqueId.ToString() + "_" + id;
                         id++;
                         component.reported_delta_mass = feature.Mass;
-                        component.intensity_reported = feature.TotalIntensity;
+                        component.intensity_reported = feature.TotalNormalizedIntensity;
 
 
                         component.num_detected_intervals = feature.MaxScanIndex - feature.MinScanIndex + 1;
@@ -231,7 +249,7 @@ namespace ProteoformSuiteInternal
                         component.relative_abundance = 0;
                         component.scan_range = feature.MinScanIndex + "-" + feature.MaxScanIndex;
                         component.rt_range = feature.MinElutionTime + "-" + feature.MaxElutionTime;
-                        component.rt_apex = (feature.MinElutionTime + feature.MaxElutionTime) / 2;
+                        component.rt_apex = feature.MostIntenseEnvelopeElutionTime;
                         component.accepted = true;
                         component.calculate_properties();
                         lock (new_components) new_components.Add(component);

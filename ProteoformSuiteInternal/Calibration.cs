@@ -32,10 +32,11 @@ namespace ProteoformSuiteInternal
 
             var trainingPointCounts = new List<int>();
 
-            IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
+            myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
                 ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
                 null;
             if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
+            if (myMsDataFile == null) return false;
             DataPointAquisitionResults dataPointAcquisitionResult = null;
 
             //need to reset m/z in case same td hits used for multiple calibration raw files... 
@@ -65,6 +66,7 @@ namespace ProteoformSuiteInternal
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
             }
+            MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated" + raw_file.extension, false);
             return true;
         }
 
