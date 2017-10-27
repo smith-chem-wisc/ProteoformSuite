@@ -66,7 +66,7 @@ namespace ProteoformSuiteInternal
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
             }
-            MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated" + raw_file.extension, false);
+            MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
             return true;
         }
 
