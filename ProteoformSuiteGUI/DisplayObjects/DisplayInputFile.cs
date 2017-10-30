@@ -44,7 +44,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate.ToString(), value.ToString());
+                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate, value);
                 file.biological_replicate = value;
             }
         }
@@ -71,7 +71,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction.ToString(), value.ToString());
+                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction, value);
                 file.fraction = value;
             }
         }
@@ -84,7 +84,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
+                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate, value);
                 file.technical_replicate = value;
             }
         }
@@ -110,7 +110,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition.ToString(), value.ToString());
+                Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition, value);
                 file.lt_condition = value;
             }
         }
@@ -124,7 +124,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition.ToString(), value.ToString());
+                Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition, value);
                 file.hv_condition = value;
             }
         }
@@ -188,6 +188,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Directory)].ReadOnly = true;
             dgv.Columns[nameof(Filename)].ReadOnly = true;
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
+            dgv.Columns[nameof(Labeling)].ReadOnly = true;
         }
 
         public static DataTable FormatInputFileTable(List<DisplayInputFile> display, string table_name, IEnumerable<Purpose> dgv_purposes)

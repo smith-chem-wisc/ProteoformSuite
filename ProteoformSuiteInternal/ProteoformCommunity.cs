@@ -296,6 +296,13 @@ namespace ProteoformSuiteInternal
             if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
             if (community_number < 0 && experimental_proteoforms.Any(e => !e.topdown_id && e.linked_proteoform_references != null)) quantify_experimentals();
+            //read in BU results if available, map to proteoforms. 
+            //Sweet.lollipop.BottomUpPSMList.Clear();
+            //BottomUpReader.bottom_up_PTMs_not_in_dictionary.Clear();
+            //foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
+            //{
+            //    Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path, theoreticals_by_accession.Values.ToList()));
+            //}
             return families;
         }
 
