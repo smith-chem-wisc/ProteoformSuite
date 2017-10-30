@@ -46,7 +46,7 @@ namespace ProteoformSuiteGUI
 
         public double flash_lfq_intensity
         {
-            get { return e.flash_flq_intensity; }
+            get { return e.aggregated.Sum(c => (c as Component).flash_flq_intensity); }
         }
 
         public double agg_rt

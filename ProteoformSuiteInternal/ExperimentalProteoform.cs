@@ -63,8 +63,6 @@ namespace ProteoformSuiteInternal
 
         public bool ambiguous { get; set; }
 
-        public double flash_flq_intensity { get; set; }
-
         #endregion Public Properties
 
         #region Public Constructors
