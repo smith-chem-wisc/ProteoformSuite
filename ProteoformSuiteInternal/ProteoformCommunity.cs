@@ -368,9 +368,14 @@ namespace ProteoformSuiteInternal
                 {
                     for (int a = 0; a < engine.filePaths.Length; a++)
                     {
-                        foreach (Component component in e.aggregated.Where(c => c.input_file.complete_path == engine.filePaths[a]))
+                        InputFile raw_file = Sweet.lollipop.input_files.Where(f => f.complete_path == engine.filePaths[a]).FirstOrDefault();
+                        if (raw_file != null)
                         {
-                            component.flash_flq_intensity = i.intensitiesByFile[a];
+                            foreach (Component component in e.aggregated.Where(c => c.input_file.lt_condition == raw_file.lt_condition && c.input_file.biological_replicate == raw_file.biological_replicate
+                            && c.input_file.fraction == raw_file.fraction && c.input_file.technical_replicate == raw_file.technical_replicate))
+                            {
+                                component.flash_flq_intensity = i.intensitiesByFile[a];
+                            }
                         }
 
                     }
