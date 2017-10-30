@@ -302,71 +302,50 @@ namespace ProteoformSuiteInternal
         private void quantify_experimentals()
         {
             if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.RawFile)) return;
-            foreach (string condition in Sweet.lollipop.input_files.Select(f => f.lt_condition).Distinct())
+            FlashLFQEngine engine = new FlashLFQEngine();
+            HashSet<InputFile> files_to_quantitate = new HashSet<InputFile>();
+            Dictionary<string, List<ExperimentalProteoform>> quantified_experimentals = new Dictionary<string, List<ExperimentalProteoform>>();
+
+            foreach (ExperimentalProteoform e in experimental_proteoforms.Where(p => !p.topdown_id && p.linked_proteoform_references != null))
             {
-                for (int tr = 1; tr <= 2; tr++)
+                TheoreticalProteoform t = e.linked_proteoform_references.First() as TheoreticalProteoform;
+                string base_sequence = e.begin == 1 && t.begin == 2 ? "M" + t.sequence.Substring(0, e.end - 1) :
+                        t.sequence.Substring(e.begin - t.begin, e.end - e.begin + 1);
+
+                string full_sequence = e.GetSequenceWithChemicalFormula(base_sequence);
+                if (full_sequence != null)
                 {
-                    FlashLFQEngine engine = new FlashLFQEngine();
+                   double theoretical_mass = new Proteomics.Peptide(full_sequence).MonoisotopicMass;
 
-                    HashSet<InputFile> files_to_quantitate = new HashSet<InputFile>();
-                    Dictionary<string, List<ExperimentalProteoform>> quantified_experimentals = new Dictionary<string, List<ExperimentalProteoform>>();
-
-                    foreach (ExperimentalProteoform e in experimental_proteoforms.Where(p => !p.topdown_id && p.linked_proteoform_references != null))
+                    foreach (InputFile component_file in e.aggregated.Select(a => a.input_file).Distinct())
                     {
-                        TheoreticalProteoform t = e.linked_proteoform_references.First() as TheoreticalProteoform;
-                        string base_sequence = e.begin == 1 && t.begin == 2 ? "M" + t.sequence.Substring(0, e.end - 1) :
-                                t.sequence.Substring(e.begin - t.begin, e.end - e.begin + 1);
-
-                        string full_sequence = e.GetSequenceWithChemicalFormula(base_sequence);
-                        if (full_sequence != null)
+                        foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile && f.lt_condition == component_file.lt_condition && f.biological_replicate == component_file.biological_replicate &&
+                        f.fraction == component_file.fraction && f.technical_replicate == component_file.technical_replicate))
                         {
-                            string first_description = t.description.Split(';')[0];
-                            string[] elements = first_description.Split('_');
-                            string bond_description = elements.Where(s => s.Contains("Disulfide")).FirstOrDefault();
-                            int disulfide_bonds = bond_description == null ? 0 : Convert.ToInt32(bond_description.Split(':')[1]);
-                            for (int i = 0; i < disulfide_bonds; i++)
+                            foreach (Component c in e.aggregated.Where(c => c.input_file == component_file))
                             {
-                                full_sequence += "[H-2]";
-                            }
-                            string fragment_description = elements.Where(s => s.Contains("Fragments")).FirstOrDefault();
-                            int fragments = fragment_description == null ? 0 : Convert.ToInt32(fragment_description.Split(':')[1].Count(s => s == 't'));
-                            for (int i = 0; i < fragments - 1; i++)
-                            {
-                                full_sequence += "[H2O]";
-                            }
-
-                            double theoretical_mass = new Proteomics.Peptide(full_sequence).MonoisotopicMass;
-
-                            foreach (InputFile component_file in e.aggregated.Select(a => a.input_file).Distinct())
-                            {
-                                if (component_file.technical_replicate != tr.ToString() || component_file.lt_condition != condition) continue;
-                                foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile && f.lt_condition == component_file.lt_condition && f.biological_replicate == component_file.biological_replicate &&
-                                f.fraction == component_file.fraction && f.technical_replicate == component_file.technical_replicate))
+                                double rt = Convert.ToDouble(c.rt_range.Split('-')[0]);
+                                while (rt <= Convert.ToDouble(c.rt_range.Split('-')[0]))
                                 {
-                                    foreach (Component c in e.aggregated.Where(c => c.input_file == component_file))
+                                    foreach (var cs in c.charge_states)
                                     {
-                                        double rt = Convert.ToDouble(c.rt_range.Split('-')[0]);
-                                        while (rt <= Convert.ToDouble(c.rt_range.Split('-')[0]))
-                                        {
-                                            foreach (var cs in c.charge_states)
-                                            {
-                                                engine.AddIdentification(Path.GetFileNameWithoutExtension(file.complete_path), base_sequence, full_sequence, theoretical_mass, rt, cs.charge_count, new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0] });
-                                            }
-                                            rt += .01;
-                                        }
+                                        engine.AddIdentification(Path.GetFileNameWithoutExtension(file.complete_path), base_sequence, full_sequence, theoretical_mass, rt, cs.charge_count, new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0] });
                                     }
-                                    files_to_quantitate.Add(file);
+                                    rt += .01;
                                 }
-                                if (quantified_experimentals.ContainsKey(full_sequence)) quantified_experimentals[full_sequence].Add(e);
-                                else quantified_experimentals.Add(full_sequence, new List<ExperimentalProteoform>() { e });
                             }
+                            files_to_quantitate.Add(file);
                         }
+                        if (quantified_experimentals.ContainsKey(full_sequence)) quantified_experimentals[full_sequence].Add(e);
+                        else quantified_experimentals.Add(full_sequence, new List<ExperimentalProteoform>() { e });
                     }
-                    if (files_to_quantitate.Count == 0) return;
-                    engine.ReadPeriodicTable(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-                    engine.PassFilePaths(files_to_quantitate.Select(f => f.complete_path).ToArray());
-                    engine.ParseArgs(new string[]
-                    {
+                }
+            }
+            if (files_to_quantitate.Count == 0) return;
+            engine.ReadPeriodicTable(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            engine.PassFilePaths(files_to_quantitate.Select(f => f.complete_path).ToArray());
+            engine.ParseArgs(new string[]
+            {
                     "--ppm " + Sweet.lollipop.mass_tolerance,
                     "--sil true",
                     "--pau false",
@@ -374,24 +353,26 @@ namespace ProteoformSuiteInternal
                     "--chg true",
                     "--int false",
                     "--rmm false"
-                    });
-                    engine.ConstructIndexTemplateFromIdentifications();
-                    Parallel.ForEach(files_to_quantitate, f =>
-                    {
-                        IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(f.complete_path);
-                        engine.Quantify(myMsDataFile, f.complete_path);
-                    });
+            });
+            engine.ConstructIndexTemplateFromIdentifications();
+            Parallel.ForEach(files_to_quantitate, f =>
+            {
+                IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(f.complete_path);
+                engine.Quantify(myMsDataFile, f.complete_path);
+            });
 
-                    var summedPeaksByPeptide = engine.SumFeatures(engine.allFeaturesByFile.SelectMany(p => p).ToList(), false);
-                    foreach (var i in summedPeaksByPeptide)
+            var summedPeaksByPeptide = engine.SumFeatures(engine.allFeaturesByFile.SelectMany(p => p).ToList(), false);
+            foreach (var i in summedPeaksByPeptide)
+            {
+                foreach (var e in quantified_experimentals[i.Sequence])
+                {
+                    for (int a = 0; a < engine.filePaths.Length; a++)
                     {
-                        foreach (var e in quantified_experimentals[i.Sequence])
+                        foreach (Component component in e.aggregated.Where(c => c.input_file.complete_path == engine.filePaths[a]))
                         {
-                            foreach (var c in e.aggregated.Where(a => a.input_file.technical_replicate == tr.ToString() && a.input_file.lt_condition == condition))
-                            {
-                                (c as Component).flash_flq_intensity = i.intensitiesByFile.Sum();
-                            }
+                            component.flash_flq_intensity = i.intensitiesByFile[a];
                         }
+
                     }
                 }
             }
