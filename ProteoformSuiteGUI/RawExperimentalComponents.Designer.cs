@@ -42,6 +42,8 @@ namespace ProteoformSuiteGUI
             this.dgv_rawComponents = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.label12 = new System.Windows.Forms.Label();
+            this.nUD_scans_to_average = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.nUD_min_rel_ab = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
@@ -67,8 +69,8 @@ namespace ProteoformSuiteGUI
             this.nUD_mass_tolerance = new System.Windows.Forms.NumericUpDown();
             this.rtb_raw_components_counts = new System.Windows.Forms.RichTextBox();
             this.dgv_chargeStates = new System.Windows.Forms.DataGridView();
-            this.label12 = new System.Windows.Forms.Label();
-            this.nUD_scans_to_average = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.nUD_min_sig_noise = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -88,6 +90,7 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_rel_ab)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_scans)).BeginInit();
@@ -100,7 +103,7 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_sig_noise)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -119,8 +122,8 @@ namespace ProteoformSuiteGUI
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1125, 579);
-            this.splitContainer1.SplitterDistance = 217;
+            this.splitContainer1.Size = new System.Drawing.Size(1125, 654);
+            this.splitContainer1.SplitterDistance = 245;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -140,7 +143,7 @@ namespace ProteoformSuiteGUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.dgv_rawComponents);
-            this.splitContainer2.Size = new System.Drawing.Size(1121, 213);
+            this.splitContainer2.Size = new System.Drawing.Size(1121, 241);
             this.splitContainer2.SplitterDistance = 371;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
@@ -153,7 +156,7 @@ namespace ProteoformSuiteGUI
             this.dgv_fileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_fileList.Location = new System.Drawing.Point(0, 3);
             this.dgv_fileList.Name = "dgv_fileList";
-            this.dgv_fileList.Size = new System.Drawing.Size(187, 207);
+            this.dgv_fileList.Size = new System.Drawing.Size(187, 235);
             this.dgv_fileList.TabIndex = 2;
             // 
             // bt_recalculate
@@ -162,7 +165,7 @@ namespace ProteoformSuiteGUI
             | System.Windows.Forms.AnchorStyles.Right)));
             this.bt_recalculate.Location = new System.Drawing.Point(191, 109);
             this.bt_recalculate.Name = "bt_recalculate";
-            this.bt_recalculate.Size = new System.Drawing.Size(177, 104);
+            this.bt_recalculate.Size = new System.Drawing.Size(177, 132);
             this.bt_recalculate.TabIndex = 1;
             this.bt_recalculate.Text = "Read Raw Components and\r\nCollapse Deconvolution Artifacts";
             this.bt_recalculate.UseVisualStyleBackColor = true;
@@ -177,7 +180,7 @@ namespace ProteoformSuiteGUI
             this.groupBox1.Controls.Add(this.rb_displayIdentificationComponents);
             this.groupBox1.Location = new System.Drawing.Point(193, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(175, 103);
+            this.groupBox1.Size = new System.Drawing.Size(175, 131);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Components Displayed";
@@ -213,7 +216,7 @@ namespace ProteoformSuiteGUI
             this.dgv_rawComponents.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_rawComponents.Name = "dgv_rawComponents";
             this.dgv_rawComponents.RowTemplate.Height = 28;
-            this.dgv_rawComponents.Size = new System.Drawing.Size(747, 213);
+            this.dgv_rawComponents.Size = new System.Drawing.Size(747, 241);
             this.dgv_rawComponents.TabIndex = 0;
             this.dgv_rawComponents.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_RawQuantComp_MI_masses_CellContentClick);
             // 
@@ -231,7 +234,7 @@ namespace ProteoformSuiteGUI
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.dgv_chargeStates);
-            this.splitContainer3.Size = new System.Drawing.Size(1121, 355);
+            this.splitContainer3.Size = new System.Drawing.Size(1121, 402);
             this.splitContainer3.SplitterDistance = 381;
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 0;
@@ -245,6 +248,8 @@ namespace ProteoformSuiteGUI
             // 
             // splitContainer4.Panel1
             // 
+            this.splitContainer4.Panel1.Controls.Add(this.label13);
+            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_sig_noise);
             this.splitContainer4.Panel1.Controls.Add(this.label12);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_scans_to_average);
             this.splitContainer4.Panel1.Controls.Add(this.label11);
@@ -274,9 +279,28 @@ namespace ProteoformSuiteGUI
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.rtb_raw_components_counts);
-            this.splitContainer4.Size = new System.Drawing.Size(381, 355);
-            this.splitContainer4.SplitterDistance = 326;
+            this.splitContainer4.Size = new System.Drawing.Size(381, 402);
+            this.splitContainer4.SplitterDistance = 369;
             this.splitContainer4.TabIndex = 0;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(136, 308);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(91, 13);
+            this.label12.TabIndex = 25;
+            this.label12.Text = "Scans to average";
+            this.label12.Visible = false;
+            // 
+            // nUD_scans_to_average
+            // 
+            this.nUD_scans_to_average.Location = new System.Drawing.Point(10, 304);
+            this.nUD_scans_to_average.Name = "nUD_scans_to_average";
+            this.nUD_scans_to_average.Size = new System.Drawing.Size(120, 20);
+            this.nUD_scans_to_average.TabIndex = 24;
+            this.nUD_scans_to_average.Visible = false;
+            this.nUD_scans_to_average.ValueChanged += new System.EventHandler(this.nUD_scans_to_average_ValueChanged);
             // 
             // label11
             // 
@@ -355,7 +379,7 @@ namespace ProteoformSuiteGUI
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(136, 261);
+            this.label8.Location = new System.Drawing.Point(136, 266);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(241, 13);
             this.label8.TabIndex = 15;
@@ -518,7 +542,7 @@ namespace ProteoformSuiteGUI
             this.rtb_raw_components_counts.Location = new System.Drawing.Point(0, 0);
             this.rtb_raw_components_counts.Name = "rtb_raw_components_counts";
             this.rtb_raw_components_counts.ReadOnly = true;
-            this.rtb_raw_components_counts.Size = new System.Drawing.Size(381, 25);
+            this.rtb_raw_components_counts.Size = new System.Drawing.Size(381, 29);
             this.rtb_raw_components_counts.TabIndex = 0;
             this.rtb_raw_components_counts.Text = "";
             // 
@@ -530,33 +554,39 @@ namespace ProteoformSuiteGUI
             this.dgv_chargeStates.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_chargeStates.Name = "dgv_chargeStates";
             this.dgv_chargeStates.RowTemplate.Height = 28;
-            this.dgv_chargeStates.Size = new System.Drawing.Size(737, 355);
+            this.dgv_chargeStates.Size = new System.Drawing.Size(737, 402);
             this.dgv_chargeStates.TabIndex = 0;
             // 
-            // label12
+            // label13
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(136, 308);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(91, 13);
-            this.label12.TabIndex = 25;
-            this.label12.Text = "Scans to average";
-            this.label12.Visible = false;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(136, 334);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(111, 13);
+            this.label13.TabIndex = 27;
+            this.label13.Text = "Min. S/N of max peak";
+            this.label13.Visible = false;
             // 
-            // nUD_scans_to_average
+            // nUD_min_sig_noise
             // 
-            this.nUD_scans_to_average.Location = new System.Drawing.Point(10, 304);
-            this.nUD_scans_to_average.Name = "nUD_scans_to_average";
-            this.nUD_scans_to_average.Size = new System.Drawing.Size(120, 20);
-            this.nUD_scans_to_average.TabIndex = 24;
-            this.nUD_scans_to_average.Visible = false;
-            this.nUD_scans_to_average.ValueChanged += new System.EventHandler(this.nUD_scans_to_average_ValueChanged);
+            this.nUD_min_sig_noise.DecimalPlaces = 1;
+            this.nUD_min_sig_noise.Location = new System.Drawing.Point(10, 330);
+            this.nUD_min_sig_noise.Maximum = new decimal(new int[] {
+            -727379968,
+            232,
+            0,
+            0});
+            this.nUD_min_sig_noise.Name = "nUD_min_sig_noise";
+            this.nUD_min_sig_noise.Size = new System.Drawing.Size(120, 20);
+            this.nUD_min_sig_noise.TabIndex = 26;
+            this.nUD_min_sig_noise.Visible = false;
+            this.nUD_min_sig_noise.ValueChanged += new System.EventHandler(this.nUD_min_sig_noise_ValueChanged);
             // 
             // RawExperimentalComponents
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1125, 579);
+            this.ClientSize = new System.Drawing.Size(1125, 654);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -585,6 +615,7 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_rel_ab)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_scans)).EndInit();
@@ -597,7 +628,7 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_sig_noise)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -641,5 +672,7 @@ namespace ProteoformSuiteGUI
         private NumericUpDown nUD_min_cs;
         private Label label12;
         private NumericUpDown nUD_scans_to_average;
+        private Label label13;
+        private NumericUpDown nUD_min_sig_noise;
     }
 }
