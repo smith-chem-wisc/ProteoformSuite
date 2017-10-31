@@ -89,19 +89,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public bool Quantitative
-        {
-            get
-            {
-                return file.quantitative;
-            }
-            set
-            {
-                Sweet.change_file(file, file.quantitative, nameof(file.quantitative), file.quantitative.ToString(), value.ToString());
-                file.quantitative = value;
-            }
-        }
-
         public string lt_condition
         {
             get
@@ -129,16 +116,25 @@ namespace ProteoformSuiteGUI
             }
         }
 
+
+        public bool Quantitative
+        {
+            get
+            {
+                return file.quantitative;
+            }
+            set
+            {
+                Sweet.change_file(file, file.quantitative, nameof(file.quantitative), file.quantitative.ToString(), value.ToString());
+                file.quantitative = value;
+            }
+        }
+
         public Labeling Labeling
         {
             get
             {
                 return file.label;
-            }
-            set
-            {
-                Sweet.change_file(file, file.label, nameof(file.label), file.label.ToString(), value.ToString());
-                file.label = value;
             }
         }
 

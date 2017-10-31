@@ -184,6 +184,7 @@ namespace ProteoformSuiteInternal
         public int min_num_cs_deconvolution_component = 3; //min number of CS for decon feature to become a component
         public int min_num_scans_deconvolution_component = 3; //min number of scans for decon feature to become a component
         public int num_scans_average = 5;
+        public double min_S_N = 5;
 
         #endregion DECONVOLUTION Public Fields
 
@@ -207,7 +208,10 @@ namespace ProteoformSuiteInternal
                b => b.MsnOrder == 1).ToList();
             Parallel.ForEach(deconvoluted_features, feature =>
             {
-                if (feature.MaxScanIndex - feature.MinScanIndex + 1 >= min_num_scans_deconvolution_component)
+                var max_intensity_envelope = feature.groups.SelectMany(g => g.isotopicEnvelopes).OrderByDescending(i => i.isotopicEnvelope.peaks.Max(p => p.intensity)).First();
+                if (feature.MaxScanIndex - feature.MinScanIndex + 1 >= min_num_scans_deconvolution_component
+                     && max_intensity_envelope.isotopicEnvelope.peaks.Max(p => p.intensity) / myMsDataFile.GetOneBasedScan(max_intensity_envelope.scanNumber).MassSpectrum.YArray.Min()
+                     >= min_S_N)
                 {
                     Component component = new Component();
                     //make charge state
