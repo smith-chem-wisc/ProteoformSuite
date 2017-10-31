@@ -153,7 +153,6 @@ namespace ProteoformSuiteInternal
             if (fields.Count > 0)
             {
                 warning_message += "The following parameters did not have a setting specified: " + String.Join(", ", fields.Select(f => f.Name)) + Environment.NewLine;
-                return false; //parameters in lollipop not specified in method file
             }
 
             foreach (XElement action in action_elements)
