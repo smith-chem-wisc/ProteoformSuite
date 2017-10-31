@@ -176,7 +176,7 @@ namespace Test
                 new_edit[i] = edit[i + 1];
             }
             File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), new_edit);
-            Assert.IsFalse(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+            Assert.IsTrue(Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
             Assert.AreEqual("The following parameters did not have a setting specified: neucode_labeled\r\n" , message);
 
             Sweet.add_file_action(new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx"), Purpose.TopDown));
