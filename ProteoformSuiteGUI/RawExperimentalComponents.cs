@@ -38,10 +38,9 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
-
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
-                (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
+            
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files, Sweet.lollipop.neucode_labeled? Purpose.Quantification : Purpose.Identification); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
 
             if (cb_deconvolute.Checked)
             {

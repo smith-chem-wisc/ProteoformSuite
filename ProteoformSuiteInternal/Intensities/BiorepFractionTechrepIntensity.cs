@@ -1,16 +1,19 @@
 ﻿namespace ProteoformSuiteInternal
 {
     public class BiorepFractionTechrepIntensity
-        : IBiorepIntensity, IFileIntensity
+        : IBiorepIntensity
     {
-        public InputFile input_file { get; set; }
         public string condition { get; set; }
-        public string biorep { get { return input_file.biological_replicate; } }
+        public string biorep { get; set; }
+        public string fraction { get; set; }
+        public string techrep { get; set; }
         public bool imputed { get; set; }
         public double intensity_sum { get; set; }
-        public BiorepFractionTechrepIntensity(InputFile file, string condition, bool imputed, double intensity_sum)
+        public BiorepFractionTechrepIntensity(string condition, string biorep, string fraction, string techrep, bool imputed, double intensity_sum)
         {
-            this.input_file = file;
+            this.biorep = biorep;
+            this.fraction = fraction;
+            this.techrep = techrep;
             this.condition = condition;
             this.imputed = imputed;
             this.intensity_sum = intensity_sum;

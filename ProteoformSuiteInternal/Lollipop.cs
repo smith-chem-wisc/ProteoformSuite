@@ -52,9 +52,9 @@ namespace ProteoformSuiteInternal
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
             "Top-Down Results (Unlabeled) (.xlsx)",
-             "Raw Files (.raw, .mzml)",
+            "Raw Files (.raw, .mzml)",
             "Uncalibrated Proteoform Identification Results (.xlsx)",
-             "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
+            "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
         };
 
         public static List<string>[] acceptable_extensions = new List<string>[]
@@ -434,6 +434,9 @@ namespace ProteoformSuiteInternal
         public int min_agg_count = 1;
         public int min_num_CS = 1;
         public int min_num_bioreps = 1;
+        public string agg_observation_requirement = observation_requirement_possibilities[0];
+        public int agg_minBiorepsWithObservations = -1;
+        public bool add_td_proteoforms = true;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
 
@@ -454,18 +457,48 @@ namespace ProteoformSuiteInternal
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
-            vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms, topdown_proteoforms);
+            List<string> conditions = input_files.Select(f => f.lt_condition).Concat(input_files.Select(f => f.hv_condition)).Distinct().ToList();
+            vetted_proteoforms = determineAggProteoformsMeetingCriteria(conditions, vetted_proteoforms, agg_observation_requirement, agg_minBiorepsWithObservations);
+            if (add_td_proteoforms) vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms, topdown_proteoforms);
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
+
             target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
                 community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => e.topdown_id ? new TopDownProteoform(e as TopDownProteoform) : new ExperimentalProteoform(e)).ToArray();
             }
-            if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
+            if (Sweet.lollipop.neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
             {
                 assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             }
-            return vetted_proteoforms;
+            else if (!Sweet.lollipop.neucode_labeled)
+            {
+                Parallel.ForEach(vetted_proteoforms, e =>
+                {
+                    e.lt_quant_components = e.aggregated.Select(c => c as Component).ToList();
+                });
+            }
+           return vetted_proteoforms;
+        }
+
+        public List<ExperimentalProteoform> determineAggProteoformsMeetingCriteria(List<string> conditions, IEnumerable<ExperimentalProteoform> experimental_proteoforms, string observation_requirement, int minBiorepsWithObservations)
+        {
+            List<ExperimentalProteoform> satisfactory_proteoforms = new List<ExperimentalProteoform>();
+
+            if (observation_requirement.Contains("Bioreps") && observation_requirement.Contains("From Any Single Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.Any(c => eP.aggregated.Select(a => a.input_file).Where(bc => bc.lt_condition == c).Select(bc => bc.biological_replicate).Distinct().Count() >= minBiorepsWithObservations)).ToList();
+            if (observation_requirement.Contains("Bioreps") && observation_requirement.Contains("From Each Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.All(c => eP.aggregated.Select(a => a.input_file).Where(bc => bc.lt_condition == c).Select(bc => bc.biological_replicate).Distinct().Count() >= minBiorepsWithObservations)).ToList();
+            if (observation_requirement.Contains("Bioreps") && observation_requirement.Contains("From Any Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => eP.aggregated.Select(a => a.input_file).Select(bc => bc.lt_condition + bc.biological_replicate.ToString()).Distinct().Count() >= minBiorepsWithObservations).ToList();
+            if (observation_requirement.Contains("Biorep+Techreps") && observation_requirement.Contains("From Any Single Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.Any(c => eP.aggregated.Select(a => a.input_file).Where(bc => bc.lt_condition == c).Select(bc => bc.biological_replicate + bc.technical_replicate).Distinct().Count() >= minBiorepsWithObservations)).ToList();
+            if (observation_requirement.Contains("Biorep+Techreps") && observation_requirement.Contains("From Each Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.All(c => eP.aggregated.Select(a => a.input_file).Where(bc => bc.lt_condition == c).Select(bc => bc.biological_replicate + bc.technical_replicate).Distinct().Count() >= minBiorepsWithObservations)).ToList();
+            if (observation_requirement.Contains("Biorep+Techreps") && observation_requirement.Contains("From Any Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => eP.aggregated.Select(a => a.input_file).Select(bc => bc.lt_condition + bc.biological_replicate + bc.technical_replicate).Distinct().Count() >= minBiorepsWithObservations).ToList();
+
+            return satisfactory_proteoforms;
         }
 
         public void set_missed_monoisotopic_range()
@@ -843,14 +876,14 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION SETUP
 
-        public void getConditionBiorepFractionLabels(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+        public void getConditionBiorepFractionLabels(bool neucode_labeled, List<InputFile> input_files, Purpose purpose) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
         {
-            if (!input_files.Any(f => f.purpose == Purpose.Quantification))
+            if (!input_files.Any(f => f.purpose == purpose))
                 return;
-
-            List<string> ltConditions = get_files(input_files, Purpose.Quantification).Select(f => f.lt_condition).Distinct().ToList();
+            if (input_files.Any(f => f.biological_replicate.Length == 0 || f.fraction.Length == 0 || f.lt_condition.Length == 0 || f.technical_replicate.Length == 0)) return;
+            List<string> ltConditions = get_files(input_files, purpose).Select(f => f.lt_condition).Distinct().ToList();
             List<string> hvConditions = neucode_labeled ?
-                get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() :
+                get_files(input_files, purpose).Select(f => f.hv_condition).Distinct().ToList() :
                 new List<string>();
             conditionsBioReps.Clear();
             ltConditionsBioReps.Clear();
@@ -858,19 +891,19 @@ namespace ProteoformSuiteInternal
 
             foreach (string condition in ltConditions.Concat(hvConditions).Distinct().ToList())
             {
-                List<string> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> allbioreps = get_files(input_files, purpose).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 conditionsBioReps.Add(condition, allbioreps);
             }
 
             foreach (string condition in ltConditions)
             {
-                List<string> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> ltbioreps = get_files(input_files, purpose).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 ltConditionsBioReps.Add(condition, ltbioreps);
             }
 
             foreach (string condition in hvConditions)
             {
-                List<string> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> hvbioreps = get_files(input_files, purpose).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 hvConditionsBioReps.Add(condition, hvbioreps);
             }
 
@@ -890,8 +923,8 @@ namespace ProteoformSuiteInternal
                         1;
 
             //getBiorepsFractionsList
-            List<string> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-            quantBioFracCombos = bioreps.ToDictionary(b => b, b => input_files.Where(q => q.purpose == Purpose.Quantification && q.biological_replicate == b).Select(f => f.fraction).Distinct().ToList());
+            List<string> bioreps = input_files.Where(q => q.purpose == purpose).Select(b => b.biological_replicate).Distinct().ToList();
+            quantBioFracCombos = bioreps.ToDictionary(b => b, b => input_files.Where(q => q.purpose == purpose && q.biological_replicate == b).Select(f => f.fraction).Distinct().ToList());
         }
 
         #endregion QUANTIFICATION SETUP
@@ -1110,12 +1143,12 @@ namespace ProteoformSuiteInternal
                     {
                         int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(hit.ms2_retention_time);
                         hit.ms2ScanNumber = scanNum;
-                        if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum < myMsDataFile.NumSpectra)
+                        if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum <= myMsDataFile.NumSpectra)
                         {
                             hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
                             hit.mz = hit.reported_mass.ToMz(hit.charge);
                         }
-                        while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
+                        while (myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
                         hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
                         hit.technical_replicate = raw_file.technical_replicate;
                         hit.biological_replicate = raw_file.biological_replicate;
@@ -1134,7 +1167,7 @@ namespace ProteoformSuiteInternal
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
             if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
-                return "Error: need to input all raw files for top-down hits. Make sure the filenames match.";
+                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
             foreach (string condition in input_files.Select(f => f.lt_condition).Distinct())
             {
                 foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())

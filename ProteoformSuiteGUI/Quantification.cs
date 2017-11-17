@@ -138,10 +138,19 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0 
-                && Sweet.lollipop.target_proteoform_community.families.Count > 0
-                // and all of the files need to have unique bio/fract/tech replicate annotations for logFC analysis
-                && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().Count() == Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count();
+            if (Sweet.lollipop.neucode_labeled && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() == 0) return false;
+            if (Sweet.lollipop.target_proteoform_community.families.Count == 0) return false;
+            return true;
+            //if(!Sweet.lollipop.neucode_labeled)
+            //{
+            //    List<InputFile> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).ToList();
+            //    foreach(var condition in files.Select(f => f.lt_condition).Distinct())
+            //    {
+            //        if(files.Select(f => f.biological_replicate).Distinct().)
+            //    }
+            //}
+            // and all of the files need to have unique bio/fract/tech replicate annotations for logFC analysis
+            //  && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().Count() == Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count();
         }
 
         public void FillTablesAndCharts()
@@ -186,18 +195,21 @@ namespace ProteoformSuiteGUI
         {
             //Initialize conditions -- need to do after files entered
             List<string> conditions = Sweet.lollipop.ltConditionsBioReps.Keys.ToList();
-            conditions.AddRange(Sweet.lollipop.hvConditionsBioReps.Keys.ToList());
-            conditions = conditions.Distinct().ToList();
-            cmbx_ratioNumerator.Items.AddRange(conditions.ToArray());
-            cmbx_ratioDenominator.Items.AddRange(conditions.ToArray());
-            cmbx_inducedCondition.Items.AddRange(conditions.ToArray());
-            cmbx_ratioDenominator.SelectedIndex = 0;
-            cmbx_ratioNumerator.SelectedIndex = Convert.ToInt32(conditions.Count > 1);
-            cmbx_inducedCondition.SelectedIndex = Convert.ToInt32(conditions.Count > 1);
-            Sweet.lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
-            Sweet.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
-            Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
-            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
+            if (conditions.Count > 0)
+            {
+                conditions.AddRange(Sweet.lollipop.hvConditionsBioReps.Keys.ToList());
+                conditions = conditions.Distinct().ToList();
+                cmbx_ratioNumerator.Items.AddRange(conditions.ToArray());
+                cmbx_ratioDenominator.Items.AddRange(conditions.ToArray());
+                cmbx_inducedCondition.Items.AddRange(conditions.ToArray());
+                cmbx_ratioDenominator.SelectedIndex = 0;
+                cmbx_ratioNumerator.SelectedIndex = Convert.ToInt32(conditions.Count > 1);
+                cmbx_inducedCondition.SelectedIndex = Convert.ToInt32(conditions.Count > 1);
+                Sweet.lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
+                Sweet.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
+                Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
+                cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
+            }
 
 
 
@@ -400,7 +412,7 @@ namespace ProteoformSuiteGUI
                 RunTheGamut(false);
                 Cursor = Cursors.Default;
             }
-            else if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() <= 0)
+            else if (Sweet.lollipop.neucode_labeled && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() <= 0)
                 MessageBox.Show("Please load quantification results in Load Deconvolution Results.", "Quantification");
             else if (Sweet.lollipop.raw_experimental_components.Count <= 0)
                 MessageBox.Show("Please load deconvolution results.", "Quantification");
@@ -408,8 +420,7 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Please aggregate proteoform observations.", "Quantification");
             else if (Sweet.lollipop.target_proteoform_community.families.Count <= 0)
                 MessageBox.Show("Please construct proteoform families.", "Quantification");
-            else if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().Count() != Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count())
-                MessageBox.Show("Please label each quantification input file with a unique set of labels, i.e. biological replicate, fraction, and technical replicate.", "Quantification");
+            else MessageBox.Show("Please load in equal numbers of technical replicates for each fraction, and equal numbers of fraction for each biological replicate.");
         }
 
         private void cmbx_ratioNumerator_SelectedIndexChanged(object sender, EventArgs e)
@@ -469,15 +480,16 @@ namespace ProteoformSuiteGUI
 
         private void set_nud_minObs_maximum()
         {
+            List<InputFile> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Sweet.lollipop.neucode_labeled ? Purpose.Quantification : Purpose.Identification).ToList();
             if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
                 nud_minObservations.Maximum = Sweet.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
             else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement) < 3)
                 nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
             else if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[4]) // From any condition
-                nud_minObservations.Maximum = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count() * (2 * Convert.ToInt32(Sweet.lollipop.neucode_labeled));
+                nud_minObservations.Maximum = files.Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count() * (2 * Convert.ToInt32(Sweet.lollipop.neucode_labeled));
             else
-                nud_minObservations.Maximum = Math.Min(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
-                    Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
+                nud_minObservations.Maximum = Math.Min(files.Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(files.Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
+                   files.Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(files.Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
         }
 
         private void nud_minObservations_ValueChanged(object sender, EventArgs e)

@@ -11,8 +11,8 @@ namespace ProteoformSuiteInternal
 
         #region Public Properties
 
-        public Dictionary<Tuple<InputFile, string>, double> fileCondition_avgLog2I { get; set; } = new Dictionary<Tuple<InputFile, string>, double>(); // used to impute bft-intensities
-        public Dictionary<Tuple<InputFile, string>, double> fileCondition_stdevLog2I { get; set; }  = new Dictionary<Tuple<InputFile, string>, double>(); // used to impute bft-intensities
+        public Dictionary<Tuple<string, string, string, string>, double> fileCondition_avgLog2I { get; set; } = new Dictionary<Tuple<string, string, string, string>, double>(); // used to impute bft-intensities
+        public Dictionary<Tuple<string, string, string, string>, double> fileCondition_stdevLog2I { get; set; }  = new Dictionary<Tuple<string, string, string, string>, double>(); // used to impute bft-intensities
         public Dictionary<Tuple<string, string>, double> conditionBiorepIntensitySums { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to normalize columns
         public Dictionary<Tuple<string, string>, double> conditionBiorepNormalizationDivisors { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to normalize columns
         public double log2FC_population_average { get; set; } = 0;
@@ -29,19 +29,19 @@ namespace ProteoformSuiteInternal
         {
             //Not all proteoforms were observed in each fraction, so we have to be careful about finding the intensities
             Dictionary<Tuple<string, string>, List<double>> conditionBiorep_intensities = new Dictionary<Tuple<string, string>, List<double>>();
-            Dictionary<Tuple<InputFile, string>, List<double>> fileCondition_intensities = new Dictionary<Tuple<InputFile, string>, List<double>>();
-            Dictionary<Tuple<InputFile, string>, List<double>> fileCondition_square_standard_differences = new Dictionary<Tuple<InputFile, string>, List<double>>();
+            Dictionary<Tuple< string, string, string, string>, List<double>> fileCondition_intensities = new Dictionary<Tuple<string, string, string, string>, List<double>>();
+            Dictionary<Tuple<string, string, string, string>, List<double>> fileCondition_square_standard_differences = new Dictionary<Tuple<string, string, string, string>, List<double>>();
 
             // Calculate avgLog2Intensity and stdevLog2Intensity for each file-condition
             List<BiorepFractionTechrepIntensity> allOriginalBfts = Sweet.lollipop.satisfactoryProteoforms.SelectMany(pf => pf.bftIntensityList).ToList();
             foreach (BiorepFractionTechrepIntensity bft in allOriginalBfts)
             {
-                Tuple<InputFile, string> key1 = new Tuple<InputFile, string>(bft.input_file, bft.condition);
+                Tuple<string, string, string, string> key1 = new Tuple<string, string, string, string>(bft.condition, bft.biorep, bft.fraction, bft.techrep);
                 bool yep = fileCondition_intensities.TryGetValue(key1, out List<double> intensities1);
                 if (yep) intensities1.Add(bft.intensity_sum);
                 else fileCondition_intensities.Add(key1, new List<double> { bft.intensity_sum });
 
-                Tuple<string, string> key2 = new Tuple<string, string>(bft.condition, bft.input_file.biological_replicate);
+                Tuple<string, string> key2 = new Tuple<string, string>(bft.condition, bft.biorep);
                 bool yes = conditionBiorep_intensities.TryGetValue(key2, out List<double> intensities2);
                 if (yes) intensities2.Add(bft.intensity_sum);
                 else conditionBiorep_intensities.Add(key2, new List<double> { bft.intensity_sum });
@@ -52,7 +52,7 @@ namespace ProteoformSuiteInternal
 
             foreach (BiorepFractionTechrepIntensity bft in allOriginalBfts)
             {
-                Tuple<InputFile, string> x = new Tuple<InputFile, string>(bft.input_file, bft.condition);
+                Tuple<string, string, string, string> x = new Tuple<string, string, string, string>(bft.condition, bft.biorep, bft.fraction, bft.techrep);
                 double value = Math.Pow(Math.Log(bft.intensity_sum, 2) - fileCondition_avgLog2I[x], 2);
                 bool yep = fileCondition_square_standard_differences.TryGetValue(x, out List<double> std_diffs);
                 if (yep) std_diffs.Add(value);
