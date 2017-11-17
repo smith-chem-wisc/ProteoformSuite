@@ -144,54 +144,63 @@ namespace ProteoformSuiteGUI
             cmb_loadTable1.Items.Clear();
             cmb_loadTable2.Items.Clear();
             cmb_loadTable3.Items.Clear();
-            for (int i = 0; i < 5; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 5; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 5; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
-            cmb_loadTable1.SelectedIndex = 0;
-            cmb_loadTable2.SelectedIndex = 1;
-            cmb_loadTable3.SelectedIndex = 2;
 
-            cmb_loadTable1.Enabled = true;
-            cmb_loadTable2.Enabled = true;
-            cmb_loadTable3.Enabled = true;
-
-            if (rb_unlabeled.Checked)
+            if (rb_standardOptions.Checked)
             {
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[0]);
+                cmb_loadTable2.Items.Add(Lollipop.file_lists[0]);
+                cmb_loadTable3.Items.Add(Lollipop.file_lists[0]);
+
+                //if unlabeled add quant
+                if (Sweet.lollipop.neucode_labeled)
+                {
+                    cmb_loadTable1.Items.Add(Lollipop.file_lists[1]);
+                    cmb_loadTable2.Items.Add(Lollipop.file_lists[1]);
+                    cmb_loadTable3.Items.Add(Lollipop.file_lists[1]);
+                }
+
+                for (int i = 2; i < 5; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 2; i < 5; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 2; i < 5; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+
                 cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = 3;
+                cmb_loadTable2.SelectedIndex = 1;
                 cmb_loadTable3.SelectedIndex = 2;
-            }
 
-            if (rb_chemicalCalibration.Checked)
-            {
-                for (int i = 5; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 5; i < 7; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 5; i < 7; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
-                bt_calibrate.Visible = true;
-                cb_useRandomSeed.Visible = true;
-                nud_randomSeed.Visible = true;
-                cmb_loadTable1.SelectedIndex = 4;
-                cmb_loadTable2.SelectedIndex = 5;
-                cmb_loadTable3.SelectedIndex = 6;
+                cmb_loadTable1.Enabled = true;
+                cmb_loadTable2.Enabled = true;
+                cmb_loadTable3.Enabled = true;
 
-                cmb_loadTable1.Enabled = false;
-                cmb_loadTable2.Enabled = false;
-                cmb_loadTable3.Enabled = false;
-            }
-            else
-            {
+
                 bt_calibrate.Visible = false;
                 cb_useRandomSeed.Visible = false;
                 nud_randomSeed.Visible = false;
             }
 
-            lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
-            lb_filter2.Text = Lollipop.file_lists[cmb_loadTable2.SelectedIndex];
-            lb_filter3.Text = Lollipop.file_lists[cmb_loadTable3.SelectedIndex];
+            else if (rb_chemicalCalibration.Checked)
+            {
+                for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 7; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 4; i < 7; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+                bt_calibrate.Visible = true;
+                cb_useRandomSeed.Visible = true;
+                nud_randomSeed.Visible = true;
 
-            dgv_loadFiles1.Refresh();
-            dgv_loadFiles2.Refresh();
-            dgv_loadFiles3.Refresh();
+                cmb_loadTable1.SelectedIndex = 0;
+                cmb_loadTable2.SelectedIndex = 1;
+                cmb_loadTable3.SelectedIndex = 2;
+
+                cmb_loadTable1.Enabled = false;
+                cmb_loadTable2.Enabled = false;
+                cmb_loadTable3.Enabled = false;
+            }
+
+            lb_filter1.Text = cmb_loadTable1.SelectedText;
+            lb_filter2.Text = cmb_loadTable1.SelectedText;
+            lb_filter3.Text = cmb_loadTable1.SelectedText;
+
+            reload_dgvs();
+            refresh_dgvs();
         }
 
         #endregion General Table Option Private Methods
@@ -231,10 +240,11 @@ namespace ProteoformSuiteGUI
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
+            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
             refresh_dgvs();
-            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
+            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
 
         private void refresh_dgvs()
@@ -247,12 +257,12 @@ namespace ProteoformSuiteGUI
 
         private void reload_dgvs()
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable1.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayUtility.FillDataGridView(dgv_loadFiles2, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayUtility.FillDataGridView(dgv_loadFiles3, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[cmb_loadTable1.SelectedIndex]);
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[cmb_loadTable2.SelectedIndex]);
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[cmb_loadTable3.SelectedIndex]);
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]).Select(f => new DisplayInputFile(f)));
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable2.Text)]).Select(f => new DisplayInputFile(f)));
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable3.Text)]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]);
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable2.Text)]);
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable3.Text)]);
         }
         #endregion DGV DRAG AND DROP Private Methods
 
@@ -313,20 +323,22 @@ namespace ProteoformSuiteGUI
 
         private void add_files(ComboBox cmb, DataGridView dgv)
         {
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = cmb.SelectedItem.ToString();
-            openFileDialog.Filter = Lollipop.file_filters[cmb.SelectedIndex];
+            openFileDialog.Filter = Lollipop.file_filters[selected_index];
             openFileDialog.Multiselect = true;
 
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
+                Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
                 refresh_dgvs();
             }
 
-            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
+            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
 
         #endregion ADD BUTTONS Private Methods

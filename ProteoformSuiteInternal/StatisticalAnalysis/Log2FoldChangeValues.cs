@@ -10,7 +10,7 @@ namespace ProteoformSuiteInternal
 
         #region Fold Change Analysis Properties
 
-        public Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity> allBftIntensities { get; set; } = new Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity>(); // each bft corresponds to a file and condition
+        public Dictionary<Tuple<string, string, string, string>, BiorepFractionTechrepIntensity> allBftIntensities { get; set; } = new Dictionary<Tuple<string, string, string, string>, BiorepFractionTechrepIntensity>(); // each bft corresponds to a file and condition
         public List<double> log2FoldChanges = new List<double>();
         public double average_log2fc { get; set; } = 0;
         public double stdev_log2fc { get; set; } = 0;
@@ -23,17 +23,17 @@ namespace ProteoformSuiteInternal
 
         #region Fold Change Analysis Methods
 
-        public void impute_bft_intensities(List<BiorepFractionTechrepIntensity> bftIntensityList, List<InputFile> allFiles, Dictionary<Tuple<InputFile, string>, double> fileCondition_avgLog2I, Dictionary<Tuple<InputFile, string>, double> fileCondition_stdevLog2I)
+        public void impute_bft_intensities(List<BiorepFractionTechrepIntensity> bftIntensityList, List<InputFile> allFiles, Dictionary<Tuple<string, string, string, string>, double> fileCondition_avgLog2I, Dictionary<Tuple<string, string, string, string>, double> fileCondition_stdevLog2I)
         {
             List<BiorepFractionTechrepIntensity> imputed_bft_intensities = imputedIntensities(bftIntensityList, allFiles, fileCondition_avgLog2I, fileCondition_stdevLog2I);
-            allBftIntensities = bftIntensityList.Concat(imputed_bft_intensities).ToDictionary(bft => new Tuple<InputFile, string>(bft.input_file, bft.condition), bft => bft);
+            allBftIntensities = bftIntensityList.Concat(imputed_bft_intensities).ToDictionary(bft => new Tuple<string, string, string, string>(bft.condition, bft.biorep, bft.fraction, bft.techrep), bft => bft);
         }
 
         public void normalize_bft_intensities(Dictionary<Tuple<string, string>, double> conditionBiorepNormalizationDivisors)
         {
             foreach (BiorepFractionTechrepIntensity bft in allBftIntensities.Values)
             {
-                bft.intensity_sum = bft.intensity_sum / conditionBiorepNormalizationDivisors[new Tuple<string, string>(bft.condition, bft.input_file.biological_replicate)];
+                bft.intensity_sum = bft.intensity_sum / conditionBiorepNormalizationDivisors[new Tuple<string, string>(bft.condition, bft.biorep)];
             }
         }
 
@@ -46,19 +46,20 @@ namespace ProteoformSuiteInternal
         /// <param name="condition"></param>
         /// <param name="bioreps"></param>
         /// <returns></returns>
-        public static List<BiorepFractionTechrepIntensity> imputedIntensities(List<BiorepFractionTechrepIntensity> observedBftIntensities, List<InputFile> allFiles, Dictionary<Tuple<InputFile, string>, double> fileCondition_avgLog2I, Dictionary<Tuple<InputFile, string>, double> fileCondition_stdevLog2I)
+        public static List<BiorepFractionTechrepIntensity> imputedIntensities(List<BiorepFractionTechrepIntensity> observedBftIntensities, List<InputFile> allFiles, Dictionary<Tuple<string, string, string, string>, double> fileCondition_avgLog2I, Dictionary<Tuple<string, string, string, string>, double> fileCondition_stdevLog2I)
         {
             //avtIntensities are log base 2
             //stdevIntensities are log base 2
 
-            List<BiorepFractionTechrepIntensity> intensities_without_corresponding_values = observedBftIntensities.Where(bft => !observedBftIntensities.Any(ff => bft.condition != ff.condition && bft.input_file.biological_replicate == ff.input_file.biological_replicate && bft.input_file.fraction == ff.input_file.fraction && bft.input_file.technical_replicate == ff.input_file.technical_replicate)).ToList();
+            List<BiorepFractionTechrepIntensity> intensities_without_corresponding_values = observedBftIntensities.Where(bft => !observedBftIntensities.Any(ff => bft.condition != ff.condition && bft.biorep == ff.biorep && bft.fraction == ff.fraction && bft.techrep == ff.techrep)).ToList();
             List<BiorepFractionTechrepIntensity> imputed_values = new List<BiorepFractionTechrepIntensity>();
             foreach (BiorepFractionTechrepIntensity bft in intensities_without_corresponding_values)
             {
-                Tuple<InputFile, string> x = new Tuple<InputFile, string>(bft.input_file, bft.input_file.lt_condition != bft.condition ? bft.input_file.lt_condition : bft.input_file.hv_condition);
+                string condition = Sweet.lollipop.ltConditionsBioReps.Concat(Sweet.lollipop.hvConditionsBioReps).Select(c => c.Key).Distinct().Where(c => c != bft.condition).First();
+                Tuple<string, string, string, string> x = new Tuple<string, string, string, string>(condition, bft.biorep, bft.fraction, bft.techrep);
                 decimal avglog2i = (decimal)fileCondition_avgLog2I[x];
                 decimal stdevlog2i = (decimal)fileCondition_stdevLog2I[x];
-                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, true, QuantitativeProteoformValues.imputed_intensity(avglog2i + Sweet.lollipop.backgroundShift * stdevlog2i, stdevlog2i * Sweet.lollipop.backgroundWidth, Sweet.lollipop.useRandomSeed_quant, Sweet.lollipop.seeded)));
+                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, x.Item3, x.Item4, true, QuantitativeProteoformValues.imputed_intensity(avglog2i + Sweet.lollipop.backgroundShift * stdevlog2i, stdevlog2i * Sweet.lollipop.backgroundWidth, Sweet.lollipop.useRandomSeed_quant, Sweet.lollipop.seeded)));
             }
             return imputed_values;
         }
@@ -66,7 +67,18 @@ namespace ProteoformSuiteInternal
         public void calculate_log2FoldChanges(string numerator_condition, string denominator_condition)
         {
             List<BiorepFractionTechrepIntensity> numeratorBfts = allBftIntensities.Values.Where(bft => bft.condition == numerator_condition).ToList();
-            log2FoldChanges = numeratorBfts.Select(bft => Math.Log(bft.intensity_sum, 2) - Math.Log(allBftIntensities[new Tuple<InputFile, string>(bft.input_file, denominator_condition)].intensity_sum, 2)).ToList();
+           // if (Sweet.lollipop.neucode_labeled)
+            {
+                log2FoldChanges = numeratorBfts.Select(bft => Math.Log(bft.intensity_sum, 2) - Math.Log(allBftIntensities[new Tuple<string, string, string, string>(denominator_condition, bft.biorep, bft.fraction, bft.techrep)].intensity_sum, 2)).ToList();
+            }
+           // else
+            //{
+            //    List<BiorepFractionTechrepIntensity> denominatorBfts = allBftIntensities.Values.Where(bft => bft.condition == denominator_condition).ToList();
+            //    foreach (var br in numeratorBfts.Select(b => b.biorep).Distinct())
+            //    {
+            //        log2FoldChanges.Add(Math.Log(numeratorBfts.Where(bft => bft.biorep == br).Sum(bft => bft.intensity_sum), 2) - Math.Log(denominatorBfts.Where(bft => bft.biorep == br).Sum(bft => bft.intensity_sum), 2));
+            //    }
+            //}
             average_log2fc = log2FoldChanges.Average();
             stdev_log2fc = Math.Sqrt(log2FoldChanges.Sum(fc => Math.Pow(fc - average_log2fc, 2)) / (log2FoldChanges.Count - 1));
         }

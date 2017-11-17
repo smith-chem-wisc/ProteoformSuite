@@ -136,12 +136,6 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Go back and load in deconvolution results.");
             }
         }
-
-        private void nUD_min_agg_count_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_agg_count = Convert.ToInt16(nUD_min_agg_count.Value);
-        }
-
         private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
@@ -160,11 +154,6 @@ namespace ProteoformSuiteGUI
 
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates.OfType<ExperimentalProteoform>().Select(ep => new DisplayExperimentalProteoform(ep)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_AggregatedProteoforms);
-        }
-
-        private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);
         }
 
         #endregion Private Methods
@@ -207,13 +196,35 @@ namespace ProteoformSuiteGUI
             nUD_RetTimeToleranace.Value = Convert.ToDecimal(Sweet.lollipop.retention_time_tolerance);
             nUD_Missed_Monos.Value = Sweet.lollipop.maximum_missed_monos;
             nUD_Missed_Ks.Value = Sweet.lollipop.maximum_missed_lysines;
-            nUD_min_num_bioreps.Value = Sweet.lollipop.min_num_bioreps;
-            nUD_min_agg_count.Value = Sweet.lollipop.min_agg_count;
             nUD_min_num_CS.Value = Sweet.lollipop.min_num_CS;
 
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+
+            // selecting proteoforms for quantification
+            cmbx_observationsTypeRequired.Items.Clear();
+            cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
+            cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
+            cmbx_observationsTypeRequired.SelectedIndex = Sweet.lollipop.agg_observation_requirement == new Lollipop().agg_observation_requirement ? // check that the default has not been changed (haven't loaded presets)
+                0 :
+                Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement);
+            Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
+
+            nud_minObservations.Minimum = 1;
+            if (Sweet.lollipop.agg_minBiorepsWithObservations == new Lollipop().agg_minBiorepsWithObservations) // check that the default has not been changed (haven't loaded presets)
+            {
+                nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
+                nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
+            }
+            else
+            {
+                set_nud_minObs_maximum();
+                nud_minObservations.Value = Sweet.lollipop.agg_minBiorepsWithObservations;
+            }
+            Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
+            cb_add_td_proteoforms.Checked = Sweet.lollipop.add_td_proteoforms;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -238,5 +249,36 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Methods
 
+        private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            set_nud_minObs_maximum();
+            nud_minObservations.Value = nud_minObservations.Maximum;
+
+        }
+
+        private void set_nud_minObs_maximum()
+        {
+            if (Sweet.lollipop.agg_observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
+                nud_minObservations.Maximum = Sweet.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
+            else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement) < 3)
+                nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
+            else if (Sweet.lollipop.agg_observation_requirement == Lollipop.observation_requirement_possibilities[4]) // From any condition
+                nud_minObservations.Maximum = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count() * (2 * Convert.ToInt32(Sweet.lollipop.neucode_labeled));
+            else
+                nud_minObservations.Maximum = Math.Min(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
+                    Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
+        }
+
+        private void nud_minObservations_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
+
+        }
+
+        private void cb_add_td_proteoforms_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.add_td_proteoforms = cb_add_td_proteoforms.Checked;
+        }
     }
 }

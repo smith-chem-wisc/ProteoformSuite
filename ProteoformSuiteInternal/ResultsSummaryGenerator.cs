@@ -604,12 +604,12 @@ namespace ProteoformSuiteInternal
                             {
                                 if (include_imputation)
                                 {
-                                    pf.quant.Log2FoldChangeValues.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
+                                    pf.quant.Log2FoldChangeValues.allBftIntensities.TryGetValue(new Tuple<string, string, string, string>(condition_bioreps.Key, f.biological_replicate, f.fraction, f.technical_replicate), out BiorepFractionTechrepIntensity bft);
                                     value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
                                 }
                                 else
                                 {
-                                    value = pf.bftIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.input_file.technical_replicate == f.technical_replicate && x.input_file.fraction == f.fraction).Sum(x => x.intensity_sum)
+                                    value = pf.bftIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.techrep == f.technical_replicate && x.fraction == f.fraction).Sum(x => x.intensity_sum)
                                         / Sweet.lollipop.Log2FoldChangeAnalysis.conditionBiorepNormalizationDivisors[new Tuple<string, string>(condition_bioreps.Key, f.biological_replicate)];
                                 }
                                 row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;

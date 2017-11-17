@@ -232,7 +232,7 @@ namespace ProteoformSuiteGUI
                 };
                 loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                 if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                    loadDeconvolutionResults.RunTheGamut(false); // updates the dgvs
+                   loadDeconvolutionResults.RunTheGamut(false); // updates the dgvs
                 return true;
             }
             return false;
