@@ -216,7 +216,7 @@ namespace ProteoformSuiteInternal
             agg_rt = aggregated.Sum(c => c.rt_apex * c.intensity_sum / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
-            accepted = aggregated.Count >= Sweet.lollipop.min_agg_count && aggregated.Select(c => c.input_file.biological_replicate).Distinct().Count() >= Sweet.lollipop.min_num_bioreps;
+            accepted = true;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 

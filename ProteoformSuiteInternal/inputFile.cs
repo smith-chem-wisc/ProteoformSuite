@@ -81,6 +81,22 @@ namespace ProteoformSuiteInternal
             this.instanceId = ++instanceCounter;
         }
 
+        public InputFile(InputFile f)
+        {
+            this.complete_path = f.complete_path;
+            this.directory = f.directory;
+            this.filename = f.filename;
+            this.extension = f.extension;
+            this.purpose = f.purpose;
+            this.instanceId = ++instanceCounter;
+            this.label = f.label;
+            this.hv_condition = f.hv_condition;
+            this.lt_condition = f.lt_condition;
+            this.biological_replicate = f.biological_replicate;
+            this.fraction = f.fraction;
+            this.technical_replicate = f.technical_replicate;
+            this.quantitative = f.quantitative;
+        }
         #endregion Public Constructors
 
     }

@@ -116,6 +116,9 @@ namespace Test
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.maximum_missed_monos = 1;
+            Sweet.lollipop.agg_minBiorepsWithObservations = 0;
+            InputFile f = new InputFile("path", Purpose.Identification);
+            Sweet.lollipop.input_files.Add(f);
             // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
             Component c1 = new Component();
             c1.weighted_monoisotopic_mass = 1000.0;
@@ -123,13 +126,13 @@ namespace Test
             c1.accepted = true;
             c1.id = 1.ToString();
             c1.intensity_sum = 1e6;
-            c1.input_file = new InputFile("path", Purpose.Identification);
+            c1.input_file = f;
             c1.charge_states = new List<ChargeState>() { new ChargeState(1, c1.intensity_sum, c1.weighted_monoisotopic_mass) };
             Component c2 = new Component();
             c2.weighted_monoisotopic_mass = 1000.0;
             c2.rt_apex = 85;
             c2.accepted = true;
-            c2.input_file = new InputFile("path", Purpose.Identification);
+            c2.input_file = f;
             c2.intensity_sum = 1e6;
             c2.charge_states = new List<ChargeState>() { new ChargeState(1, c2.intensity_sum, c2.weighted_monoisotopic_mass) };
             c2.id = 2.ToString();
@@ -137,7 +140,7 @@ namespace Test
             c3.weighted_monoisotopic_mass = 1131.04;
             c3.rt_apex = 45;
             c3.accepted = true;
-            c3.input_file = new InputFile("path", Purpose.Identification);
+            c3.input_file = f;
             c3.intensity_sum = 1e6;
             c3.charge_states = new List<ChargeState>() { new ChargeState(1, c3.intensity_sum, c3.weighted_monoisotopic_mass) };
             c3.id = 3.ToString();
@@ -153,12 +156,11 @@ namespace Test
             c5.weighted_monoisotopic_mass = 1001.0;
             c5.rt_apex = 45;
             c5.accepted = true;
-            c5.input_file = new InputFile("path", Purpose.Identification);
+            c5.input_file = f;
             c5.intensity_sum = 1e6;
             c5.charge_states = new List<ChargeState>() { new ChargeState(1, c5.intensity_sum, c5.weighted_monoisotopic_mass) };
             c5.id = 2.ToString();
             List<IAggregatable> components = new List<IAggregatable>() { c1, c2, c3, c4, c5};
-
             Sweet.lollipop.raw_experimental_components = components.OfType<Component>().ToList();
 
             TopDownProteoform td1 = ConstructorsForTesting.TopDownProteoform("ACCESSION_1", 1000.0, 45);
@@ -194,6 +196,7 @@ namespace Test
 
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new List<TheoreticalProteoform>() { t1 }.ToArray();
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform> { td1, td2, td3 };
+            Sweet.lollipop.add_td_proteoforms = true;
             Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, 0);
             List<ProteoformRelation> relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             List<DeltaMassPeak> peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>>());
@@ -205,7 +208,6 @@ namespace Test
             Assert.AreEqual(1, td1.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && (r.connected_proteoforms[0] as ExperimentalProteoform).topdown_id));
             Assert.AreEqual(0, td2.relationships.Count());
             Assert.AreEqual(0, td3.relationships.Count());
-
 
             //accession 3 has higher score... gets td
             Sweet.lollipop.clear_td();

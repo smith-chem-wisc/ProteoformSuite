@@ -111,7 +111,6 @@ namespace Test
         [Test]
         public void unlabeled_proteoform_calculate_properties()
         {
-            Sweet.lollipop.min_num_bioreps = 0;
             Sweet.lollipop.neucode_labeled = false;
             List<IAggregatable> components = generate_unlabeled_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);

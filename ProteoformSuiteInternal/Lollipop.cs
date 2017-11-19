@@ -431,9 +431,7 @@ namespace ProteoformSuiteInternal
         public int maximum_missed_monos = 3;
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
-        public int min_agg_count = 1;
         public int min_num_CS = 1;
-        public int min_num_bioreps = 1;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
         public bool add_td_proteoforms = true;
@@ -876,14 +874,13 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION SETUP
 
-        public void getConditionBiorepFractionLabels(bool neucode_labeled, List<InputFile> input_files, Purpose purpose) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+        public void getConditionBiorepFractionLabels(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
         {
-            if (!input_files.Any(f => f.purpose == purpose))
+            if (!input_files.Any(f => f.purpose == Purpose.Quantification))
                 return;
-            if (input_files.Any(f => f.biological_replicate.Length == 0 || f.fraction.Length == 0 || f.lt_condition.Length == 0 || f.technical_replicate.Length == 0)) return;
-            List<string> ltConditions = get_files(input_files, purpose).Select(f => f.lt_condition).Distinct().ToList();
+            List<string> ltConditions = get_files(input_files, Purpose.Quantification).Select(f => f.lt_condition).Distinct().ToList();
             List<string> hvConditions = neucode_labeled ?
-                get_files(input_files, purpose).Select(f => f.hv_condition).Distinct().ToList() :
+                get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() :
                 new List<string>();
             conditionsBioReps.Clear();
             ltConditionsBioReps.Clear();
@@ -891,19 +888,19 @@ namespace ProteoformSuiteInternal
 
             foreach (string condition in ltConditions.Concat(hvConditions).Distinct().ToList())
             {
-                List<string> allbioreps = get_files(input_files, purpose).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 conditionsBioReps.Add(condition, allbioreps);
             }
 
             foreach (string condition in ltConditions)
             {
-                List<string> ltbioreps = get_files(input_files, purpose).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 ltConditionsBioReps.Add(condition, ltbioreps);
             }
 
             foreach (string condition in hvConditions)
             {
-                List<string> hvbioreps = get_files(input_files, purpose).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 hvConditionsBioReps.Add(condition, hvbioreps);
             }
 
@@ -923,8 +920,8 @@ namespace ProteoformSuiteInternal
                         1;
 
             //getBiorepsFractionsList
-            List<string> bioreps = input_files.Where(q => q.purpose == purpose).Select(b => b.biological_replicate).Distinct().ToList();
-            quantBioFracCombos = bioreps.ToDictionary(b => b, b => input_files.Where(q => q.purpose == purpose && q.biological_replicate == b).Select(f => f.fraction).Distinct().ToList());
+            List<string> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
+            quantBioFracCombos = bioreps.ToDictionary(b => b, b => input_files.Where(q => q.purpose == Purpose.Quantification && q.biological_replicate == b).Select(f => f.fraction).Distinct().ToList());
         }
 
         #endregion QUANTIFICATION SETUP
