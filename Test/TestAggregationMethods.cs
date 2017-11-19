@@ -226,7 +226,6 @@ namespace Test
         [Test]
         public void unlabeled_agg()
         {
-            Sweet.lollipop.min_num_bioreps = 0;
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
 

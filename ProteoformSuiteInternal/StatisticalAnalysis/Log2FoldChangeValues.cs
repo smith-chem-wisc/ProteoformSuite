@@ -67,18 +67,18 @@ namespace ProteoformSuiteInternal
         public void calculate_log2FoldChanges(string numerator_condition, string denominator_condition)
         {
             List<BiorepFractionTechrepIntensity> numeratorBfts = allBftIntensities.Values.Where(bft => bft.condition == numerator_condition).ToList();
-           // if (Sweet.lollipop.neucode_labeled)
+           if (Sweet.lollipop.neucode_labeled)
             {
                 log2FoldChanges = numeratorBfts.Select(bft => Math.Log(bft.intensity_sum, 2) - Math.Log(allBftIntensities[new Tuple<string, string, string, string>(denominator_condition, bft.biorep, bft.fraction, bft.techrep)].intensity_sum, 2)).ToList();
             }
-           // else
-            //{
-            //    List<BiorepFractionTechrepIntensity> denominatorBfts = allBftIntensities.Values.Where(bft => bft.condition == denominator_condition).ToList();
-            //    foreach (var br in numeratorBfts.Select(b => b.biorep).Distinct())
-            //    {
-            //        log2FoldChanges.Add(Math.Log(numeratorBfts.Where(bft => bft.biorep == br).Sum(bft => bft.intensity_sum), 2) - Math.Log(denominatorBfts.Where(bft => bft.biorep == br).Sum(bft => bft.intensity_sum), 2));
-            //    }
-            //}
+            else
+            {
+                List<BiorepFractionTechrepIntensity> denominatorBfts = allBftIntensities.Values.Where(bft => bft.condition == denominator_condition).ToList();
+                foreach (var br in numeratorBfts.Select(b => b.biorep).Distinct())
+                {
+                    log2FoldChanges.Add(Math.Log(numeratorBfts.Where(bft => bft.biorep == br).Sum(bft => bft.intensity_sum), 2) - Math.Log(denominatorBfts.Where(bft => bft.biorep == br).Sum(bft => bft.intensity_sum), 2));
+                }
+            }
             average_log2fc = log2FoldChanges.Average();
             stdev_log2fc = Math.Sqrt(log2FoldChanges.Sum(fc => Math.Pow(fc - average_log2fc, 2)) / (log2FoldChanges.Count - 1));
         }

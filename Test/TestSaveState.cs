@@ -347,21 +347,21 @@ namespace Test
                 ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "2", "1"), //5
             };
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
-            e.quant.Log2FoldChangeValues.allBftIntensities = new Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity>
+            e.quant.Log2FoldChangeValues.allBftIntensities = new Dictionary<Tuple<string, string, string, string>, BiorepFractionTechrepIntensity>
             {
-                {new Tuple<InputFile, string>(input_files[0], "n"), new BiorepFractionTechrepIntensity(input_files[0], "n", false, 1) },
-                {new Tuple<InputFile, string>(input_files[1], "n"), new BiorepFractionTechrepIntensity(input_files[1], "n", true, 1) },
-                {new Tuple<InputFile, string>(input_files[2], "n"), new BiorepFractionTechrepIntensity(input_files[2], "n", false, 1) },
-                {new Tuple<InputFile, string>(input_files[3], "n"), new BiorepFractionTechrepIntensity(input_files[3], "n", false, 1) },
-                {new Tuple<InputFile, string>(input_files[4], "n"), new BiorepFractionTechrepIntensity(input_files[4], "n", false, 1) },
-                {new Tuple<InputFile, string>(input_files[5], "n"), new BiorepFractionTechrepIntensity(input_files[5], "n", false, 1) },
+                {new Tuple<string, string, string, string>("n", input_files[0].biological_replicate, input_files[0].fraction, input_files[0].technical_replicate), new BiorepFractionTechrepIntensity("n", input_files[0].biological_replicate, input_files[0].fraction, input_files[0].technical_replicate, false, 1) },
+                {new Tuple<string, string, string, string>("n",input_files[1].biological_replicate, input_files[1].fraction, input_files[1].technical_replicate), new BiorepFractionTechrepIntensity("n", input_files[1].biological_replicate, input_files[1].fraction, input_files[1].technical_replicate, true, 1) },
+                {new Tuple<string, string, string, string>("n", input_files[2].biological_replicate, input_files[2].fraction, input_files[2].technical_replicate), new BiorepFractionTechrepIntensity("n", input_files[2].biological_replicate, input_files[2].fraction, input_files[2].technical_replicate, false, 1) },
+                {new Tuple<string, string, string, string>("n", input_files[3].biological_replicate, input_files[3].fraction, input_files[3].technical_replicate), new BiorepFractionTechrepIntensity("n", input_files[3].biological_replicate, input_files[3].fraction, input_files[3].technical_replicate, false, 1) },
+                {new Tuple<string, string, string, string>("n", input_files[4].biological_replicate, input_files[4].fraction, input_files[4].technical_replicate), new BiorepFractionTechrepIntensity("n", input_files[4].biological_replicate, input_files[4].fraction, input_files[4].technical_replicate, false, 1) },
+                {new Tuple<string, string, string, string>("n", input_files[5].biological_replicate, input_files[5].fraction, input_files[5].technical_replicate), new BiorepFractionTechrepIntensity("n", input_files[5].biological_replicate, input_files[5].fraction, input_files[5].technical_replicate, false, 1) },
 
-                {new Tuple<InputFile, string>(input_files[0], "s"), new BiorepFractionTechrepIntensity(input_files[0], "s", true, 1) },
-                {new Tuple<InputFile, string>(input_files[1], "s"), new BiorepFractionTechrepIntensity(input_files[1], "s", true, 1) },
-                {new Tuple<InputFile, string>(input_files[2], "s"), new BiorepFractionTechrepIntensity(input_files[2], "s", false, 1) },
-                {new Tuple<InputFile, string>(input_files[3], "s"), new BiorepFractionTechrepIntensity(input_files[3], "s", false, 1) },
-                {new Tuple<InputFile, string>(input_files[4], "s"), new BiorepFractionTechrepIntensity(input_files[4], "s", false, 1) },
-                {new Tuple<InputFile, string>(input_files[5], "s"), new BiorepFractionTechrepIntensity(input_files[5], "s", false, 1) },
+                {new Tuple<string, string, string, string>("s", input_files[0].biological_replicate, input_files[0].fraction, input_files[0].technical_replicate), new BiorepFractionTechrepIntensity("s", input_files[0].biological_replicate, input_files[0].fraction, input_files[0].technical_replicate, true, 1) },
+                {new Tuple<string, string, string, string>("s",input_files[1].biological_replicate, input_files[1].fraction, input_files[1].technical_replicate), new BiorepFractionTechrepIntensity("s", input_files[1].biological_replicate, input_files[1].fraction, input_files[1].technical_replicate,  true, 1) },
+                {new Tuple<string, string, string, string>("s", input_files[2].biological_replicate, input_files[2].fraction, input_files[2].technical_replicate), new BiorepFractionTechrepIntensity("s", input_files[2].biological_replicate, input_files[2].fraction, input_files[2].technical_replicate, false, 1) },
+                {new Tuple<string, string, string, string>("s", input_files[3].biological_replicate, input_files[3].fraction, input_files[3].technical_replicate), new BiorepFractionTechrepIntensity("s", input_files[3].biological_replicate, input_files[3].fraction, input_files[3].technical_replicate,  false, 1) },
+                {new Tuple<string, string, string, string>("s", input_files[4].biological_replicate, input_files[4].fraction, input_files[4].technical_replicate), new BiorepFractionTechrepIntensity("s", input_files[4].biological_replicate, input_files[4].fraction, input_files[4].technical_replicate, false, 1) },
+                {new Tuple<string, string, string, string>("s",input_files[5].biological_replicate, input_files[5].fraction, input_files[5].technical_replicate), new BiorepFractionTechrepIntensity("s", input_files[5].biological_replicate, input_files[5].fraction, input_files[5].technical_replicate, false, 1) },
             };
             
             // With imputation uses processed values

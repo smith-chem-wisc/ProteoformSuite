@@ -23,7 +23,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_calibration_td_hits();
-            Assert.AreEqual("Error: need to input all raw files for top-down hits. Make sure the filenames match.", Sweet.lollipop.calibrate_files());
+            Assert.IsTrue(Sweet.lollipop.calibrate_files().Contains("Error: need to input all raw files for top-down hits:"));
 
             Sweet.lollipop.input_files.Clear();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx") }, Lollipop.acceptable_extensions[5], Lollipop.file_types[5], Sweet.lollipop.input_files, false);
@@ -62,7 +62,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_calibration_td_hits();
-            Assert.AreEqual("Error: need to input all raw files for top-down hits. Make sure the filenames match.", Sweet.lollipop.calibrate_files());
+            Assert.IsTrue(Sweet.lollipop.calibrate_files().Contains("Error: need to input all raw files for top-down hits:"));
 
             Sweet.lollipop.input_files.Clear();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);

@@ -202,28 +202,23 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
-            // selecting proteoforms for quantification
+            decimal agg_minBiorepsWithObservations = Sweet.lollipop.agg_minBiorepsWithObservations;
             cmbx_observationsTypeRequired.Items.Clear();
             cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
             cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
             cmbx_observationsTypeRequired.SelectedIndex = Sweet.lollipop.agg_observation_requirement == new Lollipop().agg_observation_requirement ? // check that the default has not been changed (haven't loaded presets)
                 0 :
                 Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement);
-            Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            cmbx_observationsTypeRequired.SelectedItem = Sweet.lollipop.agg_observation_requirement;
             cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
 
             nud_minObservations.Minimum = 1;
-            if (Sweet.lollipop.agg_minBiorepsWithObservations == new Lollipop().agg_minBiorepsWithObservations) // check that the default has not been changed (haven't loaded presets)
-            {
-                nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
-                nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
-            }
-            else
-            {
-                set_nud_minObs_maximum();
-                nud_minObservations.Value = Sweet.lollipop.agg_minBiorepsWithObservations;
-            }
+            set_nud_minObs_maximum();
+            if (agg_minBiorepsWithObservations <= nud_minObservations.Maximum
+                && agg_minBiorepsWithObservations >= nud_minObservations.Minimum) nud_minObservations.Value = agg_minBiorepsWithObservations;
+            else nud_minObservations.Value = nud_minObservations.Maximum;
             Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
+
             cb_add_td_proteoforms.Checked = Sweet.lollipop.add_td_proteoforms;
         }
 
@@ -264,7 +259,7 @@ namespace ProteoformSuiteGUI
             else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement) < 3)
                 nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
             else if (Sweet.lollipop.agg_observation_requirement == Lollipop.observation_requirement_possibilities[4]) // From any condition
-                nud_minObservations.Maximum = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count() * (2 * Convert.ToInt32(Sweet.lollipop.neucode_labeled));
+                nud_minObservations.Maximum = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count(); // * (2 * Convert.ToInt32(Sweet.lollipop.neucode_labeled));
             else
                 nud_minObservations.Maximum = Math.Min(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
                     Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
