@@ -473,7 +473,7 @@ namespace ProteoformSuiteGUI
             else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement) < 3)
                 nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
             else if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[4]) // From any condition
-                nud_minObservations.Maximum = files.Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count(); //* (2 * Convert.ToInt32(Sweet.lollipop.neucode_labeled));
+                nud_minObservations.Maximum = files.Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count() * (Sweet.lollipop.neucode_labeled ? 2 : 1);
             else
                 nud_minObservations.Maximum = Math.Min(files.Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(files.Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
                    files.Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(files.Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
