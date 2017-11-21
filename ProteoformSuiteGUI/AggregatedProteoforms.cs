@@ -219,6 +219,8 @@ namespace ProteoformSuiteGUI
             else nud_minObservations.Value = nud_minObservations.Maximum;
             Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
 
+            cb_observe_in_both_tr.Checked = Sweet.lollipop.require_both_tr;
+
             cb_add_td_proteoforms.Checked = Sweet.lollipop.add_td_proteoforms;
         }
 
@@ -274,6 +276,11 @@ namespace ProteoformSuiteGUI
         private void cb_add_td_proteoforms_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.add_td_proteoforms = cb_add_td_proteoforms.Checked;
+        }
+
+        private void cb_observe_in_both_tr_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.require_both_tr = cb_observe_in_both_tr.Checked;
         }
     }
 }

@@ -434,6 +434,7 @@ namespace ProteoformSuiteInternal
         public int min_num_CS = 1;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
+        public bool require_both_tr = false;
         public bool add_td_proteoforms = true;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
@@ -456,6 +457,15 @@ namespace ProteoformSuiteInternal
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
             List<string> conditions = input_files.Select(f => f.lt_condition).Concat(input_files.Select(f => f.hv_condition)).Distinct().ToList();
+            if (require_both_tr) //for a component to be in an agg proteoform, needs to have been observed in all tech reps
+            {
+                Parallel.ForEach(vetted_proteoforms, p => 
+                p.aggregated = p.aggregated.Where(c => p.aggregated.Where(b => b.input_file.lt_condition + b.input_file.biological_replicate + b.input_file.fraction == 
+                c.input_file.lt_condition + c.input_file.biological_replicate + c.input_file.fraction).Select(b => b.input_file.technical_replicate).Distinct().Count()
+               == Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification && f.lt_condition + f.biological_replicate + f.fraction == c.input_file.lt_condition + c.input_file.biological_replicate + c.input_file.fraction).Select(f => f.technical_replicate).Distinct().Count()).ToList());
+
+                vetted_proteoforms = vetted_proteoforms.Where(p => p.aggregated.Count > 0).ToList();
+            }
             vetted_proteoforms = determineAggProteoformsMeetingCriteria(conditions, vetted_proteoforms, agg_observation_requirement, agg_minBiorepsWithObservations);
             if (add_td_proteoforms) vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms, topdown_proteoforms);
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
