@@ -456,7 +456,7 @@ namespace ProteoformSuiteInternal
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
-            List<string> conditions = input_files.Select(f => f.lt_condition).Concat(input_files.Select(f => f.hv_condition)).Distinct().ToList();
+            List<string> conditions = input_files.Where(f => f.purpose == Purpose.Identification).Select(f => f.lt_condition).Concat(input_files.Select(f => f.hv_condition)).Distinct().ToList();
             if (require_both_tr) //for a component to be in an agg proteoform, needs to have been observed in all tech reps
             {
                 Parallel.ForEach(vetted_proteoforms, p => 
