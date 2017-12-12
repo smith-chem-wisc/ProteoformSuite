@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
         public ChargeState(List<string> charge_row)
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
-            this.intensity = Convert.ToDouble(charge_row[1]);
+            this.intensity = Convert.ToDouble(charge_row[1]) / this.charge_count; //charge state normalized
             this.mz_centroid = Convert.ToDouble(charge_row[2]);
             this.reported_mass = Convert.ToDouble(charge_row[3]);
             this.calculated_mass = correct_calculated_mass();
