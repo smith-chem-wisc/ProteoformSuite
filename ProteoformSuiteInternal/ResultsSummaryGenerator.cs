@@ -406,6 +406,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
+            results.Columns.Add("Mass Error", typeof(double));
             results.Columns.Add("Ambiguous", typeof(bool));
             results.Columns.Add("Adduct", typeof(bool));
             results.Columns.Add("Contaminant", typeof(bool));
@@ -436,6 +437,7 @@ namespace ProteoformSuiteInternal
                     e.modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
+                    e.mass_error,
                     e.ambiguous,
                     e.adduct,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant,
@@ -473,7 +475,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Theoretical PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type Unlocalized", typeof(string));
-            results.Columns.Add("Mass Error", typeof(double));
+            results.Columns.Add("Proteoform Suite Mass Error", typeof(double));
+            results.Columns.Add("Top-Down Mass Error", typeof(string));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Best Scoring Hit", typeof(string));
@@ -497,6 +500,7 @@ namespace ProteoformSuiteInternal
                     td.topdown_ptm_description,
                     td.topdown_ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :   String.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
+                    td.linked_proteoform_references == null ? "N/A" : td.mass_error.ToString(),
                     td.modified_mass - td.theoretical_mass,
                     td.modified_mass,
                     td.agg_rt,

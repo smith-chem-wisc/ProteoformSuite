@@ -6,6 +6,13 @@ MM   18.010565
 MT   Unlocalized
 CF   H2O
 //
+ID   Water loss
+TG   Any
+PP   Anywhere.
+MM   -18.010565
+MT   Unlocalized
+CF   H-2 O-1
+//
 ID   Oxidation
 TG   Any
 PP   Anywhere.

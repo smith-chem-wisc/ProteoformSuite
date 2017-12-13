@@ -63,6 +63,8 @@ namespace ProteoformSuiteInternal
 
         public bool ambiguous { get; set; }
 
+        public double mass_error { get; set; }
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -170,8 +172,19 @@ namespace ProteoformSuiteInternal
 
         #endregion
 
-        
-#region Aggregation Public Methods
+        #region Public Methods
+
+        public double calculate_mass_error()
+        {
+            string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence.Substring(begin - linked_proteoform_references.First().begin, end - begin + 1);
+            double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
+            return agg_mass - theoretical_mass;
+        }
+
+        #endregion
+
+
+        #region Aggregation Public Methods
 
         public void aggregate()
         {

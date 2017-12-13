@@ -124,6 +124,10 @@ namespace ProteoformSuiteGUI
             get { return t.manual_validation_id; }
         }
 
+        public double mass_error
+        {
+            get { return t.mass_error; }
+        }
         #endregion Public Properties
 
         #region Public Methods
@@ -165,6 +169,7 @@ namespace ProteoformSuiteGUI
             if (name == nameof(best_c_score)) return "Best Hit C-Score";
             if (name == nameof(manual_id)) return "Best Hit Info";
             if (name == nameof(family_id)) return "Family ID";
+            if (name == nameof(mass_error)) return "Mass Error";
             return null;
         }
 
@@ -178,6 +183,7 @@ namespace ProteoformSuiteGUI
                 if (property_name == nameof(theoretical_begin)) return false;
                 if (property_name == nameof(theoretical_end)) return false;
                 if (property_name == nameof(family_id)) return false;
+                if (property_name == nameof(mass_error)) return false;
             }
             return current;
         }
@@ -187,6 +193,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(modified_mass)) return "0.0000";
             if (property_name == nameof(theoretical_mass)) return "0.0000";
             if (property_name == nameof(retentionTime)) return "0.00";
+            if (property_name == nameof(mass_error)) return "0.0000";
             return null;
         }
         #endregion
