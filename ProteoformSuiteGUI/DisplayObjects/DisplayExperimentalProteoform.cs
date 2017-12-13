@@ -161,6 +161,11 @@ namespace ProteoformSuiteGUI
             get { return e.topdown_id; }
         }
 
+        public double mass_error
+        {
+            get { return e.mass_error; }
+        }
+
         public bool Adduct
         {
             get
@@ -244,6 +249,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
             if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
             if (property_name == nameof(family_id)) return "Family ID";
+            if (property_name == nameof(mass_error)) return "Mass Error";
             return null;
         }
 
@@ -259,6 +265,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(agg_intensity)) return "0.0000";
             if (property_name == nameof(flash_lfq_intensity)) return "0.0000";
             if (property_name == nameof(agg_rt)) return "0.00";
+            if (property_name == nameof(mass_error)) return "0.0000";
             return null;
         }
 

@@ -866,7 +866,6 @@ namespace ProteoformSuiteInternal
         public void construct_target_and_decoy_families()
         {
             target_proteoform_community.construct_families();
-            foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
         }
 
         #endregion PROTEOFORM FAMILIES Public Fields

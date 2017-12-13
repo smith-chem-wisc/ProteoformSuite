@@ -32,13 +32,9 @@ namespace ProteoformSuiteInternal
         //Settings
         public bool limit_triples_and_greater = true;
 
+        public Dictionary<char, double> aaIsotopeMassList;
+
         #endregion Public Fields
-
-        #region Private Fields
-
-        private Dictionary<char, double> aaIsotopeMassList;
-
-        #endregion Private Fields
 
         #region Public Methods
 
@@ -75,11 +71,11 @@ namespace ProteoformSuiteInternal
                     new List<ModificationWithMass>(); // Empty variable modifications if not selected
                 if (filename.EndsWith("variable.txt"))
                     variableModifications = new_mods;
-                if (filename.EndsWith("intact_mods.txt"))
-                {
-                    List<double> old_mods = all_known_modifications.OfType<ModificationWithMass>().Select(m => m.monoisotopicMass).ToList();
-                    new_mods = new_mods.Where(m => !old_mods.Contains(m.monoisotopicMass)).ToList(); // get rid of the unlocalized mods if they're already present
-                }
+                //if (filename.EndsWith("intact_mods.txt"))
+                //{
+                //    List<double> old_mods = all_known_modifications.OfType<ModificationWithMass>().Select(m => m.monoisotopicMass).ToList();
+                //    new_mods = new_mods.Where(m => !old_mods.Contains(m.monoisotopicMass)).ToList(); // get rid of the unlocalized mods if they're already present
+                //}
                 all_known_modifications.AddRange(new_mods);
             }
 

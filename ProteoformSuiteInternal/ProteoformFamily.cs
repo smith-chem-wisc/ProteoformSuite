@@ -121,6 +121,7 @@ namespace ProteoformSuiteInternal
             && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id) != e.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id))
             .Count(p => p.modification.modificationType != "Deconvolution Error" && p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0);
             if (e as TopDownProteoform != null) (e as TopDownProteoform).set_correct_id();
+            if (e.linked_proteoform_references != null) e.mass_error = e.calculate_mass_error();
             });
         }
 
