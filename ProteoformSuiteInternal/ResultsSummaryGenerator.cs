@@ -475,8 +475,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Theoretical PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type Unlocalized", typeof(string));
-            results.Columns.Add("Proteoform Suite Mass Error", typeof(double));
-            results.Columns.Add("Top-Down Mass Error", typeof(string));
+            results.Columns.Add("Proteoform Suite Mass Error", typeof(string));
+            results.Columns.Add("Top-Down Mass Error", typeof(double));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Best Scoring Hit", typeof(string));

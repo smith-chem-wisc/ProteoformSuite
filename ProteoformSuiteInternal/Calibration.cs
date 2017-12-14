@@ -390,7 +390,7 @@ namespace ProteoformSuiteInternal
                     double corrected_mass;
                     if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble()), out corrected_mass))
                     {
-                        row.Cell(17).SetValue(corrected_mass);
+                        row.Cell(17).SetValue(corrected_mass.ToString());
                     }
                     //if hit's file not calibrated (not enough calibration points, remove from list
                     else
@@ -428,7 +428,7 @@ namespace ProteoformSuiteInternal
                         double value;
                         if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
                         {
-                            row.Cell(4).SetValue(value);
+                            row.Cell(4).SetValue(value.ToString());
                         }
                     }
                 }

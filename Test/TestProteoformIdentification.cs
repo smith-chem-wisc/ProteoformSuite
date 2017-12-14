@@ -241,6 +241,7 @@ namespace Test
             }
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(3, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
