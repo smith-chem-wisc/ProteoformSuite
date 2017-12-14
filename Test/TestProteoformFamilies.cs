@@ -147,7 +147,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } }
             };
@@ -158,6 +158,8 @@ namespace Test
             Sweet.lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
+            pf2.begin = 1;
+            pf2.end = 4;
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0, TestContext.CurrentContext.TestDirectory);
             pr1.Accepted = true;
@@ -331,6 +333,9 @@ namespace Test
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3", 1040, 8, true);
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4", 1050, 5, true);
             TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("t1", 1000, 5);
+            t1.sequence = "ASDF";
+            t1.begin = 1;
+            t1.end = 4;
             TheoreticalProteoform decoy1 = ConstructorsForTesting.make_a_theoretical("Decoy1", 1020, 5);
 
             TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 0 });

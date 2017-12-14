@@ -37,7 +37,10 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             PtmSet set = new PtmSet(p.OneBasedPossibleLocalizedModifications.SelectMany(m => m.Value.OfType<ModificationWithMass>().SelectMany(mmm => new List<Ptm> { new Ptm(0, mmm) })).ToList());
-            return new TheoreticalProteoform(a, "", p.BaseSequence,  new List<ProteinWithGoTerms> { p }, 100, 0, set, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform(a, "", p.BaseSequence,  new List<ProteinWithGoTerms> { p }, 100, 0, set, true, true, dict);
+            t.begin = 1;
+            t.end = 4;
+            return t;
         }
 
         public static TheoreticalProteoform make_a_theoretical()

@@ -866,6 +866,17 @@ namespace ProteoformSuiteInternal
         public void construct_target_and_decoy_families()
         {
             target_proteoform_community.construct_families();
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\decoy_mass_errors.txt"))
+            {
+                foreach (var decoys in decoy_proteoform_communities.Values)
+                {
+                    decoys.construct_families();
+                    foreach(var e in decoys.experimental_proteoforms)
+                    {
+                        if (e.linked_proteoform_references != null) writer.WriteLine(decoys.community_number + "\t" + e.mass_error);
+                    }
+                }
+            }
         }
 
         #endregion PROTEOFORM FAMILIES Public Fields

@@ -200,7 +200,7 @@ namespace Test
         public void testListUncorrected()
         {
             Assert.AreEqual(10, testChargeStateList.charge_count);
-            Assert.AreEqual(1d, testChargeStateList.intensity);
+            Assert.AreEqual(1d / 10, testChargeStateList.intensity); //charge state normalized
             Assert.AreEqual(100d, testChargeStateList.mz_centroid);
             Assert.AreEqual(Math.Round(989.92723555, 5), Math.Round(testChargeStateList.calculated_mass), 5);
         }
