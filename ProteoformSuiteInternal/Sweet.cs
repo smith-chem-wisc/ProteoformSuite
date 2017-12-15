@@ -171,7 +171,7 @@ namespace ProteoformSuiteInternal
 
         public static void change_file(InputFile file, object property, string property_name, string from, string to)
         {
-            save_actions.Add("change file '" + file.complete_path + "' property " + property_name + " of type " + property.GetType().FullName + " from " + from + " to " + to);
+            save_actions.Add("change file '" + file.complete_path + "' with purpose " + file.purpose + " property " + property_name + " of type " + property.GetType().FullName + " from " + from + " to " + to);
         }
 
         public static void accept_peak_action(IMassDifference peak)
@@ -192,7 +192,7 @@ namespace ProteoformSuiteInternal
         public static void add_files_from_presets(List<InputFile> destination)
         {
             Regex findaddfile = new Regex(@"(add file ')(.+)(' with purpose )");
-            Regex findpurpose = new Regex(@"(purpose )(.+)");
+            Regex findpurpose = new Regex(@"( purpose )(.+)");
             foreach (string add_file in loaded_actions.Where(x => x.StartsWith("add file ")))
             {
                 string filestring = findaddfile.Match(add_file).Groups[2].ToString();
@@ -208,7 +208,8 @@ namespace ProteoformSuiteInternal
 
         public static void update_files_from_presets(List<InputFile> destination)
         {
-            Regex findchangefile = new Regex(@"(change file ')(.+)(' property )");
+            Regex findchangefile = new Regex(@"(change file ')(.+)(' with purpose )");
+            Regex findpurpose = new Regex(@"( purpose )(.+)( property )");
             Regex findproperty = new Regex(@"( property )(\S+)");
             Regex findtype = new Regex(@"( type )(\S+)");
             Regex findto = new Regex(@"( to )(.+)"); // matches to end of line
@@ -219,7 +220,8 @@ namespace ProteoformSuiteInternal
                 string property = findproperty.Match(change_file).Groups[2].ToString();
                 string typefullname = findtype.Match(change_file).Groups[2].ToString();
                 string value = findto.Match(change_file).Groups[2].ToString();
-                InputFile file = destination.FirstOrDefault(f => f.complete_path == filepath); //match the filename, not the path, in case it changed folders
+                Purpose? purpose = ExtensionMethods.EnumUntil.GetValues<Purpose>().FirstOrDefault(p => findpurpose.Match(change_file).Groups[2].ToString() == p.ToString());
+                InputFile file = destination.FirstOrDefault(f => f.complete_path == filepath && f.purpose == purpose); //match the filename, not the path, in case it changed folders
                 PropertyInfo propertyinfo = typeof(InputFile).GetProperties().FirstOrDefault(p => p.Name == property);
                 Type type = Type.GetType(typefullname);
 
