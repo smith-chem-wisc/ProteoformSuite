@@ -10,6 +10,7 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayGoTermNumber : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayGoTermNumber(GoTermNumber g)
@@ -48,7 +49,7 @@ namespace ProteoformSuiteGUI
 
         public double p_value
         {
-            get { return gtn.by; }
+            get { return gtn.p_value; }
         }
 
         public double by //benjamini yekutieli calculated after all p-values are calculated
@@ -138,5 +139,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Methods
+
     }
 }
