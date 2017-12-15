@@ -334,6 +334,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             btn_downloadUniProtPtmList.Enabled = false;
+            SetMakeDatabaseButton();
         }
 
         #endregion LOAD DATABASES GRID VIEW Private Methods
