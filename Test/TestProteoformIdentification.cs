@@ -50,20 +50,57 @@ namespace Test
             {
                 new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
             });
+            PtmSet set4 = new PtmSet(new List<Ptm>
+            {
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+                new Ptm(0, new ModificationWithMass("acetyl", new Tuple<string, string>("", ""), motif, TerminusLocalization.Any, 42.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Mod")),
+            });
+
             e.ptm_set = set;
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
             {
                 { Math.Round(set.mass, 1), new List<PtmSet> { set } },
                 { Math.Round(set2.mass, 1), new List<PtmSet> { set2 } },
                 { Math.Round(set3.mass, 1), new List<PtmSet> { set3 } },
+                { Math.Round(set4.mass, 1), new List<PtmSet> { set4 } },
             };
+
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 126.03);
+            e.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
+            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<ModificationWithMass> { set.ptm_combination.First().modification });
+            Assert.IsNotNull(e2.linked_proteoform_references);
+            Assert.AreEqual(0, e2.ptm_set.mass);
+
+            e.relationships.Clear();
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 84.02);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals(new List<PtmSet> { set, set2, set3 }, new List<ModificationWithMass> { set.ptm_combination.First().modification });
+            e.identify_connected_experimentals(new List<PtmSet> { set2 }, new List<ModificationWithMass> { set2.ptm_combination.First().modification });
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(42.01, e2.ptm_set.mass);
+
+            e.relationships.Clear();
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 42.01);
+            e.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
+            e.identify_connected_experimentals(new List<PtmSet> { set3 }, new List<ModificationWithMass> { set3.ptm_combination.First().modification });
+            Assert.IsNotNull(e2.linked_proteoform_references);
+            Assert.AreEqual(84.02, e2.ptm_set.mass);
+
+            //can't remove more acetylations than in e's ptmset
+            e.relationships.Clear();
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 168.04);
+            e.relationships.First().Accepted = true;
+            e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
+            e.identify_connected_experimentals(new List<PtmSet> { set4 }, new List<ModificationWithMass> { set4.ptm_combination.First().modification });
+            Assert.IsNull(e2.linked_proteoform_references);
         }
 
         [Test]
