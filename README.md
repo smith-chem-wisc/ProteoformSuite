@@ -7,6 +7,8 @@ Software for constructing, quantifying, and visualizing proteoform families.
 
 * [Proteoform Suite: Software for Constructing, Quantifying, and Visualizing Proteoform Families. (2017, _J. Proteome Res._)](http://pubs.acs.org/doi/10.1021/acs.jproteome.7b00685)
 
+* [Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Constructing Proteoform Families (2017, _Anal. Chem._)](http://pubs.acs.org/doi/abs/10.1021/acs.analchem.7b04221)
+
 * [Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. (2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
 
 ## Latest Release and Vignette
