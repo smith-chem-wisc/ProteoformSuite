@@ -14,6 +14,7 @@ namespace ProteoformSuiteInternal
     {
 
         public static Lollipop lollipop = new Lollipop();
+        public static string methodFilePath = "";
         public static List<string> save_actions = new List<string>();
         public static List<string> loaded_actions = new List<string>();
 
@@ -103,8 +104,9 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static bool open_method(string alltext, bool add_files, out string warning_message)
+        public static bool open_method(string methodFilePath, string alltext, bool add_files, out string warning_message)
         {
+            Sweet.methodFilePath = methodFilePath;
             warning_message = "";
             loaded_actions.Clear();
             FieldInfo[] lollipop_fields = typeof(Lollipop).GetFields();
@@ -143,6 +145,8 @@ namespace ProteoformSuiteInternal
                 field.SetValue(lollipop, Convert.ChangeType(value, type));
             }
 
+            lollipop.results_folder = !lollipop.results_folder.StartsWith(".") ? lollipop.results_folder : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), lollipop.results_folder));
+
             foreach (XElement action in action_elements)
             {
                 loaded_actions.Add(GetAttribute(action, "action"));
@@ -151,7 +155,7 @@ namespace ProteoformSuiteInternal
             if (loaded_actions.Any(a => !a.StartsWith("add file ") && !a.StartsWith("change file ") && !a.StartsWith("shift ") && !a.StartsWith("accept ") && !a.StartsWith("unaccept ")))
                 return false;
 
-            if (add_files)  add_files_from_presets(lollipop.input_files); 
+            if (add_files) add_files_from_presets(lollipop.input_files); 
             else update_files_from_presets(lollipop.input_files);
             return true;
         }
@@ -162,12 +166,12 @@ namespace ProteoformSuiteInternal
 
         public static void add_file_action(InputFile file)
         {
-            save_actions.Add("add file \"" + file.complete_path + "\" with purpose " + file.purpose.ToString());
+            save_actions.Add("add file '" + file.complete_path + "' with purpose " + file.purpose.ToString());
         }
 
         public static void change_file(InputFile file, object property, string property_name, string from, string to)
         {
-            save_actions.Add("change file \"" + file.complete_path + "\" property " + property_name + " of type " + property.GetType().FullName + " from " + from + " to " + to);
+            save_actions.Add("change file '" + file.complete_path + "' property " + property_name + " of type " + property.GetType().FullName + " from " + from + " to " + to);
         }
 
         public static void accept_peak_action(IMassDifference peak)
@@ -187,11 +191,12 @@ namespace ProteoformSuiteInternal
 
         public static void add_files_from_presets(List<InputFile> destination)
         {
-            Regex findaddfile = new Regex(@"(add file )(.+)( with purpose )");
+            Regex findaddfile = new Regex(@"(add file ')(.+)(' with purpose )");
             Regex findpurpose = new Regex(@"(purpose )(.+)");
             foreach (string add_file in loaded_actions.Where(x => x.StartsWith("add file ")))
             {
-                string filepath = findaddfile.Match(add_file).Groups[2].ToString();
+                string filestring = findaddfile.Match(add_file).Groups[2].ToString();
+                string filepath = !filestring.StartsWith(".") ? filestring : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), filestring));
                 Purpose? purpose = ExtensionMethods.EnumUntil.GetValues<Purpose>().FirstOrDefault(p => findpurpose.Match(add_file).Groups[2].ToString() == p.ToString());
                 if (purpose == null || !File.Exists(filepath))
                     continue;
@@ -203,17 +208,18 @@ namespace ProteoformSuiteInternal
 
         public static void update_files_from_presets(List<InputFile> destination)
         {
-            Regex findchangefile = new Regex(@"(change file )(\S+)( of type )");
+            Regex findchangefile = new Regex(@"(change file ')(.+)(' property )");
             Regex findproperty = new Regex(@"( property )(\S+)");
             Regex findtype = new Regex(@"( type )(\S+)");
             Regex findto = new Regex(@"( to )(.+)"); // matches to end of line
             foreach (string change_file in loaded_actions.Where(x => x.StartsWith("change file ")))
             {
-                string filename = Path.GetFileName(findchangefile.Match(change_file).Groups[2].ToString());
+                string filestring = findchangefile.Match(change_file).Groups[2].ToString();
+                string filepath = !filestring.StartsWith(".") ? filestring : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), filestring));
                 string property = findproperty.Match(change_file).Groups[2].ToString();
                 string typefullname = findtype.Match(change_file).Groups[2].ToString();
                 string value = findto.Match(change_file).Groups[2].ToString();
-                InputFile file = destination.FirstOrDefault(f => Path.GetFileName(f.complete_path) == filename); //match the filename, not the path, in case it changed folders
+                InputFile file = destination.FirstOrDefault(f => f.complete_path == filepath); //match the filename, not the path, in case it changed folders
                 PropertyInfo propertyinfo = typeof(InputFile).GetProperties().FirstOrDefault(p => p.Name == property);
                 Type type = Type.GetType(typefullname);
 
