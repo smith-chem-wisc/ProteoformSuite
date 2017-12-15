@@ -61,7 +61,7 @@ namespace Test
                 else continue;
             }
 
-            Sweet.open_method(builder.ToString(), false, out string warning);
+            Sweet.open_method("", builder.ToString(), false, out string warning);
             foreach (PropertyInfo property in typeof(Lollipop).GetProperties())
             {
                 if (property.PropertyType == typeof(int))
@@ -120,7 +120,7 @@ namespace Test
             Sweet.unaccept_peak_action(pr2);
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Sweet.open_method(String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
+            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
             Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, Sweet.lollipop.ee_peaks.Count);
             DeltaMassPeak peak = Sweet.lollipop.ee_peaks[0];
