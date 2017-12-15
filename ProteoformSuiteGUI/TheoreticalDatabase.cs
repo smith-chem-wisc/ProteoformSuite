@@ -45,11 +45,12 @@ namespace ProteoformSuiteGUI
             initial_load = false;
         }
 
-        private void set_Make_Database_Button()
+        private bool SetMakeDatabaseButton()
         {
             bool ready_to_run = ReadyToRunTheGamut();
             btn_downloadUniProtPtmList.Enabled = !ready_to_run && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() == 0;
             btn_Make_Databases.Enabled = ready_to_run;
+            return ready_to_run;
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
@@ -278,7 +279,10 @@ namespace ProteoformSuiteGUI
         private void dgv_loadFiles_DragDrop(object sender, DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
-            set_Make_Database_Button();
+            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
+            {
+                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
+            }
         }
 
         private void dgv_loadFiles_DragEnter(object sender, DragEventArgs e)
@@ -289,6 +293,7 @@ namespace ProteoformSuiteGUI
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
@@ -302,7 +307,10 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             initialize_table_bindinglist();
-            set_Make_Database_Button();
+            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
+            {
+                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
+            }
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
@@ -326,6 +334,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             btn_downloadUniProtPtmList.Enabled = false;
+            SetMakeDatabaseButton();
         }
 
         #endregion LOAD DATABASES GRID VIEW Private Methods
@@ -341,11 +350,17 @@ namespace ProteoformSuiteGUI
 
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
+            {
+                if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Sweet.lollipop.input_files, true);
+            }
 
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            set_Make_Database_Button();
+            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
+            {
+                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
+            }
         }
 
         private void btn_clearFiles_Click(object sender, EventArgs e)
@@ -355,7 +370,7 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            set_Make_Database_Button();
+            SetMakeDatabaseButton();
         }
 
         #endregion ADD/CLEAR Private Methods

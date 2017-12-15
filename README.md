@@ -3,6 +3,12 @@ Software for constructing, quantifying, and visualizing proteoform families.
 [![Build status](https://ci.appveyor.com/api/projects/status/qbc3xy4b35otnsxe/branch/master?svg=true)](https://ci.appveyor.com/project/stefanks/proteoform-suite/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/smith-chem-wisc/proteoform-suite/badge.svg?branch=master)](https://coveralls.io/github/smith-chem-wisc/proteoform-suite?branch=master)
 
+## Papers
+
+* [Proteoform Suite: Software for Constructing, Quantifying, and Visualizing Proteoform Families. (2017, _J. Proteome Res._)](http://pubs.acs.org/doi/10.1021/acs.jproteome.7b00685)
+
+* [Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. (2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
+
 ## Latest Release and Vignette
 
 The latest release and vignette can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/latest).
