@@ -46,6 +46,7 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate, value);
                 file.biological_replicate = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -73,6 +74,7 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction, value);
                 file.fraction = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -86,6 +88,7 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate, value);
                 file.technical_replicate = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -99,6 +102,7 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition, value);
                 file.lt_condition = value != null? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -113,6 +117,7 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition, value);
                 file.hv_condition = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 

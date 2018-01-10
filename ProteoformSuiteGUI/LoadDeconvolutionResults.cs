@@ -152,7 +152,7 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable3.Items.Add(Lollipop.file_lists[0]);
 
                 //if unlabeled add quant
-                if (Sweet.lollipop.neucode_labeled)
+             //   if (Sweet.lollipop.neucode_labeled)
                 {
                     cmb_loadTable1.Items.Add(Lollipop.file_lists[1]);
                     cmb_loadTable2.Items.Add(Lollipop.file_lists[1]);

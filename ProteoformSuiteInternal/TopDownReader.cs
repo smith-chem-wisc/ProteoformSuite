@@ -34,33 +34,67 @@ namespace ProteoformSuiteInternal
                                                           //N-term modifications
                     if (cellStrings[10].Length > 0) //N Terminal Modification Code
                     {
-                        int position = Convert.ToInt32(cellStrings[5]);
-                        if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
+                        string[] ptms = cellStrings[9].Split('|');
+                        foreach (string ptm in ptms)
                         {
-                            ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == "N-terminal Acetyl").FirstOrDefault()));
+                            int position = Convert.ToInt32(cellStrings[5]);
+                            if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
+                            {
+                                ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == "N-terminal Acetyl").FirstOrDefault()));
+                            }
+                            else
+                            {
+                                string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
+                                while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
+                                psimod = "MOD:" + psimod;
+                                ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                if (mod != null) ptm_list.Add(new Ptm(position, mod));
+                                else
+                                {
+                                    lock (topdown_ptms)
+                                    {
+                                        topdown_ptms.Add("PSI-MOD:" + psimod + " at " + position);
+                                    }
+                                    add_topdown_hit = false;
+                                }
+                            }
                         }
                     }
                     //don't have example of c-term modification to write code
                     //other mods
                     if (cellStrings[9].Length > 0)//Modification Codes
                     {
-                        string[] res_ids = cellStrings[9].Split('|');
-                        foreach (string ptm in res_ids)
+                        string[] ptms = cellStrings[9].Split('|');
+                        foreach (string ptm in ptms)
                         {
-                            string resid = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
-                            while (resid.Length < 4) resid = "0" + resid;//short part should be the accession number, which is an integer
-                            resid = "AA" + resid;
+                            ModificationWithMass mod = null;
+                            string id = "";
                             int position_after_begin = Convert.ToInt16(ptm.Split(':')[1].Split('@')[1]) + 1; //one based sequence
-                            //they give position # as from begin site -> want to report in terms of overall sequence #'s
-                            //begin + position from begin - 1 => position in overall sequence
+                                                                                                             //they give position # as from begin site -> want to report in terms of overall sequence #'s
+                                                                                                             //begin + position from begin - 1 => position in overall sequence
                             int position = Convert.ToInt32(cellStrings[5]) + position_after_begin - 1;
-                            ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
+                            if (ptm.Split(':')[0] == "RESID")
+                            {
+                                string resid = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
+                                while (resid.Length < 4) resid = "0" + resid;//short part should be the accession number, which is an integer
+                                resid = "AA" + resid;
+                                id = "RESID:" + resid;
+                                mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
+                            }
+                            else if (ptm.Split(':')[0] == "PSI-MOD")
+                            {
+                                string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
+                                while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
+                                psimod = "MOD:" + psimod;
+                                mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                id = "PSI-MOD:" + psimod;
+                            }
                             if (mod != null) ptm_list.Add(new Ptm(position, mod));
                             else
                             {
                                 lock (topdown_ptms)
                                 {
-                                    topdown_ptms.Add(resid + " at " + cellStrings[4][position_after_begin - 1]);
+                                    topdown_ptms.Add(id + " at " + cellStrings[4][position_after_begin - 1]);
                                 }
                                 add_topdown_hit = false;
                             }

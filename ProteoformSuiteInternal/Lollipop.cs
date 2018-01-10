@@ -475,17 +475,18 @@ namespace ProteoformSuiteInternal
             {
                 community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => e.topdown_id ? new TopDownProteoform(e as TopDownProteoform) : new ExperimentalProteoform(e)).ToArray();
             }
-            if (Sweet.lollipop.neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
+           // if (Sweet.lollipop.neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
+           if(get_files(input_files, Purpose.Quantification).Count() > 0)
             {
                 assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             }
-            else if (!Sweet.lollipop.neucode_labeled)
-            {
-                Parallel.ForEach(vetted_proteoforms, e =>
-                {
-                    e.lt_quant_components = e.aggregated.Select(c => c as Component).ToList();
-                });
-            }
+            //else if (!Sweet.lollipop.neucode_labeled)
+            //{
+            //    Parallel.ForEach(vetted_proteoforms, e =>
+            //    {
+            //        e.lt_quant_components = e.aggregated.Select(c => c as Component).ToList();
+            //    });
+            //}
            return vetted_proteoforms;
         }
 
