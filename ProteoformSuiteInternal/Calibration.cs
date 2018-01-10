@@ -191,10 +191,11 @@ namespace ProteoformSuiteInternal
                 Component matching_component = null;
                 if (identification.filename != raw_file.filename) //if calibrating across files find component with matching mass and retention time
                 {
-                    //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes  
+                    //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes same br, tr, fraction, condition (same file!)
                     //if neucode labled, look for the light component mass 
                     double hit_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(identification.theoretical_mass, identification.sequence.Count(s => s == 'K')) : identification.theoretical_mass;
-                    List<Component> potential_matches = Sweet.lollipop.calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && (Sweet.lollipop.neucode_labeled || c.input_file.biological_replicate == raw_file.biological_replicate) && c.input_file.fraction == raw_file.fraction).ToList();
+                    List<Component> potential_matches = Sweet.lollipop.calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && (Sweet.lollipop.neucode_labeled || c.input_file.biological_replicate == raw_file.biological_replicate) && c.input_file.fraction == raw_file.fraction
+                    && c.input_file.technical_replicate == raw_file.technical_replicate).ToList();
                     if (potential_matches.Count > 0)
                         matching_component = potential_matches.Where(c =>
                    Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
@@ -212,6 +213,10 @@ namespace ProteoformSuiteInternal
                         rt = myMsDataFile.GetOneBasedScan(scanNumber + 1).RetentionTime;
                     }
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
+                }
+                else
+                {
+                    if (identification.technical_replicate != raw_file.technical_replicate) continue;
                 }
 
                 var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();

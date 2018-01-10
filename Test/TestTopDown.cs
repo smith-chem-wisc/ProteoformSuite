@@ -103,7 +103,7 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(5, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.topdown_ptms.Count);
-            Assert.AreEqual("AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.First());
+            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.First());
             Assert.AreEqual(4, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10892.196, Math.Round(Sweet.lollipop.top_down_hits.OrderByDescending(h => h.ptm_list.Count).First().theoretical_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);

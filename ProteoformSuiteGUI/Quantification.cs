@@ -138,19 +138,14 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            if (Sweet.lollipop.neucode_labeled && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() == 0) return false;
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() == 0) return false;
             if (Sweet.lollipop.target_proteoform_community.families.Count == 0) return false;
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == "")) return false;
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().Count() != 2) return false;
+                if (Sweet.lollipop.neucode_labeled || !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
+                Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d)))) return false;
+            if (Sweet.lollipop.raw_quantification_components.Count == 0) return false;
             return true;
-            //if(!Sweet.lollipop.neucode_labeled)
-            //{
-            //    List<InputFile> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).ToList();
-            //    foreach(var condition in files.Select(f => f.lt_condition).Distinct())
-            //    {
-            //        if(files.Select(f => f.biological_replicate).Distinct().)
-            //    }
-            //}
-            // and all of the files need to have unique bio/fract/tech replicate annotations for logFC analysis
-            //  && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().Count() == Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count();
         }
 
         public void FillTablesAndCharts()
@@ -193,6 +188,11 @@ namespace ProteoformSuiteGUI
 
         public void InitializeConditionsParameters()
         {
+            cmbx_ratioNumerator.Items.Clear();
+            cmbx_ratioDenominator.Items.Clear();
+            cmbx_inducedCondition.Items.Clear();
+            cmbx_edgeLabel.Items.Clear();
+
             //Initialize conditions -- need to do after files entered
             List<string> conditions = Sweet.lollipop.ltConditionsBioReps.Keys.ToList();
             if (conditions.Count > 0)
@@ -399,15 +399,23 @@ namespace ProteoformSuiteGUI
                 RunTheGamut(false);
                 Cursor = Cursors.Default;
             }
-            else if (Sweet.lollipop.neucode_labeled && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() <= 0)
+            else if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() <= 0)
                 MessageBox.Show("Please load quantification results in Load Deconvolution Results.", "Quantification");
+            else if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
+                MessageBox.Show("Please be sure the technical replicate, fraction, biological replicate, and condition are labeled for each quantification file.");
+            else if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().Count() != 2)
+                MessageBox.Show("Please be sure there are two conditions.");
+            else if (Sweet.lollipop.neucode_labeled || !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
+            Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d))))
+                MessageBox.Show("Please be sure there are the same number and labels for each biological replicate, fraction, and technical replicate for each condition.");
+            else if (Sweet.lollipop.raw_quantification_components.Count == 0)
+                MessageBox.Show("Please process raw components.", "Quantification");
             else if (Sweet.lollipop.raw_experimental_components.Count <= 0)
                 MessageBox.Show("Please load deconvolution results.", "Quantification");
             else if (Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
                 MessageBox.Show("Please aggregate proteoform observations.", "Quantification");
             else if (Sweet.lollipop.target_proteoform_community.families.Count <= 0)
                 MessageBox.Show("Please construct proteoform families.", "Quantification");
-            else MessageBox.Show("Please load in equal numbers of technical replicates for each fraction, and equal numbers of fraction for each biological replicate.");
         }
 
         private void cmbx_ratioNumerator_SelectedIndexChanged(object sender, EventArgs e)
