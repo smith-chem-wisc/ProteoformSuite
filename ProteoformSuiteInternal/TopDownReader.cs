@@ -19,7 +19,9 @@ namespace ProteoformSuiteInternal
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
         {
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, true, false, false).AA_Masses; //always use natural K mass
+            //if neucode labeled, calculate neucode light theoretical AND observed mass! --> better for matching up
+            //if carbamidomethylated, add 57 to theoretical mass (already in observed mass...)
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, !Sweet.lollipop.neucode_labeled, Sweet.lollipop.neucode_labeled, false).AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);//This returns the entire sheet except for the header. Each row of cells is one List<string>
@@ -31,7 +33,7 @@ namespace ProteoformSuiteInternal
                 if (tdResultType != TopDownResultType.Unknown) //uknown result type! 
                 {
                     List<Ptm> ptm_list = new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
-                                                          //N-term modifications
+                    //N-term modifications
                     if (cellStrings[10].Length > 0) //N Terminal Modification Code
                     {
                         string[] ptms = cellStrings[9].Split('|');

@@ -475,18 +475,10 @@ namespace ProteoformSuiteInternal
             {
                 community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => e.topdown_id ? new TopDownProteoform(e as TopDownProteoform) : new ExperimentalProteoform(e)).ToArray();
             }
-           // if (Sweet.lollipop.neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
            if(get_files(input_files, Purpose.Quantification).Count() > 0)
             {
                 assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             }
-            //else if (!Sweet.lollipop.neucode_labeled)
-            //{
-            //    Parallel.ForEach(vetted_proteoforms, e =>
-            //    {
-            //        e.lt_quant_components = e.aggregated.Select(c => c as Component).ToList();
-            //    });
-            //}
            return vetted_proteoforms;
         }
 
@@ -1124,6 +1116,8 @@ namespace ProteoformSuiteInternal
         public List<string> filenames_did_not_calibrate = new List<string>();
         public bool calibration_use_random_seed = false;
         public int calibration_random_seed = 1;
+        public bool calibrate_raw_files = false;
+        public bool calibrate_td_files = false;
 
         public void read_in_calibration_td_hits()
         {
@@ -1187,6 +1181,8 @@ namespace ProteoformSuiteInternal
                         process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && (Sweet.lollipop.neucode_labeled || f.biological_replicate == biological_replicate) && f.fraction == fraction && f.lt_condition == condition).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                         foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
+                            if (!Sweet.lollipop.calibrate_td_files && td_hits_calibration.Any(h => h.filename == raw_file.filename)) continue;
+
                             bool calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => (Sweet.lollipop.neucode_labeled || h.biological_replicate == raw_file.biological_replicate) && h.fraction == raw_file.fraction && h.condition == raw_file.lt_condition).ToList());
                             if (calibrated)
                             {
@@ -1200,9 +1196,12 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown && td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
+            if (calibrate_td_files)
             {
-                Calibration.calibrate_td_hits_file(file);
+                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown && td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
+                {
+                    Calibration.calibrate_td_hits_file(file);
+                }
             }
             return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + String.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
         }
@@ -1225,11 +1224,14 @@ namespace ProteoformSuiteInternal
                 }
             });
 
-            //get topdown shifts if this rawfile is the same name as the topdown hit's file
-            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
+            if (calibrate_td_files)
             {
-                Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
-                if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, Math.Round(hit.mz.ToMass(hit.charge), 8));
+                //get topdown shifts if this rawfile is the same name as the topdown hit's file
+                foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
+                {
+                    Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
+                    if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, Math.Round(hit.mz.ToMass(hit.charge), 8));
+                }
             }
         }
 
