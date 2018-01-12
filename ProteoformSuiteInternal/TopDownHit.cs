@@ -50,7 +50,8 @@ namespace ProteoformSuiteInternal
             this.begin = begin;
             this.end = end;
             this.ptm_list = modifications;
-            this.reported_mass = reported_mass;
+            //if neucode labeled, calculate neucode mass.... 
+            this.reported_mass = Sweet.lollipop.neucode_labeled? Sweet.lollipop.get_neucode_mass(reported_mass, sequence.Count(s => s == 'K')) : reported_mass;
             this.theoretical_mass = CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
             this.ms2ScanNumber = scan;
             this.ms2_retention_time = retention_time;

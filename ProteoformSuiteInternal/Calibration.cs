@@ -66,7 +66,7 @@ namespace ProteoformSuiteInternal
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
             }
-            MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
+            if(Sweet.lollipop.calibrate_raw_files) MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
             return true;
         }
 
@@ -192,17 +192,15 @@ namespace ProteoformSuiteInternal
                 if (identification.filename != raw_file.filename) //if calibrating across files find component with matching mass and retention time
                 {
                     //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes same br, tr, fraction, condition (same file!)
-                    //if neucode labled, look for the light component mass 
-                    double hit_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(identification.theoretical_mass, identification.sequence.Count(s => s == 'K')) : identification.theoretical_mass;
+                    //if neucode labled, look for the light component mass (loaded in...)
                     List<Component> potential_matches = Sweet.lollipop.calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && (Sweet.lollipop.neucode_labeled || c.input_file.biological_replicate == raw_file.biological_replicate) && c.input_file.fraction == raw_file.fraction
                     && c.input_file.technical_replicate == raw_file.technical_replicate).ToList();
                     if (potential_matches.Count > 0)
                         matching_component = potential_matches.Where(c =>
-                   Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
-                   && Math.Abs(c.rt_apex - identification.ms1_retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
+                   Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
+                   && Math.Abs(c.rt_apex - identification.ms1_retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
                     else matching_component = null;
                     if (matching_component == null) continue;
-                    ChargeState cs = matching_component.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
                     scanNumbers.Clear();
                     //get scan numbers using retention time (if raw file is spliced, scan numbers change)
                     double rt = Convert.ToDouble(matching_component.rt_range.Split('-')[0]);
@@ -216,6 +214,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
+                    //if top-down file, needs to be hit from same techrep (exact same raw file...)
                     if (identification.technical_replicate != raw_file.technical_replicate) continue;
                 }
 
@@ -395,7 +394,7 @@ namespace ProteoformSuiteInternal
                     double corrected_mass;
                     if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble()), out corrected_mass))
                     {
-                        row.Cell(17).SetValue(corrected_mass.ToString());
+                        row.Cell(17).SetValue(corrected_mass);
                     }
                     //if hit's file not calibrated (not enough calibration points, remove from list
                     else
@@ -431,9 +430,9 @@ namespace ProteoformSuiteInternal
                     if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                     {
                         double value;
-                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
                         {
-                            row.Cell(4).SetValue(value.ToString());
+                            row.Cell(4).SetValue(value);
                         }
                     }
                 }

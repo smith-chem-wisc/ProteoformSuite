@@ -40,6 +40,8 @@ namespace ProteoformSuiteGUI
             rb_unlabeled.Checked = !rb_neucode.Checked;
             nud_randomSeed.Value = Sweet.lollipop.calibration_random_seed;
             cb_useRandomSeed.Checked = Sweet.lollipop.calibration_use_random_seed;
+            cb_calibrate_td_files.Checked = Sweet.lollipop.calibrate_td_files;
+            cb_calibrate_raw_files.Checked = Sweet.lollipop.calibrate_raw_files;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
         }
 
@@ -134,10 +136,6 @@ namespace ProteoformSuiteGUI
         {
             populate_file_lists();
         }
-        private void rb_topdown_CheckedChanged(object sender, EventArgs e)
-        {
-            populate_file_lists();
-        }
 
         private void populate_file_lists()
         {
@@ -174,6 +172,8 @@ namespace ProteoformSuiteGUI
 
                 bt_calibrate.Visible = false;
                 cb_useRandomSeed.Visible = false;
+                cb_calibrate_raw_files.Visible = false;
+                cb_calibrate_td_files.Visible = false;
                 nud_randomSeed.Visible = false;
             }
 
@@ -184,6 +184,8 @@ namespace ProteoformSuiteGUI
                 for (int i = 4; i < 7; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
                 bt_calibrate.Visible = true;
                 cb_useRandomSeed.Visible = true;
+                cb_calibrate_td_files.Visible = true;
+                cb_calibrate_raw_files.Visible = true;
                 nud_randomSeed.Visible = true;
 
                 cmb_loadTable1.SelectedIndex = 0;
@@ -195,9 +197,9 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable3.Enabled = false;
             }
 
-            lb_filter1.Text = cmb_loadTable1.SelectedText;
-            lb_filter2.Text = cmb_loadTable1.SelectedText;
-            lb_filter3.Text = cmb_loadTable1.SelectedText;
+            lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
+            lb_filter2.Text = cmb_loadTable2.SelectedItem.ToString();
+            lb_filter3.Text = cmb_loadTable3.SelectedItem.ToString();
 
             reload_dgvs();
             refresh_dgvs();
@@ -600,6 +602,16 @@ namespace ProteoformSuiteGUI
         private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.calibration_use_random_seed = cb_useRandomSeed.Checked;
+        }
+
+        private void cb_calibrate_raw_files_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.calibrate_raw_files = cb_calibrate_raw_files.Checked;
+        }
+
+        private void cb_calibrate_td_files_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.calibrate_td_files = cb_calibrate_td_files.Checked;
         }
     }
 }

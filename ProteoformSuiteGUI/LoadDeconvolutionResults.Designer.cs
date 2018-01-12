@@ -77,6 +77,8 @@
             this.splitContainer16 = new System.Windows.Forms.SplitContainer();
             this.splitContainer24 = new System.Windows.Forms.SplitContainer();
             this.splitContainer17 = new System.Windows.Forms.SplitContainer();
+            this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
+            this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
             this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             this.bt_calibrate = new System.Windows.Forms.Button();
@@ -876,7 +878,7 @@
             // 
             this.splitContainer16.Panel2.Controls.Add(this.splitContainer25);
             this.splitContainer16.Size = new System.Drawing.Size(850, 181);
-            this.splitContainer16.SplitterDistance = 42;
+            this.splitContainer16.SplitterDistance = 68;
             this.splitContainer16.TabIndex = 0;
             // 
             // splitContainer24
@@ -892,7 +894,7 @@
             // splitContainer24.Panel2
             // 
             this.splitContainer24.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer24.Size = new System.Drawing.Size(850, 42);
+            this.splitContainer24.Size = new System.Drawing.Size(850, 68);
             this.splitContainer24.SplitterDistance = 283;
             this.splitContainer24.TabIndex = 0;
             // 
@@ -904,19 +906,45 @@
             // 
             // splitContainer17.Panel1
             // 
+            this.splitContainer17.Panel1.Controls.Add(this.cb_calibrate_td_files);
+            this.splitContainer17.Panel1.Controls.Add(this.cb_calibrate_raw_files);
             this.splitContainer17.Panel1.Controls.Add(this.nud_randomSeed);
             this.splitContainer17.Panel1.Controls.Add(this.cb_useRandomSeed);
             // 
             // splitContainer17.Panel2
             // 
             this.splitContainer17.Panel2.Controls.Add(this.bt_calibrate);
-            this.splitContainer17.Size = new System.Drawing.Size(283, 42);
-            this.splitContainer17.SplitterDistance = 136;
+            this.splitContainer17.Size = new System.Drawing.Size(283, 68);
+            this.splitContainer17.SplitterDistance = 189;
             this.splitContainer17.TabIndex = 0;
+            // 
+            // cb_calibrate_td_files
+            // 
+            this.cb_calibrate_td_files.AutoSize = true;
+            this.cb_calibrate_td_files.Location = new System.Drawing.Point(3, 48);
+            this.cb_calibrate_td_files.Name = "cb_calibrate_td_files";
+            this.cb_calibrate_td_files.Size = new System.Drawing.Size(144, 17);
+            this.cb_calibrate_td_files.TabIndex = 61;
+            this.cb_calibrate_td_files.Text = "Calibrate Top-Down Files";
+            this.cb_calibrate_td_files.UseVisualStyleBackColor = true;
+            this.cb_calibrate_td_files.Visible = false;
+            this.cb_calibrate_td_files.CheckedChanged += new System.EventHandler(this.cb_calibrate_td_files_CheckedChanged);
+            // 
+            // cb_calibrate_raw_files
+            // 
+            this.cb_calibrate_raw_files.AutoSize = true;
+            this.cb_calibrate_raw_files.Location = new System.Drawing.Point(3, 27);
+            this.cb_calibrate_raw_files.Name = "cb_calibrate_raw_files";
+            this.cb_calibrate_raw_files.Size = new System.Drawing.Size(150, 17);
+            this.cb_calibrate_raw_files.TabIndex = 60;
+            this.cb_calibrate_raw_files.Text = "Write Calibrated Raw Files";
+            this.cb_calibrate_raw_files.UseVisualStyleBackColor = true;
+            this.cb_calibrate_raw_files.Visible = false;
+            this.cb_calibrate_raw_files.CheckedChanged += new System.EventHandler(this.cb_calibrate_raw_files_CheckedChanged);
             // 
             // nud_randomSeed
             // 
-            this.nud_randomSeed.Location = new System.Drawing.Point(3, 20);
+            this.nud_randomSeed.Location = new System.Drawing.Point(120, 4);
             this.nud_randomSeed.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -956,7 +984,7 @@
             this.bt_calibrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.bt_calibrate.Location = new System.Drawing.Point(0, 0);
             this.bt_calibrate.Name = "bt_calibrate";
-            this.bt_calibrate.Size = new System.Drawing.Size(143, 42);
+            this.bt_calibrate.Size = new System.Drawing.Size(90, 68);
             this.bt_calibrate.TabIndex = 40;
             this.bt_calibrate.Text = "Calibrate";
             this.bt_calibrate.UseVisualStyleBackColor = true;
@@ -968,7 +996,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(563, 42);
+            this.groupBox2.Size = new System.Drawing.Size(563, 68);
             this.groupBox2.TabIndex = 61;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Full Run Save Options";
@@ -986,7 +1014,7 @@
             // splitContainer27.Panel2
             // 
             this.splitContainer27.Panel2.Controls.Add(this.btn_browseSummarySaveFolder);
-            this.splitContainer27.Size = new System.Drawing.Size(557, 23);
+            this.splitContainer27.Size = new System.Drawing.Size(557, 49);
             this.splitContainer27.SplitterDistance = 294;
             this.splitContainer27.TabIndex = 0;
             // 
@@ -1004,7 +1032,7 @@
             this.btn_browseSummarySaveFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.btn_browseSummarySaveFolder.Location = new System.Drawing.Point(0, 0);
             this.btn_browseSummarySaveFolder.Name = "btn_browseSummarySaveFolder";
-            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(259, 23);
+            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(259, 49);
             this.btn_browseSummarySaveFolder.TabIndex = 36;
             this.btn_browseSummarySaveFolder.Text = "Browse Results Folder";
             this.btn_browseSummarySaveFolder.UseVisualStyleBackColor = true;
@@ -1024,7 +1052,7 @@
             // splitContainer25.Panel2
             // 
             this.splitContainer25.Panel2.Controls.Add(this.splitContainer26);
-            this.splitContainer25.Size = new System.Drawing.Size(850, 135);
+            this.splitContainer25.Size = new System.Drawing.Size(850, 109);
             this.splitContainer25.SplitterDistance = 283;
             this.splitContainer25.TabIndex = 0;
             // 
@@ -1033,7 +1061,7 @@
             this.btn_stepThrough.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_stepThrough.Location = new System.Drawing.Point(0, 0);
             this.btn_stepThrough.Name = "btn_stepThrough";
-            this.btn_stepThrough.Size = new System.Drawing.Size(283, 135);
+            this.btn_stepThrough.Size = new System.Drawing.Size(283, 109);
             this.btn_stepThrough.TabIndex = 60;
             this.btn_stepThrough.Text = "Step Through Processing";
             this.btn_stepThrough.UseVisualStyleBackColor = true;
@@ -1053,7 +1081,7 @@
             // splitContainer26.Panel2
             // 
             this.splitContainer26.Panel2.Controls.Add(this.bt_clearResults);
-            this.splitContainer26.Size = new System.Drawing.Size(563, 135);
+            this.splitContainer26.Size = new System.Drawing.Size(563, 109);
             this.splitContainer26.SplitterDistance = 283;
             this.splitContainer26.TabIndex = 0;
             // 
@@ -1062,7 +1090,7 @@
             this.btn_fullRun.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_fullRun.Location = new System.Drawing.Point(0, 0);
             this.btn_fullRun.Name = "btn_fullRun";
-            this.btn_fullRun.Size = new System.Drawing.Size(283, 135);
+            this.btn_fullRun.Size = new System.Drawing.Size(283, 109);
             this.btn_fullRun.TabIndex = 58;
             this.btn_fullRun.Text = "Full Run";
             this.btn_fullRun.UseVisualStyleBackColor = true;
@@ -1073,7 +1101,7 @@
             this.bt_clearResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bt_clearResults.Location = new System.Drawing.Point(0, 0);
             this.bt_clearResults.Name = "bt_clearResults";
-            this.bt_clearResults.Size = new System.Drawing.Size(276, 135);
+            this.bt_clearResults.Size = new System.Drawing.Size(276, 109);
             this.bt_clearResults.TabIndex = 59;
             this.bt_clearResults.Text = "Clear Results";
             this.bt_clearResults.UseVisualStyleBackColor = true;
@@ -1274,5 +1302,7 @@
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
         private System.Windows.Forms.Button bt_calibrate;
+        private System.Windows.Forms.CheckBox cb_calibrate_td_files;
+        private System.Windows.Forms.CheckBox cb_calibrate_raw_files;
     }
 }
