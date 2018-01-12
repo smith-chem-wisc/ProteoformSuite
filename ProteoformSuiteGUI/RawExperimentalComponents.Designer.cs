@@ -44,17 +44,11 @@ namespace ProteoformSuiteGUI
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.label12 = new System.Windows.Forms.Label();
             this.nUD_scans_to_average = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
-            this.nUD_min_rel_ab = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.nUD_min_cs = new System.Windows.Forms.NumericUpDown();
             this.cb_deconvolute = new System.Windows.Forms.CheckBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.nUD_min_num_scans = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.nUD_min_num_CS = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.nUD_intensity_ratio_limit = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.nUD_max_cs = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
@@ -69,8 +63,6 @@ namespace ProteoformSuiteGUI
             this.nUD_mass_tolerance = new System.Windows.Forms.NumericUpDown();
             this.rtb_raw_components_counts = new System.Windows.Forms.RichTextBox();
             this.dgv_chargeStates = new System.Windows.Forms.DataGridView();
-            this.label13 = new System.Windows.Forms.Label();
-            this.nUD_min_sig_noise = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -91,11 +83,8 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_rel_ab)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_scans)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_intensity_ratio_limit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_max_cs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_decon_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_agg_tolerance)).BeginInit();
@@ -103,7 +92,6 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_sig_noise)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -248,21 +236,13 @@ namespace ProteoformSuiteGUI
             // 
             // splitContainer4.Panel1
             // 
-            this.splitContainer4.Panel1.Controls.Add(this.label13);
-            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_sig_noise);
             this.splitContainer4.Panel1.Controls.Add(this.label12);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_scans_to_average);
-            this.splitContainer4.Panel1.Controls.Add(this.label11);
-            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_rel_ab);
             this.splitContainer4.Panel1.Controls.Add(this.label10);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_min_cs);
             this.splitContainer4.Panel1.Controls.Add(this.cb_deconvolute);
-            this.splitContainer4.Panel1.Controls.Add(this.label9);
-            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_num_scans);
             this.splitContainer4.Panel1.Controls.Add(this.label8);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_min_num_CS);
-            this.splitContainer4.Panel1.Controls.Add(this.label7);
-            this.splitContainer4.Panel1.Controls.Add(this.nUD_intensity_ratio_limit);
             this.splitContainer4.Panel1.Controls.Add(this.label6);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_max_cs);
             this.splitContainer4.Panel1.Controls.Add(this.label5);
@@ -286,7 +266,7 @@ namespace ProteoformSuiteGUI
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(136, 308);
+            this.label12.Location = new System.Drawing.Point(136, 235);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(91, 13);
             this.label12.TabIndex = 25;
@@ -295,37 +275,12 @@ namespace ProteoformSuiteGUI
             // 
             // nUD_scans_to_average
             // 
-            this.nUD_scans_to_average.Location = new System.Drawing.Point(10, 304);
+            this.nUD_scans_to_average.Location = new System.Drawing.Point(11, 233);
             this.nUD_scans_to_average.Name = "nUD_scans_to_average";
             this.nUD_scans_to_average.Size = new System.Drawing.Size(120, 20);
             this.nUD_scans_to_average.TabIndex = 24;
             this.nUD_scans_to_average.Visible = false;
             this.nUD_scans_to_average.ValueChanged += new System.EventHandler(this.nUD_scans_to_average_ValueChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(136, 213);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(138, 13);
-            this.label11.TabIndex = 23;
-            this.label11.Text = "Min. relative abundance (%)";
-            this.label11.Visible = false;
-            // 
-            // nUD_min_rel_ab
-            // 
-            this.nUD_min_rel_ab.DecimalPlaces = 2;
-            this.nUD_min_rel_ab.Location = new System.Drawing.Point(10, 209);
-            this.nUD_min_rel_ab.Maximum = new decimal(new int[] {
-            -727379968,
-            232,
-            0,
-            0});
-            this.nUD_min_rel_ab.Name = "nUD_min_rel_ab";
-            this.nUD_min_rel_ab.Size = new System.Drawing.Size(120, 20);
-            this.nUD_min_rel_ab.TabIndex = 22;
-            this.nUD_min_rel_ab.Visible = false;
-            this.nUD_min_rel_ab.ValueChanged += new System.EventHandler(this.nUD_min_rel_ab_ValueChanged);
             // 
             // label10
             // 
@@ -357,29 +312,10 @@ namespace ProteoformSuiteGUI
             this.cb_deconvolute.UseVisualStyleBackColor = true;
             this.cb_deconvolute.CheckedChanged += new System.EventHandler(this.cb_deconvolute_CheckedChanged);
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(136, 287);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(205, 13);
-            this.label9.TabIndex = 17;
-            this.label9.Text = "Min. number of scans to make component";
-            this.label9.Visible = false;
-            // 
-            // nUD_min_num_scans
-            // 
-            this.nUD_min_num_scans.Location = new System.Drawing.Point(10, 283);
-            this.nUD_min_num_scans.Name = "nUD_min_num_scans";
-            this.nUD_min_num_scans.Size = new System.Drawing.Size(120, 20);
-            this.nUD_min_num_scans.TabIndex = 16;
-            this.nUD_min_num_scans.Visible = false;
-            this.nUD_min_num_scans.ValueChanged += new System.EventHandler(this.nUD_min_num_scans_ValueChanged);
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(136, 266);
+            this.label8.Location = new System.Drawing.Point(137, 210);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(241, 13);
             this.label8.TabIndex = 15;
@@ -388,36 +324,12 @@ namespace ProteoformSuiteGUI
             // 
             // nUD_min_num_CS
             // 
-            this.nUD_min_num_CS.Location = new System.Drawing.Point(10, 259);
+            this.nUD_min_num_CS.Location = new System.Drawing.Point(10, 208);
             this.nUD_min_num_CS.Name = "nUD_min_num_CS";
             this.nUD_min_num_CS.Size = new System.Drawing.Size(120, 20);
             this.nUD_min_num_CS.TabIndex = 14;
             this.nUD_min_num_CS.Visible = false;
             this.nUD_min_num_CS.ValueChanged += new System.EventHandler(this.nUD_min_num_CS_ValueChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(136, 237);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(89, 13);
-            this.label7.TabIndex = 13;
-            this.label7.Text = "Intensity ratio limit";
-            this.label7.Visible = false;
-            // 
-            // nUD_intensity_ratio_limit
-            // 
-            this.nUD_intensity_ratio_limit.Location = new System.Drawing.Point(10, 233);
-            this.nUD_intensity_ratio_limit.Maximum = new decimal(new int[] {
-            -727379968,
-            232,
-            0,
-            0});
-            this.nUD_intensity_ratio_limit.Name = "nUD_intensity_ratio_limit";
-            this.nUD_intensity_ratio_limit.Size = new System.Drawing.Size(120, 20);
-            this.nUD_intensity_ratio_limit.TabIndex = 12;
-            this.nUD_intensity_ratio_limit.Visible = false;
-            this.nUD_intensity_ratio_limit.ValueChanged += new System.EventHandler(this.nUD_intensity_ratio_limit_ValueChanged);
             // 
             // label6
             // 
@@ -557,31 +469,6 @@ namespace ProteoformSuiteGUI
             this.dgv_chargeStates.Size = new System.Drawing.Size(737, 402);
             this.dgv_chargeStates.TabIndex = 0;
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(136, 334);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(111, 13);
-            this.label13.TabIndex = 27;
-            this.label13.Text = "Min. S/N of max peak";
-            this.label13.Visible = false;
-            // 
-            // nUD_min_sig_noise
-            // 
-            this.nUD_min_sig_noise.DecimalPlaces = 1;
-            this.nUD_min_sig_noise.Location = new System.Drawing.Point(10, 330);
-            this.nUD_min_sig_noise.Maximum = new decimal(new int[] {
-            -727379968,
-            232,
-            0,
-            0});
-            this.nUD_min_sig_noise.Name = "nUD_min_sig_noise";
-            this.nUD_min_sig_noise.Size = new System.Drawing.Size(120, 20);
-            this.nUD_min_sig_noise.TabIndex = 26;
-            this.nUD_min_sig_noise.Visible = false;
-            this.nUD_min_sig_noise.ValueChanged += new System.EventHandler(this.nUD_min_sig_noise_ValueChanged);
-            // 
             // RawExperimentalComponents
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -616,11 +503,8 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_rel_ab)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_scans)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_intensity_ratio_limit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_max_cs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_decon_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_agg_tolerance)).EndInit();
@@ -628,7 +512,6 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_sig_noise)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -655,24 +538,16 @@ namespace ProteoformSuiteGUI
         private NumericUpDown nUD_max_RT;
         private Label label2;
         private NumericUpDown nUD_min_RT;
-        private Label label9;
-        private NumericUpDown nUD_min_num_scans;
         private Label label8;
         private NumericUpDown nUD_min_num_CS;
-        private Label label7;
-        private NumericUpDown nUD_intensity_ratio_limit;
         private Label label6;
         private NumericUpDown nUD_max_cs;
         private Label label5;
         private NumericUpDown nUD_decon_tolerance;
         private CheckBox cb_deconvolute;
-        private Label label11;
-        private NumericUpDown nUD_min_rel_ab;
         private Label label10;
         private NumericUpDown nUD_min_cs;
         private Label label12;
         private NumericUpDown nUD_scans_to_average;
-        private Label label13;
-        private NumericUpDown nUD_min_sig_noise;
     }
 }

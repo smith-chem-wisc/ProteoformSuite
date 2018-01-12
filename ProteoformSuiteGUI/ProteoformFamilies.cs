@@ -17,6 +17,23 @@ namespace ProteoformSuiteGUI
         public ProteoformFamilies()
         {
             InitializeComponent();
+
+            //Initialize display options
+            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
+            cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
+            cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
+            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
+            cmbx_nodeLabel.Items.AddRange(Lollipop.node_labels);
+            cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
+            cmbx_tableSelector.Items.AddRange(table_names);
+
+            cmbx_colorScheme.SelectedIndex = 1;
+            cmbx_nodeLayout.SelectedIndex = 1;
+            cmbx_nodeLabelPositioning.SelectedIndex = 0;
+            cmbx_edgeLabel.SelectedIndex = 1;
+            cmbx_nodeLabel.SelectedIndex = 1;
+            cmbx_geneLabel.SelectedIndex = 1;
+
             InitializeParameterSet();
             this.AutoScroll = true;
             this.AutoScrollMinSize = this.ClientSize;
@@ -45,21 +62,6 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            //Initialize display options
-            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
-            cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
-            cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
-            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
-            cmbx_nodeLabel.Items.AddRange(Lollipop.node_labels);
-            cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
-            cmbx_tableSelector.Items.AddRange(table_names);
-
-            cmbx_colorScheme.SelectedIndex = 1;
-            cmbx_nodeLayout.SelectedIndex = 1;
-            cmbx_nodeLabelPositioning.SelectedIndex = 0;
-            cmbx_edgeLabel.SelectedIndex = 1;
-            cmbx_nodeLabel.SelectedIndex = 1;
-            cmbx_geneLabel.SelectedIndex = 1;
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
             
@@ -123,20 +125,17 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        /// <summary>
+        /// generate report and change selected table names based on # decoy communities
+        /// </summary>
         public void update_figures_of_merit()
         {
             rtb_proteoformFamilyResults.Text = ResultsSummaryGenerator.proteoform_families_report();
-
+            int selection = cmbx_tableSelector.SelectedIndex;
             cmbx_tableSelector.Items.Clear();
             cmbx_tableSelector.Items.AddRange(table_names);
-            //change selected table names based on # decoy communities
-            int decoy_communities = Sweet.lollipop.decoy_proteoform_communities.Count;
-            for(int i = 0; i < decoy_communities; i++)
-            {
-               if (!cmbx_tableSelector.Items.Contains("Decoy Community " + i)) cmbx_tableSelector.Items.Add("Decoy Community " + i);
-            }
-            cmbx_tableSelector.SelectedIndex = 0;
-           
+            cmbx_tableSelector.Items.AddRange(Enumerable.Range(0, Sweet.lollipop.decoy_proteoform_communities.Count).Select(i => "Decoy Community " + i).ToArray());
+            cmbx_tableSelector.SelectedIndex = selection < cmbx_tableSelector.Items.Count ? selection : 0;
         }
 
         #endregion Public Methods

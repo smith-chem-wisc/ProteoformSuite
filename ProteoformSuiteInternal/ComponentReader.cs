@@ -105,7 +105,10 @@ namespace ProteoformSuiteInternal
                     foreach (double missedMonoMass in possibleMissedMonoisotopicsList)
                     {
                         double massTolerance = missedMonoMass / 1000000d * Sweet.lollipop.raw_component_mass_tolerance;
-                        List<Component> missedMonoisotopics = scanComps.Where(cp => !removeThese.Contains(cp) && cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance) && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)).ToList(); // this is a list of harmonics to hc
+                        List<Component> missedMonoisotopics = scanComps.Where(cp => 
+                            !removeThese.Contains(cp) 
+                            && cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance) 
+                            && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)).ToList(); // this is a list of harmonics to hc
 
                         foreach (Component c in missedMonoisotopics.Where(m => m.id != sc.id).ToList())
                         {
@@ -145,7 +148,10 @@ namespace ProteoformSuiteInternal
                     foreach (double harmonicMass in possibleHarmonicList)
                     {
                         double massTolerance = harmonicMass / 1000000d * Sweet.lollipop.raw_component_mass_tolerance;
-                        List<Component> harmonics = scanComps.Where(cp => !removeThese.Contains(cp) && cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance) && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)).ToList(); // this is a list of harmonics to hc
+                        List<Component> harmonics = scanComps.Where(cp => 
+                            !removeThese.Contains(cp) 
+                            && cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance) 
+                            && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)).ToList(); // this is a list of harmonics to hc
                         List<Component> someHarmonics = harmonics.Where(harmonicComponent => harmonicComponent.id != hc.id).ToList();
                         foreach (Component h in someHarmonics) // now that we have a list of harmonics to hc, we have to figure out what to do with them
                         {

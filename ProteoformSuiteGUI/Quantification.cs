@@ -20,6 +20,25 @@ namespace ProteoformSuiteGUI
             InitializeComponent();
             this.AutoScroll = true;
             this.AutoScrollMinSize = this.ClientSize;
+
+            //Initialize display options
+            cmbx_volcanoChartSelection.Items.AddRange(volcano_selections);
+            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
+            cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
+            cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
+            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels.ToArray());
+            cmbx_nodeLabel.Items.AddRange(Lollipop.node_labels.ToArray());
+            cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
+            cb_redBorder.Checked = true;
+            cb_boldLabel.Checked = true;
+
+            cmbx_volcanoChartSelection.SelectedIndex = 0;
+            cmbx_colorScheme.SelectedIndex = 1;
+            cmbx_nodeLayout.SelectedIndex = 1;
+            cmbx_nodeLabelPositioning.SelectedIndex = 0;
+            cmbx_geneLabel.SelectedIndex = 1;
+            cmbx_nodeLabel.SelectedIndex = 1;
+            cmbx_edgeLabel.SelectedIndex = 1;
         }
 
         #endregion Constructor
@@ -208,56 +227,11 @@ namespace ProteoformSuiteGUI
                 Sweet.lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
                 Sweet.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
                 Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
-                cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
             }
-
-
-            decimal minBiorepsWithObservations = Sweet.lollipop.minBiorepsWithObservations;
-            decimal minBiorepsWithFoldChange = Sweet.lollipop.minBiorepsWithFoldChange;
-            // selecting proteoforms for quantification
-            cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
-            cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
-            cmbx_observationsTypeRequired.SelectedIndex = Sweet.lollipop.observation_requirement == new Lollipop().observation_requirement ? // check that the default has not been changed (haven't loaded presets)
-                0 :
-                Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement);
-            Sweet.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
-            cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
-
-            nud_minObservations.Minimum = 1;
-            set_nud_minObs_maximum();
-            if (minBiorepsWithObservations <= nud_minObservations.Maximum
-                && minBiorepsWithObservations >= nud_minObservations.Minimum)  nud_minObservations.Value = minBiorepsWithObservations;
-            else nud_minObservations.Value = nud_minObservations.Maximum;
-            Sweet.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
-
-            // permutation fold change requirement
-            nud_foldChangeObservations.Minimum = 1;
-            if (minBiorepsWithFoldChange <= nud_foldChangeObservations.Maximum
-                && minBiorepsWithFoldChange >= nud_foldChangeObservations.Minimum) nud_foldChangeObservations.Value = minBiorepsWithFoldChange;
-            else nud_foldChangeObservations.Value = nud_foldChangeObservations.Maximum;
-            Sweet.lollipop.minBiorepsWithFoldChange = (int)nud_foldChangeObservations.Value;
         }
 
         public void InitializeParameterSet()
         {
-            //Initialize display options
-            cmbx_volcanoChartSelection.Items.AddRange(volcano_selections);
-            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
-            cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
-            cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
-            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels.ToArray());
-            cmbx_nodeLabel.Items.AddRange(Lollipop.node_labels.ToArray());
-            cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
-            cb_redBorder.Checked = true;
-            cb_boldLabel.Checked = true;
-
-            cmbx_volcanoChartSelection.SelectedIndex = 0;
-            cmbx_colorScheme.SelectedIndex = 1;
-            cmbx_nodeLayout.SelectedIndex = 1;
-            cmbx_nodeLabelPositioning.SelectedIndex = 0;
-            cmbx_geneLabel.SelectedIndex = 1;
-            cmbx_nodeLabel.SelectedIndex = 1;
-            cmbx_edgeLabel.SelectedIndex = 1;
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
 
