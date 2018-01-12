@@ -30,7 +30,6 @@ namespace ProteoformSuiteInternal
         public string scan_range { get; set; }
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
-        public double flash_flq_intensity { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public List<Component> incorporated_missed_monoisotopics = new List<Component>();
         public bool calculating_properties { get; set; } = false;
