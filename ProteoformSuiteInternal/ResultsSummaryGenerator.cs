@@ -199,8 +199,8 @@ namespace ProteoformSuiteInternal
 
             int raw_quant_components_in_fams = identified_families.Concat(ambiguous_families).Concat(unidentified_families).Sum(f => f.experimental_proteoforms.Sum(e => e.lt_quant_components.Count + e.hv_quant_components.Count));
             report += raw_quant_components_in_fams + "\tRaw Quantitative Components in Families" + Environment.NewLine;
-            report += Sweet.lollipop.raw_experimental_components.Count > 0 ?
-                Math.Round(100 * ((double)raw_quant_components_in_fams / (double)Sweet.lollipop.raw_experimental_components.Count), 2) + "\t% of Raw Quantitative Components in Families" + Environment.NewLine :
+            report += Sweet.lollipop.raw_quantification_components.Count > 0 ?
+                Math.Round(100 * ((double)raw_quant_components_in_fams / (double)Sweet.lollipop.raw_quantification_components.Count), 2) + "\t% of Raw Quantitative Components in Families" + Environment.NewLine :
                 "N/A\t% of Raw Quantitative Components in Families" + Environment.NewLine;
             report += Environment.NewLine;
 
