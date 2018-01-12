@@ -44,11 +44,6 @@ namespace ProteoformSuiteGUI
             get { return e.agg_intensity; }
         }
 
-        public double flash_lfq_intensity
-        {
-            get { return Sweet.lollipop.neucode_labeled ? 0 : e.aggregated.Sum(c => (c as Component).flash_flq_intensity); }
-        }
-
         public double agg_rt
         {
             get { return e.agg_rt; }
@@ -232,7 +227,6 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(Accession)) return "Experimental Proteoform ID";
             if (property_name == nameof(agg_mass)) return "Aggregated Mass";
             if (property_name == nameof(agg_intensity)) return "Aggregated Deconvolution Intensity";
-            if (property_name == nameof(flash_lfq_intensity)) return "Flash LFQ Intensity";
             if (property_name == nameof(agg_rt)) return "Aggregated RT";
             if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
             if (property_name == nameof(heavy_verification_count)) return "Heavy Verification Component Count";
@@ -263,7 +257,6 @@ namespace ProteoformSuiteGUI
         {
             if (property_name == nameof(agg_mass)) return "0.0000";
             if (property_name == nameof(agg_intensity)) return "0.0000";
-            if (property_name == nameof(flash_lfq_intensity)) return "0.0000";
             if (property_name == nameof(agg_rt)) return "0.00";
             if (property_name == nameof(mass_error)) return "0.0000";
             return null;

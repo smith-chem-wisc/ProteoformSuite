@@ -241,12 +241,14 @@ namespace ProteoformSuiteGUI
 
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
+
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
-            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
+            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
             refresh_dgvs();
-            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
+            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
 
         private void refresh_dgvs()
@@ -336,7 +338,7 @@ namespace ProteoformSuiteGUI
             if (dr == DialogResult.OK)
             {
                 if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
-                Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
+                Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
                 refresh_dgvs();
             }
 
@@ -364,12 +366,13 @@ namespace ProteoformSuiteGUI
 
         private void clear_files(ComboBox cmb, DataGridView dgv)
         {
-            List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).ToList();
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
+            List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).ToList();
             Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             refresh_dgvs();
-            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
+            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
         #endregion CLEAR BUTTONS Private Methods
 
@@ -414,20 +417,23 @@ namespace ProteoformSuiteGUI
 
         private void tb_filter1_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable1.SelectedIndex]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[cmb_loadTable1.SelectedIndex]);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
         }
 
         private void tb_filter2_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles2, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]), tb_filter2.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[cmb_loadTable2.SelectedIndex]);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable2.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter2.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[selected_index]);
         }
 
         private void tb_filter3_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles3, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]), tb_filter3.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[cmb_loadTable3.SelectedIndex]);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable3.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter3.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[selected_index]);
         }
         #endregion FILTERS Private Methods
 
@@ -435,22 +441,25 @@ namespace ProteoformSuiteGUI
 
         private void cmb_loadTable1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable1.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[cmb_loadTable1.SelectedIndex]);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
         private void cmb_loadTable2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles2, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[cmb_loadTable2.SelectedIndex]);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable2.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles2, Lollipop.file_types[selected_index]);
             lb_filter2.Text = cmb_loadTable2.SelectedItem.ToString();
         }
 
         private void cmb_loadTable3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles3, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[cmb_loadTable3.SelectedIndex]);
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable3.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[selected_index]);
             lb_filter3.Text = cmb_loadTable3.SelectedItem.ToString();
         }
 
