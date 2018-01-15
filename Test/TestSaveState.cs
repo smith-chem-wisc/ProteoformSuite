@@ -273,13 +273,13 @@ namespace Test
             };
            
             // Biorep intensities with imputation uses processed values
-            Assert.False(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true)).Contains("NaN"));
+            Assert.False(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, true)).Contains("NaN"));
 
             // Biorep intensities without imputation uses raw values
             e.biorepIntensityList = e.quant.TusherValues1.allIntensities.Values.Where(x => !x.imputed).ToList();
-            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Contains("\t0\t"));
+            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Contains("\t0\t"));
 
-            string[] line = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Split('\n')[1].Split('\t');
+            string[] line = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Split('\n')[1].Split('\t');
             Assert.True(line.First() == e.accession);
             Assert.True(line[1] == "1" && line[2] == "0" && line[3] == "1" && line[4] == "1" && line[5] == "1" && line[6] == "1");
         }
@@ -316,13 +316,13 @@ namespace Test
             };
 
             // Biorep intensities with imputation uses processed values
-            Assert.False(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis2 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true)).Contains("NaN"));
+            Assert.False(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis2 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, true)).Contains("NaN"));
 
             // Biorep intensities without imputation uses raw values
             e.biorepTechrepIntensityList = e.quant.TusherValues2.allIntensities.Values.Where(x => !x.imputed).ToList();
-            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis2 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Contains("\t0\t"));
+            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis2 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Contains("\t0\t"));
 
-            string[] line = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis2 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Split('\n')[1].Split('\t');
+            string[] line = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.TusherAnalysis2 as IGoAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Split('\n')[1].Split('\t');
             Assert.True(line.First() == e.accession);
             Assert.True(line[1] == "1" && line[2] == "0" && line[3] == "1" && line[4] == "1" && line[5] == "1" && line[6] == "1");
         }
@@ -365,18 +365,18 @@ namespace Test
             };
             
             // With imputation uses processed values
-            Assert.False(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true)).Contains("NaN"));
+            Assert.False(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, true)).Contains("NaN"));
 
             // Without imputation uses raw values
             e.bftIntensityList = e.quant.Log2FoldChangeValues.allBftIntensities.Values.Where(x => !x.imputed).ToList();
-            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Contains("\t0\t"));
+            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Contains("\t0\t"));
 
             // Headers should be condition_biorep_fraction_techrep
-            string[] header = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Split('\n')[0].Split('\t');
+            string[] header = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Split('\n')[0].Split('\t');
             Assert.True(header[1] == "n_1_1_1" && header[2] == "n_1_2_1" && header[3] == "n_2_1_1" && header[4] == "n_2_2_1" && header[5] == "n_3_1_1" && header[6] == "n_3_2_1"
                 && header[7] == "s_1_1_1" && header[8] == "s_1_2_1" && header[9] == "s_2_1_1" && header[10] == "s_2_2_1" && header[11] == "s_3_1_1" && header[12] == "s_3_2_1");
 
-            string[] line = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false)).Split('\n')[1].Split('\t');
+            string[] line = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.biological_replicate_intensities(Sweet.lollipop.Log2FoldChangeAnalysis, new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, true)).Split('\n')[1].Split('\t');
             Assert.True(line.First() == e.accession);
             Assert.True(line[1] == "1" && line[2] == "0" && line[3] == "1" && line[4] == "1" && line[5] == "1" && line[6] == "1" // all "n" condition is imputed
                 && line[7] == "0" && line[8] == "0" && line[9] == "1" && line[10] == "1" && line[11] == "1" && line[12] == "1"); // all fract2 of "s" condition has values

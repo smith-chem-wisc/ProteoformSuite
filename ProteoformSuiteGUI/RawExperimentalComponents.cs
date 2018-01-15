@@ -40,6 +40,7 @@ namespace ProteoformSuiteGUI
             ClearListsTablesFigures(true);
             Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
             (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
+            (MdiParent as ProteoformSweet).aggregatedProteoforms.InitializeParameterSet();
 
             if (cb_deconvolute.Checked)
             {

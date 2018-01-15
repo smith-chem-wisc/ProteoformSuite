@@ -82,20 +82,24 @@ namespace ProteoformSuiteGUI
             // Satisfactory proteoforms with and without imputation
             IEnumerable <ExperimentalProteoform> proteoforms;
             proteoforms = Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform>;
-            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, true);
+            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, true, false);
             results.TableName = "SelectWithImputation" + suffix;
             DataTables.Add(results);
-            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false);
+            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, true);
+            results.TableName = "SelectNoImputationNormalized" + suffix;
+            DataTables.Add(results);
+            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, false);
             results.TableName = "SelectNoImputation" + suffix;
             DataTables.Add(results);
-
             // All proteoforms with and without imputation
             proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms as IEnumerable<ExperimentalProteoform>;
-            proteoforms = Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform>;
-            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, true);
+            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, true, false);
             results.TableName = "AllWithImputation" + suffix;
             DataTables.Add(results);
-            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false);
+            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, true);
+            results.TableName = "AllNoImputationNormalized" + suffix;
+            DataTables.Add(results);
+            results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, false);
             results.TableName = "AllNoImputation" + suffix;
             DataTables.Add(results);
 
@@ -228,6 +232,29 @@ namespace ProteoformSuiteGUI
                 Sweet.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
                 Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
             }
+
+            // selecting proteoforms for quantification
+            cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
+            cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
+            cmbx_observationsTypeRequired.SelectedIndex = Sweet.lollipop.observation_requirement == new Lollipop().observation_requirement ? // check that the default has not been changed (haven't loaded presets)
+                0 :
+                Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement);
+            Sweet.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
+
+            nud_minObservations.Minimum = 1;
+            if (Sweet.lollipop.minBiorepsWithObservations == new Lollipop().minBiorepsWithObservations) // check that the default has not been changed (haven't loaded presets)
+            {
+                nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
+                nud_minObservations.Value = Sweet.lollipop.countOfBioRepsInOneCondition;
+            }
+            else
+            {
+                set_nud_minObs_maximum();
+                nud_minObservations.Value = Sweet.lollipop.minBiorepsWithObservations;
+            }
+            Sweet.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
+
         }
 
         public void InitializeParameterSet()
@@ -506,7 +533,7 @@ namespace ProteoformSuiteGUI
 
             bool include_imputation = new int[] { 2, 3, 6, 7, 10, 11 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex);
 
-            DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation));
+            DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation, true));
         }
 
         private void cmbx_quantitativeValuesTableSelection_SelectedIndexChanged(object sender, EventArgs e)
