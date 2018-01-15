@@ -528,7 +528,7 @@ namespace ProteoformSuiteInternal
             return results;
         }
 
-        public static DataTable biological_replicate_intensities(IGoAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation)
+        public static DataTable biological_replicate_intensities(IGoAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation, bool include_normalized_intensity)
         {
             DataTable results = new DataTable();
             List<Tuple<string, string>> biorep_techreps = Sweet.lollipop.get_files(input_files, Purpose.Quantification).Select(x => new Tuple<string, string>(x.biological_replicate, x.technical_replicate)).Distinct().ToList();
@@ -589,7 +589,7 @@ namespace ProteoformSuiteInternal
                             {
                                 double norm_divisor = Sweet.lollipop.TusherAnalysis1.conditionBiorep_sums[new Tuple<string, string>(condition_bioreps.Key, biorep)] /
                                     (Sweet.lollipop.neucode_labeled ? Sweet.lollipop.TusherAnalysis1.conditionBiorep_sums.Where(kv => kv.Key.Item2 == biorep).Average(kv => kv.Value) : Sweet.lollipop.TusherAnalysis1.conditionBiorep_sums.Average(kv => kv.Value));
-                                value = pf.biorepIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep).Sum(x => x.intensity_sum) / norm_divisor;
+                                value = pf.biorepIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep).Sum(x => x.intensity_sum) / (include_normalized_intensity? norm_divisor : 1);
                             }
                             row[condition_bioreps.Key + "_" + biorep] = value;
                         }
@@ -606,7 +606,7 @@ namespace ProteoformSuiteInternal
                                 {
                                     double norm_divisor = Sweet.lollipop.TusherAnalysis2.conditionBiorep_sums[new Tuple<string, string>(condition_bioreps.Key, biorep)] 
                                         / (Sweet.lollipop.neucode_labeled ? Sweet.lollipop.TusherAnalysis2.conditionBiorep_sums.Where(kv => kv.Key.Item2 == biorep).Average(kv => kv.Value) : Sweet.lollipop.TusherAnalysis2.conditionBiorep_sums.Average(kv => kv.Value));
-                                    value = pf.biorepTechrepIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.techrep == techrep).Sum(x => x.intensity_sum) / norm_divisor;
+                                    value = pf.biorepTechrepIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.techrep == techrep).Sum(x => x.intensity_sum) / (include_normalized_intensity ? norm_divisor : 1);
                                 }
                                 row[condition_bioreps.Key + "_" + biorep + "_" + techrep] = value;
                             }
@@ -623,7 +623,7 @@ namespace ProteoformSuiteInternal
                                 else
                                 {
                                     value = pf.bftIntensityList.Where(x => x.condition == condition_bioreps.Key && x.biorep == biorep && x.techrep == f.technical_replicate && x.fraction == f.fraction).Sum(x => x.intensity_sum)
-                                        / Sweet.lollipop.Log2FoldChangeAnalysis.conditionBiorepNormalizationDivisors[new Tuple<string, string>(condition_bioreps.Key, f.biological_replicate)];
+                                        / (include_normalized_intensity? Sweet.lollipop.Log2FoldChangeAnalysis.conditionBiorepNormalizationDivisors[new Tuple<string, string>(condition_bioreps.Key, f.biological_replicate)] : 1 );
                                 }
                                 row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;
                             }
