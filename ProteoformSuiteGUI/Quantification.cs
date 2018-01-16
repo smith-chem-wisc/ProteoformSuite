@@ -86,7 +86,7 @@ namespace ProteoformSuiteGUI
             results.TableName = "SelectWithImputation" + suffix;
             DataTables.Add(results);
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, true);
-            results.TableName = "SelectNoImputationNormalized" + suffix;
+            results.TableName = "SelectNoImputationNorm" + suffix;
             DataTables.Add(results);
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, false);
             results.TableName = "SelectNoImputation" + suffix;
@@ -97,7 +97,7 @@ namespace ProteoformSuiteGUI
             results.TableName = "AllWithImputation" + suffix;
             DataTables.Add(results);
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, true);
-            results.TableName = "AllNoImputationNormalized" + suffix;
+            results.TableName = "AllNoImputationNorm" + suffix;
             DataTables.Add(results);
             results = ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, false, false);
             results.TableName = "AllNoImputation" + suffix;
@@ -214,7 +214,6 @@ namespace ProteoformSuiteGUI
             cmbx_ratioNumerator.Items.Clear();
             cmbx_ratioDenominator.Items.Clear();
             cmbx_inducedCondition.Items.Clear();
-            cmbx_edgeLabel.Items.Clear();
 
             //Initialize conditions -- need to do after files entered
             List<string> conditions = Sweet.lollipop.ltConditionsBioReps.Keys.ToList();
