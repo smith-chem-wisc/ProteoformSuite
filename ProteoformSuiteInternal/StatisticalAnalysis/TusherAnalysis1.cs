@@ -25,14 +25,13 @@ namespace ProteoformSuiteInternal
             }
 
             if (define_histogram)
-                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
+                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList), QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
 
             normalize_protoeform_intensities(satisfactoryProteoforms);
 
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.TusherValues1.determine_proteoform_statistics(induced_condition, sKnot_minFoldChange);
-                eP.quant.determine_statistics();
             }
         }
 
@@ -244,8 +243,8 @@ namespace ProteoformSuiteInternal
             if (!Sweet.lollipop.useLocalFdrCutoff)
                 relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, Sweet.lollipop.satisfactoryProteoforms, flattenedPermutedRelativeDifferences, Sweet.lollipop.offsetTestStatistics);
             else
-                Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues1.significant = eP.quant.TusherValues1.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
-            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(this as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity);
+            Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues1.significant = eP.quant.TusherValues1.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
+            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues1.significant), GoAnalysis);
             analysis.GoAnalysis.GO_analysis(inducedOrRepressedProteins);
         }
 

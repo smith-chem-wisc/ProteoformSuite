@@ -25,14 +25,13 @@ namespace ProteoformSuiteInternal
             }
 
             if (define_histogram)
-                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
+                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.quant.TusherValues2.allIntensities.Values), QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
 
             normalize_protoeform_intensities(satisfactoryProteoforms);
 
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.TusherValues2.determine_proteoform_statistics(induced_condition, sKnot_minFoldChange);
-                eP.quant.determine_statistics();
             }
         }
 
@@ -202,8 +201,7 @@ namespace ProteoformSuiteInternal
                 relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, Sweet.lollipop.satisfactoryProteoforms, flattenedPermutedRelativeDifferences, Sweet.lollipop.offsetTestStatistics);
             else
                 Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues2.significant = eP.quant.TusherValues2.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
-            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(this as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity);
-            analysis.GoAnalysis.GO_analysis(inducedOrRepressedProteins);
+            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues2.significant), GoAnalysis);
         }
 
         #endregion Public Methods

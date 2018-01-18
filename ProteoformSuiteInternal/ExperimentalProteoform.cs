@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
 
         public List<BiorepTechrepIntensity> biorepTechrepIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
 
-        public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>();
+       // public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>();
 
         public QuantitativeProteoformValues quant { get; set; }
 
@@ -330,15 +330,12 @@ namespace ProteoformSuiteInternal
                 List<InputFile> files = quants_from_condition.Select(x => x.input_file).ToList();
                 List<string> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
                 biorepIntensityList.AddRange(bioreps.Select(b => new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum))));
-                List<Tuple<string, string, string>> bfts = quants_from_condition.Select(c => new Tuple<string, string, string>(c.input_file.biological_replicate, c.input_file.fraction, c.input_file.technical_replicate)).Distinct().ToList();
-                bftIntensityList.AddRange(bfts.Select(x => new BiorepFractionTechrepIntensity(condition, x.Item1, x.Item2, x.Item3, false, quants_from_condition.Where(q => q.input_file.biological_replicate == x.Item1 && q.input_file.fraction == x.Item2 && q.input_file.technical_replicate == x.Item3).Sum(q => q.intensity_sum))));
                 List<Tuple<string, string>> biotechs = quants_from_condition.Select(c => new Tuple<string, string>(c.input_file.biological_replicate, c.input_file.technical_replicate)).Distinct().ToList();
                 biotechIntensityList.AddRange(biotechs.Select(x => new BiorepTechrepIntensity(false, x.Item1, condition, x.Item2, quants_from_condition.Where(c => c.input_file.biological_replicate == x.Item1 && c.input_file.technical_replicate == x.Item2).Sum(asdf => asdf.intensity_sum))));
             }
 
             this.biorepIntensityList = biorepIntensityList;
             this.biorepTechrepIntensityList = biotechIntensityList;
-            this.bftIntensityList = bftIntensityList;
             return biorepIntensityList;
         }
 

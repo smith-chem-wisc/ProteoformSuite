@@ -74,8 +74,6 @@
             this.label21 = new System.Windows.Forms.Label();
             this.nud_benjiHochFDR = new System.Windows.Forms.NumericUpDown();
             this.cb_significanceByFoldChange = new System.Windows.Forms.CheckBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.cmbx_volcanoChartSelection = new System.Windows.Forms.ComboBox();
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
@@ -699,8 +697,6 @@
             this.groupBox2.Controls.Add(this.label21);
             this.groupBox2.Controls.Add(this.nud_benjiHochFDR);
             this.groupBox2.Controls.Add(this.cb_significanceByFoldChange);
-            this.groupBox2.Controls.Add(this.label20);
-            this.groupBox2.Controls.Add(this.cmbx_volcanoChartSelection);
             this.groupBox2.Controls.Add(this.cmbx_ratioDenominator);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.cmbx_ratioNumerator);
@@ -750,25 +746,6 @@
             this.cb_significanceByFoldChange.Text = "Significance by Fold Change Analysis";
             this.cb_significanceByFoldChange.UseVisualStyleBackColor = true;
             this.cb_significanceByFoldChange.CheckedChanged += new System.EventHandler(this.cb_significanceByFoldChange_CheckedChanged);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(6, 46);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(142, 13);
-            this.label20.TabIndex = 16;
-            this.label20.Text = "Volcano Plot Chart Selection";
-            // 
-            // cmbx_volcanoChartSelection
-            // 
-            this.cmbx_volcanoChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_volcanoChartSelection.FormattingEnabled = true;
-            this.cmbx_volcanoChartSelection.Location = new System.Drawing.Point(9, 61);
-            this.cmbx_volcanoChartSelection.Name = "cmbx_volcanoChartSelection";
-            this.cmbx_volcanoChartSelection.Size = new System.Drawing.Size(197, 21);
-            this.cmbx_volcanoChartSelection.TabIndex = 15;
-            this.cmbx_volcanoChartSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_volcanoChartSelection_SelectedIndexChanged);
             // 
             // cmbx_ratioDenominator
             // 
@@ -1921,8 +1898,6 @@
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.ComboBox cmbx_volcanoChartSelection;
         private System.Windows.Forms.CheckBox cb_significanceByFoldChange;
         private System.Windows.Forms.CheckBox cb_significanceByPermutation;
         private System.Windows.Forms.Label label21;

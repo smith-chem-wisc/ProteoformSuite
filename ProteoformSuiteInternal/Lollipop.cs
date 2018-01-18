@@ -426,7 +426,6 @@ namespace ProteoformSuiteInternal
         public int min_num_CS = 1;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
-        public bool require_both_tr = false;
         public bool add_td_proteoforms = true;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
@@ -449,19 +448,9 @@ namespace ProteoformSuiteInternal
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
             List<string> conditions = input_files.Where(f => f.purpose == Purpose.Identification).Select(f => f.lt_condition).Concat(input_files.Select(f => f.hv_condition)).Distinct().ToList();
-            if (require_both_tr) //for a component to be in an agg proteoform, needs to have been observed in all tech reps
-            {
-                Parallel.ForEach(vetted_proteoforms, p => 
-                p.aggregated = p.aggregated.Where(c => p.aggregated.Where(b => b.input_file.lt_condition + b.input_file.biological_replicate + b.input_file.fraction == 
-                c.input_file.lt_condition + c.input_file.biological_replicate + c.input_file.fraction).Select(b => b.input_file.technical_replicate).Distinct().Count()
-               == Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification && f.lt_condition + f.biological_replicate + f.fraction == c.input_file.lt_condition + c.input_file.biological_replicate + c.input_file.fraction).Select(f => f.technical_replicate).Distinct().Count()).ToList());
-
-                vetted_proteoforms = vetted_proteoforms.Where(p => p.aggregated.Count > 0).ToList();
-            }
             vetted_proteoforms = determineAggProteoformsMeetingCriteria(conditions, vetted_proteoforms, agg_observation_requirement, agg_minBiorepsWithObservations);
             if (add_td_proteoforms) vetted_proteoforms = add_topdown_proteoforms(vetted_proteoforms, topdown_proteoforms);
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
-
             target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
@@ -999,12 +988,12 @@ namespace ProteoformSuiteInternal
             quantifiedProteins = getProteins(satisfactoryProteoforms);
             qVals = satisfactoryProteoforms.Where(pf => pf.accepted).Select(pf => pf.quant).ToList();
 
-            TusherAnalysis1.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, TusherAnalysis1.QuantitativeDistributions.logIntensityHistogram);
-            TusherAnalysis1.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms, TusherAnalysis1.QuantitativeDistributions.logSelectIntensityHistogram);
+            TusherAnalysis1.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList).ToList<IBiorepIntensity>(), TusherAnalysis1.QuantitativeDistributions.logIntensityHistogram);
+            TusherAnalysis1.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList), TusherAnalysis1.QuantitativeDistributions.logSelectIntensityHistogram);
             TusherAnalysis1.QuantitativeDistributions.defineBackgroundIntensityDistribution(quantBioFracCombos, satisfactoryProteoforms, condition_count, backgroundShift, backgroundWidth);
 
-            TusherAnalysis2.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, TusherAnalysis2.QuantitativeDistributions.logIntensityHistogram);
-            TusherAnalysis2.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms, TusherAnalysis2.QuantitativeDistributions.logSelectIntensityHistogram);
+            TusherAnalysis2.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList).ToList<IBiorepIntensity>(), TusherAnalysis2.QuantitativeDistributions.logIntensityHistogram);
+            TusherAnalysis2.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepTechrepIntensityList), TusherAnalysis2.QuantitativeDistributions.logSelectIntensityHistogram);
             TusherAnalysis2.QuantitativeDistributions.defineBackgroundIntensityDistribution(quantBioFracCombos, satisfactoryProteoforms, condition_count, backgroundShift, backgroundWidth);
 
             TusherAnalysis1.compute_proteoform_statistics(satisfactoryProteoforms, TusherAnalysis1.QuantitativeDistributions.bkgdAverageIntensity, TusherAnalysis1.QuantitativeDistributions.bkgdStDev, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange, true); // includes normalization
@@ -1013,7 +1002,7 @@ namespace ProteoformSuiteInternal
             TusherAnalysis1.computeSortedRelativeDifferences(satisfactoryProteoforms, TusherAnalysis1.permutedRelativeDifferences);
             TusherAnalysis1.relativeDifferenceFDR = TusherAnalysis1.computeRelativeDifferenceFDR(TusherAnalysis1.avgSortedPermutationRelativeDifferences, TusherAnalysis1.sortedProteoformRelativeDifferences, satisfactoryProteoforms, TusherAnalysis1.flattenedPermutedRelativeDifferences, offsetTestStatistics);
             TusherAnalysis1.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, TusherAnalysis1.flattenedPermutedRelativeDifferences, TusherAnalysis1.sortedProteoformRelativeDifferences);
-            TusherAnalysis1.inducedOrRepressedProteins = getInducedOrRepressedProteins(TusherAnalysis1 as TusherAnalysis, satisfactoryProteoforms, TusherAnalysis1.GoAnalysis.minProteoformFoldChange, TusherAnalysis1.GoAnalysis.maxGoTermFDR, TusherAnalysis1.GoAnalysis.minProteoformIntensity);
+            TusherAnalysis1.inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms.Where(p => p.quant.TusherValues1.significant), TusherAnalysis1.GoAnalysis);
 
             TusherAnalysis2.compute_proteoform_statistics(satisfactoryProteoforms, TusherAnalysis2.QuantitativeDistributions.bkgdAverageIntensity, TusherAnalysis2.QuantitativeDistributions.bkgdStDev, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange, true); // includes normalization
             TusherAnalysis2.permutedRelativeDifferences = TusherAnalysis2.compute_balanced_biorep_permutation_relativeDifferences(conditionsBioReps, input_files, induced_condition, satisfactoryProteoforms, sKnot_minFoldChange);
@@ -1021,7 +1010,9 @@ namespace ProteoformSuiteInternal
             TusherAnalysis2.computeSortedRelativeDifferences(satisfactoryProteoforms, TusherAnalysis2.permutedRelativeDifferences);
             TusherAnalysis2.relativeDifferenceFDR = TusherAnalysis2.computeRelativeDifferenceFDR(TusherAnalysis2.avgSortedPermutationRelativeDifferences, TusherAnalysis2.sortedProteoformRelativeDifferences, satisfactoryProteoforms, TusherAnalysis2.flattenedPermutedRelativeDifferences, offsetTestStatistics);
             TusherAnalysis2.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, TusherAnalysis2.flattenedPermutedRelativeDifferences, TusherAnalysis2.sortedProteoformRelativeDifferences);
-            TusherAnalysis2.inducedOrRepressedProteins = getInducedOrRepressedProteins(TusherAnalysis2 as TusherAnalysis, satisfactoryProteoforms, TusherAnalysis2.GoAnalysis.minProteoformFoldChange, TusherAnalysis2.GoAnalysis.maxGoTermFDR, TusherAnalysis2.GoAnalysis.minProteoformIntensity);
+            TusherAnalysis2.inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms.Where(p => p.quant.TusherValues2.significant), TusherAnalysis2.GoAnalysis);
+
+            Log2FoldChangeAnalysis.compute_proteoform_statistics(satisfactoryProteoforms, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange, true); // includes normalization
         }
 
         public void computeBiorepIntensities(IEnumerable<ExperimentalProteoform> experimental_proteoforms, IEnumerable<string> ltconditions, IEnumerable<string> hvconditions)
@@ -1060,18 +1051,16 @@ namespace ProteoformSuiteInternal
                 .ToList();
         }
 
-        public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(TusherAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
+        public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform> significantProteoforms, GoAnalysis goAnalysis)
         {
-            return proteoforms.Where(p =>
-                (significance_by_permutation && analysis != null && (analysis as TusherAnalysis1 != null ? p.quant.TusherValues1.significant : p.quant.TusherValues2.significant) 
-                || significance_by_log2FC && p.quant.Log2FoldChangeValues.significant)
-                && Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
-                && p.quant.intensitySum > minProteoformIntensity);
+            return significantProteoforms.Where(p =>
+                 Math.Abs(p.quant.logFoldChange) > goAnalysis.minProteoformFoldChange 
+                && p.quant.intensitySum > goAnalysis.minProteoformIntensity);
         }
 
-        public List<ProteinWithGoTerms> getInducedOrRepressedProteins(TusherAnalysis analysis, IEnumerable<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
+        public List<ProteinWithGoTerms> getInducedOrRepressedProteins(IEnumerable<ExperimentalProteoform> significantProteoforms, GoAnalysis goAnalysis)
         {
-            return getInterestingProteoforms(analysis, satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
+            return getInterestingProteoforms(significantProteoforms, goAnalysis)
                 .Where(pf => pf.linked_proteoform_references != null && pf.linked_proteoform_references.FirstOrDefault() as TheoreticalProteoform != null)
                 .Select(pf => pf.linked_proteoform_references.First() as TheoreticalProteoform)
                 .SelectMany(t => t.ExpandedProteinList)
@@ -1079,9 +1068,9 @@ namespace ProteoformSuiteInternal
                 .ToList();
         }
 
-        public List<ProteoformFamily> getInterestingFamilies(TusherAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> significantProteoforms, GoAnalysis goAnalysis)
         {
-            return getInterestingProteoforms(analysis, proteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity)
+            return getInterestingProteoforms(significantProteoforms, goAnalysis)
                 .Select(e => e.family).ToList();
         }
 

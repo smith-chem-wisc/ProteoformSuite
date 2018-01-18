@@ -350,7 +350,7 @@ namespace ProteoformSuiteInternal
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
                             "Q-Value = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.roughSignificanceFDR.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.roughSignificanceFDR.ToString() : ""),
-                            "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.average_log2fc.ToString() : ep.quant.logFoldChange.ToString()),
+                            "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.logfold2change.ToString() : ep.quant.logFoldChange.ToString()),
                             "Significant = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.significant.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.significant.ToString() : quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.significant.ToString() : ""),
                             Sweet.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
                             Sweet.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
@@ -363,7 +363,7 @@ namespace ProteoformSuiteInternal
                     else if (quantitative as TusherAnalysis2 != null && ep.quant.intensitySum != 0)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues2.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues2.denominatorIntensitySum).ToString(), ep.quant.TusherValues2.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative as Log2FoldChangeAnalysis != null && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allBftIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allBftIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative != null)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else
