@@ -57,7 +57,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
-            this.cb_observe_in_both_tr = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -168,7 +167,6 @@
             // groupBox2
             // 
             this.groupBox2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox2.Controls.Add(this.cb_observe_in_both_tr);
             this.groupBox2.Controls.Add(this.nud_minObservations);
             this.groupBox2.Controls.Add(this.cmbx_observationsTypeRequired);
             this.groupBox2.Location = new System.Drawing.Point(3, 136);
@@ -460,20 +458,6 @@
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1273, 411);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             // 
-            // cb_observe_in_both_tr
-            // 
-            this.cb_observe_in_both_tr.AutoSize = true;
-            this.cb_observe_in_both_tr.Checked = true;
-            this.cb_observe_in_both_tr.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_observe_in_both_tr.Location = new System.Drawing.Point(18, 45);
-            this.cb_observe_in_both_tr.Name = "cb_observe_in_both_tr";
-            this.cb_observe_in_both_tr.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.cb_observe_in_both_tr.Size = new System.Drawing.Size(203, 17);
-            this.cb_observe_in_both_tr.TabIndex = 52;
-            this.cb_observe_in_both_tr.Text = "Require observation in both tech reps";
-            this.cb_observe_in_both_tr.UseVisualStyleBackColor = true;
-            this.cb_observe_in_both_tr.CheckedChanged += new System.EventHandler(this.cb_observe_in_both_tr_CheckedChanged);
-            // 
             // AggregatedProteoforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -496,7 +480,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -540,6 +523,5 @@
         private System.Windows.Forms.NumericUpDown nud_minObservations;
         private System.Windows.Forms.ComboBox cmbx_observationsTypeRequired;
         private System.Windows.Forms.CheckBox cb_add_td_proteoforms;
-        private System.Windows.Forms.CheckBox cb_observe_in_both_tr;
     }
 }

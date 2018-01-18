@@ -10,7 +10,7 @@ namespace ProteoformSuiteInternal
         #region Public Fields
 
         public TusherAnalysis analysis;
-
+        public Log2FoldChangeAnalysis log2foldAnalysis;
         // Histograms
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>(); // all intensities
         public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>(); // selected intensities
@@ -45,15 +45,17 @@ namespace ProteoformSuiteInternal
             this.analysis = analysis;
         }
 
+        public QuantitativeDistributions(Log2FoldChangeAnalysis analysis)
+        {
+            this.log2foldAnalysis = analysis;
+        }
+
         #endregion Public Constructor
 
         #region Public Methods
 
-        public void defineAllObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> experimental_proteoforms, SortedDictionary<decimal, int> logIntensityHistogram) // the distribution of all observed experimental proteoform biorep intensities
+        public void defineAllObservedIntensityDistribution(IEnumerable<IBiorepIntensity> biorep_intensities, SortedDictionary<decimal, int> logIntensityHistogram) // the distribution of all observed experimental proteoform biorep intensities
         {
-            IEnumerable<IBiorepIntensity> biorep_intensities = analysis as TusherAnalysis1 != null ?
-                experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList).ToList<IBiorepIntensity>() :
-                experimental_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList).ToList<IBiorepIntensity>();
             IEnumerable<decimal> rounded_log_intensities = define_rounded_intensity_distribution(biorep_intensities, logIntensityHistogram);
 
             IEnumerable<decimal> log_intensities = biorep_intensities.Where(i => i.intensity_sum > 1).Select(x => (decimal)Math.Log(x.intensity_sum, 2));
@@ -63,11 +65,8 @@ namespace ProteoformSuiteInternal
             allObservedGaussianHeight = allObservedGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)allObservedStDev, 2));
         }
 
-        public void defineSelectObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
+        public void defineSelectObservedIntensityDistribution(IEnumerable<IBiorepIntensity> biorep_intensities, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
-            IEnumerable<IBiorepIntensity> biorep_intensities = analysis as TusherAnalysis1 != null ?
-                satisfactory_proteoforms.SelectMany(pf => pf.biorepIntensityList).ToList<IBiorepIntensity>() :
-                satisfactory_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList).ToList<IBiorepIntensity>();
             define_rounded_intensity_distribution(biorep_intensities, logSelectIntensityHistogram);
 
             IEnumerable<decimal> log_intensities = biorep_intensities.Where(i => i.intensity_sum > 1).Select(x => (decimal)Math.Log(x.intensity_sum, 2));
@@ -77,11 +76,8 @@ namespace ProteoformSuiteInternal
             selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
         }
 
-        public void defineSelectObservedWithImputedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
+        public void defineSelectObservedWithImputedIntensityDistribution(IEnumerable<IBiorepIntensity> biorep_intensities, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
-            IEnumerable<IBiorepIntensity> biorep_intensities = analysis as TusherAnalysis1 != null ?
-                satisfactory_proteoforms.SelectMany(pf => pf.quant.TusherValues1.allIntensities.Values).ToList<IBiorepIntensity>() :
-                satisfactory_proteoforms.SelectMany(pf => pf.quant.TusherValues2.allIntensities.Values).ToList<IBiorepIntensity>();
             IEnumerable<decimal> rounded_log_intensities = define_rounded_intensity_distribution(biorep_intensities, logSelectIntensityWithImputationHistogram);
 
             IEnumerable<decimal> log_intensities = biorep_intensities.Where(i => i.intensity_sum > 1).Select(x => (decimal)Math.Log(x.intensity_sum, 2));
