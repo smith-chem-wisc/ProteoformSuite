@@ -199,6 +199,9 @@
     <None Include="BU_result_sliced-raw_5ppmAroundZero.mzid">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="elements.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="example_corrections.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
