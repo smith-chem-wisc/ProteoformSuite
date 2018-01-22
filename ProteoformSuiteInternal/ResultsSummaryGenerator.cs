@@ -446,8 +446,8 @@ namespace ProteoformSuiteInternal
                     e.adduct,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant,
                     e.family != null ? e.family.family_id.ToString() : "",
-                    get_tusher_values(e.quant, analysis).numeratorIntensitySum,
-                    get_tusher_values(e.quant, analysis).denominatorIntensitySum,
+                    Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.numeratorIntensitySum : get_tusher_values(e.quant, analysis).numeratorIntensitySum,
+                    Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.denominatorIntensitySum : get_tusher_values(e.quant, analysis).denominatorIntensitySum,
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
                 );
             }
@@ -588,7 +588,7 @@ namespace ProteoformSuiteInternal
                             if (include_imputation)
                             {
                                 pf.quant.TusherValues1.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
-                                value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
+                                value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : 0 : 0;
                             }
                             else
                             {
@@ -606,7 +606,7 @@ namespace ProteoformSuiteInternal
                                 if (include_imputation)
                                 {
                                     pf.quant.TusherValues2.allIntensities.TryGetValue(new Tuple<string, string, string>(condition_bioreps.Key, biorep, techrep), out BiorepTechrepIntensity br);
-                                    value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
+                                    value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : 0 : 0;
                                 }
                                 else
                                 {
@@ -623,7 +623,7 @@ namespace ProteoformSuiteInternal
                             if (include_imputation)
                             {
                                 pf.quant.Log2FoldChangeValues.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity bft);
-                                value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
+                                value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : 0 : 0;
                             }
                             else
                             {

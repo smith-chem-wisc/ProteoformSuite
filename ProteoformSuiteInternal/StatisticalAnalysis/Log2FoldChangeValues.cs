@@ -42,9 +42,6 @@ namespace ProteoformSuiteInternal
             denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
 
             allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string>(x.condition, x.biorep), x => x);
-
-            //List<BiorepIntensity> imputed_bft_intensities = imputedIntensities(biorepIntensityList, allFiles, fileCondition_avgLog2I, fileCondition_stdevLog2I);
-           // allIntensities = biorepIntensityList.Concat(imputed_bft_intensities).ToDictionary(bft => new Tuple<string, string>(bft.condition, bft.biorep), bft => bft);
         }
 
         /// <summary>

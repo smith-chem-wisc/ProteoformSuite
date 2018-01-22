@@ -320,6 +320,10 @@ namespace ProteoformSuiteGUI
             nud_benjiHochFDR.Value = (decimal)Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr;
             nud_benjiHochFDR.ValueChanged += nud_benjiHochFDR_ValueChanged;
 
+            nUD_min_fold_change.ValueChanged -= nUD_min_fold_change_ValueChanged;
+            nUD_min_fold_change.Value = (decimal)Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange;
+            nUD_min_fold_change.ValueChanged += nUD_min_fold_change_ValueChanged;
+
             nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
             nud_bkgdShift.Value = Sweet.lollipop.backgroundShift;
             nud_bkgdShift.ValueChanged += nud_bkgdShift_ValueChanged;
@@ -488,13 +492,13 @@ namespace ProteoformSuiteGUI
 
         private void set_nud_minObs_maximum()
         {
-            List<InputFile> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Sweet.lollipop.neucode_labeled ? Purpose.Quantification : Purpose.Identification).ToList();
+            List<InputFile> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).ToList();
             if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
                 nud_minObservations.Maximum = Sweet.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
             else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.observation_requirement) < 3)
                 nud_minObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
             else if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[4]) // From any condition
-                nud_minObservations.Maximum = files.Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count() * (Sweet.lollipop.neucode_labeled ? 2 : 1);
+                nud_minObservations.Maximum = files.Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count();
             else
                 nud_minObservations.Maximum = Math.Min(files.Where(x => x.lt_condition == Sweet.lollipop.numerator_condition).Concat(files.Where(x => x.hv_condition == Sweet.lollipop.numerator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count(),
                    files.Where(x => x.lt_condition == Sweet.lollipop.denominator_condition).Concat(files.Where(x => x.hv_condition == Sweet.lollipop.denominator_condition)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
@@ -1037,7 +1041,7 @@ namespace ProteoformSuiteGUI
 
             QuantitativeDistributions quant = Sweet.lollipop.significance_by_log2FC ? Sweet.lollipop.Log2FoldChangeAnalysis.QuantitativeDistributions : get_tusher_analysis().QuantitativeDistributions;
             foreach (KeyValuePair<decimal, int> entry in selection == 3 ?
-                quant.logSelectIntensityHistogram :
+                quant.logSelectIntensityWithImputationHistogram :
                 new int[] { 1, 2 }.Contains(selection) ? quant.logSelectIntensityHistogram :
                     quant.logIntensityHistogram)
             {
@@ -1045,15 +1049,15 @@ namespace ProteoformSuiteGUI
 
                 decimal gaussian_height = selection == 3 ?
                    quant.selectWithImputationGaussianHeight :
-                    new int[] { 1, 2 }.Contains(selection) ? quant.selectWithImputationGaussianHeight :
+                    new int[] { 1, 2 }.Contains(selection) ? quant.selectGaussianHeight :
                         quant.allObservedGaussianHeight;
                 decimal average_intensity = selection == 3 ?
                     quant.selectWithImputationAverageIntensity :
-                    new int[] { 1, 2 }.Contains(selection) ? quant.selectWithImputationAverageIntensity :
+                    new int[] { 1, 2 }.Contains(selection) ? quant.selectAverageIntensity :
                         quant.allObservedAverageIntensity;
                 decimal std_dev = selection == 3 ?
                     quant.selectWithImputationStDev :
-                    new int[] { 1, 2 }.Contains(selection) ? quant.selectWithImputationStDev :
+                    new int[] { 1, 2 }.Contains(selection) ? quant.selectStDev :
                        quant.allObservedStDev;
                 double gaussIntensity = ((double)gaussian_height) * Math.Exp(-Math.Pow(((double)entry.Key - (double)average_intensity), 2) / (2d * Math.Pow((double)std_dev, 2)));
                 double bkgd_gaussIntensity = (double)quant.bkgdGaussianHeight * Math.Exp(-Math.Pow(((double)entry.Key - (double)quant.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)quant.bkgdStDev, 2)));
@@ -1066,6 +1070,8 @@ namespace ProteoformSuiteGUI
                     ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
                 }
             }
+            tb_avgIntensity.Text = Math.Round(quant.selectAverageIntensity, 1).ToString();
+            tb_stdevIntensity.Text = Math.Round(quant.selectStDev, 3).ToString();
         }
 
         private void cmbx_intensityDistributionChartSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -1314,5 +1320,11 @@ namespace ProteoformSuiteGUI
 
         #endregion Cytoscape Visualization Private Methods
 
+        private void nUD_min_fold_change_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange = (double)nUD_min_fold_change.Value;
+            Sweet.lollipop.Log2FoldChangeAnalysis.establish_benjiHoch_significance();
+            volcanoPlot();
+        }
     }
 }
