@@ -17,6 +17,7 @@ namespace ProteoformSuiteInternal
         public double log2FC_population_average { get; set; } = 0;
         public double log2FC_population_stdev { get; set; } = 0;
         public double benjiHoch_fdr { get; set; } = 0.05;
+        public double minFoldChange { get; set; } = 2.0;
         public List<ProteinWithGoTerms> inducedOrRepressedProteins { get; set; } = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
         public GoAnalysis GoAnalysis { get; set; } = new GoAnalysis();
         public QuantitativeDistributions QuantitativeDistributions { get; set; }
@@ -85,7 +86,7 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                pf.quant.Log2FoldChangeValues.significant = pf.quant.Log2FoldChangeValues.benjiHoch_value <= benjiHoch_criticalValue; // every test at or below the critical value is significant, even if the p-value is greater than its benjiHoch value
+                pf.quant.Log2FoldChangeValues.significant = Math.Abs(pf.quant.Log2FoldChangeValues.logfold2change) >= minFoldChange && pf.quant.Log2FoldChangeValues.benjiHoch_value <= benjiHoch_criticalValue; // every test at or below the critical value is significant, even if the p-value is greater than its benjiHoch value
             }
 
             inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), GoAnalysis);

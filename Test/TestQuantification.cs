@@ -135,7 +135,7 @@ namespace Test
             Assert.AreEqual(0d /*200d*/, e1.quant.TusherValues1.numeratorOriginalIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(0d /*105d*/, e1.quant.TusherValues1.denominatorOriginalIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(305d, e1.quant.intensitySum);
-            Assert.AreEqual(0.929610672108602M, e1.quant.logFoldChange);
+            Assert.AreEqual(0.929610672108602M, e1.quant.tusherlogFoldChange);
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace Test
             Assert.AreEqual(0d /*298d*/, e2.quant.TusherValues1.numeratorOriginalIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(0d /*307d*/, e2.quant.TusherValues1.denominatorOriginalIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(605d, e2.quant.intensitySum);
-            Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
+            Assert.AreEqual(-0.0429263249080178M, e2.quant.tusherlogFoldChange);
             //Assert.AreEqual(20.338m, Math.Round(e2.quant.StdDev(e2.quant.numeratorOriginalBiorepIntensities, e2.quant.denominatorOriginalBiorepIntensities), 3));
             //Assert.AreEqual(0.10544m, Math.Round(e2.quant.relative_difference, 5));
         }
@@ -633,7 +633,7 @@ namespace Test
 
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
-            distributions.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
+            distributions.defineAllObservedIntensityDistribution(exps.SelectMany(p => p.biorepIntensityList), histogram); // creates the histogram again, checking that it's cleared, too
             Assert.AreEqual(0.4m, distributions.allObservedGaussianArea);
             Assert.AreEqual(1.185, distributions.allObservedAverageIntensity);
             Assert.AreEqual(0.085m, Math.Round(distributions.allObservedStDev, 3));
@@ -646,7 +646,7 @@ namespace Test
             distributions.allObservedGaussianHeight = 0;
 
             //SELECTED INTENSITIES
-            distributions.defineSelectObservedIntensityDistribution(exps, histogram);
+            distributions.defineSelectObservedIntensityDistribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
             Assert.AreEqual(0.4m, distributions.selectGaussianArea);
             Assert.AreEqual(1.185m, distributions.selectAverageIntensity);
             Assert.AreEqual(0.085m, Math.Round(distributions.selectStDev, 3));
@@ -995,6 +995,9 @@ namespace Test
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange = 10;
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR = 0.5m;
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformIntensity = 1;
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p2 = new ProteinWithGoTerms("ASDF", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p3 = new ProteinWithGoTerms("ASDF", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -1027,42 +1030,43 @@ namespace Test
             u.family = f;
 
             //Nothing passing, but one thing passing for each
-            ex.quant.logFoldChange = 12;
+            ex.quant.tusherlogFoldChange = 12;
             ex.quant.TusherValues1.significant = false;
             ex.quant.intensitySum = 0;
-            fx.quant.logFoldChange = -12;
+            fx.quant.tusherlogFoldChange = -12;
             fx.quant.TusherValues1.significant = false; ;
             fx.quant.intensitySum = 0;
-            gx.quant.logFoldChange = 8;
+            gx.quant.tusherlogFoldChange = 8;
             gx.quant.TusherValues1.significant = true;
             gx.quant.intensitySum = 0;
-            hx.quant.logFoldChange = 8;
+            hx.quant.tusherlogFoldChange = 8;
             hx.quant.TusherValues1.significant = false; ;
             hx.quant.intensitySum = 2;
-            List<ProteinWithGoTerms> prots = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
+            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx };
+            List<ProteinWithGoTerms> prots = Sweet.lollipop.getInducedOrRepressedProteins(exps.Where(p => p.quant.TusherValues1.significant), Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Assert.AreEqual(0, prots.Count);
 
             //Nothing passing, but two things passing for each
-            ex.quant.logFoldChange = 12;
+            ex.quant.tusherlogFoldChange = 12;
             ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 0;
-            fx.quant.logFoldChange = -12;
+            fx.quant.tusherlogFoldChange = -12;
             fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 0;
-            gx.quant.logFoldChange = 8;
+            gx.quant.tusherlogFoldChange = 8;
             gx.quant.TusherValues1.significant = true;
             gx.quant.intensitySum = 2;
-            hx.quant.logFoldChange = 12;
+            hx.quant.tusherlogFoldChange = 12;
             hx.quant.TusherValues1.significant = false; ;
             hx.quant.intensitySum = 2;
-            prots = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
+            prots = Sweet.lollipop.getInducedOrRepressedProteins(exps.Where(p => p.quant.TusherValues1.significant), Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Assert.AreEqual(0, prots.Count);
 
             //Passing
-            ex.quant.logFoldChange = 12;
+            ex.quant.tusherlogFoldChange = 12;
             ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
-            prots = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
+            prots = Sweet.lollipop.getInducedOrRepressedProteins(exps.Where(p => p.quant.TusherValues1.significant), Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Assert.AreEqual(1, prots.Count); // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             //Assert.True(prots.Select(p => p.Accession).Contains("T2"));
@@ -1078,16 +1082,14 @@ namespace Test
             ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
-            ex.quant.logFoldChange = 12;
+            ex.quant.tusherlogFoldChange = 12;
             ex.quant.Log2FoldChangeValues.significant = true;
             ex.quant.intensitySum = 2;
-            fx.quant.logFoldChange = 12;
+            fx.quant.tusherlogFoldChange = 12;
             fx.quant.Log2FoldChangeValues.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, exps, 10, 0.5m, 1).ToList();
-            Assert.AreEqual(2, interesting.Count);
-            interesting = Sweet.lollipop.getInterestingProteoforms(null, exps, 10, 0.5m, 1).ToList(); // should take null param indicating Log2FoldChangeAnalysis
+            List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(exps.Where(e => e.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis).ToList();
             Assert.AreEqual(2, interesting.Count);
 
             Sweet.lollipop.significance_by_permutation = true;
@@ -1096,14 +1098,14 @@ namespace Test
             fx = ConstructorsForTesting.ExperimentalProteoform("E2");
             gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             hx = ConstructorsForTesting.ExperimentalProteoform("E4");
-            ex.quant.logFoldChange = 12;
+            ex.quant.tusherlogFoldChange = 12;
             ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
-            fx.quant.logFoldChange = 12;
+            fx.quant.tusherlogFoldChange = 12;
             fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 2;
             exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            interesting = Sweet.lollipop.getInterestingProteoforms(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, exps, 10, 0.5m, 1).ToList();
+            interesting = Sweet.lollipop.getInterestingProteoforms(exps.Where(e => e.quant.TusherValues1.significant), Sweet.lollipop.TusherAnalysis1.GoAnalysis).ToList();
             Assert.AreEqual(2, interesting.Count);
         }
 
@@ -1127,10 +1129,10 @@ namespace Test
             ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
-            ex.quant.logFoldChange = 12;
+            ex.quant.tusherlogFoldChange = 12;
             ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
-            fx.quant.logFoldChange = 12;
+            fx.quant.tusherlogFoldChange = 12;
             fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
@@ -1153,7 +1155,7 @@ namespace Test
             u.family = h;
             v.family = f;
 
-            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, exps, 10, 0.5m, 1);
+            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(exps.Where(p => p.quant.TusherValues1.significant), Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Assert.AreEqual(2, fams.Count);
             Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 0).Count());
             Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 1).Count());
@@ -1350,20 +1352,20 @@ namespace Test
             Sweet.lollipop.quantify();
             Assert.AreEqual(216, Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count);
 
-            Sweet.lollipop.Log2FoldChangeAnalysis.calculate_log2fc_statistics();
+            Sweet.lollipop.Log2FoldChangeAnalysis.compute_proteoform_statistics(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.conditionsBioReps, Sweet.lollipop.numerator_condition, Sweet.lollipop.denominator_condition, Sweet.lollipop.induced_condition, Sweet.lollipop.sKnot_minFoldChange, true);
 
             // Check mixing normalization
-            List<BiorepFractionTechrepIntensity> allBfts = Sweet.lollipop.satisfactoryProteoforms.SelectMany(pf => pf.bftIntensityList).ToList();
-            Assert.AreEqual(4948, allBfts.Count);
+            List<BiorepIntensity> allBfts = Sweet.lollipop.satisfactoryProteoforms.SelectMany(pf => pf.quant.Log2FoldChangeValues.allIntensities.Values.Where(i => !i.imputed)).ToList();
+            Assert.AreEqual(596, allBfts.Count);
+            //normalize before imputing so should be normalized to these values....
             Assert.AreEqual(Math.Round(allBfts.Where(bft => bft.condition == conditions[0]).Sum(bft => bft.intensity_sum), 1), Math.Round(allBfts.Where(bft => bft.condition == conditions[1]).Sum(bft => bft.intensity_sum), 1));
 
             //Check that all values are imputed
-            Assert.True(Sweet.lollipop.Log2FoldChangeAnalysis.fileCondition_avgLog2I.Values.All(v => 16.4 < v && v < 26.9));
-            Assert.True(Sweet.lollipop.Log2FoldChangeAnalysis.fileCondition_stdevLog2I.Values.All(v => 0.66 < v && v < 3.6));
-            Assert.AreEqual(5242, Sweet.lollipop.satisfactoryProteoforms.Sum(pf => pf.quant.Log2FoldChangeValues.allBftIntensities.Values.Count));
-
-            //Assert.True(0 < Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.pValue_uncorrected < 0.0001));
-            //Assert.True(0 < Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.significant_foldchange));
+            Assert.True(Sweet.lollipop.Log2FoldChangeAnalysis.conditionBiorep_avgLog2I.Values.All(v => 16.4 < v && v < 26.9));
+            Assert.True(Sweet.lollipop.Log2FoldChangeAnalysis.conditionBiorep_stdevLog2I.Values.All(v => 0.66 < v && v < 3.6));
+            Assert.AreEqual(600, Sweet.lollipop.satisfactoryProteoforms.Sum(pf => pf.quant.Log2FoldChangeValues.allIntensities.Values.Count));
+            Assert.AreEqual(0, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.Log2FoldChangeValues.pValue_uncorrected < 0.0001));
+            Assert.AreEqual(0, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.Log2FoldChangeValues.significant));
         }
 
         [Test]
@@ -1385,7 +1387,7 @@ namespace Test
                 e.quant.Log2FoldChangeValues.pValue_uncorrected = ExtensionMethods.Student2T((double)i / 10, 10);
                 Sweet.lollipop.satisfactoryProteoforms.Add(e);
             }
-
+            Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange = 0;
             Sweet.lollipop.Log2FoldChangeAnalysis.establish_benjiHoch_significance();
 
             Assert.AreEqual(77, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.Log2FoldChangeValues.significant));

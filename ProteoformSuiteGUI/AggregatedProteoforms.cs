@@ -56,28 +56,20 @@ namespace ProteoformSuiteGUI
 
         private void display_light_proteoforms()
         {
-            if (selected_pf == null || (selected_pf != null && !selected_pf.topdown_id))
-            {
-                List<IAggregatable> components = selected_pf == null ? new List<IAggregatable>() :
-                    rb_displayIdentificationComponents.Checked ?
-                    selected_pf.aggregated :
-                    rb_displayLightQuantificationComponents.Checked ?
-                        selected_pf.lt_quant_components.ToList<IAggregatable>() :
-                        selected_pf.hv_quant_components.ToList<IAggregatable>();
-                if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
-                    DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)));
-                else
-                    DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayComponent(c as Component)));
-                if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
-                    DisplayNeuCodePair.FormatNeuCodeTable(dgv_AcceptNeuCdLtProteoforms);
-                else
-                    DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms);
-            }
-            else
-            {
-                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, (selected_pf as TopDownProteoform).topdown_hits.Select(h => new DisplayTopDownHit(h)));
-                DisplayTopDownHit.FormatTopDownHitsTable(dgv_AcceptNeuCdLtProteoforms);
-            }
+            List<IAggregatable> components = selected_pf == null ? new List<IAggregatable>() :
+                rb_displayIdentificationComponents.Checked ?
+                selected_pf.aggregated :
+                rb_displayLightQuantificationComponents.Checked ?
+                    selected_pf.lt_quant_components.ToList<IAggregatable>() :
+                    selected_pf.hv_quant_components.ToList<IAggregatable>();
+            if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
+                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)));
+            else if (rb_displayIdentificationComponents.Checked && selected_pf != null && selected_pf.topdown_id) DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, (selected_pf as TopDownProteoform).topdown_hits.Select(h => new DisplayTopDownHit(h)));
+            else DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayComponent(c as Component)));
+            if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
+                DisplayNeuCodePair.FormatNeuCodeTable(dgv_AcceptNeuCdLtProteoforms);
+            else if (rb_displayIdentificationComponents.Checked && selected_pf != null && selected_pf.topdown_id) DisplayTopDownHit.FormatTopDownHitsTable(dgv_AcceptNeuCdLtProteoforms);
+            else DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms);
         }
 
         private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)

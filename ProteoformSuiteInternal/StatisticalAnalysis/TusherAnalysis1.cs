@@ -32,6 +32,7 @@ namespace ProteoformSuiteInternal
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.TusherValues1.determine_proteoform_statistics(induced_condition, sKnot_minFoldChange);
+                eP.quant.determine_statistics();
             }
         }
 

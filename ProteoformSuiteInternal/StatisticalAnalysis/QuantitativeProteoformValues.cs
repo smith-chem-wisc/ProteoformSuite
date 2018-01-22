@@ -11,7 +11,7 @@ namespace ProteoformSuiteInternal
 
         public ExperimentalProteoform proteoform { get; set; }
         public string accession { get { return proteoform.accession; } }
-        public decimal logFoldChange { get; set; } = 0; // rough value
+        public decimal tusherlogFoldChange { get; set; } = 0; // rough value
         public decimal intensitySum { get; set; } = 0; // rough value
 
         #endregion Public Properties
@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         public void determine_statistics()
         {
             intensitySum = TusherValues1.numeratorIntensitySum + TusherValues1.denominatorIntensitySum;
-            logFoldChange = (decimal)Math.Log((double)TusherValues1.numeratorIntensitySum / (double)TusherValues1.denominatorIntensitySum, 2);
+            tusherlogFoldChange = (decimal)Math.Log((double)TusherValues1.numeratorIntensitySum / (double)TusherValues1.denominatorIntensitySum, 2);
         }
 
         /// <summary>

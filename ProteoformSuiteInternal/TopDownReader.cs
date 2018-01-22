@@ -36,7 +36,7 @@ namespace ProteoformSuiteInternal
                     //N-term modifications
                     if (cellStrings[10].Length > 0) //N Terminal Modification Code
                     {
-                        string[] ptms = cellStrings[9].Split('|');
+                        string[] ptms = cellStrings[10].Split('|');
                         foreach (string ptm in ptms)
                         {
                             int position = Convert.ToInt32(cellStrings[5]);

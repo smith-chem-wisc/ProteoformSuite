@@ -496,7 +496,6 @@ namespace ProteoformSuiteInternal
                 {
                     pf.manual_validation_id = pf.find_manual_inspection_component(pf.aggregated);
                     pf.manual_validation_verification = pf.find_manual_inspection_component(pf.lt_verification_components.Concat(pf.hv_verification_components));
-                    pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
                 }
                 else
                 {
@@ -505,12 +504,13 @@ namespace ProteoformSuiteInternal
                          + "; Scan: " + best_hit.ms2ScanNumber
                         + "; RT (min): " + best_hit.ms2_retention_time;
                 }
+                pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
             }
         }
         
         public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
-            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.agg_mass))
+            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count()).ThenBy(t => t.agg_mass))
             {
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
@@ -604,7 +604,12 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> vetExperimentalProteoforms(IEnumerable<ExperimentalProteoform> candidateExperimentalProteoforms, IEnumerable<Component> raw_experimental_components, List<ExperimentalProteoform> vetted_proteoforms) // eliminating candidate proteoforms that were mistakenly created
         {
-            List<ExperimentalProteoform> candidates = candidateExperimentalProteoforms.OrderByDescending(p => p.agg_intensity).ToList();
+            Parallel.ForEach(candidateExperimentalProteoforms, p =>
+            {
+                p.hv_verification_components.Clear();
+                p.lt_verification_components.Clear();
+            });
+            List<ExperimentalProteoform> candidates = candidateExperimentalProteoforms.OrderBy(p => p.topdown_id ? (p as TopDownProteoform).topdown_hits.Min(h => h.pscore) : 1e6).ThenByDescending(p => p.topdown_id ? (p as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(p => p.agg_intensity).ToList();
             remaining_verification_components = new HashSet<Component>(raw_experimental_components);
 
             ExperimentalProteoform candidate = candidates.FirstOrDefault();
@@ -648,7 +653,12 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> assignQuantificationComponents(List<ExperimentalProteoform> vetted_proteoforms, IEnumerable<Component> raw_quantification_components)  // this is only need for neucode labeled data. quantitative components for unlabelled are assigned elsewhere "vetExperimentalProteoforms"
         {
-            List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderByDescending(x => x.agg_intensity).ToList();
+            Parallel.ForEach(vetted_proteoforms, e =>
+            {
+                e.lt_quant_components.Clear();
+                e.hv_quant_components.Clear();
+            });
+            List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderBy(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Min(h => h.pscore) : 1e6).ThenByDescending(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(e => e.agg_intensity).ToList();
             remaining_quantification_components = new HashSet<Component>(raw_quantification_components);
 
             ExperimentalProteoform p = proteoforms.FirstOrDefault();
@@ -1054,7 +1064,7 @@ namespace ProteoformSuiteInternal
         public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform> significantProteoforms, GoAnalysis goAnalysis)
         {
             return significantProteoforms.Where(p =>
-                 Math.Abs(p.quant.logFoldChange) > goAnalysis.minProteoformFoldChange 
+                 Math.Abs(p.quant.tusherlogFoldChange) > goAnalysis.minProteoformFoldChange 
                 && p.quant.intensitySum > goAnalysis.minProteoformIntensity);
         }
 

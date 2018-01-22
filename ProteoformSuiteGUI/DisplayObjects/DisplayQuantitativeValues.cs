@@ -48,6 +48,22 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public double mass
+        {
+            get
+            {
+                return proteoform.modified_mass;
+            }
+        }
+
+        public double retention_time
+        {
+            get
+            {
+                return (proteoform as ExperimentalProteoform).agg_rt;
+            }
+        }
+
         public decimal NumeratorIntensitySum
         {
             get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.numeratorIntensitySum :
@@ -75,7 +91,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return analysis as TusherAnalysis != null ? qval.logFoldChange :
+                return analysis as TusherAnalysis != null ? qval.tusherlogFoldChange :
                     (decimal)qval.Log2FoldChangeValues.logfold2change;
             }
         }
@@ -176,6 +192,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(benjiHoch)) return "Benjamini-Hochberg corrected p-value";
             if (property_name == nameof(RelativeDifference)) return "Student's t-Test Statistic";
             if (property_name == nameof(AvgPermutedTestStatistic)) return "Corresponding Avg. Permuted Student's t-Test Statistic";
+            if (property_name == nameof(retention_time)) return "Retention Time";
+            if (property_name == nameof(mass)) return "Aggregated Mass";
             return null;
         }
         
@@ -194,6 +212,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(benjiHoch)) return "E2";
             if (property_name == nameof(RelativeDifference)) return "0.#####";
             if (property_name == nameof(AvgPermutedTestStatistic)) return "0.#####";
+            if (property_name == nameof(mass)) return "0.####";
+            if (property_name == nameof(retention_time)) return "0.##";
             return null;
         }
 

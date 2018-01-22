@@ -322,7 +322,6 @@ namespace ProteoformSuiteInternal
 
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
             List<BiorepTechrepIntensity> biotechIntensityList = new List<BiorepTechrepIntensity>();
-            List<BiorepFractionTechrepIntensity> bftIntensityList = new List<BiorepFractionTechrepIntensity>();
 
             foreach (string condition in ltConditionStrings.Concat(hvConditionStrings).Distinct().ToList())
             {

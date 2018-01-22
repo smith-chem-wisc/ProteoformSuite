@@ -92,10 +92,10 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.TusherValues1.significant = true;
-            e1.quant.logFoldChange = 1;
+            e1.quant.tusherlogFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.TusherValues1.significant = true;
-            e2.quant.logFoldChange = 1;
+            e2.quant.tusherlogFoldChange = 1;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
@@ -124,7 +124,7 @@ namespace Test
             u.family = h;
             e2.family = h;
             List<ExperimentalProteoform> fake_significant = new List<ExperimentalProteoform> { e1 };
-            List<ProteinWithGoTerms> significant_proteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, fake_significant, 0, 1, 0);
+            List<ProteinWithGoTerms> significant_proteins = Sweet.lollipop.getInducedOrRepressedProteins(fake_significant, Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             List<GoTermNumber> gtn = Sweet.lollipop.TusherAnalysis1.GoAnalysis.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(1, significant_proteins.Count);
             Assert.AreEqual(1, gtn.Count);
@@ -161,10 +161,10 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.TusherValues1.significant = true;
-            e1.quant.logFoldChange = 1;
+            e1.quant.tusherlogFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.TusherValues1.significant = true;
-            e2.quant.logFoldChange = 1;
+            e2.quant.tusherlogFoldChange = 1;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
@@ -186,7 +186,7 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.allTheoreticalProteins = true;
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.GO_analysis(Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins);
@@ -237,10 +237,10 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.TusherValues1.significant = true;
-            e1.quant.logFoldChange = 1;
+            e1.quant.tusherlogFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.TusherValues1.significant = true;
-            e2.quant.logFoldChange = 1;
+            e2.quant.tusherlogFoldChange = 1;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
@@ -262,7 +262,7 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.allTheoreticalProteins = true;
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
