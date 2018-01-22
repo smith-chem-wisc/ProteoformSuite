@@ -42,8 +42,6 @@ namespace ProteoformSuiteGUI
             this.dgv_rawComponents = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.label12 = new System.Windows.Forms.Label();
-            this.nUD_scans_to_average = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.nUD_min_cs = new System.Windows.Forms.NumericUpDown();
             this.cb_deconvolute = new System.Windows.Forms.CheckBox();
@@ -82,7 +80,6 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_max_cs)).BeginInit();
@@ -236,8 +233,6 @@ namespace ProteoformSuiteGUI
             // 
             // splitContainer4.Panel1
             // 
-            this.splitContainer4.Panel1.Controls.Add(this.label12);
-            this.splitContainer4.Panel1.Controls.Add(this.nUD_scans_to_average);
             this.splitContainer4.Panel1.Controls.Add(this.label10);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_min_cs);
             this.splitContainer4.Panel1.Controls.Add(this.cb_deconvolute);
@@ -262,25 +257,6 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Size = new System.Drawing.Size(381, 402);
             this.splitContainer4.SplitterDistance = 369;
             this.splitContainer4.TabIndex = 0;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(136, 235);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(91, 13);
-            this.label12.TabIndex = 25;
-            this.label12.Text = "Scans to average";
-            this.label12.Visible = false;
-            // 
-            // nUD_scans_to_average
-            // 
-            this.nUD_scans_to_average.Location = new System.Drawing.Point(11, 233);
-            this.nUD_scans_to_average.Name = "nUD_scans_to_average";
-            this.nUD_scans_to_average.Size = new System.Drawing.Size(120, 20);
-            this.nUD_scans_to_average.TabIndex = 24;
-            this.nUD_scans_to_average.Visible = false;
-            this.nUD_scans_to_average.ValueChanged += new System.EventHandler(this.nUD_scans_to_average_ValueChanged);
             // 
             // label10
             // 
@@ -310,6 +286,7 @@ namespace ProteoformSuiteGUI
             this.cb_deconvolute.TabIndex = 19;
             this.cb_deconvolute.Text = "Deconvolute";
             this.cb_deconvolute.UseVisualStyleBackColor = true;
+            this.cb_deconvolute.Visible = false;
             this.cb_deconvolute.CheckedChanged += new System.EventHandler(this.cb_deconvolute_CheckedChanged);
             // 
             // label8
@@ -502,7 +479,6 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_scans_to_average)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_cs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_max_cs)).EndInit();
@@ -547,7 +523,5 @@ namespace ProteoformSuiteGUI
         private CheckBox cb_deconvolute;
         private Label label10;
         private NumericUpDown nUD_min_cs;
-        private Label label12;
-        private NumericUpDown nUD_scans_to_average;
     }
 }

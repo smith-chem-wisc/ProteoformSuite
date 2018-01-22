@@ -64,5 +64,33 @@ namespace Test
             Assert.AreEqual(1.7301034510740836, neucode_pair.intensity_ratio);
         }
 
+
+        [Test]
+        public void testComponentReaderClear()
+        {
+            Sweet.lollipop = new Lollipop();
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
+            InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Sweet.lollipop.input_files.Add(noisy);
+
+            string inFileId = noisy.UniqueId.ToString();
+
+            Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
+            Assert.AreEqual(223, Sweet.lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(223, noisy.reader.final_components.Count());
+            Assert.AreEqual(68, noisy.reader.scan_ranges.Count());
+            Assert.AreEqual(224, noisy.reader.unprocessed_components);
+            Assert.AreEqual(1, noisy.reader.missed_mono_merges);
+            Assert.AreEqual(0, noisy.reader.harmonic_merges);
+            noisy.reader.Clear();
+            Assert.AreEqual(0, noisy.reader.final_components.Count());
+            Assert.AreEqual(0, noisy.reader.scan_ranges.Count());
+            Assert.AreEqual(0, noisy.reader.unprocessed_components);
+            Assert.AreEqual(0, noisy.reader.missed_mono_merges);
+            Assert.AreEqual(0, noisy.reader.harmonic_merges);
+
+        }
+
     }
 }

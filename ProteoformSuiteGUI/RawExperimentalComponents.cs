@@ -74,7 +74,6 @@ namespace ProteoformSuiteGUI
             nUD_max_cs.Value = Sweet.lollipop.max_assumed_cs;
             nUD_min_num_CS.Value = Sweet.lollipop.min_num_cs_deconvolution_component;
             nUD_min_cs.Value = Sweet.lollipop.min_assumed_cs;
-            nUD_scans_to_average.Value = Sweet.lollipop.num_scans_average;
             FillTablesAndCharts();
         }
 
@@ -221,7 +220,6 @@ namespace ProteoformSuiteGUI
             nUD_max_cs.Visible = cb_deconvolute.Checked;
             nUD_min_num_CS.Visible = cb_deconvolute.Checked;
             nUD_min_cs.Visible = cb_deconvolute.Checked;
-            nUD_scans_to_average.Visible = cb_deconvolute.Checked;
             label2.Visible = cb_deconvolute.Checked;
             label3.Visible = cb_deconvolute.Checked;
             label4.Visible = cb_deconvolute.Checked;
@@ -229,17 +227,11 @@ namespace ProteoformSuiteGUI
             label6.Visible = cb_deconvolute.Checked;
             label8.Visible = cb_deconvolute.Checked;
             label10.Visible = cb_deconvolute.Checked;
-            label12.Visible = cb_deconvolute.Checked;
         }
 
         private void nUD_min_cs_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_assumed_cs = Convert.ToInt32(nUD_min_cs.Value);
-        }
-
-        private void nUD_scans_to_average_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.num_scans_average = Convert.ToInt32(nUD_scans_to_average.Value);
         }
     }
 }

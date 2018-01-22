@@ -79,8 +79,6 @@ namespace ProteoformSuiteInternal
         public void defineSelectObservedWithImputedIntensityDistribution(IEnumerable<IBiorepIntensity> biorep_intensities, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
             IEnumerable<decimal> rounded_log_intensities = define_rounded_intensity_distribution(biorep_intensities, logSelectIntensityWithImputationHistogram);
-
-            IEnumerable<decimal> log_intensities = biorep_intensities.Where(i => i.intensity_sum > 1).Select(x => (decimal)Math.Log(x.intensity_sum, 2));
             selectWithImputationAverageIntensity = rounded_log_intensities.Average();
             selectWithImputationStDev = (decimal)Math.Sqrt(rounded_log_intensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
             selectWithImputationGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
