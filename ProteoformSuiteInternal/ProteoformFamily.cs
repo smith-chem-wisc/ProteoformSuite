@@ -141,8 +141,8 @@ namespace ProteoformSuiteInternal
         private void separate_proteoforms()
         {
             theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
-            gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
+            gene_names = proteoforms.Where(p => p as TopDownProteoform != null || p as TheoreticalProteoform != null).Select(t => t.gene_name).ToList();
             relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.Accepted))).ToList();
         }
 

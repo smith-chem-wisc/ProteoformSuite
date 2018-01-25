@@ -228,11 +228,12 @@ namespace ProteoformSuiteInternal
             {
                 string filestring = findchangefile.Match(change_file).Groups[2].ToString();
                 string filepath = !filestring.StartsWith(".") ? filestring : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), filestring));
+                string filename = Path.GetFileNameWithoutExtension(filepath);
                 string property = findproperty.Match(change_file).Groups[2].ToString();
                 string typefullname = findtype.Match(change_file).Groups[2].ToString();
                 string value = findto.Match(change_file).Groups[2].ToString();
                 Purpose? purpose = ExtensionMethods.EnumUntil.GetValues<Purpose>().FirstOrDefault(p => findpurpose.Match(change_file).Groups[2].ToString() == p.ToString());
-                InputFile file = destination.FirstOrDefault(f => f.complete_path == filepath && f.purpose == purpose); //match the filename, not the path, in case it changed folders
+                InputFile file = destination.FirstOrDefault(f => (f.complete_path == filepath || f.filename == filename) && f.purpose == purpose); //match the filename, not the path, in case it changed folders
                 PropertyInfo propertyinfo = typeof(InputFile).GetProperties().FirstOrDefault(p => p.Name == property);
                 Type type = Type.GetType(typefullname);
 

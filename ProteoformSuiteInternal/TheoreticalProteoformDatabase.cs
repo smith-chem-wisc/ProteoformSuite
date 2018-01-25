@@ -353,6 +353,7 @@ namespace ProteoformSuiteInternal
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
                 if (candidate_theoreticals.Count > 0)
                 {
+                    topdown.gene_name = new GeneName(candidate_theoreticals.First().GeneNames);
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
                         int count = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence) + new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
@@ -378,7 +379,7 @@ namespace ProteoformSuiteInternal
         public void add_topdown_theoreticals(ProteinWithGoTerms prot, string seq, string accession, double unmodified_mass, int decoy_number, int lysine_count, List<TheoreticalProteoform> new_theoreticals, int ptm_set_counter, Dictionary<double, int> mod_ranks, int added_ptm_penalty)
         {
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0].Split('-')[0])
-                && p.topdown_begin == prot.ProteolysisProducts.First().OneBasedBeginPosition && p.topdown_end == prot.ProteolysisProducts.First().OneBasedEndPosition).OrderBy(t => t.gene_name).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
+                && p.topdown_begin == prot.ProteolysisProducts.First().OneBasedBeginPosition && p.topdown_end == prot.ProteolysisProducts.First().OneBasedEndPosition).OrderBy(t => t.accession).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
                 if (!new_theoreticals.Any(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)))
                 {
