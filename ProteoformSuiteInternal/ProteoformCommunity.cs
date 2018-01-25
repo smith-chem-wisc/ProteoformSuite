@@ -77,7 +77,7 @@ namespace ProteoformSuiteInternal
                     {
                         pf1.ptm_set = null;
                         pf1.linked_proteoform_references = null;
-                        pf1.gene_name = null;
+                        if(pf1 as TopDownProteoform == null) pf1.gene_name = null;
                     }
 
                     if (limit_et_relations && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
@@ -354,7 +354,7 @@ namespace ProteoformSuiteInternal
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
-                p.gene_name = null;
+                if(p as TopDownProteoform == null) p.gene_name = null;
             }
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
         }

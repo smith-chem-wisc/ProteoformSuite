@@ -284,7 +284,7 @@ namespace Test
             Assert.AreEqual(3, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous); //dont have same path length so not ambiguous
+            Assert.IsTrue(e2.ambiguous); //dont have same path length, still ambiguous
             Assert.IsFalse(e1.ambiguous);
             Assert.IsTrue(e3.ambiguous);
 

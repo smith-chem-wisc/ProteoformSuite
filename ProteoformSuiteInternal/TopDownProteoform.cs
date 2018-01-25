@@ -85,6 +85,7 @@ namespace ProteoformSuiteInternal
             this.is_target = t.is_target;
             this.topdown_end = t.topdown_end;
             this.topdown_begin = t.topdown_begin;
+            this.gene_name = t.gene_name;
         }
 
 

@@ -220,9 +220,9 @@ namespace ProteoformSuiteInternal
 
             int correct_td = Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references != null && p.correct_id);
             int incorrect_td = Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references != null && !p.correct_id);
-            report += correct_td + "\tTop-Down Proteoforms Assigned Same Identification" + Environment.NewLine;
-            report += incorrect_td + "\tTop-Down Proteoforms Assigned Different Identification" + Environment.NewLine;
-            report += Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references == null) + "\tUnidentified Top-Down Proteoforms" + Environment.NewLine;
+            report += correct_td + "\tTop-Down Proteoforms Assigned Same Identification by Intact-Mass Analysis" + Environment.NewLine;
+            report += incorrect_td + "\tTop-Down Proteoforms Assigned Different Identification by Intact-Mass Analysis" + Environment.NewLine;
+            report += Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references == null) + "\tTop-Down Proteoforms Unidentified by Intact-Mass Analysis" + Environment.NewLine;
             report += Environment.NewLine;
 
             int identified_exp_proteoforms_intact = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
@@ -487,6 +487,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Best Scoring Hit", typeof(string));
             results.Columns.Add("Theoretical SGD ID", typeof(string));
             results.Columns.Add("Theoretical Gene Name", typeof(string));
+            results.Columns.Add("Top-Down Gene Name", typeof(string));
             results.Columns.Add("Family ID", typeof(string));
             results.Columns.Add("Correct ID", typeof(bool));
             results.Columns.Add("Accepted", typeof(bool));
@@ -512,6 +513,7 @@ namespace ProteoformSuiteInternal
                     td.manual_validation_id,
                     td.linked_proteoform_references == null ? "N/A" : td.linked_proteoform_references.Last().gene_name.ordered_locus,
                     td.linked_proteoform_references == null ? "N/A" : td.linked_proteoform_references.Last().gene_name.primary,
+                    td.gene_name != null ? td.gene_name.primary: "",
                     td.family == null ? "N/A" : td.family.family_id.ToString(),
                     td.correct_id,
                     td.accepted

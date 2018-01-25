@@ -48,6 +48,14 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string Theoretical
+        {
+            get
+            {
+                return proteoform.linked_proteoform_references != null ? proteoform.linked_proteoform_references.First().accession.Split('_')[0] : "";
+            }
+        }
+
         public double mass
         {
             get

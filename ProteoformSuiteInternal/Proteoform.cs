@@ -242,7 +242,7 @@ namespace ProteoformSuiteInternal
                         e.begin++;
                         remove.Add(mod); //dont have in ptmset --> change the begin & end
                     }
-                    else if (theoretical_base.sequence[this.end - 1].ToString() == mod.modification.motif.ToString())
+                    else if (theoretical_base.sequence[this.end - this.begin].ToString() == mod.modification.motif.ToString())
                     {
                         e.end--;
                         remove.Add(mod);
@@ -261,14 +261,13 @@ namespace ProteoformSuiteInternal
             else
             {
                 //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
-                if ((e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                    && e.linked_proteoform_references.Count == this.linked_proteoform_references.Count + 1))
+                if ((e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
                     e.ambiguous = true;
             }
 
             if (e.gene_name == null)
                 e.gene_name = this.gene_name;
-            else
+            else if(!e.topdown_id)
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
 
         }
