@@ -287,7 +287,6 @@ namespace Test
             Assert.IsTrue(e2.ambiguous); //dont have same path length, still ambiguous
             Assert.IsFalse(e1.ambiguous);
             Assert.IsTrue(e3.ambiguous);
-
         }
 
         [Test]
