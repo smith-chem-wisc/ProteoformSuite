@@ -71,6 +71,8 @@
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.nUD_min_fold_change = new System.Windows.Forms.NumericUpDown();
             this.label21 = new System.Windows.Forms.Label();
             this.nud_benjiHochFDR = new System.Windows.Forms.NumericUpDown();
             this.cb_significanceByFoldChange = new System.Windows.Forms.CheckBox();
@@ -146,8 +148,6 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.nUD_min_fold_change = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -190,6 +190,7 @@
             this.splitContainer8.Panel2.SuspendLayout();
             this.splitContainer8.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_fold_change)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).BeginInit();
             this.splitContainer9.Panel1.SuspendLayout();
@@ -229,7 +230,6 @@
             this.splitContainer14.Panel2.SuspendLayout();
             this.splitContainer14.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_fold_change)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -712,6 +712,34 @@
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Volcano Plot";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(323, 49);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(111, 13);
+            this.label20.TabIndex = 18;
+            this.label20.Text = "Minimum Fold Change";
+            // 
+            // nUD_min_fold_change
+            // 
+            this.nUD_min_fold_change.DecimalPlaces = 2;
+            this.nUD_min_fold_change.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.nUD_min_fold_change.Location = new System.Drawing.Point(267, 45);
+            this.nUD_min_fold_change.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nUD_min_fold_change.Name = "nUD_min_fold_change";
+            this.nUD_min_fold_change.Size = new System.Drawing.Size(50, 20);
+            this.nUD_min_fold_change.TabIndex = 19;
+            this.nUD_min_fold_change.ValueChanged += new System.EventHandler(this.nUD_min_fold_change_ValueChanged);
             // 
             // label21
             // 
@@ -1705,34 +1733,6 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(323, 49);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(111, 13);
-            this.label20.TabIndex = 18;
-            this.label20.Text = "Minimum Fold Change";
-            // 
-            // nUD_min_fold_change
-            // 
-            this.nUD_min_fold_change.DecimalPlaces = 2;
-            this.nUD_min_fold_change.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.nUD_min_fold_change.Location = new System.Drawing.Point(267, 45);
-            this.nUD_min_fold_change.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nUD_min_fold_change.Name = "nUD_min_fold_change";
-            this.nUD_min_fold_change.Size = new System.Drawing.Size(50, 20);
-            this.nUD_min_fold_change.TabIndex = 19;
-            this.nUD_min_fold_change.ValueChanged += new System.EventHandler(this.nUD_min_fold_change_ValueChanged);
-            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1789,6 +1789,7 @@
             this.splitContainer8.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_fold_change)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).EndInit();
             this.splitContainer9.Panel1.ResumeLayout(false);
             this.splitContainer9.Panel2.ResumeLayout(false);
@@ -1834,7 +1835,6 @@
             this.splitContainer14.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_fold_change)).EndInit();
             this.ResumeLayout(false);
 
         }

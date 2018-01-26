@@ -1072,12 +1072,12 @@ namespace ProteoformSuiteInternal
                 .SelectMany(t => t.ExpandedProteinList)
                 .DistinctBy(pwg => pwg.Accession.Split('_')[0])
                 .ToList();
-        }
+        }  
 
         public List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> significantProteoforms, GoAnalysis goAnalysis)
         {
             return getInterestingProteoforms(significantProteoforms, goAnalysis)
-                .Select(e => e.family).ToList();
+                .Select(e => e.family).Distinct().ToList();
         }
 
         public List<ProteoformFamily> getInterestingFamilies(List<GoTermNumber> go_terms_numbers, List<ProteoformFamily> families)
