@@ -250,18 +250,15 @@ namespace ProteoformSuiteInternal
                 }
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "AminoAcid"))
                 {
-                    if (theoretical_base.sequence[this.begin - 2].ToString() == mod.modification.motif.ToString())
-                    {
-                        e.begin--;
-                        remove.Add(mod);
-                    }
+                    e.begin--;
+                    remove.Add(mod);
                 }
-                foreach(var ptm in remove) e.ptm_set.ptm_combination.Remove(ptm);
+                foreach (var ptm in remove) e.ptm_set.ptm_combination.Remove(ptm);
             }
             else
             {
                 //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
-                if ((e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
+                if (!e.topdown_id && (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
                     e.ambiguous = true;
             }
 

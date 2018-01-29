@@ -192,8 +192,8 @@ namespace ProteoformSuiteGUI
         private static string header(string property_name)
         {
             if (property_name == nameof(GeneName)) return "Gene Name";
-            if (property_name == nameof(NumeratorIntensitySum)) return "Light Intensity Sum";
-            if (property_name == nameof(DenominatorIntensitySum)) return "Heavy Intensity Sum";
+            if (property_name == nameof(NumeratorIntensitySum)) return Sweet.lollipop.numerator_condition +  " Intensity Sum";
+            if (property_name == nameof(DenominatorIntensitySum)) return Sweet.lollipop.denominator_condition + " Intensity Sum";
             if (property_name == nameof(IntensitySum)) return "Intensity Sum";
             if (property_name == nameof(LogFoldChange)) return "Log2 Fold Change";
             if (property_name == nameof(pValue)) return "p-value";

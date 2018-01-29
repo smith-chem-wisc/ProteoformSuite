@@ -296,7 +296,7 @@ namespace ProteoformSuiteInternal
 
             report += "LOG2 FOLD CHANGE ANALYSIS" + Environment.NewLine; ;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.Log2FoldChangeValues.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Benjimini-Hochberg Q-Value < " + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr + ")" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr, 4).ToString() + "\tFDR for Significance Conclusion" + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.Log2FoldChangeAnalysis.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + "; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange > " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
@@ -403,11 +403,10 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Accessions", typeof(string));
             results.Columns.Add("PTM Type", typeof(string));
             results.Columns.Add("Begin and End", typeof(string));
-            results.Columns.Add("Mass Difference", typeof(double));
+            results.Columns.Add("Mass Error", typeof(double));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
-            results.Columns.Add("Mass Error", typeof(double));
             results.Columns.Add("Top-Down Proteoform", typeof(bool));
             results.Columns.Add("Same ID as Top-Down", typeof(string));
             results.Columns.Add("Ambiguous", typeof(bool));
@@ -435,11 +434,10 @@ namespace ProteoformSuiteInternal
                         "Unmodified" :
                         String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
                     e.begin + " to " + e.end,
-                    e.modified_mass - e.linked_proteoform_references.Last().modified_mass,
+                    e.mass_error,
                     e.modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
-                    e.mass_error,
                     e.topdown_id,
                     e.topdown_id? (e as TopDownProteoform).correct_id.ToString() : "N/A",
                     e.ambiguous,
