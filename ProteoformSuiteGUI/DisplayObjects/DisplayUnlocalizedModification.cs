@@ -45,6 +45,12 @@ namespace ProteoformSuiteGUI
             set { m.id = value; }
         }
 
+        public string Type
+        {
+            get { return m.original_modification.modificationType; }
+            set { m.id = value; }
+        }
+            
         public int PtmCount
         {
             get { return m.ptm_count; }

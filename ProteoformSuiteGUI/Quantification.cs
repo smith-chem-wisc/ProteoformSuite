@@ -171,6 +171,7 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().Count() != 2) return false;
             if (!Sweet.lollipop.neucode_labeled && !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
            Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d)))) return false;
+            if (!Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate).Distinct().Count() >= 2)) return false;
             if (Sweet.lollipop.raw_quantification_components.Count == 0) return false;
             return true;
         }
@@ -292,13 +293,13 @@ namespace ProteoformSuiteGUI
 
 
             //Set parameters
-            cb_significanceByFoldChange.CheckedChanged -= cb_significanceByFoldChange_CheckedChanged;
-            cb_significanceByFoldChange.Checked = Sweet.lollipop.significance_by_log2FC;
-            cb_significanceByFoldChange.CheckedChanged += cb_significanceByFoldChange_CheckedChanged;
+            rb_significanceByFoldChange.CheckedChanged -= cb_significanceByFoldChange_CheckedChanged;
+            rb_significanceByFoldChange.Checked = Sweet.lollipop.significance_by_log2FC;
+            rb_significanceByFoldChange.CheckedChanged += cb_significanceByFoldChange_CheckedChanged;
 
-            cb_significanceByPermutation.CheckedChanged -= cb_significanceByPermutation_CheckedChanged;
-            cb_significanceByPermutation.Checked = Sweet.lollipop.significance_by_permutation;
-            cb_significanceByPermutation.CheckedChanged += cb_significanceByPermutation_CheckedChanged;
+            rb_signficanceByPermutation.CheckedChanged -= cb_significanceByPermutation_CheckedChanged;
+            rb_signficanceByPermutation.Checked = Sweet.lollipop.significance_by_permutation;
+            rb_signficanceByPermutation.CheckedChanged += cb_significanceByPermutation_CheckedChanged;
 
             cb_useAveragePermutationFoldChange.CheckedChanged -= cb_useAveragePermutationFoldChange_CheckedChanged;
             cb_useAveragePermutationFoldChange.Checked = Sweet.lollipop.useAveragePermutationFoldChange;
@@ -416,6 +417,8 @@ namespace ProteoformSuiteGUI
             else if (!Sweet.lollipop.neucode_labeled && !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
             Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d))))
                 MessageBox.Show("Please be sure there are the same number and labels for each biological replicate, fraction, and technical replicate for each condition.");
+            else if (!Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate).Distinct().Count() >= 2))
+                MessageBox.Show("Please be sure there are at least two biological replicates for each condition.");
             else if (Sweet.lollipop.raw_quantification_components.Count == 0)
                 MessageBox.Show("Please process raw components.", "Quantification");
             else if (Sweet.lollipop.raw_experimental_components.Count <= 0)
@@ -894,26 +897,12 @@ namespace ProteoformSuiteGUI
 
         private void cb_significanceByPermutation_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.significance_by_permutation = cb_significanceByPermutation.Checked;
-            if (cb_significanceByPermutation.Checked)
-            {
-                cb_significanceByFoldChange.Checked = !cb_significanceByPermutation.Checked;
-                plots();
-            }
-            get_go_analysis();
-            fill_quantitative_values_table();
+
         }
 
         private void cb_significanceByFoldChange_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.significance_by_log2FC = cb_significanceByFoldChange.Checked;
-            if (cb_significanceByFoldChange.Checked)
-            {
-                cb_significanceByPermutation.Checked = !cb_significanceByFoldChange.Checked;
-                plots();
-            }
-            get_go_analysis();
-            fill_quantitative_values_table();
+
         }
 
         #endregion Significance Checkbox Methods
@@ -1325,6 +1314,30 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange = (double)nUD_min_fold_change.Value;
             Sweet.lollipop.Log2FoldChangeAnalysis.establish_benjiHoch_significance();
             volcanoPlot();
+        }
+
+        private void rb_significanceByFoldChange_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.significance_by_log2FC = rb_significanceByFoldChange.Checked;
+            rb_signficanceByPermutation.Checked = !rb_significanceByFoldChange.Checked;
+            if (rb_significanceByFoldChange.Checked)
+            {
+                plots();
+            }
+            updateGoTermsTable();
+            fill_quantitative_values_table();
+        }
+
+        private void rb_signficanceByPermutation_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.significance_by_permutation = rb_signficanceByPermutation.Checked;
+            rb_significanceByFoldChange.Checked = !rb_signficanceByPermutation.Checked;
+            if (rb_signficanceByPermutation.Checked)
+            {
+                plots();
+            }
+            updateGoTermsTable();
+            fill_quantitative_values_table();
         }
     }
 }
