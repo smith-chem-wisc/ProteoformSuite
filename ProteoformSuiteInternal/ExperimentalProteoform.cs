@@ -176,14 +176,12 @@ namespace ProteoformSuiteInternal
 
         public double calculate_mass_error()
         {
-            int protein_sequence_length = (linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.First().BaseSequence.Length;
-            if (protein_sequence_length >= begin && protein_sequence_length >= end - begin + 1)
-            {
-                string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.First().BaseSequence.Substring(begin - linked_proteoform_references.First().begin, end - begin + 1);
-                double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
-                return agg_mass - theoretical_mass;
-            }
-            else return double.MaxValue;
+           string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence
+                    .Substring(begin < linked_proteoform_references.First().begin? 0 : begin - linked_proteoform_references.First().begin,
+                    1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin ));
+            if (begin < linked_proteoform_references.First().begin) sequence = "M" + sequence;
+            double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
+            return agg_mass - theoretical_mass;
         }
 
         #endregion

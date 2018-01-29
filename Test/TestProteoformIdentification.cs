@@ -14,10 +14,12 @@ namespace Test
         [Test]
         public void assign_missing_aa_identity()
         {
-            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 100087.03, 0); // sequence with all serines
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 886.45, 0); // sequence with all serines
+            t.sequence = "AAAAAAAAAAAS";
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") } );
-            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 100087.03, 0, true);
-            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 886.46, 0, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 799.43, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 87.03);
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("missing serine", "Missing", motif, TerminusLocalization.Any, -87.03)) });
@@ -40,12 +42,14 @@ namespace Test
             Assert.AreEqual(1, e2.begin);
             Assert.AreEqual(11, e2.end);
             Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
+            Assert.AreEqual(0.01, Math.Round(e.calculate_mass_error(), 2));
+            Assert.AreEqual(0.01, Math.Round(e2.calculate_mass_error(), 2));
 
-            t = ConstructorsForTesting.make_a_theoretical("", 100087.03, 0); // sequence with all serines
+            t = ConstructorsForTesting.make_a_theoretical("", 886.45, 0); // sequence with all serines
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
             t.sequence = "SAAAAAAAAAAA";
-             e = ConstructorsForTesting.ExperimentalProteoform("", 100087.03, 0, true);
-             e2 = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+             e = ConstructorsForTesting.ExperimentalProteoform("", 886.47, 0, true);
+             e2 = ConstructorsForTesting.ExperimentalProteoform("", 799.44, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 87.03);
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
@@ -62,13 +66,15 @@ namespace Test
             Assert.AreEqual(2, e2.begin);
             Assert.AreEqual(12, e2.end);
             Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
+            Assert.AreEqual(0.02, Math.Round(e.calculate_mass_error(), 2));
+            Assert.AreEqual(0.02, Math.Round(e2.calculate_mass_error(), 2));
 
-            t = ConstructorsForTesting.make_a_theoretical("", 100087.03, 0); // sequence with all serines
+            t = ConstructorsForTesting.make_a_theoretical("", 815.41, 0); // sequence with all serines
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
-            t.sequence = "MSAAAAAAAAAA";
+            t.sequence = "SAAAAAAAAAA";
             t.begin = 2;
-             e = ConstructorsForTesting.ExperimentalProteoform("", 100087.03, 0, true);
-             e2 = ConstructorsForTesting.ExperimentalProteoform("", 100200.03, 0, true);
+             e = ConstructorsForTesting.ExperimentalProteoform("", 815.41, 0, true);
+             e2 = ConstructorsForTesting.ExperimentalProteoform("", 946.45, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 113);
             ModificationMotif.TryGetMotif("M", out motif);
              set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("M retention", "AminoAcid", motif, TerminusLocalization.Any, 113)) });
@@ -89,15 +95,20 @@ namespace Test
             Assert.AreEqual(0, e2.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e2.begin);
             Assert.AreEqual(12, e2.end);
-
+            Assert.AreEqual(-.004, Math.Round(e.calculate_mass_error(), 3));
+            Assert.AreEqual(-0.004, Math.Round(e2.calculate_mass_error(), 3));
         }
 
         [Test]
         public void loss_of_ptm_set()
         {
-            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 100000, 0); // sequence with all serines
-            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 100126.03, 0, true);
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
+
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1232.43, 0, true);
             e.linked_proteoform_references = new List<Proteoform> { t };
+            e.begin = 1;
+            e.end = 12;
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set = new PtmSet(new List<Ptm>
             {
@@ -131,35 +142,38 @@ namespace Test
                 { Math.Round(set4.mass, 1), new List<PtmSet> { set4 } },
             };
 
-            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 1106.4, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 126.03);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
             e.identify_connected_experimentals(new List<PtmSet> { set }, new List<ModificationWithMass> { set.ptm_combination.First().modification });
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(0, e2.ptm_set.mass);
+            Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(), 2));
 
             e.relationships.Clear();
-            e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 1148.41, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 84.02);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
             e.identify_connected_experimentals(new List<PtmSet> { set2 }, new List<ModificationWithMass> { set2.ptm_combination.First().modification });
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(42.01, e2.ptm_set.mass);
+            Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(), 2));
 
             e.relationships.Clear();
-            e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 1190.42, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 42.01);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
             e.identify_connected_experimentals(new List<PtmSet> { set3 }, new List<ModificationWithMass> { set3.ptm_combination.First().modification });
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(84.02, e2.ptm_set.mass);
+            Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(), 2));
 
             //can't remove more acetylations than in e's ptmset
             e.relationships.Clear();
-            e2 = ConstructorsForTesting.ExperimentalProteoform("", 10042.01, 0, true);
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 1148.41, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 168.04);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
@@ -170,8 +184,10 @@ namespace Test
         [Test]
         public void unmodified_identification()
         {
-            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 100000, 0); // sequence with all serines
-            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 10000, 0, true);
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
+
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1106.42, 0, true);
             ConstructorsForTesting.make_relation(t, e, ProteoformComparison.ExperimentalTheoretical, 0);
 
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
@@ -197,6 +213,7 @@ namespace Test
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.mass);
             Assert.AreEqual(new Ptm().modification.id, e.ptm_description); // it's unmodified
+            Assert.AreEqual(0.02, Math.Round(e.calculate_mass_error(), 2));
         }
 
         [Test]

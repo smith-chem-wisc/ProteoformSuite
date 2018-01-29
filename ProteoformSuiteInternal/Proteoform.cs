@@ -254,6 +254,7 @@ namespace ProteoformSuiteInternal
                     remove.Add(mod);
                 }
                 foreach (var ptm in remove) e.ptm_set.ptm_combination.Remove(ptm);
+                e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
             }
             else
             {
