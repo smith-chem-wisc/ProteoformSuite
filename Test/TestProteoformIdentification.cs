@@ -305,45 +305,5 @@ namespace Test
             Assert.IsFalse(e1.ambiguous);
             Assert.IsTrue(e3.ambiguous);
         }
-
-        [Test]
-        public void get_sequence_with_chemical_formula()
-        {
-            Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
-
-            ExperimentalProteoform pf = ConstructorsForTesting.ExperimentalProteoform("E1");
-
-            //no ptm's, not carbamidomethylated
-            Sweet.lollipop.carbamidomethylation = false;
-            Assert.AreEqual("SEQUENCE", pf.GetSequenceWithChemicalFormula("SEQUENCE"));
-
-            //no ptm's, carbamidomethylated
-            Sweet.lollipop.carbamidomethylation = true;
-            Assert.AreEqual("SEQUEN[H3C2N1O1]CE", pf.GetSequenceWithChemicalFormula("SEQUENCE"));
-
-            ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains("AA0502")).FirstOrDefault();
-
-            //ptms, carbamidomethylated
-            ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
-            pf.ptm_set = new PtmSet(
-                new List<Ptm>() { new Ptm(10, mod) });
-            Assert.AreEqual("SEQUEN[H3C2N1O1]CE[C6H9NO3]", pf.GetSequenceWithChemicalFormula("SEQUENCE"));
-
-            //ptms, not carbamidomethylated
-            Sweet.lollipop.carbamidomethylation = false;
-            Assert.AreEqual("SEQUENCE[C6H9NO3]", pf.GetSequenceWithChemicalFormula("SEQUENCE"));
-
-            //deconvolution error mod shouldn ot be added... 
-            List<ModificationWithMass> mods = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.modificationType == "Deconvolution Error").ToList();
-            Assert.AreEqual(2, mods.Count);
-            pf.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(10, mods[0]) });
-            Assert.AreEqual("SEQUENCE", pf.GetSequenceWithChemicalFormula("SEQUENCE"));
-            pf.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(10, mods[1]), new Ptm(10, mod) });
-            Assert.AreEqual("SEQUENCE[C6H9NO3]", pf.GetSequenceWithChemicalFormula("SEQUENCE"));
-        }
     }
 }

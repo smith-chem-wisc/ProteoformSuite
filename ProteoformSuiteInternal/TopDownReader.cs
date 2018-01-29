@@ -48,8 +48,12 @@ namespace ProteoformSuiteInternal
                             {
                                 string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                                 while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
-                                psimod = "MOD:" + psimod;
                                 ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                if (mod == null)
+                                {
+                                    psimod = "MOD:" + psimod;
+                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                }
                                 if (mod != null) ptm_list.Add(new Ptm(position, mod));
                                 else
                                 {
@@ -87,8 +91,12 @@ namespace ProteoformSuiteInternal
                             {
                                 string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                                 while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
-                                psimod = "MOD:" + psimod;
                                 mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                if (mod == null)
+                                {
+                                    psimod = "MOD:" + psimod;
+                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                }
                                 id = "PSI-MOD:" + psimod;
                             }
                             if (mod != null) ptm_list.Add(new Ptm(position, mod));
