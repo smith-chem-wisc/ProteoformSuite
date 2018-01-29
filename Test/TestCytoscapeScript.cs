@@ -227,6 +227,16 @@ namespace Test
         }
 
         [Test]
+        public void cytoscape_script_nothing_selected()
+        {
+            string message = CytoscapeScript.write_cytoscape_script(new List<ProteoformFamily>(), Sweet.lollipop.target_proteoform_community.families,
+               TestContext.CurrentContext.TestDirectory, "", "test",
+               null, false, false,
+               CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
+               false, Lollipop.gene_name_labels[1]);
+        }
+
+        [Test]
         public void cytoscape_script_from_theoreticals()
         {
             Sweet.lollipop = new Lollipop();
@@ -260,6 +270,48 @@ namespace Test
             Assert.True(shared_pf_names_edges.All(name => shared_pf_names_nodes.Contains(name)));
             Assert.AreEqual(5, shared_pf_names_nodes.Count); //only the first family
         }
+
+
+        [Test]
+        public void cytoscape_script_from_topdown()
+        {
+            Sweet.lollipop = new Lollipop();
+            ProteoformCommunity community = TestProteoformFamilies.construct_community_with_td_proteoforms(-1);
+            Sweet.lollipop.target_proteoform_community = community;
+            TopDownProteoform td = ConstructorsForTesting.TopDownProteoform("ASDF", 1000, 50);
+            td.gene_name = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
+            ProteoformFamily fam = new ProteoformFamily(td);
+            fam.construct_family();
+            CytoscapeScript.write_cytoscape_script(new List<ProteoformFamily>() { fam }, new List<ProteoformFamily>() { fam },
+                TestContext.CurrentContext.TestDirectory, "", "test",
+                null, false, false,
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
+                true, Lollipop.gene_name_labels[1]);
+            string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
+            HashSet<string> shared_pf_names_edges = new HashSet<string>();
+            for (int i = 1; i < edge_lines.Length; i++)
+            {
+                if (edge_lines[i] == "") break;
+                string[] line = edge_lines[i].Split(new char[] { '\t' });
+                shared_pf_names_edges.Add(line[0]);
+                shared_pf_names_edges.Add(line[2]);
+            }
+
+            string[] node_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.node_file_prefix + "test" + CytoscapeScript.node_file_extension));
+            HashSet<string> shared_pf_names_nodes = new HashSet<string>();
+            for (int i = 1; i < node_lines.Length; i++)
+            {
+                if (node_lines[i] == "") break;
+                string[] line = node_lines[i].Split(new char[] { '\t' });
+                shared_pf_names_nodes.Add(line[0]);
+            }
+
+            Assert.True(shared_pf_names_nodes.All(name => shared_pf_names_edges.Contains(name)));
+            Assert.True(shared_pf_names_edges.All(name => shared_pf_names_nodes.Contains(name)));
+            Assert.AreEqual(2, shared_pf_names_nodes.Count); 
+            Assert.AreEqual(2, shared_pf_names_edges.Count);
+        }
+
 
         [Test]
         public void cytoscape_script_from_goterm()

@@ -366,31 +366,6 @@ namespace ProteoformSuiteInternal
             mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
 
-        public string GetSequenceWithChemicalFormula(string sequence)
-        {
-            var sbsequence = new StringBuilder();
-            for (int r = 0; r < sequence.Length; r++)
-            {
-                if (Sweet.lollipop.carbamidomethylation && sequence[r] == 'C')
-                {
-                    sbsequence.Append("[H3C2N1O1]");
-                }
-                sbsequence.Append(sequence[r]);
-            }
-            //add mods at end...
-            foreach(var mod in ptm_set.ptm_combination)
-            {
-                if (mod.modification.modificationType == "Deconvolution Error") continue;
-                var jj = mod.modification as ModificationWithMassAndCf;
-                if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
-                    sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
-                else
-                    return null;
-
-            }
-            return sbsequence.ToString();
-        }
-
         #endregion Public Methods
 
     }

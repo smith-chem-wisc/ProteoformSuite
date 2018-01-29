@@ -229,6 +229,16 @@ namespace Test
             Assert.IsFalse(set1.same_ptmset(set2, false));
             Assert.IsFalse(set2.same_ptmset(set1, true));
             Assert.IsFalse(set2.same_ptmset(set1, false));
+
+            set2 = new PtmSet(new List<Ptm>()
+            {
+                new Ptm(1, ConstructorsForTesting.get_modWithMass("id1", 5)),
+                new Ptm(2, ConstructorsForTesting.get_modWithMass("id2", 6)),
+            });
+            Assert.IsFalse(set1.same_ptmset(set2, true));
+            Assert.IsFalse(set1.same_ptmset(set2, false));
+            Assert.IsFalse(set2.same_ptmset(set1, true));
+            Assert.IsFalse(set2.same_ptmset(set1, false));
         }
     }
 }

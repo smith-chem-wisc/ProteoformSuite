@@ -201,6 +201,7 @@ namespace Test
         [Test]
         public void test_get_modification_dictionary()
         {
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(new string[] { TestContext.CurrentContext.TestDirectory, "Mods", "amino_acids.txt" }) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             var mods = ConstructorsForTesting.read_mods();
             Assert.AreEqual(21, mods.Keys.Count);

@@ -1375,6 +1375,15 @@ namespace Test
             Assert.AreEqual(0.900, Math.Round(ExtensionMethods.Student2T(0.127379, 21), 3));
         }
 
+        [Test]
+        public void gauss()
+        {
+            Assert.AreEqual(0.50, Math.Round(ExtensionMethods.Gauss(0), 2));
+            Assert.AreEqual(1.00, Math.Round(ExtensionMethods.Gauss(6), 2));
+            Assert.AreEqual(1.00, Math.Round(ExtensionMethods.Gauss(10), 2));
+            Assert.AreEqual(0.98, Math.Round(ExtensionMethods.Gauss(2), 2));
+        }
+
         //Example saved in benjihoch.xlsx in Examples folder
         [Test]
         public void benjiHoch()
