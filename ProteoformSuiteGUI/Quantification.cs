@@ -287,17 +287,19 @@ namespace ProteoformSuiteGUI
                 "Observed vs. Scatter",
                 "All Permuted vs. Average Permuted",
             };
-
+            cmbx_relativeDifferenceChartSelection.Items.Clear();
             cmbx_relativeDifferenceChartSelection.Items.AddRange(relative_difference_selections);
             cmbx_relativeDifferenceChartSelection.SelectedIndexChanged -= cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
             cmbx_relativeDifferenceChartSelection.SelectedIndex = 3; //start with obs vs exp
             cmbx_relativeDifferenceChartSelection.SelectedIndexChanged += cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
 
+            cmbx_intensityDistributionChartSelection.Items.Clear();
             cmbx_intensityDistributionChartSelection.Items.AddRange(biorepintensity_selections);
             cmbx_intensityDistributionChartSelection.SelectedIndexChanged -= cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
             cmbx_intensityDistributionChartSelection.SelectedIndex = 3; //start with projected
             cmbx_intensityDistributionChartSelection.SelectedIndexChanged += cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
 
+            cmbx_quantitativeValuesTableSelection.Items.Clear();
             cmbx_quantitativeValuesTableSelection.Items.AddRange(quantitative_table_selections);
             cmbx_quantitativeValuesTableSelection.SelectedIndexChanged -= cmbx_quantitativeValuesTableSelection_SelectedIndexChanged;
             cmbx_quantitativeValuesTableSelection.SelectedIndex = 0;
@@ -347,6 +349,7 @@ namespace ProteoformSuiteGUI
             nud_bkgdWidth.ValueChanged += nud_bkgdWidth_ValueChanged;
             nud_bkgdWidth.ValueChanged += new EventHandler(plotBiorepIntensitiesEvent);
 
+            cmbx_foldChangeConjunction.Items.Clear();
             cmbx_foldChangeConjunction.SelectedIndexChanged -= cmbx_foldChangeConjunction_SelectedIndexChanged;
             cmbx_foldChangeConjunction.Items.AddRange(Lollipop.fold_change_conjunction_options);
             cmbx_foldChangeConjunction.SelectedIndex = Lollipop.fold_change_conjunction_options.ToList().IndexOf(Sweet.lollipop.fold_change_conjunction);
@@ -370,6 +373,7 @@ namespace ProteoformSuiteGUI
             nud_localFdrCutoff.ValueChanged += nud_localFdrCutoff_ValueChanged;
             nud_localFdrCutoff.Enabled = cb_useLocalFdrCutoff.Checked;
 
+            cmbx_goAspect.Items.Clear();
             cmbx_goAspect.Items.Add(Aspect.BiologicalProcess);
             cmbx_goAspect.Items.Add(Aspect.CellularComponent);
             cmbx_goAspect.Items.Add(Aspect.MolecularFunction);
@@ -524,10 +528,6 @@ namespace ProteoformSuiteGUI
             "Biorep-Techrep Intensity Sums (Normalized with Imputation) for All Proteoforms", // 7
             "Biorep-Techrep Intensity Sums (Normalized without Imputation) for Selected Proteoforms", // 8
             "Biorep-Techrep Intensity Sums (Normalized without Imputation) for All Proteoforms", // 9
-            "File-Condition Intensity Sums (Normalized with Imputation) for Selected Proteoforms", // 10
-            "File-Condition Intensity Sums (Normalized with Imputation) for All Proteoforms", // 11
-            "File-Condition Intensity Sums (Normalized without Imputation) for Selected Proteoforms", // 12
-            "File-Condition Intensity Sums (Normalized without Imputation) for All Proteoforms" // 13
         };
 
 
@@ -555,11 +555,11 @@ namespace ProteoformSuiteGUI
                 }
             }
 
-            IEnumerable<ExperimentalProteoform> proteoforms = new int[] { 2,4,6,8,10,12 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex) 
+            IEnumerable<ExperimentalProteoform> proteoforms = new int[] { 2,4,6,8 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex) 
                 ? Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform> 
                 : Sweet.lollipop.target_proteoform_community.experimental_proteoforms as IEnumerable<ExperimentalProteoform>;
 
-            bool include_imputation = new int[] { 2, 3, 6, 7, 10, 11 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex);
+            bool include_imputation = new int[] { 2, 3, 6, 7 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex);
 
             DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.biological_replicate_intensities(selected_analysis, proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation, true));
         }
