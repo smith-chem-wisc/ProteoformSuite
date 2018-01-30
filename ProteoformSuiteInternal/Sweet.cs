@@ -259,7 +259,7 @@ namespace ProteoformSuiteInternal
                 string shift = findshift.Match(mass_shift).Groups[2].ToString();
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
-                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
+                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
                 if (peak != null)
                 {
                     peak.mass_shifter = shift;
@@ -280,9 +280,9 @@ namespace ProteoformSuiteInternal
                     continue;
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
-                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
+                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
                 else if (comparison == ProteoformComparison.ExperimentalExperimental)
-                    peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
+                    peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
                 if (peak != null)
                 {
                     lollipop.change_peak_acceptance(peak, peak_change.StartsWith("accept "), false);

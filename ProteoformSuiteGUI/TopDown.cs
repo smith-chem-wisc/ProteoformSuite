@@ -136,6 +136,7 @@ namespace ProteoformSuiteGUI
         {
             if (Sweet.lollipop.top_down_hits.Count > 0)
             {
+                Sweet.lollipop.clear_td();
                 Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
                 Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
             }
