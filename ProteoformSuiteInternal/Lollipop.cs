@@ -600,12 +600,7 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> vetExperimentalProteoforms(IEnumerable<ExperimentalProteoform> candidateExperimentalProteoforms, IEnumerable<Component> raw_experimental_components, List<ExperimentalProteoform> vetted_proteoforms) // eliminating candidate proteoforms that were mistakenly created
         {
-            Parallel.ForEach(candidateExperimentalProteoforms, p =>
-            {
-                p.hv_verification_components.Clear();
-                p.lt_verification_components.Clear();
-            });
-            List<ExperimentalProteoform> candidates = candidateExperimentalProteoforms.OrderBy(p => p.topdown_id ? (p as TopDownProteoform).topdown_hits.Min(h => h.pscore) : 1e6).ThenByDescending(p => p.topdown_id ? (p as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(p => p.agg_intensity).ToList();
+            List<ExperimentalProteoform> candidates = candidateExperimentalProteoforms.OrderByDescending(p => p.agg_intensity).ToList();
             remaining_verification_components = new HashSet<Component>(raw_experimental_components);
 
             ExperimentalProteoform candidate = candidates.FirstOrDefault();
