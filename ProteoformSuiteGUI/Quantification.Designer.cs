@@ -70,6 +70,8 @@
             this.splitContainer7 = new System.Windows.Forms.SplitContainer();
             this.splitContainer15 = new System.Windows.Forms.SplitContainer();
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
+            this.rb_significanceByFoldChange = new System.Windows.Forms.RadioButton();
+            this.rb_signficanceByPermutation = new System.Windows.Forms.RadioButton();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -147,8 +149,6 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.rb_significanceByFoldChange = new System.Windows.Forms.RadioButton();
-            this.rb_signficanceByPermutation = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -699,6 +699,30 @@
             this.btn_refreshCalculation.Text = "Refresh Calculations";
             this.btn_refreshCalculation.UseVisualStyleBackColor = true;
             this.btn_refreshCalculation.Click += new System.EventHandler(this.btn_refreshCalculation_Click);
+            // 
+            // rb_significanceByFoldChange
+            // 
+            this.rb_significanceByFoldChange.AutoSize = true;
+            this.rb_significanceByFoldChange.Checked = true;
+            this.rb_significanceByFoldChange.Location = new System.Drawing.Point(8, 10);
+            this.rb_significanceByFoldChange.Name = "rb_significanceByFoldChange";
+            this.rb_significanceByFoldChange.Size = new System.Drawing.Size(201, 17);
+            this.rb_significanceByFoldChange.TabIndex = 58;
+            this.rb_significanceByFoldChange.TabStop = true;
+            this.rb_significanceByFoldChange.Text = "Significance by Fold Change Analysis";
+            this.rb_significanceByFoldChange.UseVisualStyleBackColor = true;
+            this.rb_significanceByFoldChange.CheckedChanged += new System.EventHandler(this.rb_significanceByFoldChange_CheckedChanged);
+            // 
+            // rb_signficanceByPermutation
+            // 
+            this.rb_signficanceByPermutation.AutoSize = true;
+            this.rb_signficanceByPermutation.Location = new System.Drawing.Point(216, 10);
+            this.rb_signficanceByPermutation.Name = "rb_signficanceByPermutation";
+            this.rb_signficanceByPermutation.Size = new System.Drawing.Size(197, 17);
+            this.rb_signficanceByPermutation.TabIndex = 59;
+            this.rb_signficanceByPermutation.Text = "Significance by Permutation Analysis";
+            this.rb_signficanceByPermutation.UseVisualStyleBackColor = true;
+            this.rb_signficanceByPermutation.CheckedChanged += new System.EventHandler(this.rb_signficanceByPermutation_CheckedChanged);
             // 
             // splitContainer8
             // 
@@ -1732,30 +1756,6 @@
             this.cmbx_colorScheme.Size = new System.Drawing.Size(200, 21);
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
-            // 
-            // rb_significanceByFoldChange
-            // 
-            this.rb_significanceByFoldChange.AutoSize = true;
-            this.rb_significanceByFoldChange.Checked = true;
-            this.rb_significanceByFoldChange.Location = new System.Drawing.Point(8, 10);
-            this.rb_significanceByFoldChange.Name = "rb_significanceByFoldChange";
-            this.rb_significanceByFoldChange.Size = new System.Drawing.Size(201, 17);
-            this.rb_significanceByFoldChange.TabIndex = 58;
-            this.rb_significanceByFoldChange.TabStop = true;
-            this.rb_significanceByFoldChange.Text = "Significance by Fold Change Analysis";
-            this.rb_significanceByFoldChange.UseVisualStyleBackColor = true;
-            this.rb_significanceByFoldChange.CheckedChanged += new System.EventHandler(this.rb_significanceByFoldChange_CheckedChanged);
-            // 
-            // rb_signficanceByPermutation
-            // 
-            this.rb_signficanceByPermutation.AutoSize = true;
-            this.rb_signficanceByPermutation.Location = new System.Drawing.Point(216, 10);
-            this.rb_signficanceByPermutation.Name = "rb_signficanceByPermutation";
-            this.rb_signficanceByPermutation.Size = new System.Drawing.Size(197, 17);
-            this.rb_signficanceByPermutation.TabIndex = 59;
-            this.rb_signficanceByPermutation.Text = "Significance by Permutation Analysis";
-            this.rb_signficanceByPermutation.UseVisualStyleBackColor = true;
-            this.rb_signficanceByPermutation.CheckedChanged += new System.EventHandler(this.rb_signficanceByPermutation_CheckedChanged);
             // 
             // Quantification
             // 

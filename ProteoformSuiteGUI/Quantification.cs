@@ -171,7 +171,7 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().Count() != 2) return false;
             if (!Sweet.lollipop.neucode_labeled && !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
            Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d)))) return false;
-            if (!Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate).Distinct().Count() >= 2)) return false;
+            if (!Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c || f.hv_condition == c).Select(f => f.biological_replicate).Distinct().Count() >= 2)) return false;
             if (Sweet.lollipop.raw_quantification_components.Count == 0) return false;
             return true;
         }
@@ -263,6 +263,18 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
+            nud_FDR.ValueChanged -= new EventHandler(updateGoTermsTable);
+            nud_FDR.Value = get_go_analysis().GoAnalysis.maxGoTermFDR;
+            nud_FDR.ValueChanged += new EventHandler(updateGoTermsTable);
+
+            nud_ratio.ValueChanged -= new EventHandler(updateGoTermsTable);
+            nud_ratio.Value = get_go_analysis().GoAnalysis.minProteoformFoldChange;
+            nud_ratio.ValueChanged += new EventHandler(updateGoTermsTable);
+
+            nud_intensity.ValueChanged -= new EventHandler(updateGoTermsTable);
+            nud_intensity.Value = get_go_analysis().GoAnalysis.minProteoformIntensity;
+            nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
+
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
 
@@ -334,18 +346,6 @@ namespace ProteoformSuiteGUI
             nud_bkgdWidth.Value = Sweet.lollipop.backgroundWidth;
             nud_bkgdWidth.ValueChanged += nud_bkgdWidth_ValueChanged;
             nud_bkgdWidth.ValueChanged += new EventHandler(plotBiorepIntensitiesEvent);
-
-            nud_FDR.ValueChanged -= new EventHandler(updateGoTermsTable);
-            nud_FDR.Value = get_go_analysis().GoAnalysis.maxGoTermFDR;
-            nud_FDR.ValueChanged += new EventHandler(updateGoTermsTable);
-
-            nud_ratio.ValueChanged -= new EventHandler(updateGoTermsTable);
-            nud_ratio.Value = get_go_analysis().GoAnalysis.minProteoformFoldChange;
-            nud_ratio.ValueChanged += new EventHandler(updateGoTermsTable);
-
-            nud_intensity.ValueChanged -= new EventHandler(updateGoTermsTable);
-            nud_intensity.Value = get_go_analysis().GoAnalysis.minProteoformIntensity;
-            nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
 
             cmbx_foldChangeConjunction.SelectedIndexChanged -= cmbx_foldChangeConjunction_SelectedIndexChanged;
             cmbx_foldChangeConjunction.Items.AddRange(Lollipop.fold_change_conjunction_options);
@@ -784,8 +784,10 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_relativeDifferenceChartSelection_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (Sweet.lollipop.satisfactoryProteoforms.Count <= 0) return;
             get_tusher_analysis().reestablishSignficance(get_go_analysis());
             plots();
+            updateGoTermsTable();
             tb_FDR.Text = Math.Round(get_tusher_analysis().relativeDifferenceFDR, 4).ToString();
         }
 
