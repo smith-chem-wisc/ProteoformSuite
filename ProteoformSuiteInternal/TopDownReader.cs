@@ -99,7 +99,10 @@ namespace ProteoformSuiteInternal
                                 }
                                 id = "PSI-MOD:" + psimod;
                             }
-                            if (mod != null) ptm_list.Add(new Ptm(position, mod));
+                            if (mod != null)
+                            {
+                                ptm_list.Add(new Ptm(position, mod));
+                            }
                             else
                             {
                                 lock (topdown_ptms)

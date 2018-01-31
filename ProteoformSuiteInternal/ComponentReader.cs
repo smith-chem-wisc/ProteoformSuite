@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
             int charge_row_index = 0;
             string scan_range = "";
             List<List<string>> cells = ExcelReader.get_cell_strings(file, false);
-            for (int i = 0; i < cells.Count(); i++)
+            for (int i = 0; i < cells.Count; i++)
             {
                 if (i == 0) continue; //skip component header                        
                 List<string> cellStrings = cells[i];

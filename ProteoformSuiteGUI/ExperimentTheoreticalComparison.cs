@@ -477,10 +477,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Tooltip Private Methods
-
-        private void label12_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

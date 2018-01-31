@@ -241,7 +241,7 @@ namespace ProteoformSuiteInternal
             List<string> experimental_ids = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
                 .Select(p => String.Join(",", (p.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(e => e.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + "_" + p.begin + "_" + p.end + "_" + String.Join(", ", p.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m))).ToList();
             report += experimental_ids.Distinct().Count() + "\tUnique Intact-Mass Experimental Proteoforms Identifications" + Environment.NewLine;
-            int unique_td = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr).Distinct().Count();
+            int unique_td = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count();
             report += unique_td + "\tUnique Top-Down Proteoforms Identifications (TDPortal)"  + Environment.NewLine;
             List<string> topdown_ids = Sweet.lollipop.topdown_proteoforms
                .Select(p => p.accession.Split('_')[0].Split('-')[0] + "_" + p.topdown_begin + "_" + p.topdown_end + "_" + String.Join(", ", p.topdown_ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m))).ToList();
@@ -468,10 +468,10 @@ namespace ProteoformSuiteInternal
         public static DataTable topdown_results_dataframe()
         {
             DataTable results = new DataTable();
-            results.Columns.Add("PFR", typeof(string));
-            results.Columns.Add("Theoretiecal Accession", typeof(string));
+            results.Columns.Add("PFR Accession", typeof(string));
+            results.Columns.Add("Theoretical Accession", typeof(string));
             results.Columns.Add("Top-Down Full Accession", typeof(string));
-            results.Columns.Add("Top-Down  Accession", typeof(string));
+            results.Columns.Add("Top-Down Accession", typeof(string));
             results.Columns.Add("Theoretical Description", typeof(string));
             results.Columns.Add("Theoretical Begin and End", typeof(string));
             results.Columns.Add("Top-Down Begin and End", typeof(string));
@@ -493,7 +493,7 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform td in Sweet.lollipop.topdown_proteoforms)
             {
                 results.Rows.Add(
-                    td.pfr,
+                    td.pfr_accession,
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).accession,
                     td.accession,
                     td.accession.Split('_')[0],

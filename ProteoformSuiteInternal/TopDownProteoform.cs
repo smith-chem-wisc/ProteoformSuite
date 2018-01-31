@@ -8,7 +8,7 @@ namespace ProteoformSuiteInternal
     public class TopDownProteoform : ExperimentalProteoform
     {
         public string uniprot_id { get; set; }
-        public string pfr { get; set; }
+        public string pfr_accession { get; set; }
         public string name { get; set; }
         public string sequence { get; set; }
         public int topdown_begin { get; set; } //position one based
@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
         {
             TopDownHit root = hits[0];
             this.name = root.name;
-            this.pfr = root.pfr;
+            this.pfr_accession = root.pfr_accession;
             this.topdown_ptm_set = new PtmSet(root.ptm_list);
             this.uniprot_id = root.uniprot_id;
             this.sequence = root.sequence;
@@ -77,7 +77,7 @@ namespace ProteoformSuiteInternal
             this.lysine_count = t.lysine_count;
             this.accepted = t.accepted;
             this.uniprot_id = t.uniprot_id;
-            this.pfr = t.pfr;
+            this.pfr_accession = t.pfr_accession;
             this.agg_intensity = t.agg_intensity;
             this.topdown_id = t.topdown_id;
             this.agg_mass = t.agg_mass;

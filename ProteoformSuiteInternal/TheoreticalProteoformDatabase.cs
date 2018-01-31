@@ -355,7 +355,9 @@ namespace ProteoformSuiteInternal
                     topdown.gene_name = new GeneName(candidate_theoreticals.First().GeneNames);
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
-                        int count = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence) + new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
+                        int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
+                        int new_proteins_with_same_being_end_diff_sequence = new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
+                        int count = old_proteins_with_same_begin_end_diff_sequence + new_proteins_with_same_being_end_diff_sequence;
                         ProteinWithGoTerms p = new ProteinWithGoTerms(topdown.sequence, topdown.accession.Split('_')[0].Split('-')[0] + "_" + topdown.topdown_begin + "frag" + topdown.topdown_end + (count > 0 ? "_" + count : ""), candidate_theoreticals.First().GeneNames.ToList(), new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct>() { new ProteolysisProduct(topdown.topdown_begin, topdown.topdown_end, "full") }, candidate_theoreticals.First().Name, candidate_theoreticals.First().FullName, false, false, candidate_theoreticals.First().DatabaseReferences, candidate_theoreticals.First().GoTerms);
                         p.topdown_protein = true;
                         //add the ptm's of the top-down proteoform
@@ -530,8 +532,8 @@ namespace ProteoformSuiteInternal
                     sb.Append(proteoform.sequence);
                 }
                 string giantProtein = sb.ToString();
-                TheoreticalProteoform[] shuffled_proteoforms = new TheoreticalProteoform[entries.Count()];
-                Array.Copy(entries, shuffled_proteoforms, entries.Count());
+                TheoreticalProteoform[] shuffled_proteoforms = new TheoreticalProteoform[entries.Length];
+                Array.Copy(entries, shuffled_proteoforms, entries.Length);
                 Random decoy_rng = Sweet.lollipop.useRandomSeed_decoys ? new Random(decoyNumber + Sweet.lollipop.randomSeed_decoys) : new Random(); // each decoy database needs to have a new random number generator
                 decoy_rng.Shuffle(shuffled_proteoforms); //randomize order of protein array
                 int prevLength = 0;

@@ -253,7 +253,10 @@ namespace ProteoformSuiteInternal
                     e.begin--;
                     remove.Add(mod);
                 }
-                foreach (var ptm in remove) e.ptm_set.ptm_combination.Remove(ptm);
+                foreach (var ptm in remove)
+                {
+                    e.ptm_set.ptm_combination.Remove(ptm);
+                }
                 e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
             }
             else
@@ -265,7 +268,7 @@ namespace ProteoformSuiteInternal
 
             if (e.gene_name == null)
                 e.gene_name = this.gene_name;
-            else if(!e.topdown_id)
+            else if (!e.topdown_id)
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
 
         }

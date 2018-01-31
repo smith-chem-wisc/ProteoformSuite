@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
         public void identify_experimentals()
         {
             HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
-            foreach(TheoreticalProteoform t in theoretical_proteoforms)
+            foreach (TheoreticalProteoform t in theoretical_proteoforms)
             {
                 lock (identified_experimentals)
                     foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
@@ -100,7 +100,7 @@ namespace ProteoformSuiteInternal
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
-                foreach(ExperimentalProteoform id_experimental in newly_identified_experimentals)
+                foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals)
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
                             foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
