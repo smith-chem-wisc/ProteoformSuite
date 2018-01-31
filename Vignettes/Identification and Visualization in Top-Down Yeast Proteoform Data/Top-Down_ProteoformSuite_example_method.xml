@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-16"?>
+<proteoform_suite documentVersion="0.01" id="2018-01-30-12-43-07">
+  <setting field_type="System.Boolean" field_name="neucode_labeled" field_value="False" />
+  <setting field_type="System.Double" field_name="raw_component_mass_tolerance" field_value="5" />
+  <setting field_type="System.Double" field_name="min_RT" field_value="40" />
+  <setting field_type="System.Double" field_name="max_RT" field_value="90" />
+  <setting field_type="System.Double" field_name="aggregation_tolerance_ppm" field_value="5" />
+  <setting field_type="System.Double" field_name="deconvolution_tolerance_ppm" field_value="5" />
+  <setting field_type="System.Int32" field_name="min_assumed_cs" field_value="5" />
+  <setting field_type="System.Int32" field_name="max_assumed_cs" field_value="50" />
+  <setting field_type="System.Int32" field_name="min_num_cs_deconvolution_component" field_value="3" />
+  <setting field_type="System.Decimal" field_name="max_intensity_ratio" field_value="6" />
+  <setting field_type="System.Decimal" field_name="min_intensity_ratio" field_value="1.4" />
+  <setting field_type="System.Decimal" field_name="max_lysine_ct" field_value="26.2" />
+  <setting field_type="System.Decimal" field_name="min_lysine_ct" field_value="1.5" />
+  <setting field_type="System.Double" field_name="min_score_td" field_value="3" />
+  <setting field_type="System.Boolean" field_name="biomarker" field_value="True" />
+  <setting field_type="System.Boolean" field_name="tight_abs_mass" field_value="True" />
+  <setting field_type="System.Double" field_name="td_retention_time_tolerance" field_value="5" />
+  <setting field_type="System.String" field_name="decoy_community_name_prefix" field_value="Decoy_Proteoform_Community_" />
+  <setting field_type="System.Boolean" field_name="validate_proteoforms" field_value="True" />
+  <setting field_type="System.Double" field_name="mass_tolerance" field_value="5" />
+  <setting field_type="System.Double" field_name="retention_time_tolerance" field_value="5" />
+  <setting field_type="System.Int32" field_name="maximum_missed_monos" field_value="3" />
+  <setting field_type="System.Int32" field_name="maximum_missed_lysines" field_value="2" />
+  <setting field_type="System.Int32" field_name="min_num_CS" field_value="1" />
+  <setting field_type="System.String" field_name="agg_observation_requirement" field_value="Minimum Bioreps with Observations From Any Single Condition" />
+  <setting field_type="System.Int32" field_name="agg_minBiorepsWithObservations" field_value="1" />
+  <setting field_type="System.Boolean" field_name="add_td_proteoforms" field_value="True" />
+  <setting field_type="System.Boolean" field_name="methionine_oxidation" field_value="True" />
+  <setting field_type="System.Boolean" field_name="carbamidomethylation" field_value="False" />
+  <setting field_type="System.Boolean" field_name="methionine_cleavage" field_value="True" />
+  <setting field_type="System.Boolean" field_name="natural_lysine_isotope_abundance" field_value="True" />
+  <setting field_type="System.Boolean" field_name="neucode_light_lysine" field_value="False" />
+  <setting field_type="System.Boolean" field_name="neucode_heavy_lysine" field_value="False" />
+  <setting field_type="System.Int32" field_name="max_ptms" field_value="2" />
+  <setting field_type="System.Int32" field_name="decoy_databases" field_value="10" />
+  <setting field_type="System.Int32" field_name="min_peptide_length" field_value="7" />
+  <setting field_type="System.Double" field_name="ptmset_mass_tolerance" field_value="1E-05" />
+  <setting field_type="System.Boolean" field_name="combine_identical_sequences" field_value="True" />
+  <setting field_type="System.Boolean" field_name="combine_theoretical_proteoforms_byMass" field_value="True" />
+  <setting field_type="System.Int32" field_name="mod_rank_sum_threshold" field_value="14" />
+  <setting field_type="System.Int32" field_name="mod_rank_first_quartile" field_value="7" />
+  <setting field_type="System.Int32" field_name="mod_rank_second_quartile" field_value="11" />
+  <setting field_type="System.Int32" field_name="mod_rank_third_quartile" field_value="13" />
+  <setting field_type="System.Boolean" field_name="useRandomSeed_decoys" field_value="True" />
+  <setting field_type="System.Int32" field_name="randomSeed_decoys" field_value="1" />
+  <setting field_type="System.Double" field_name="ee_max_mass_difference" field_value="300" />
+  <setting field_type="System.Double" field_name="ee_max_RetentionTime_difference" field_value="2.5" />
+  <setting field_type="System.Double" field_name="et_low_mass_difference" field_value="-1" />
+  <setting field_type="System.Double" field_name="et_high_mass_difference" field_value="1" />
+  <setting field_type="System.Double" field_name="no_mans_land_lowerBound" field_value="0.22" />
+  <setting field_type="System.Double" field_name="no_mans_land_upperBound" field_value="0.88" />
+  <setting field_type="System.Double" field_name="peak_width_base_et" field_value="0.025" />
+  <setting field_type="System.Double" field_name="peak_width_base_ee" field_value="0.025" />
+  <setting field_type="System.Double" field_name="min_peak_count_et" field_value="1000" />
+  <setting field_type="System.Double" field_name="min_peak_count_ee" field_value="90" />
+  <setting field_type="System.Int32" field_name="relation_group_centering_iterations" field_value="2" />
+  <setting field_type="System.Boolean" field_name="count_adducts_as_identifications" field_value="False" />
+  <setting field_type="System.String" field_name="family_build_folder_path" field_value="" />
+  <setting field_type="System.Int32" field_name="deltaM_edge_display_rounding" field_value="2" />
+  <setting field_type="System.Int32" field_name="countOfBioRepsInOneCondition" field_value="0" />
+  <setting field_type="System.Int32" field_name="condition_count" field_value="0" />
+  <setting field_type="System.String" field_name="numerator_condition" field_value="" />
+  <setting field_type="System.String" field_name="denominator_condition" field_value="" />
+  <setting field_type="System.String" field_name="induced_condition" field_value="" />
+  <setting field_type="System.String" field_name="observation_requirement" field_value="Minimum Biorep+Techreps with Observations From Any Single Condition" />
+  <setting field_type="System.Int32" field_name="minBiorepsWithObservations" field_value="0" />
+  <setting field_type="System.Boolean" field_name="significance_by_log2FC" field_value="False" />
+  <setting field_type="System.Boolean" field_name="significance_by_permutation" field_value="True" />
+  <setting field_type="System.Decimal" field_name="backgroundShift" field_value="-1.8" />
+  <setting field_type="System.Decimal" field_name="backgroundWidth" field_value="0.5" />
+  <setting field_type="System.Boolean" field_name="useRandomSeed_quant" field_value="False" />
+  <setting field_type="System.Int32" field_name="randomSeed_quant" field_value="1" />
+  <setting field_type="System.Decimal" field_name="offsetTestStatistics" field_value="0.9" />
+  <setting field_type="System.Decimal" field_name="sKnot_minFoldChange" field_value="1" />
+  <setting field_type="System.Boolean" field_name="useFoldChangeCutoff" field_value="False" />
+  <setting field_type="System.Decimal" field_name="foldChangeCutoff" field_value="1.5" />
+  <setting field_type="System.String" field_name="fold_change_conjunction" field_value="AND" />
+  <setting field_type="System.Int32" field_name="minBiorepsWithFoldChange" field_value="-1" />
+  <setting field_type="System.Boolean" field_name="useAveragePermutationFoldChange" field_value="True" />
+  <setting field_type="System.Boolean" field_name="useBiorepPermutationFoldChange" field_value="False" />
+  <setting field_type="System.Boolean" field_name="useLocalFdrCutoff" field_value="False" />
+  <setting field_type="System.Decimal" field_name="localFdrCutoff" field_value="0.05" />
+  <setting field_type="System.Boolean" field_name="calibration_use_random_seed" field_value="False" />
+  <setting field_type="System.Int32" field_name="calibration_random_seed" field_value="1" />
+  <setting field_type="System.Boolean" field_name="calibrate_raw_files" field_value="False" />
+  <setting field_type="System.Boolean" field_name="calibrate_td_files" field_value="False" />
+  <setting field_type="System.String" field_name="results_folder" field_value="" />
+  <setting field_type="System.Boolean" field_name="gene_centric_families" field_value="True" />
+  <setting field_type="System.String" field_name="preferred_gene_label" field_value="Ordered Locus, e.g. YLR113W" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract10_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract10_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract10_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract10_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract11_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract11_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract11_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract11_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract12_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract12_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract12_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract12_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7a_yeast_td_fract5_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7a_yeast_td_fract5_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract5_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract5_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract6_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract6_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract6_rep1_MS1_3_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract6_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract6_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract6_rep2_MS1_3_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract7_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract7_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract7_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract7_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract8_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract8_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract8_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract8_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract9_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract9_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract9_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-26-17_B7A_yeast_td_fract9_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract3_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract3_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract3_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract3_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract4_rep1_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract4_rep1_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract4_rep2_MS1_1_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\calibrated_identification_files\05-29-17_B7A_yeast_td_redo_fract4_rep2_MS1_2_calibrated.xlsx' with purpose Identification" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\proteoform_databases_yeast\cRAP_database.xml' with purpose ProteinDatabase" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\proteoform_databases_yeast\ptmlist.txt' with purpose PtmList" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\proteoform_databases_yeast\yeast_170221.xml.gz' with purpose ProteinDatabase" />
+  <action action="add file 'C:\Users\user\ProteoformSuite\Vignettes\Identification and Visualization in Top-Down Yeast Proteoform Data\B7A_hits_5%FDR_calibrated.xlsx' with purpose TopDown" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 97.9673287991789" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 4.00509674376558" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 17.0196916877798" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 16.0165056738856" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 5.00601549150544" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 6.01110568957728" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 81.9756392878363" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 15.9752733385678" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 16.9991814310328" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 32.9983542768239" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 7.01518015485828" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 45.0509389618033" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 30.990158696355" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 15.0147639470563" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 97.9891536391529" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 27.989878624876" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 96.9659494751578" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 11.9908565689899" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 98.0700051157793" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 79.9639275123407" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 239.8979478344" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 163.065522636518" />
+  <action action="accept ExperimentalExperimental peak with delta-mass 27.989878624876" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 10.0151896167287" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 30.0154505334135" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 8.01650779596114" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 195.935095505116" />
+  <action action="unaccept ExperimentalExperimental peak with delta-mass 47.984443292462" />
+</proteoform_suite>

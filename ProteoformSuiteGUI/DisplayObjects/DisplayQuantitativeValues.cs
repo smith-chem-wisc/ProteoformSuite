@@ -13,7 +13,7 @@ namespace ProteoformSuiteGUI
 
         #region Public Constructors
 
-        public DisplayQuantitativeValues(QuantitativeProteoformValues q, TusherAnalysis analysis)
+        public DisplayQuantitativeValues(QuantitativeProteoformValues q, IGoAnalysis analysis)
             : base(q)
         {
             proteoform = q.proteoform;
@@ -27,7 +27,7 @@ namespace ProteoformSuiteGUI
 
         private Proteoform proteoform;
         private QuantitativeProteoformValues qval;
-        private TusherAnalysis analysis;
+        private IGoAnalysis analysis;
 
         #endregion
 
@@ -48,59 +48,109 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string Theoretical
+        {
+            get
+            {
+                return proteoform.linked_proteoform_references != null ? proteoform.linked_proteoform_references.First().accession.Split('_')[0] : "";
+            }
+        }
+
+        public double mass
+        {
+            get
+            {
+                return proteoform.modified_mass;
+            }
+        }
+
+        public double retention_time
+        {
+            get
+            {
+                return (proteoform as ExperimentalProteoform).agg_rt;
+            }
+        }
+
         public decimal NumeratorIntensitySum
         {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.numeratorIntensitySum : qval.TusherValues2.numeratorIntensitySum; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.numeratorIntensitySum :
+                    analysis as TusherAnalysis2 != null ? qval.TusherValues2.numeratorIntensitySum :
+                    (decimal) qval.Log2FoldChangeValues.numeratorIntensitySum; }
         }
         
         public decimal DenominatorIntensitySum
         {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.denominatorIntensitySum : qval.TusherValues2.denominatorIntensitySum; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.denominatorIntensitySum 
+                    : analysis as TusherAnalysis2 != null ? qval.TusherValues2.denominatorIntensitySum :
+                    (decimal) qval.Log2FoldChangeValues.denominatorIntensitySum; }
         }
 
         public decimal IntensitySum
         {
-            get { return qval.intensitySum; }
+            get
+            {
+                return analysis as TusherAnalysis != null ? qval.intensitySum
+               : (decimal)(qval.Log2FoldChangeValues.denominatorIntensitySum + qval.Log2FoldChangeValues.numeratorIntensitySum);
+            }
         }
 
         public decimal LogFoldChange
         {
-            get { return qval.logFoldChange; }
+            get
+            {
+                return analysis as TusherAnalysis != null ? qval.tusherlogFoldChange :
+                    (decimal)qval.Log2FoldChangeValues.logfold2change;
+            }
         }
 
         public decimal Scatter_linear
         {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.scatter : qval.TusherValues2.scatter; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.scatter 
+                    : analysis as TusherAnalysis2 != null ? qval.TusherValues2.scatter
+                    : 0; }
         }
 
         public double pValue
         {
-            get { return qval.Log2FoldChangeValues.pValue_uncorrected; }
+            get
+            {
+                return analysis as TusherAnalysis1 != null ? double.NaN
+                 : analysis as TusherAnalysis2 != null ? double.NaN
+                 : qval.Log2FoldChangeValues.pValue_uncorrected;
+            }
+        }
+
+        public double benjiHoch
+        {
+            get
+            {
+                return analysis as TusherAnalysis1 != null ? double.NaN
+                 : analysis as TusherAnalysis2 != null ? double.NaN
+                 : qval.Log2FoldChangeValues.benjiHoch_value;
+            }
         }
 
         public bool Significant
         {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant : qval.TusherValues2.significant; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant : 
+                    analysis as TusherAnalysis2 != null ? qval.TusherValues2.significant :
+                    qval.Log2FoldChangeValues.significant; }
         }
 
-        public bool Significant_RelDiff
-        {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant_relative_difference : qval.TusherValues2.significant_relative_difference; }
-        }
-
-        public bool Significant_FoldChange
-        {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.significant_fold_change : qval.TusherValues2.significant_fold_change; }
-        }
 
         public decimal RelativeDifference
         {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.relative_difference : qval.TusherValues2.relative_difference; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.relative_difference : 
+                    analysis as TusherAnalysis2 != null ? qval.TusherValues2.relative_difference : 
+                    (decimal)qval.Log2FoldChangeValues.tTestStatistic ; }
         }
 
         public decimal AvgPermutedTestStatistic
         {
-            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.correspondingAvgSortedRelDiff : qval.TusherValues2.correspondingAvgSortedRelDiff; }
+            get { return analysis as TusherAnalysis1 != null ? qval.TusherValues1.correspondingAvgSortedRelDiff :
+                    analysis as TusherAnalysis2 != null ? qval.TusherValues2.correspondingAvgSortedRelDiff :
+                    0; }
         }
 
         public string manual_validation_quant
@@ -142,15 +192,16 @@ namespace ProteoformSuiteGUI
         private static string header(string property_name)
         {
             if (property_name == nameof(GeneName)) return "Gene Name";
-            if (property_name == nameof(NumeratorIntensitySum)) return "Light Intensity Sum";
-            if (property_name == nameof(DenominatorIntensitySum)) return "Heavy Intensity Sum";
+            if (property_name == nameof(NumeratorIntensitySum)) return Sweet.lollipop.numerator_condition +  " Intensity Sum";
+            if (property_name == nameof(DenominatorIntensitySum)) return Sweet.lollipop.denominator_condition + " Intensity Sum";
             if (property_name == nameof(IntensitySum)) return "Intensity Sum";
             if (property_name == nameof(LogFoldChange)) return "Log2 Fold Change";
-            if (property_name == nameof(pValue)) return "p-value (by randomization test)";
-            if (property_name == nameof(RelativeDifference)) return "Student's t-Test Statistic (Linear Intensities)";
-            if (property_name == nameof(AvgPermutedTestStatistic)) return "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
-            if (property_name == nameof(Significant_RelDiff)) return "Significant by Relative Difference Analysis";
-            if (property_name == nameof(Significant_FoldChange)) return "Significant by Fold Change";
+            if (property_name == nameof(pValue)) return "p-value";
+            if (property_name == nameof(benjiHoch)) return "Benjamini-Hochberg corrected p-value";
+            if (property_name == nameof(RelativeDifference)) return "Student's t-Test Statistic";
+            if (property_name == nameof(AvgPermutedTestStatistic)) return "Corresponding Avg. Permuted Student's t-Test Statistic";
+            if (property_name == nameof(retention_time)) return "Retention Time";
+            if (property_name == nameof(mass)) return "Aggregated Mass";
             return null;
         }
         
@@ -166,8 +217,11 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(IntensitySum)) return "0.##";
             if (property_name == nameof(LogFoldChange)) return "0.####";
             if (property_name == nameof(pValue)) return "E2";
+            if (property_name == nameof(benjiHoch)) return "E2";
             if (property_name == nameof(RelativeDifference)) return "0.#####";
             if (property_name == nameof(AvgPermutedTestStatistic)) return "0.#####";
+            if (property_name == nameof(mass)) return "0.####";
+            if (property_name == nameof(retention_time)) return "0.##";
             return null;
         }
 

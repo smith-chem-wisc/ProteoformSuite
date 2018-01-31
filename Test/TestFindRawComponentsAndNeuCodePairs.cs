@@ -20,16 +20,15 @@ namespace Test
         public void testFindRawNeuCodePairsMethod()
         {
             //reading in test excel file, process raw components before testing neucode pairs.
-            Sweet.lollipop.correctionFactors = null;
-            Sweet.lollipop.raw_experimental_components.Clear();
-            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, Sweet.lollipop.correctionFactors);
+            Sweet.lollipop = new Lollipop();
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
             InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
             Sweet.lollipop.input_files.Add(noisy);
 
             string inFileId = noisy.UniqueId.ToString();
 
             Sweet.lollipop.neucode_labeled = true;
-            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
             Assert.AreEqual(223, Sweet.lollipop.raw_experimental_components.Count);
 
             //Check the validity of one component read from the Excel file
@@ -42,8 +41,8 @@ namespace Test
             Assert.AreEqual(8, overlapping_charge_states.Count);
             Assert.AreEqual(Sweet.lollipop.input_files.Where(f => f.filename == "noisy").FirstOrDefault().UniqueId + "_1", c1.id); //this line behaving strangely.
             Assert.AreEqual(Math.Round(8982.7258, 4), Math.Round(c1.reported_monoisotopic_mass, 4));
-            Assert.AreEqual(Math.Round(32361626.3, 1), Math.Round(c1.intensity_sum, 1));
-            Assert.AreEqual(Math.Round(32135853.39, 2), Math.Round(NeuCodePair.calculate_sum_intensity_olcs(c1.charge_states, overlapping_charge_states), 2));
+            Assert.AreEqual(Math.Round(2868299.6, 1), Math.Round(c1.intensity_sum, 1)); //charge state normalized
+            Assert.AreEqual(Math.Round(2836046.31, 2), Math.Round(NeuCodePair.calculate_sum_intensity_olcs(c1.charge_states, overlapping_charge_states), 2));
             Assert.AreEqual(9, c1.num_charge_states);
             Assert.AreEqual(Math.Round(2127.5113, 4), Math.Round(c1.reported_delta_mass, 4));
             Assert.AreEqual(Math.Round(54.97795307, 8), Math.Round(c1.relative_abundance, 8));
@@ -51,17 +50,46 @@ namespace Test
             Assert.AreEqual("413-415", c1.scan_range);
             Assert.AreEqual("56.250-56.510", c1.rt_range);
             Assert.AreEqual(Math.Round(56.3809775, 7), Math.Round(c1.rt_apex, 7));
+            Assert.AreEqual(8981.69, Math.Round(c1.charge_states.OrderBy(s => s.charge_count).First().reported_mass, 2));
 
             //testing intensity ratio
             NeuCodePair neucode_pair = Sweet.lollipop.raw_neucode_pairs.Where(i => i.neuCodeHeavy.id == inFileId + "_5" && i.neuCodeLight.id == inFileId + "_1").First();
-            Assert.AreEqual(2.0595679693624596, neucode_pair.intensity_ratio);
+            Assert.AreEqual(2.0695212171812423d, neucode_pair.intensity_ratio); //intensities are charge state normalized
 
             //testing K-count
             Assert.AreEqual(7, neucode_pair.lysine_count);
 
             //testing that only overlapping charge states go into intensity ratio
             neucode_pair = Sweet.lollipop.raw_neucode_pairs.Where(i => i.neuCodeHeavy.id == inFileId + "_122" && i.neuCodeLight.id == inFileId + "_57").First();
-            Assert.AreEqual(1.7231604062234347, neucode_pair.intensity_ratio);
+            Assert.AreEqual(1.7301034510740836, neucode_pair.intensity_ratio);
+        }
+
+
+        [Test]
+        public void testComponentReaderClear()
+        {
+            Sweet.lollipop = new Lollipop();
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
+            InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Sweet.lollipop.input_files.Add(noisy);
+
+            string inFileId = noisy.UniqueId.ToString();
+
+            Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
+            Assert.AreEqual(223, Sweet.lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(223, noisy.reader.final_components.Count());
+            Assert.AreEqual(68, noisy.reader.scan_ranges.Count());
+            Assert.AreEqual(224, noisy.reader.unprocessed_components);
+            Assert.AreEqual(1, noisy.reader.missed_mono_merges);
+            Assert.AreEqual(0, noisy.reader.harmonic_merges);
+            noisy.reader.Clear();
+            Assert.AreEqual(0, noisy.reader.final_components.Count());
+            Assert.AreEqual(0, noisy.reader.scan_ranges.Count());
+            Assert.AreEqual(0, noisy.reader.unprocessed_components);
+            Assert.AreEqual(0, noisy.reader.missed_mono_merges);
+            Assert.AreEqual(0, noisy.reader.harmonic_merges);
+
         }
 
     }

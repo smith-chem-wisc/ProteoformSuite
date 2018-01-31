@@ -50,14 +50,15 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
-            this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
-            this.cb_geneCentric = new System.Windows.Forms.CheckBox();
-            this.btn_inclusion_list_all_families = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btn_inclusion_list_selected_families = new System.Windows.Forms.Button();
             this.cb_orphans = new System.Windows.Forms.CheckBox();
+            this.btn_inclusion_list_all_families = new System.Windows.Forms.Button();
             this.cb_unidentified_families = new System.Windows.Forms.CheckBox();
             this.cb_identified_families = new System.Windows.Forms.CheckBox();
-            this.btn_inclusion_list_selected_families = new System.Windows.Forms.Button();
+            this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
+            this.cb_geneCentric = new System.Windows.Forms.CheckBox();
+            this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
             this.cb_buildAsQuantitative = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
@@ -106,8 +107,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1184, 890);
-            this.splitContainer1.SplitterDistance = 369;
+            this.splitContainer1.Size = new System.Drawing.Size(1354, 910);
+            this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -140,8 +141,8 @@
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_colorScheme);
             this.splitContainer2.Panel2.Controls.Add(this.lb_dgv_selection);
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_tableSelector);
-            this.splitContainer2.Size = new System.Drawing.Size(1184, 369);
-            this.splitContainer2.SplitterDistance = 685;
+            this.splitContainer2.Size = new System.Drawing.Size(1354, 376);
+            this.splitContainer2.SplitterDistance = 782;
             this.splitContainer2.TabIndex = 5;
             // 
             // dgv_main
@@ -153,7 +154,7 @@
             this.dgv_main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_main.Location = new System.Drawing.Point(0, 0);
             this.dgv_main.Name = "dgv_main";
-            this.dgv_main.Size = new System.Drawing.Size(681, 365);
+            this.dgv_main.Size = new System.Drawing.Size(778, 372);
             this.dgv_main.TabIndex = 2;
             this.dgv_main.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_proteoform_families_CellMouseClick);
             // 
@@ -335,11 +336,10 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
+            this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
-            this.splitContainer3.Panel2.Controls.Add(this.btn_inclusion_list_all_families);
-            this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
-            this.splitContainer3.Panel2.Controls.Add(this.btn_inclusion_list_selected_families);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_count_adducts_as_id);
             this.splitContainer3.Panel2.Controls.Add(this.cb_buildAsQuantitative);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer3.Panel2.Controls.Add(this.nud_decimalRoundingLabels);
@@ -352,8 +352,8 @@
             this.splitContainer3.Panel2.Controls.Add(this.tb_familyBuildFolder);
             this.splitContainer3.Panel2.Controls.Add(this.btn_browseTempFolder);
             this.splitContainer3.Panel2.Controls.Add(this.Families_update);
-            this.splitContainer3.Size = new System.Drawing.Size(1180, 513);
-            this.splitContainer3.SplitterDistance = 675;
+            this.splitContainer3.Size = new System.Drawing.Size(1350, 526);
+            this.splitContainer3.SplitterDistance = 771;
             this.splitContainer3.TabIndex = 7;
             // 
             // dgv_proteoform_family_members
@@ -365,16 +365,86 @@
             this.dgv_proteoform_family_members.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_proteoform_family_members.Location = new System.Drawing.Point(0, 0);
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
-            this.dgv_proteoform_family_members.Size = new System.Drawing.Size(675, 513);
+            this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btn_inclusion_list_selected_families);
+            this.groupBox1.Controls.Add(this.cb_orphans);
+            this.groupBox1.Controls.Add(this.btn_inclusion_list_all_families);
+            this.groupBox1.Controls.Add(this.cb_unidentified_families);
+            this.groupBox1.Controls.Add(this.cb_identified_families);
+            this.groupBox1.Location = new System.Drawing.Point(35, 256);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(349, 86);
+            this.groupBox1.TabIndex = 67;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Inclusion List";
+            // 
+            // btn_inclusion_list_selected_families
+            // 
+            this.btn_inclusion_list_selected_families.Location = new System.Drawing.Point(128, 44);
+            this.btn_inclusion_list_selected_families.Name = "btn_inclusion_list_selected_families";
+            this.btn_inclusion_list_selected_families.Size = new System.Drawing.Size(214, 23);
+            this.btn_inclusion_list_selected_families.TabIndex = 69;
+            this.btn_inclusion_list_selected_families.Text = "Export Inclusion List: Selected Families";
+            this.btn_inclusion_list_selected_families.UseVisualStyleBackColor = true;
+            this.btn_inclusion_list_selected_families.Click += new System.EventHandler(this.btn_inclusion_list_selected_families_Click);
+            // 
+            // cb_orphans
+            // 
+            this.cb_orphans.AutoSize = true;
+            this.cb_orphans.Checked = true;
+            this.cb_orphans.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_orphans.Location = new System.Drawing.Point(6, 65);
+            this.cb_orphans.Name = "cb_orphans";
+            this.cb_orphans.Size = new System.Drawing.Size(66, 17);
+            this.cb_orphans.TabIndex = 58;
+            this.cb_orphans.Text = "Orphans";
+            this.cb_orphans.UseVisualStyleBackColor = true;
+            // 
+            // btn_inclusion_list_all_families
+            // 
+            this.btn_inclusion_list_all_families.Location = new System.Drawing.Point(128, 13);
+            this.btn_inclusion_list_all_families.Name = "btn_inclusion_list_all_families";
+            this.btn_inclusion_list_all_families.Size = new System.Drawing.Size(214, 23);
+            this.btn_inclusion_list_all_families.TabIndex = 68;
+            this.btn_inclusion_list_all_families.Text = "Export Inclusion List: All Families";
+            this.btn_inclusion_list_all_families.UseVisualStyleBackColor = true;
+            this.btn_inclusion_list_all_families.Click += new System.EventHandler(this.btn_inclusion_list_all_families_Click);
+            // 
+            // cb_unidentified_families
+            // 
+            this.cb_unidentified_families.AutoSize = true;
+            this.cb_unidentified_families.Checked = true;
+            this.cb_unidentified_families.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_unidentified_families.Location = new System.Drawing.Point(6, 42);
+            this.cb_unidentified_families.Name = "cb_unidentified_families";
+            this.cb_unidentified_families.Size = new System.Drawing.Size(122, 17);
+            this.cb_unidentified_families.TabIndex = 57;
+            this.cb_unidentified_families.Text = "Unidentified Families";
+            this.cb_unidentified_families.UseVisualStyleBackColor = true;
+            // 
+            // cb_identified_families
+            // 
+            this.cb_identified_families.AutoSize = true;
+            this.cb_identified_families.Checked = true;
+            this.cb_identified_families.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_identified_families.Location = new System.Drawing.Point(6, 19);
+            this.cb_identified_families.Name = "cb_identified_families";
+            this.cb_identified_families.Size = new System.Drawing.Size(109, 17);
+            this.cb_identified_families.TabIndex = 56;
+            this.cb_identified_families.Text = "Identified Families";
+            this.cb_identified_families.UseVisualStyleBackColor = true;
             // 
             // rtb_proteoformFamilyResults
             // 
-            this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(17, 390);
+            this.rtb_proteoformFamilyResults.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 348);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
             this.rtb_proteoformFamilyResults.ReadOnly = true;
-            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
+            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(575, 155);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
             this.rtb_proteoformFamilyResults.Text = "";
             // 
@@ -383,7 +453,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(301, 87);
+            this.cb_geneCentric.Location = new System.Drawing.Point(302, 100);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 61;
@@ -391,78 +461,19 @@
             this.cb_geneCentric.UseVisualStyleBackColor = true;
             this.cb_geneCentric.CheckedChanged += new System.EventHandler(this.cb_geneCentric_CheckedChanged);
             // 
-            // btn_inclusion_list_all_families
+            // cb_count_adducts_as_id
             // 
-            this.btn_inclusion_list_all_families.Location = new System.Drawing.Point(75, 261);
-            this.btn_inclusion_list_all_families.Name = "btn_inclusion_list_all_families";
-            this.btn_inclusion_list_all_families.Size = new System.Drawing.Size(195, 23);
-            this.btn_inclusion_list_all_families.TabIndex = 60;
-            this.btn_inclusion_list_all_families.Text = "Export Inclusion List";
-            this.btn_inclusion_list_all_families.UseVisualStyleBackColor = true;
-            this.btn_inclusion_list_all_families.Click += new System.EventHandler(this.btn_inclusion_list_all_families_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.cb_orphans);
-            this.groupBox1.Controls.Add(this.cb_unidentified_families);
-            this.groupBox1.Controls.Add(this.cb_identified_families);
-            this.groupBox1.Location = new System.Drawing.Point(280, 237);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 96);
-            this.groupBox1.TabIndex = 59;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Inclusion List";
-            // 
-            // cb_orphans
-            // 
-            this.cb_orphans.AutoSize = true;
-            this.cb_orphans.Checked = true;
-            this.cb_orphans.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_orphans.Location = new System.Drawing.Point(21, 76);
-            this.cb_orphans.Name = "cb_orphans";
-            this.cb_orphans.Size = new System.Drawing.Size(66, 17);
-            this.cb_orphans.TabIndex = 58;
-            this.cb_orphans.Text = "Orphans";
-            this.cb_orphans.UseVisualStyleBackColor = true;
-            // 
-            // cb_unidentified_families
-            // 
-            this.cb_unidentified_families.AutoSize = true;
-            this.cb_unidentified_families.Checked = true;
-            this.cb_unidentified_families.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_unidentified_families.Location = new System.Drawing.Point(21, 53);
-            this.cb_unidentified_families.Name = "cb_unidentified_families";
-            this.cb_unidentified_families.Size = new System.Drawing.Size(141, 17);
-            this.cb_unidentified_families.TabIndex = 57;
-            this.cb_unidentified_families.Text = "Unidentified Proteoforms";
-            this.cb_unidentified_families.UseVisualStyleBackColor = true;
-            // 
-            // cb_identified_families
-            // 
-            this.cb_identified_families.AutoSize = true;
-            this.cb_identified_families.Checked = true;
-            this.cb_identified_families.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_identified_families.Location = new System.Drawing.Point(21, 30);
-            this.cb_identified_families.Name = "cb_identified_families";
-            this.cb_identified_families.Size = new System.Drawing.Size(128, 17);
-            this.cb_identified_families.TabIndex = 56;
-            this.cb_identified_families.Text = "Identified Proteoforms";
-            this.cb_identified_families.UseVisualStyleBackColor = true;
-            // 
-            // btn_inclusion_list_selected_families
-            // 
-            this.btn_inclusion_list_selected_families.Location = new System.Drawing.Point(75, 291);
-            this.btn_inclusion_list_selected_families.Name = "btn_inclusion_list_selected_families";
-            this.btn_inclusion_list_selected_families.Size = new System.Drawing.Size(195, 23);
-            this.btn_inclusion_list_selected_families.TabIndex = 59;
-            this.btn_inclusion_list_selected_families.Text = "Export Selected Families Inclusion List";
-            this.btn_inclusion_list_selected_families.UseVisualStyleBackColor = true;
-            this.btn_inclusion_list_selected_families.Click += new System.EventHandler(this.btn_inclusion_list_selected_families_Click);
+            this.cb_count_adducts_as_id.Location = new System.Drawing.Point(301, 73);
+            this.cb_count_adducts_as_id.Name = "cb_count_adducts_as_id";
+            this.cb_count_adducts_as_id.Size = new System.Drawing.Size(180, 24);
+            this.cb_count_adducts_as_id.TabIndex = 0;
+            this.cb_count_adducts_as_id.Text = "Count Adducts as Identifications";
+            this.cb_count_adducts_as_id.CheckedChanged += new System.EventHandler(this.cb_count_adducts_as_id_CheckedChanged);
             // 
             // cb_buildAsQuantitative
             // 
             this.cb_buildAsQuantitative.AutoSize = true;
-            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(301, 110);
+            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(302, 123);
             this.cb_buildAsQuantitative.Name = "cb_buildAsQuantitative";
             this.cb_buildAsQuantitative.Size = new System.Drawing.Size(163, 17);
             this.cb_buildAsQuantitative.TabIndex = 58;
@@ -474,7 +485,7 @@
             // 
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(280, 151);
+            this.groupBox5.Location = new System.Drawing.Point(301, 156);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(200, 84);
             this.groupBox5.TabIndex = 57;
@@ -591,10 +602,10 @@
             // Families_update
             // 
             this.Families_update.AllowDrop = true;
-            this.Families_update.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Families_update.Location = new System.Drawing.Point(51, 480);
+            this.Families_update.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.Families_update.Location = new System.Drawing.Point(0, 503);
             this.Families_update.Name = "Families_update";
-            this.Families_update.Size = new System.Drawing.Size(402, 23);
+            this.Families_update.Size = new System.Drawing.Size(575, 23);
             this.Families_update.TabIndex = 33;
             this.Families_update.Text = "Construct Families and Identify Proteoforms";
             this.Families_update.UseMnemonic = false;
@@ -605,7 +616,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 890);
+            this.ClientSize = new System.Drawing.Size(1354, 910);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -669,17 +680,18 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox cb_boldLabel;
         private System.Windows.Forms.CheckBox cb_redBorder;
-        private System.Windows.Forms.Button btn_inclusion_list_all_families;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox cb_orphans;
-        private System.Windows.Forms.CheckBox cb_unidentified_families;
-        private System.Windows.Forms.CheckBox cb_identified_families;
-        private System.Windows.Forms.Button btn_inclusion_list_selected_families;
         public System.Windows.Forms.CheckBox cb_geneCentric;
         private System.Windows.Forms.Label label10;
         public System.Windows.Forms.ComboBox cmbx_geneLabel;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
+        private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox cb_unidentified_families;
+        private System.Windows.Forms.CheckBox cb_identified_families;
+        private System.Windows.Forms.CheckBox cb_orphans;
+        private System.Windows.Forms.Button btn_inclusion_list_selected_families;
+        private System.Windows.Forms.Button btn_inclusion_list_all_families;
     }
 }

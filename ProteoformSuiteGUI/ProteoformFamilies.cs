@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteGUI
 {
@@ -56,12 +57,14 @@ namespace ProteoformSuiteGUI
             cb_buildAsQuantitative.Checked = false;
             cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
             cb_geneCentric.Checked = Lollipop.gene_centric_families;
+            
         }
 
         public void InitializeParameterSet()
         {
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
+            
 
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
@@ -71,12 +74,9 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
-            initialize_every_time();
-        }
+            cb_count_adducts_as_id.Checked = Sweet.lollipop.count_adducts_as_identifications;
 
-        public List<DataGridView> GetDGVs()
-        {
-            return new List<DataGridView> { dgv_main };
+            initialize_every_time();
         }
 
         public List<DataTable> SetTables()
@@ -90,7 +90,7 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.target_proteoform_community.has_e_proteoforms;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.construct_target_and_decoy_families();
@@ -244,6 +244,16 @@ namespace ProteoformSuiteGUI
                 else dgv_proteoform_family_members.Rows.Clear();
             }
 
+            else if (new List<string> { nameof(DisplayProteoformFamily.topdown_count) }.Contains(dgv_main.Columns[column_index].Name))
+            {
+                if (selected_family.experimental_proteoforms.Count(p => p.topdown_id) > 0)
+                {
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Where(p => p.topdown_id).Select(td => new DisplayTopDownProteoform(td as TopDownProteoform)));
+                    DisplayTopDownProteoform.FormatTopDownTable(dgv_proteoform_family_members, false);
+                }
+                else dgv_proteoform_family_members.Rows.Clear();
+            }
+
             else if (dgv_main.Columns[column_index].Name == nameof(DisplayProteoformFamily.relation_count))
             {
                 if (selected_family.relations.Count > 0)
@@ -326,7 +336,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 Cursor = Cursors.Default;
             }
         }
@@ -396,9 +406,14 @@ namespace ProteoformSuiteGUI
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
+        private void cb_count_adducts_as_id_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.count_adducts_as_identifications = cb_count_adducts_as_id.Checked;
+            update_figures_of_merit();
+        }
+
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Private Methods
-
     }
 }

@@ -1,0 +1,38 @@
+ID   Sulfate Adduct
+TG   Any
+PP   Anywhere.
+MM   97.967377
+MT   Unlocalized
+CF   H2 O4 S1
+//
+ID   Acetone Artifact (Unconfirmed)
+TG   Any
+PP   Anywhere.
+MM   98.0732
+MT   Unlocalized
+CF   C6 H10 O1
+//
+ID   Hydrogen Dodecyl Sulfate
+TG   Any
+PP   Anywhere.
+MM   266.15516
+MT   Unlocalized
+CF   H26 C12 S1 O4
+//
+ID   N-terminal Acetyl
+TG   K
+PP   N-terminal.
+MM   42.010565
+MT   Unlocalized
+CF   H2 C2 O1
+//
+ID   GPI anchor
+TG   Any
+PP   Anywhere.
+MM   123.00853
+MT   Unlocalized
+CF   H6 C2 N1 O3 P1
+DR   RESID; AA0161.
+DR   RESID; AA0162.
+DR   RESID; AA0158.
+//

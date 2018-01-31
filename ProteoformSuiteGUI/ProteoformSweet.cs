@@ -26,9 +26,10 @@ namespace ProteoformSuiteGUI
         public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
         public Quantification quantification = new Quantification();
+        public TopDown topDown = new TopDown();
+        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms();
         public ResultsSummary resultsSummary = new ResultsSummary();
         public List<ISweetForm> forms = new List<ISweetForm>();
-        public static bool run_when_form_loads;
 
         #endregion Public Fields
 
@@ -69,15 +70,18 @@ namespace ProteoformSuiteGUI
 
         private void InitializeForms()
         {
+
             forms = new List<ISweetForm>
             {
                 loadDeconvolutionResults,
+                theoreticalDatabase,
+                topDown,
                 rawExperimentalComponents,
                 neuCodePairs,
                 aggregatedProteoforms,
-                theoreticalDatabase,
                 experimentalTheoreticalComparison,
                 experimentExperimentComparison,
+                identifiedProteoforms,
                 proteoformFamilies,
                 quantification,
                 resultsSummary
@@ -124,7 +128,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(neuCodePairs);
             if (neuCodePairs.ReadyToRunTheGamut())
-                neuCodePairs.RunTheGamut(); // There's no update/run button in NeuCodePairs, so just fill the tables
+                neuCodePairs.RunTheGamut(false); // There's no update/run button in NeuCodePairs, so just fill the tables
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -153,6 +157,16 @@ namespace ProteoformSuiteGUI
             showForm(proteoformFamilies);
             proteoformFamilies.initialize_every_time();
         }
+        private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(topDown);
+        }
+
+        private void identifiedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(identifiedProteoforms);
+            if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut(false);
+        }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -167,6 +181,7 @@ namespace ProteoformSuiteGUI
             showForm(resultsSummary);
         }
 
+    
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods
@@ -217,7 +232,7 @@ namespace ProteoformSuiteGUI
                 };
                 loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                 if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                    loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                   loadDeconvolutionResults.RunTheGamut(false); // updates the dgvs
                 return true;
             }
             return false;
@@ -248,7 +263,6 @@ namespace ProteoformSuiteGUI
 
                     if (!open_method(filepath, File.ReadAllLines(filepath), d4 == DialogResult.Yes))
                     {
-                        MessageBox.Show("Error in method file. Generate a new method file.");
                         return null;
                     };
                 }
@@ -280,7 +294,7 @@ namespace ProteoformSuiteGUI
                     {
                         Sweet.lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
                         if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                            loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                            loadDeconvolutionResults.RunTheGamut(true); // updates the dgvs
                     }
                     else return null;
                 }
@@ -320,7 +334,7 @@ namespace ProteoformSuiteGUI
             foreach (ISweetForm sweet in forms)
             {
                 if (sweet.ReadyToRunTheGamut())
-                    sweet.RunTheGamut();
+                    sweet.RunTheGamut(true);
             }
 
             // Save the results
@@ -333,7 +347,26 @@ namespace ProteoformSuiteGUI
                 using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
                     file.WriteLine(Sweet.save_method());
             }
-
+            List<string> warning_methods = new List<string>() { "Warning:" };
+            if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            {
+                warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
+                warning_methods.Add(String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+            }
+            if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+            {
+                warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
+                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+            }
+            if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
+            {
+                warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
+                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+            }
+            if(warning_methods.Count > 1)
+            {
+                MessageBox.Show(String.Join("\n\n", warning_methods));
+            }
             //Program ran successfully
             stopwatch.Stop();
             Cursor = Cursors.Default;

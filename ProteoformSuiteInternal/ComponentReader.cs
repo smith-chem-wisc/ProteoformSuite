@@ -29,57 +29,38 @@ namespace ProteoformSuiteInternal
 
         #region Public Method
 
-        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction> correctionFactors)
+        public List<Component> read_components_from_xlsx(InputFile file, bool remove_missed_monos_and_harmonics)
         {
-            raw_components_in_file.Clear();
-            string absolute_path = file.directory + "\\" + file.filename + file.extension;
+            this.raw_components_in_file.Clear();
 
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(absolute_path, false))
+            Component new_component = new Component();
+            int charge_row_index = 0;
+            string scan_range = "";
+            List<List<string>> cells = ExcelReader.get_cell_strings(file, false);
+            for (int i = 0; i < cells.Count; i++)
             {
-                // Get Data in Sheet1 of Excel file
-                WorkbookPart wbp = spreadsheetDocument.WorkbookPart;
-                string first_sheet_id = wbp.Workbook.Descendants<Sheet>().First().Id;
-                WorksheetPart worksheet_1 = wbp.GetPartById(first_sheet_id) as WorksheetPart; // Get sheet1 Part of Spread Sheet Document
-                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
-
-                Component new_component = new Component();
-                int charge_row_index = 0;
-                string scan_range = "";
-                for (int i = 0; i < rowcollection.Count; i++)
+                if (i == 0) continue; //skip component header                        
+                List<string> cellStrings = cells[i];
+                if (cellStrings.Count > 7) //component row
                 {
-                    if (i == 0) continue; //skip component header
-
-                    List<string> cellStrings = rowcollection[i].Descendants<Cell>()
-                        .Select(c => GetCellValue(spreadsheetDocument, c)).ToList();
-
-                    if (cellStrings.Count > 4) //component row
-                    {
-                        if (i > 1)
-                        {
-                            add_component(new_component); // here we're adding the previously read component
-                        }
-                        new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
-                        charge_row_index = 0;
-                        scan_range = cellStrings[8];
-                    }
-
-                    else if (cellStrings.Count == 4) //charge-state row
-                    {
-                        if (charge_row_index == 0)
-                        {
-                            charge_row_index++;
-                            continue; //skip charge state headers
-                        }
-                        else
-                        {
-                            new_component.add_charge_state(cellStrings, Correction.GetCorrectionFactor(file.filename, scan_range, correctionFactors));
-                        }
-                    }
+                    if (i > 1) add_component(new_component); // here we're adding the previously read component
+                    new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
+                    charge_row_index = 0;
+                    scan_range = cellStrings[8];
                 }
-                add_component(new_component); //add the final component
+                else if (cellStrings.Count == 4) //charge-state row
+                {
+                    if (charge_row_index == 0)
+                    {
+                        charge_row_index += 1;
+                        continue; //skip charge state headers=
+                    }
+                    else new_component.add_charge_state(cellStrings);
+                }
             }
+            add_component(new_component);
             unprocessed_components += raw_components_in_file.Count;
-            final_components = remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
+            final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range)).ToList();
             return final_components;
         }
@@ -222,18 +203,6 @@ namespace ProteoformSuiteInternal
             }
             return raw_components.Except(removeThese).ToList();
         }
-
-        private static string GetCellValue(SpreadsheetDocument document, Cell cell)
-        {
-            SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
-            string value = cell.CellValue.InnerXml;
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString && value != null)
-                return stringTablePart.SharedStringTable.ChildElements[Int32.Parse(value)].InnerText;
-            else
-                return value;
-        }
-
         #endregion Private Methods
-
     }
 }

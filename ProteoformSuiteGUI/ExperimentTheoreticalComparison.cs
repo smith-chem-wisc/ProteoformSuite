@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
- 
+
 namespace ProteoformSuiteGUI
 {
     public partial class ExperimentTheoreticalComparison : Form, ISweetForm
@@ -50,7 +50,7 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.target_proteoform_community.has_e_and_t_proteoforms;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             shift_masses();  //check for shifts from GUI
             ClearListsTablesFigures(true);
@@ -70,14 +70,11 @@ namespace ProteoformSuiteGUI
             DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, false);
             GraphETRelations();
             GraphETPeaks();
+            if(cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            else ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
             cb_discoveryHistogram.Checked = false;
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
-        }
-
-        public List<DataGridView> GetDGVs()
-        {
-            return new List<DataGridView> { dgv_ET_Relations, dgv_ET_Peak_List };
         }
 
         public List<DataTable> SetTables()
@@ -103,7 +100,6 @@ namespace ProteoformSuiteGUI
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
-
             dgv_ET_Relations.DataSource = null;
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Relations.Rows.Clear();
@@ -119,7 +115,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as ExperimentExperimentComparison == null)
+                    if (sweet as ExperimentExperimentComparison == null && sweet as TopDown == null)
                         sweet.ClearListsTablesFigures(false);
                 }
             }
@@ -187,7 +183,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 xMaxET.Value = (decimal)Sweet.lollipop.et_high_mass_difference;
                 xMinET.Value = (decimal)Sweet.lollipop.et_low_mass_difference;
                 Cursor = Cursors.Default;
@@ -225,8 +221,8 @@ namespace ProteoformSuiteGUI
                     Sweet.lollipop.process_neucode_components(Sweet.lollipop.raw_neucode_pairs);
                     ((ProteoformSweet)MdiParent).neuCodePairs.FillTablesAndCharts();
                 }
-                ((ProteoformSweet)MdiParent).aggregatedProteoforms.RunTheGamut();
-                RunTheGamut(); //will need to rerun the Gamut if peaks shifted from preset.
+                ((ProteoformSweet)MdiParent).aggregatedProteoforms.RunTheGamut(false);
+                RunTheGamut(false); //will need to rerun the Gamut if peaks shifted from preset.
             }
         }
 
@@ -481,6 +477,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Tooltip Private Methods
-
     }
 }

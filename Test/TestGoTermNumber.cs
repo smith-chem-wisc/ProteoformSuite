@@ -70,6 +70,7 @@ namespace Test
         public void get_interesting_goterm_families()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             DatabaseReference d1 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
@@ -78,9 +79,9 @@ namespace Test
             GoTerm g1 = new GoTerm(d1);
             GoTerm g2 = new GoTerm(d2);
             GoTerm g3 = new GoTerm(d3);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
-            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
-            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("ASDF", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("ASDF", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]>
             {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
@@ -91,16 +92,22 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.TusherValues1.significant = true;
-            e1.quant.logFoldChange = 1;
+            e1.quant.tusherlogFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.TusherValues1.significant = true;
-            e2.quant.logFoldChange = 1;
+            e2.quant.tusherlogFoldChange = 1;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             t.ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
             u.ExpandedProteinList = new List<ProteinWithGoTerms> { p2 };
             v.ExpandedProteinList = new List<ProteinWithGoTerms> { p3 };
+            t.begin = 1;
+            t.end = 1;
+            u.begin = 1;
+            u.end = 1;
+            v.begin = 1;
+            v.end = 1;
             make_relation(e1, t);
             //make_relation(e1, v); // we don't allow this to happen anymore... we only allow one ET conntection per E
             make_relation(e2, u);
@@ -117,7 +124,7 @@ namespace Test
             u.family = h;
             e2.family = h;
             List<ExperimentalProteoform> fake_significant = new List<ExperimentalProteoform> { e1 };
-            List<ProteinWithGoTerms> significant_proteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, fake_significant, 0, 1, 0);
+            List<ProteinWithGoTerms> significant_proteins = Sweet.lollipop.getInducedOrRepressedProteins(fake_significant, Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             List<GoTermNumber> gtn = Sweet.lollipop.TusherAnalysis1.GoAnalysis.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(1, significant_proteins.Count);
             Assert.AreEqual(1, gtn.Count);
@@ -133,6 +140,7 @@ namespace Test
         public void test_goterm_analysis()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             DatabaseReference d1 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
@@ -141,9 +149,9 @@ namespace Test
             GoTerm g1 = new GoTerm(d1);
             GoTerm g2 = new GoTerm(d2);
             GoTerm g3 = new GoTerm(d3);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
-            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
-            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("ASDF", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("ASDF", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
@@ -153,10 +161,10 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.TusherValues1.significant = true;
-            e1.quant.logFoldChange = 1;
+            e1.quant.tusherlogFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.TusherValues1.significant = true;
-            e2.quant.logFoldChange = 1;
+            e2.quant.tusherlogFoldChange = 1;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
@@ -178,7 +186,7 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.allTheoreticalProteins = true;
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.GO_analysis(Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins);
@@ -196,6 +204,7 @@ namespace Test
         {
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0, TestContext.CurrentContext.TestDirectory);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new HashSet<ProteoformRelation> { pp });
+            pp.Accepted = true;
             pp.peak = ppp;
             pp.Accepted = true;
             ppp.Accepted = true;
@@ -207,6 +216,7 @@ namespace Test
         public void test_goterm_analysis_with_custom_list()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             DatabaseReference d1 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
@@ -215,9 +225,9 @@ namespace Test
             GoTerm g1 = new GoTerm(d1);
             GoTerm g2 = new GoTerm(d2);
             GoTerm g3 = new GoTerm(d3);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
-            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
-            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("ASDF", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("ASDF", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
@@ -227,10 +237,10 @@ namespace Test
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.TusherValues1.significant = true;
-            e1.quant.logFoldChange = 1;
+            e1.quant.tusherlogFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.TusherValues1.significant = true;
-            e2.quant.logFoldChange = 1;
+            e2.quant.tusherlogFoldChange = 1;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
@@ -252,7 +262,7 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.TusherAnalysis1 as TusherAnalysis, new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, Sweet.lollipop.TusherAnalysis1.GoAnalysis);
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.allTheoreticalProteins = true;
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");

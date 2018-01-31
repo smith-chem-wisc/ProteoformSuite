@@ -64,12 +64,12 @@ namespace ProteoformSuiteGUI
                     selected_pf.hv_quant_components.ToList<IAggregatable>();
             if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
                 DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)));
-            else
-                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayComponent(c as Component)));
+            else if (rb_displayIdentificationComponents.Checked && selected_pf != null && selected_pf.topdown_id) DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, (selected_pf as TopDownProteoform).topdown_hits.Select(h => new DisplayTopDownHit(h)));
+            else DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayComponent(c as Component)));
             if (Sweet.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
                 DisplayNeuCodePair.FormatNeuCodeTable(dgv_AcceptNeuCdLtProteoforms);
-            else
-                DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms);
+            else if (rb_displayIdentificationComponents.Checked && selected_pf != null && selected_pf.topdown_id) DisplayTopDownHit.FormatTopDownHitsTable(dgv_AcceptNeuCdLtProteoforms);
+            else DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms);
         }
 
         private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)
@@ -120,7 +120,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 Cursor = Cursors.Default;
             }
             else if (Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
@@ -128,12 +128,6 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Go back and load in deconvolution results.");
             }
         }
-
-        private void nUD_min_agg_count_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_agg_count = Convert.ToInt16(nUD_min_agg_count.Value);
-        }
-
         private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
@@ -154,35 +148,22 @@ namespace ProteoformSuiteGUI
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
 
-        private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);
-        }
-
         #endregion Private Methods
 
         #region Public Methods
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0;
+            return Sweet.lollipop.topdown_proteoforms.Count > 0 || ( Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0 );
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, Sweet.lollipop.min_num_CS);
             Sweet.lollipop.assign_best_components_for_manual_validation(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
             FillTablesAndCharts();
             updateFiguresOfMerit();
-        }
-
-        public List<DataGridView> GetDGVs()
-        {
-            return new List<DataGridView>
-            {
-                dgv_AggregatedProteoforms
-            };
         }
 
         public List<DataTable> SetTables()
@@ -207,13 +188,29 @@ namespace ProteoformSuiteGUI
             nUD_RetTimeToleranace.Value = Convert.ToDecimal(Sweet.lollipop.retention_time_tolerance);
             nUD_Missed_Monos.Value = Sweet.lollipop.maximum_missed_monos;
             nUD_Missed_Ks.Value = Sweet.lollipop.maximum_missed_lysines;
-            nUD_min_num_bioreps.Value = Sweet.lollipop.min_num_bioreps;
-            nUD_min_agg_count.Value = Sweet.lollipop.min_agg_count;
             nUD_min_num_CS.Value = Sweet.lollipop.min_num_CS;
 
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+
+            decimal agg_minBiorepsWithObservations = Sweet.lollipop.agg_minBiorepsWithObservations;
+            cmbx_observationsTypeRequired.Items.Clear();
+            cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
+            cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
+            cmbx_observationsTypeRequired.SelectedIndex = Sweet.lollipop.agg_observation_requirement == new Lollipop().agg_observation_requirement ? // check that the default has not been changed (haven't loaded presets)
+                0 :
+                Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement);
+            cmbx_observationsTypeRequired.SelectedItem = Sweet.lollipop.agg_observation_requirement;
+            cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
+
+            nud_minObservations.Minimum = 1;
+            set_nud_minObs_maximum();
+            if (agg_minBiorepsWithObservations <= nud_minObservations.Maximum
+                && agg_minBiorepsWithObservations >= nud_minObservations.Minimum) nud_minObservations.Value = agg_minBiorepsWithObservations;
+            else nud_minObservations.Value = nud_minObservations.Maximum;
+            Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
+            cb_add_td_proteoforms.Checked = Sweet.lollipop.add_td_proteoforms;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -223,8 +220,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as TheoreticalDatabase == null)
-                        sweet.ClearListsTablesFigures(false);
+                    sweet.ClearListsTablesFigures(false);
                 }
             }
 
@@ -239,5 +235,38 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Methods
 
+        private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            set_nud_minObs_maximum();
+            nud_minObservations.Value = nud_minObservations.Maximum;
+
+        }
+
+        private void set_nud_minObs_maximum()
+        {
+            List<string> conditions = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(f => f.lt_condition).Distinct().ToList();
+            if (Sweet.lollipop.neucode_labeled) conditions.AddRange(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(f => f.hv_condition).Distinct());
+
+            if (Sweet.lollipop.agg_observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any  condition
+                nud_minObservations.Maximum = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + x.biological_replicate).Distinct().Count();
+            else if (Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement) < 3)
+                nud_minObservations.Maximum = Sweet.lollipop.input_files.Count(f => f.purpose == Purpose.Identification) == 0 ? 0 : conditions.Min(c => Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == c).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == c)).Select(x => x.biological_replicate).Distinct().Count());
+            else if (Sweet.lollipop.agg_observation_requirement == Lollipop.observation_requirement_possibilities[4]) // From any single condition
+                nud_minObservations.Maximum =  Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + x.biological_replicate + x.technical_replicate).Distinct().Count();
+            else
+                nud_minObservations.Maximum = Sweet.lollipop.input_files.Count(f => f.purpose == Purpose.Identification) == 0 ? 0 : conditions.Min(c => Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == c).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == c)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
+        }
+
+        private void nud_minObservations_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
+
+        }
+
+        private void cb_add_td_proteoforms_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.add_td_proteoforms = cb_add_td_proteoforms.Checked;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace ProteoformSuiteInternal
         ExperimentalTheoretical, //Experiment-Theoretical comparisons
         ExperimentalDecoy, //Experiment-Decoy comparisons
         ExperimentalExperimental, //Experiment-Experiment comparisons
-        ExperimentalFalse  //Experiment-Experiment comparisons using unequal lysine counts
+        ExperimentalFalse,  //Experiment-Experiment comparisons using unequal lysine counts
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
@@ -56,6 +56,7 @@ namespace ProteoformSuiteInternal
         /// </summary>
         public bool Accepted { get; set; }
 
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -87,8 +88,8 @@ namespace ProteoformSuiteInternal
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
-                List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < 0.05).ToList();
-                candidate_ptmset = t.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, Sweet.lollipop.theoretical_database.all_mods_with_mass, t, t.sequence, Sweet.lollipop.mod_rank_first_quartile)
+                List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < Sweet.lollipop.peak_width_base_et).ToList();
+                candidate_ptmset = pf1.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, Sweet.lollipop.theoretical_database.all_mods_with_mass, t, Sweet.lollipop.mod_rank_first_quartile)
                     .OrderBy(x => x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
             }
@@ -151,9 +152,9 @@ namespace ProteoformSuiteInternal
         {
             ProteoformRelation r2 = obj as ProteoformRelation;
             return r2 != null &&
-                (InstanceId == r2.InstanceId ||
-                connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0] ||
-                connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
+                (InstanceId == r2.InstanceId) ||
+                (connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0]) ||
+                (connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
         }
 
         public override int GetHashCode()

@@ -22,17 +22,17 @@ namespace ProteoformSuiteInternal
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.TusherValues2.impute_biorep_intensities(eP.biorepTechrepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange, Sweet.lollipop.useRandomSeed_quant, Sweet.lollipop.seeded);
+                eP.quant.determine_statistics();
             }
 
             if (define_histogram)
-                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
+                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.quant.TusherValues2.allIntensities.Values), QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
 
             normalize_protoeform_intensities(satisfactoryProteoforms);
 
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.TusherValues2.determine_proteoform_statistics(induced_condition, sKnot_minFoldChange);
-                eP.quant.determine_statistics();
             }
         }
 
@@ -49,11 +49,13 @@ namespace ProteoformSuiteInternal
                 else conditionBiorep_intensities.Add(key2, new List<double> { bi.intensity_sum });
             }
 
-            // Mixing bias normalization
+            // If Neucode Labeled: Mixing bias normalization
             conditionBiorep_sums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum());
+            //otherwise, tech rep normalize
             foreach (BiorepTechrepIntensity bi in allOriginalBiorepIntensities)
             {
-                double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value);
+                double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / 
+                    (Sweet.lollipop.neucode_labeled ? conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value) : conditionBiorep_sums.Average(kv => kv.Value));
                 bi.intensity_sum = bi.intensity_sum / norm_divisor;
             }
 
@@ -200,8 +202,7 @@ namespace ProteoformSuiteInternal
                 relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, Sweet.lollipop.satisfactoryProteoforms, flattenedPermutedRelativeDifferences, Sweet.lollipop.offsetTestStatistics);
             else
                 Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues2.significant = eP.quant.TusherValues2.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
-            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(this as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity);
-            analysis.GoAnalysis.GO_analysis(inducedOrRepressedProteins);
+            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues2.significant), GoAnalysis);
         }
 
         #endregion Public Methods

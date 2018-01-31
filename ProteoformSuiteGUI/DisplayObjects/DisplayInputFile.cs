@@ -29,22 +29,26 @@ namespace ProteoformSuiteGUI
 
         #region Public Properties
 
-        // For all files
-        public int UniqueId
-        {
-            get { return file.UniqueId; }
-        }
 
         public string Filename
         {
             get { return file.filename; }
         }
-
-        public Purpose Purpose
+       
+        // For quantification or calibration files
+        public string biological_replicate
         {
-            get { return file.purpose; }
+            get
+            {
+                return file.biological_replicate;
+            }
+            set
+            {
+                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate, value);
+                file.biological_replicate = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
+            }
         }
-
 
         //For protein databases
         public bool ContaminantDB
@@ -60,21 +64,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-
-        // For quantification files
-        public string biological_replicate
-        {
-            get
-            {
-                return file.biological_replicate;
-            }
-            set
-            {
-                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate.ToString(), value.ToString());
-                file.biological_replicate = value;
-            }
-        }
-
         public string Fraction
         {
             get
@@ -83,8 +72,9 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction.ToString(), value.ToString());
-                file.fraction = value;
+                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction, value);
+                file.fraction = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -96,8 +86,9 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
-                file.technical_replicate = value;
+                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate, value);
+                file.technical_replicate = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -109,31 +100,38 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition.ToString(), value.ToString());
-                file.lt_condition = value;
+                Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition, value);
+                file.lt_condition = value != null? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
+
         public string hv_condition
-        {
+        { 
             get
             {
                 return file.hv_condition;
             }
             set
             {
-                Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition.ToString(), value.ToString());
-                file.hv_condition = value;
+                Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition, value);
+                file.hv_condition = value != null ? value : "";
+                ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
 
-        // For identification files
-        public bool matchingCalibrationFile
+        public bool Quantitative
         {
             get
             {
-                return file.matchingCalibrationFile;
+                return file.quantitative;
+            }
+            set
+            {
+                Sweet.change_file(file, file.quantitative, nameof(file.quantitative), file.quantitative.ToString(), value.ToString());
+                file.quantitative = value;
             }
         }
 
@@ -143,14 +141,7 @@ namespace ProteoformSuiteGUI
             {
                 return file.label;
             }
-            set
-            {
-                Sweet.change_file(file, file.label, nameof(file.label), file.label.ToString(), value.ToString());
-                file.label = value;
-            }
         }
-
-
 
         // Other for all files
         public string complete_path
@@ -162,6 +153,18 @@ namespace ProteoformSuiteGUI
         {
             get { return file.directory; }
         }
+
+        public Purpose Purpose
+        {
+            get { return file.purpose; }
+        }
+
+        // For all files
+        public int UniqueId
+        {
+            get { return file.UniqueId; }
+        }
+
 
         #endregion Public Properties
 
@@ -175,7 +178,7 @@ namespace ProteoformSuiteGUI
 
             foreach (DataGridViewColumn c in dgv.Columns)
             {
-                string h = header(c.Name);
+                string h = header(c.Name, dgv_purposes);
                 c.HeaderText = h != null ? h : c.HeaderText;
                 c.Visible = visible(c.Name, c.Visible, dgv_purposes);
             }
@@ -186,12 +189,12 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Directory)].ReadOnly = true;
             dgv.Columns[nameof(Filename)].ReadOnly = true;
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
-            dgv.Columns[nameof(matchingCalibrationFile)].ReadOnly = true;
+            dgv.Columns[nameof(Labeling)].ReadOnly = true;
         }
 
         public static DataTable FormatInputFileTable(List<DisplayInputFile> display, string table_name, IEnumerable<Purpose> dgv_purposes)
         {
-            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayInputFile).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true, dgv_purposes)));
+            IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayInputFile).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name, dgv_purposes), visible(x.Name, true, dgv_purposes)));
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
@@ -200,14 +203,13 @@ namespace ProteoformSuiteGUI
         #region Private Methods
 
 
-        private static string header(string property_name)
+        private static string header(string property_name, IEnumerable<Purpose> dgv_purposes)
         {
             if (property_name == nameof(UniqueId)) return "File ID";
             if (property_name == nameof(complete_path)) return "File Path";
-            if (property_name == nameof(matchingCalibrationFile)) return "Matching Calibration File";
             if (property_name == nameof(biological_replicate)) return "Biological Replicate";
             if (property_name == nameof(TechnicalReplicate)) return "Technical Replicate";
-            if (property_name == nameof(lt_condition)) return Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
+            if (property_name == nameof(lt_condition)) return (Sweet.lollipop.neucode_labeled && !dgv_purposes.Contains(Purpose.CalibrationIdentification) && !dgv_purposes.Contains(Purpose.RawFile)) ? "NeuCode Light Condition" : "Condition";
             if (property_name == nameof(hv_condition)) return "NeuCode Heavy Condition";
             if (property_name == nameof(ContaminantDB)) return "Contaminant Database";
             return null;
@@ -215,14 +217,14 @@ namespace ProteoformSuiteGUI
 
         private static bool visible(string property_name, bool current, IEnumerable<Purpose> dgv_purposes)
         {
-            if (property_name == nameof(matchingCalibrationFile)) return dgv_purposes.Contains(Purpose.Calibration) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            if (property_name == nameof(Labeling)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            if (property_name == nameof(biological_replicate)) return dgv_purposes.Contains(Purpose.Quantification);
-            if (property_name == nameof(Fraction)) return dgv_purposes.Contains(Purpose.Quantification);
-            if (property_name == nameof(TechnicalReplicate)) return dgv_purposes.Contains(Purpose.Quantification);
-            if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification);
+            if (property_name == nameof(Labeling)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            if (property_name == nameof(biological_replicate)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            if (property_name == nameof(Fraction)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            if (property_name == nameof(TechnicalReplicate)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             if (property_name == nameof(hv_condition)) return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             if (property_name == nameof(ContaminantDB)) return dgv_purposes.Contains(Purpose.ProteinDatabase);
+            if (property_name == nameof(Quantitative)) return dgv_purposes.Contains(Purpose.RawFile);
             return current;
         }
 

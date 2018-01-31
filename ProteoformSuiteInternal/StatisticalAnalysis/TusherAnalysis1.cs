@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
             }
 
             if (define_histogram)
-                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
+                QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList), QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
 
             normalize_protoeform_intensities(satisfactoryProteoforms);
 
@@ -53,7 +53,8 @@ namespace ProteoformSuiteInternal
             conditionBiorep_sums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum());
             foreach (BiorepIntensity bi in allOriginalBiorepIntensities)
             {
-                double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value);
+                double norm_divisor = conditionBiorep_sums[new Tuple<string, string>(bi.condition, bi.biorep)] / 
+                    (Sweet.lollipop.neucode_labeled ? conditionBiorep_sums.Where(kv => kv.Key.Item2 == bi.biorep).Average(kv => kv.Value) : conditionBiorep_sums.Average(kv => kv.Value));
                 bi.intensity_sum = bi.intensity_sum / norm_divisor;
             }
 
@@ -243,8 +244,8 @@ namespace ProteoformSuiteInternal
             if (!Sweet.lollipop.useLocalFdrCutoff)
                 relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, Sweet.lollipop.satisfactoryProteoforms, flattenedPermutedRelativeDifferences, Sweet.lollipop.offsetTestStatistics);
             else
-                Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues1.significant = eP.quant.TusherValues1.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
-            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(this as TusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, analysis.GoAnalysis.minProteoformFoldChange, analysis.GoAnalysis.maxGoTermFDR, analysis.GoAnalysis.minProteoformIntensity);
+            Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, eP => { eP.quant.TusherValues1.significant = eP.quant.TusherValues1.roughSignificanceFDR <= Sweet.lollipop.localFdrCutoff; });
+            inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues1.significant), GoAnalysis);
             analysis.GoAnalysis.GO_analysis(inducedOrRepressedProteins);
         }
 

@@ -3,6 +3,9 @@ using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using Proteomics;
+
 
 namespace Test
 {
@@ -37,8 +40,8 @@ namespace Test
                 heavy.rt_apex = starter_rt;
                 light.accepted = true;
                 heavy.accepted = true;
-                ChargeState light_charge_state = new ChargeState(1, light.intensity_sum, light.weighted_monoisotopic_mass, 1.00727645D);
-                ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum, heavy.weighted_monoisotopic_mass, 1.00727645D);
+                ChargeState light_charge_state = new ChargeState(1, light.intensity_sum, light.weighted_monoisotopic_mass + 1.00727645D);
+                ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum, heavy.weighted_monoisotopic_mass + 1.00727645D);
                 light.charge_states = new List<ChargeState> { light_charge_state };
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
                 double mass_difference = heavy.weighted_monoisotopic_mass - light.weighted_monoisotopic_mass;
@@ -111,7 +114,6 @@ namespace Test
         [Test]
         public void unlabeled_proteoform_calculate_properties()
         {
-            Sweet.lollipop.min_num_bioreps = 0;
             Sweet.lollipop.neucode_labeled = false;
             List<IAggregatable> components = generate_unlabeled_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
@@ -262,7 +264,7 @@ namespace Test
 
         [Test]
         public void test_aggregate_copy()
-        {
+        { 
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -306,6 +308,317 @@ namespace Test
             Assert.AreEqual(e.hv_verification_components.Count, f.hv_verification_components.Count);
             Assert.AreNotEqual(e.biorepIntensityList.GetHashCode(), f.biorepIntensityList.GetHashCode());
             Assert.AreEqual(e.biorepIntensityList.Count, f.biorepIntensityList.Count);
+        }
+
+        [Test]
+        public void agg_proteoforms_meeting_criteria()
+        {
+            Sweet.lollipop = new Lollipop();
+            string anysingle = "Bioreps From Any Single Condition";
+            string any = "Bioreps From Any Condition";
+            string fromeach = "Bioreps From Each Condition";
+
+            List<string> conditions = new List<string> { "s", "ns" };
+            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ConstructorsForTesting.ExperimentalProteoform("E") };
+            Component c1 = new Component();
+            c1.input_file = new InputFile("somePath", Purpose.Identification);
+            c1.input_file.lt_condition = conditions[0];
+            c1.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c1);
+
+            List<ExperimentalProteoform> exps_out = new List<ExperimentalProteoform>();
+
+            //PASSES WHEN THERE ARE ENOUGH IN SPECIFIED CONDITIONS
+            //One biorep obs passes any-single-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 1);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //One biorep obs passes any-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 1);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //One biorep obs doesn't pass for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
+            Assert.AreEqual(0, exps_out.Count);
+
+
+            // DOESN'T PASS WHEN LESS THAN THRESHOLD
+            //One biorep obs doesn't pass 2 from any-single-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            //One biorep obs doesn't pass 2 from any-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            //One biorep obs doesn't pass 2 from for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            Component c2 = new Component();
+            c2.input_file = new InputFile("somePath", Purpose.Identification);
+            c2.input_file.lt_condition = conditions[1];
+            c2.input_file.biological_replicate = "100";
+            exps[0].aggregated.Add(c2);
+
+            //One biorep in each condition passes for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
+            Assert.AreEqual(1, exps_out.Count);
+
+
+            // DOESN'T PASS WHEN LESS THAN THRESHOLD IN SPECIFIC CONDITIONS UNLESS ANY-CONDITION
+            //One biorep obs in two different conditions doesn't pass 2 from any-single-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            //One biorep obs in two different conditions passes 2 from any-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //One biorep obs in two different conditions doesn't pass 2 from for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+
+            //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
+            foreach (var x in exps[0].aggregated)
+            {
+                x.input_file.lt_condition = "not_a_condition";
+            }
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(1, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+
+            //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
+            exps[0].aggregated.Clear();
+            Component c3 = new Component();
+            c3.input_file = new InputFile("somePath", Purpose.Identification);
+            c3.input_file.lt_condition = conditions[0];
+            c3.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c3);
+            Component c4 = new Component();
+            c4.input_file = new InputFile("somePath", Purpose.Identification);
+            c4.input_file.lt_condition = conditions[0];
+            c4.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c4);
+            Component c5 = new Component();
+            c5.input_file = new InputFile("somePath", Purpose.Identification);
+            c5.input_file.lt_condition = conditions[0];
+            c5.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c5);
+            Component c6 = new Component();
+            c6.input_file = new InputFile("somePath", Purpose.Identification);
+            c6.input_file.lt_condition = conditions[0];
+            c6.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c6);
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            Component c7 = new Component();
+            c7.input_file = new InputFile("somePath", Purpose.Identification);
+            c7.input_file.lt_condition = conditions[1];
+            c7.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c7);
+            Component c8 = new Component();
+            c8.input_file = new InputFile("somePath", Purpose.Identification);
+            c8.input_file.lt_condition = conditions[1];
+            c8.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c8);
+            Component c9 = new Component();
+            c9.input_file = new InputFile("somePath", Purpose.Identification);
+            c9.input_file.lt_condition = conditions[1];
+            c9.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c9);
+            Component c10 = new Component();
+            c10.input_file = new InputFile("somePath", Purpose.Identification);
+            c10.input_file.lt_condition = conditions[1];
+            c10.input_file.biological_replicate = "1";
+            exps[0].aggregated.Add(c10);
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(1, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+        }
+
+        [Test]
+        public void agg_proteoforms_meeting_criteria2()
+        {
+            Sweet.lollipop = new Lollipop();
+
+            string anysingle = "Biorep+Techreps From Any Single Condition";
+            string any = "Biorep+Techreps From Any Condition";
+            string fromeach = "Biorep+Techreps From Each Condition";
+            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ConstructorsForTesting.ExperimentalProteoform("E") };
+            List<string> conditions = new List<string> { "s", "ns" };
+            Component c1 = new Component();
+            c1.input_file = new InputFile("somePath", Purpose.Identification);
+            c1.input_file.lt_condition = conditions[0];
+            c1.input_file.biological_replicate = "1";
+            c1.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c1);
+            List<ExperimentalProteoform> exps_out = new List<ExperimentalProteoform>();
+
+            //PASSES WHEN THERE ARE ENOUGH IN SPECIFIED CONDITIONS
+            //One biorep+techrep obs passes any-single-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 1);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //Two biorep+techrep obs in single condition passes any-single-conditon test
+            Component c2 = new Component();
+            c2.input_file = new InputFile("somePath", Purpose.Identification);
+            c2.input_file.lt_condition = conditions[0];
+            c2.input_file.biological_replicate = "1";
+            c2.input_file.technical_replicate = "2";
+            exps[0].aggregated.Add(c2);
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //Two biorep+techrep obs in single condition passes any-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //Two biorep+techrep obs in single condition doesn't pass for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
+            Assert.AreEqual(0, exps_out.Count);
+
+
+            // DOESN'T PASS WHEN LESS THAN THRESHOLD
+            //Two biorep+techrep obs in single condition doesn't pass 3 from any-single-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
+            Assert.AreEqual(0, exps_out.Count);
+
+            //Two biorep+techrep obs in single condition doesn't pass 3 from any-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 3);
+            Assert.AreEqual(0, exps_out.Count);
+
+            //Two biorep+techrep obs in single condition  doesn't pass 2 from for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            Component c3 = new Component();
+            c3.input_file = new InputFile("somePath", Purpose.Identification);
+            c3.input_file.lt_condition = conditions[1];
+            c3.input_file.biological_replicate = "100";
+            c3.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c3);
+
+            //At least one biorep+techrep in each condition passes for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
+            Assert.AreEqual(1, exps_out.Count);
+
+
+            // DOESN'T PASS WHEN LESS THAN THRESHOLD IN SPECIFIC CONDITIONS UNLESS ANY-CONDITION
+            //Two and one biorep+techrep obs in two different conditions doesn't pass 3 from any-single-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
+            Assert.AreEqual(0, exps_out.Count);
+
+            //Two and one biorep+techrep obs in two different conditions passes 3 from any-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 3);
+            Assert.AreEqual(1, exps_out.Count);
+
+            //Two and one biorep+techrep obs in two different conditions doesn't pass 3 from for-each-conditon test
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 3);
+            Assert.AreEqual(0, exps_out.Count);
+
+
+            //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
+            foreach (var x in exps[0].aggregated) x.input_file.lt_condition = "not_a_condition";
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 3);
+            Assert.AreEqual(1, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 3);
+            Assert.AreEqual(0, exps_out.Count);
+
+
+
+            //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
+            exps[0].aggregated.Clear();
+            Component c4 = new Component();
+            c4.input_file = new InputFile("somePath", Purpose.Identification);
+            c4.input_file.lt_condition = conditions[0];
+            c4.input_file.biological_replicate = "1";
+            c4.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c4);
+            Component c5 = new Component();
+            c5.input_file = new InputFile("somePath", Purpose.Identification);
+            c5.input_file.lt_condition = conditions[0];
+            c5.input_file.biological_replicate = "1";
+            c5.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c5);
+            Component c6 = new Component();
+            c6.input_file = new InputFile("somePath", Purpose.Identification);
+            c6.input_file.lt_condition = conditions[0];
+            c6.input_file.biological_replicate = "1";
+            c6.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c6);
+            Component c7 = new Component();
+            c7.input_file = new InputFile("somePath", Purpose.Identification);
+            c7.input_file.lt_condition = conditions[0];
+            c7.input_file.biological_replicate = "1";
+            c7.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c7);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            Component c8 = new Component();
+            c8.input_file = new InputFile("somePath", Purpose.Identification);
+            c8.input_file.lt_condition = conditions[1];
+            c8.input_file.biological_replicate = "1";
+            c8.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c8);
+            Component c9 = new Component();
+            c9.input_file = new InputFile("somePath", Purpose.Identification);
+            c9.input_file.lt_condition = conditions[1];
+            c9.input_file.biological_replicate = "1";
+            c9.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c9);
+            Component c10 = new Component();
+            c10.input_file = new InputFile("somePath", Purpose.Identification);
+            c10.input_file.lt_condition = conditions[1];
+            c10.input_file.biological_replicate = "1";
+            c10.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c10);
+            Component c11 = new Component();
+            c11.input_file = new InputFile("somePath", Purpose.Identification);
+            c11.input_file.lt_condition = conditions[1];
+            c11.input_file.biological_replicate = "1";
+            c11.input_file.technical_replicate = "1";
+            exps[0].aggregated.Add(c11);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
+            Assert.AreEqual(0, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, any, 2);
+            Assert.AreEqual(1, exps_out.Count);
+
+            exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
+            Assert.AreEqual(0, exps_out.Count);
         }
     }
 }

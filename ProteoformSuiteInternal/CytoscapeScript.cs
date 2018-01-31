@@ -213,6 +213,7 @@ namespace ProteoformSuiteInternal
         public static string unmodified_theoretical_label = "theoretical";
         public static string modified_theoretical_label = "modified_theoretical";
         public static string gene_name_label = "gene_name";
+        public static string td_label = "topdown";
 
         //Other
         public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
@@ -265,7 +266,24 @@ namespace ProteoformSuiteInternal
                         );
                     }
                 }
+                foreach (TopDownProteoform t in families.SelectMany(f => f.experimental_proteoforms.Where(exp => exp.topdown_id)))
+                {
+                    string gene_name = t.gene_name.get_prefered_name(preferred_gene_label);
+                    if (gene_name != null)
+                    {
+                        edge_table.Rows.Add
+                         (
+                        get_proteoform_shared_name(t, node_label, double_rounding),
+                        t.lysine_count,
+                        t.gene_name.get_prefered_name(preferred_gene_label),
+                        "",
+                        ""
+                                                );
+                    }
+                }
             }
+
+
 
             return get_table_string(edge_table);
         }
@@ -301,7 +319,7 @@ namespace ProteoformSuiteInternal
                     layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).OrderBy(p => p.modified_mass);
                     break;
                 case 1: //mass-based spiral
-                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OrderBy(p => p.modified_mass));
+                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().OrderBy(p => p.modified_mass));
                     break;
             }
 
@@ -321,11 +339,13 @@ namespace ProteoformSuiteInternal
 
                     string node_type = quantitative != null && ep.quant.intensitySum == 0 ?
                         experimental_notQuantified_label :
+                        ep.topdown_id? 
+                        td_label :
                         experimental_label;
 
                     string total_intensity = quantitative != null ?
                         ep.quant.intensitySum == 0 ? mock_intensity : ((double)ep.quant.intensitySum).ToString() :
-                        ep.agg_intensity.ToString();
+                        ep.agg_intensity == 0 ? mock_intensity : ep.agg_intensity.ToString();
 
                     //Names and size
                     node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });
@@ -337,7 +357,7 @@ namespace ProteoformSuiteInternal
                         "Aggregated Mass = " + ep.agg_mass.ToString(),
                         "Aggregated Retention Time = " + ep.agg_rt.ToString(),
                         "Total Intensity = " + total_intensity.ToString(),
-                        "Aggregated Component Count = " + ep.aggregated.Count.ToString(),
+                        "Aggregated Component Count = " + (ep.topdown_id ? (ep as TopDownProteoform).topdown_hits.Count.ToString() : ep.aggregated.Count.ToString()),
                         Sweet.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
                         "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id,
                         "Abundant Component for Manual Validation of Identification Validation: " + ep.manual_validation_verification
@@ -347,7 +367,7 @@ namespace ProteoformSuiteInternal
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
                             "Q-Value = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.roughSignificanceFDR.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.roughSignificanceFDR.ToString() : ""),
-                            "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.average_log2fc.ToString() : ep.quant.logFoldChange.ToString()),
+                            "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.logfold2change.ToString() : ep.quant.tusherlogFoldChange.ToString()),
                             "Significant = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.significant.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.significant.ToString() : quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.significant.ToString() : ""),
                             Sweet.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
                             Sweet.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
@@ -360,7 +380,7 @@ namespace ProteoformSuiteInternal
                     else if (quantitative as TusherAnalysis2 != null && ep.quant.intensitySum != 0)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues2.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues2.denominatorIntensitySum).ToString(), ep.quant.TusherValues2.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative as Log2FoldChangeAnalysis != null && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allBftIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allBftIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative != null)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else
@@ -369,10 +389,11 @@ namespace ProteoformSuiteInternal
 
                 layout_rank++;
             }
-
             if (gene_centric_families)
             {
-                foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).Distinct())
+                foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).ToList().
+                    Concat(families.SelectMany(f => f.experimental_proteoforms.Where(pf => pf.topdown_id)).
+                    Select(t => t.gene_name.get_prefered_name(preferred_gene_label))).Distinct())
                 {
                     if (gene_name != null && quantitative != null)
                         node_table.Rows.Add(gene_name, gene_name_label, mock_intensity, "Other Gene Names: ", 0, "", "", "", "");
@@ -408,11 +429,12 @@ namespace ProteoformSuiteInternal
             if (p as ExperimentalProteoform != null)
             {
                 ExperimentalProteoform e = p as ExperimentalProteoform;
-                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
+                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_"  + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
-                    name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession 
-                          + " " + (e.ptm_set.ptm_combination.Count == 0 ? 
-                            "Unmodified" : 
+                    name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
+                          + " " + e.begin + "to" + e.end + " " +
+                          (e.ptm_set.ptm_combination.Count == 0 ?
+                            "Unmodified" :
                             String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
                 return name;
             }
@@ -618,9 +640,9 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = all_families.Count == 0 ? 0 : quantitative != null ?
+                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms.Where(e => !e.topdown_id)).Count() > 0 ? quantitative != null ?
                     (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
-                    all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
+                    all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity) : 1e6;
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
                 writer.WriteAttributeString("name", "nodeCustomGraphicsSizeSync");
@@ -660,6 +682,7 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>(not_quantified, experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
+                            new Tuple<string, string>(color_schemes[color_scheme][6], td_label),
                             new Tuple<string, string>(color_schemes[color_scheme][4], gene_name_label)
                             //new Tuple<string, string>(color_schemes[color_scheme][4], transcript_name_label)
                         });
