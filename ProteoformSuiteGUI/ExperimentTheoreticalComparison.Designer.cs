@@ -363,7 +363,6 @@
             this.label12.Size = new System.Drawing.Size(118, 13);
             this.label12.TabIndex = 3;
             this.label12.Text = "ET Relation Table Filter";
-            this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // tb_relationTableFilter
             // 

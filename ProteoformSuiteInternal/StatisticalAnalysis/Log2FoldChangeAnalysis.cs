@@ -50,14 +50,16 @@ namespace ProteoformSuiteInternal
             QuantitativeDistributions.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.condition_count, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
 
             // Use those values to impute missing ones
-            foreach(var pf in Sweet.lollipop.satisfactoryProteoforms) pf.quant.Log2FoldChangeValues.impute_biorep_intensities(pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Concat(pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities).ToList(), conditionsBioReps, numerator_condition, denominator_condition, induced_condition, QuantitativeDistributions.bkgdAverageIntensity, QuantitativeDistributions.bkgdStDev, sKnot_minFoldChange, Sweet.lollipop.useRandomSeed_quant, Sweet.lollipop.seeded);
+            foreach (var pf in Sweet.lollipop.satisfactoryProteoforms)
+            {
+                pf.quant.Log2FoldChangeValues.impute_biorep_intensities(pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Concat(pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities).ToList(), conditionsBioReps, numerator_condition, denominator_condition, induced_condition, QuantitativeDistributions.bkgdAverageIntensity, QuantitativeDistributions.bkgdStDev, sKnot_minFoldChange, Sweet.lollipop.useRandomSeed_quant, Sweet.lollipop.seeded);
+            }
             QuantitativeDistributions.defineSelectObservedWithImputedIntensityDistribution(Sweet.lollipop.satisfactoryProteoforms.SelectMany(pf => pf.quant.Log2FoldChangeValues.allIntensities.Values), QuantitativeDistributions.logSelectIntensityWithImputationHistogram);
 
             // Calculate log2 fold changes
             Parallel.ForEach(Sweet.lollipop.satisfactoryProteoforms, pf =>
             {
                 pf.quant.Log2FoldChangeValues.calcluate_statistics(Sweet.lollipop.numerator_condition, Sweet.lollipop.denominator_condition);
-                MathNet.Numerics.Distributions.StudentT asdf = new MathNet.Numerics.Distributions.StudentT();
                 int degrees_of_freedom = Sweet.lollipop.conditionsBioReps.Values.SelectMany(x => x).Count() - 2; //degrees of freedom for unpaired 2 samples t test = n1 + n2 - 2
                 pf.quant.Log2FoldChangeValues.pValue_uncorrected =  ExtensionMethods.Student2T(pf.quant.Log2FoldChangeValues.tTestStatistic, degrees_of_freedom); // using a two-tailed test. Null hypothesis is that our value x is equal to the mean. Alternative hypothesis is in either direction.
 

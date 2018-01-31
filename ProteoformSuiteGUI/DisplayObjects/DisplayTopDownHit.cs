@@ -106,9 +106,9 @@ namespace ProteoformSuiteGUI
             get { return h.score; }
         }
 
-        public string PFR
+        public string PFR_accession
         {
-            get { return h.pfr; }
+            get { return h.pfr_accession; }
         }
 
         #endregion Public Properties
@@ -154,6 +154,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(retention_time)) return "Retention Time";
             if (property_name == nameof(pscore)) return "P-Score";
             if (property_name == nameof(ptm_description)) return "PTM Description";
+            if (property_name == nameof(PFR_accession)) return "PFR Accession";
             return null;
         }
 

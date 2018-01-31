@@ -109,9 +109,9 @@ namespace ProteoformSuiteGUI
             get { return t.topdown_hits.Count; }
         }
 
-        public string PFR
+        public string PFR_accession
         {
-            get { return t.pfr; }
+            get { return t.pfr_accession; }
         }
 
         public string family_id
@@ -170,6 +170,7 @@ namespace ProteoformSuiteGUI
             if (name == nameof(manual_id)) return "Best Hit Info";
             if (name == nameof(family_id)) return "Family ID";
             if (name == nameof(mass_error)) return "Mass Error";
+            if (name == nameof(PFR_accession)) return "PFR Accession";
             return null;
         }
 

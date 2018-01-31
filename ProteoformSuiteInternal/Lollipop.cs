@@ -362,10 +362,10 @@ namespace ProteoformSuiteInternal
             //get topdown hits that meet criteria
             List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
 
-            List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
-            Parallel.ForEach(PFRs, pfr =>
+            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
+            Parallel.ForEach(unique_proteoform_ids, pfr =>
             {
-                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr == pfr).ToList();
+                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr_accession == pfr).ToList();
                 List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
                 //aggregate to td hit w/ highest c-score as root - 1st average for retention time
                 while (hits_by_pfr.Count > 0)
@@ -400,7 +400,7 @@ namespace ProteoformSuiteInternal
         //convert unlabeled mass to neucode light mass based on lysine count (used for topdown identifications)
         public double get_neucode_mass(double unlabeled_mass, int lysine_count)
         {
-            return (unlabeled_mass - lysine_count * 128.094963 + lysine_count * 136.109162);
+            return unlabeled_mass - lysine_count * 128.094963 + lysine_count * 136.109162;
         }
 
         #endregion TOPDOWN 
@@ -452,7 +452,7 @@ namespace ProteoformSuiteInternal
             {
                 community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => e.topdown_id ? new TopDownProteoform(e as TopDownProteoform) : new ExperimentalProteoform(e)).ToArray();
             }
-           if(get_files(input_files, Purpose.Quantification).Count() > 0)
+           if (get_files(input_files, Purpose.Quantification).Count() > 0)
             {
                 assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             }
@@ -506,7 +506,7 @@ namespace ProteoformSuiteInternal
         
         public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
-            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count()).ThenBy(t => t.agg_mass))
+            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
             {
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
@@ -1171,7 +1171,12 @@ namespace ProteoformSuiteInternal
                                 //determine component and td hit shifts
                                 determine_shifts(raw_file);
                                 //calibrate component xlsx files
-                                foreach (InputFile f in input_files.Where(f => f.lt_condition == raw_file.lt_condition && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == raw_file.biological_replicate && f.fraction == raw_file.fraction && f.technical_replicate == raw_file.technical_replicate)) Calibration.calibrate_components_in_xlsx(f);
+                                foreach (InputFile f in input_files.Where(f => f.lt_condition == raw_file.lt_condition && f.purpose == Purpose.CalibrationIdentification 
+                                && f.biological_replicate == raw_file.biological_replicate && f.fraction == raw_file.fraction 
+                                && f.technical_replicate == raw_file.technical_replicate))
+                                {
+                                    Calibration.calibrate_components_in_xlsx(f);
+                                }
                             }
                             else filenames_did_not_calibrate.Add(raw_file.filename);
                         }
@@ -1180,7 +1185,8 @@ namespace ProteoformSuiteInternal
             }
             if (calibrate_td_files)
             {
-                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown && td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
+                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown &&
+                td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
                 {
                     Calibration.calibrate_td_hits_file(file);
                 }

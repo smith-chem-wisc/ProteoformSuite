@@ -52,7 +52,7 @@ namespace ProteoformSuiteGUI
             mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
             tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
-            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr).Distinct().Count().ToString();
+            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
         }
 
         public void RunTheGamut(bool full_run)

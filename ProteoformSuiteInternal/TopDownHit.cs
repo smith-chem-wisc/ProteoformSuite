@@ -26,7 +26,7 @@ namespace ProteoformSuiteInternal
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
-        public string pfr { get; set; }
+        public string pfr_accession { get; set; }
 
         //for mass calibration
         public string biological_replicate { get; set; } = "";
@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
 
         public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score)
         {
-            this.pfr = pfr;
+            this.pfr_accession = pfr;
             this.file = file;
             this.tdResultType = tdResultType;
             this.accession = accession;
@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
             List<double> aaMasses = new List<double>();
             for (int i = 0; i < pForm.Length; i++)
             {
-              if(aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+              if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
             }
             return proteoformMass + aaMasses.Sum();
         }
