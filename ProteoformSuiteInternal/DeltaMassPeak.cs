@@ -61,15 +61,15 @@ namespace ProteoformSuiteInternal
             {
                 List<PtmSet> candidates = (are_positive_candidates ? positive_candidates : new List<PtmSet>()).Concat(are_negative_candidates ? negative_candidates : new List<PtmSet>()).ToList();
                 possiblePeakAssignments = candidates.Where(c => RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
-                    Math.Abs(DeltaMass - c.mass) <= 0.05 :
-                    Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= 0.05).ToList();
+                    Math.Abs(DeltaMass - c.mass) <= (grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ? Sweet.lollipop.peak_width_base_et  : Sweet.lollipop.peak_width_base_ee ) :
+                    Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= (grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ? Sweet.lollipop.peak_width_base_et : Sweet.lollipop.peak_width_base_ee )).ToList();
             }
             else
             {
                 possiblePeakAssignments = new List<PtmSet>();
             }
 
-            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => 
+            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.OrderBy(p => p.ptm_rank_sum).Select(ptmset => 
                 String.Join(";", ptmset.ptm_combination.Select(ptm => 
                     Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id))).Distinct()) + "]";
         }
@@ -108,6 +108,7 @@ namespace ProteoformSuiteInternal
 
         public int count_nearby_decoys(List<ProteoformRelation> all_relations)
         {
+            if (all_relations.Count == 0) return 0;
             double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? 
                 DeltaMass - Sweet.lollipop.peak_width_base_et / 2 : 
                 DeltaMass - Sweet.lollipop.peak_width_base_ee / 2;

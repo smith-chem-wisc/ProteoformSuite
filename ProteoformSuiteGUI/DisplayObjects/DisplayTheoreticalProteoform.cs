@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
+
 namespace ProteoformSuiteGUI
 {
     public class DisplayTheoreticalProteoform : DisplayObject
@@ -108,6 +109,16 @@ namespace ProteoformSuiteGUI
         {
             get { return t.goTerm_IDs; }
         }
+        
+        public string groupedAccessions
+        {
+            get { return String.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
+        }
+
+        public bool topdown_theoretical
+        {
+            get { return t.topdown_theoretical;  }
+        }
 
         #endregion Public Properties
 
@@ -135,7 +146,7 @@ namespace ProteoformSuiteGUI
             IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayTheoreticalProteoform).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
-
+        
         #endregion
 
         #region Private Methods
@@ -149,6 +160,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(lysine_count)) return "Lysine Count";
             if (property_name == nameof(goTerm_IDs)) return "GO Term IDs";
             if (property_name == nameof(gene_name)) return "Gene Name";
+            if (property_name == nameof(groupedAccessions)) return "Grouped Accessions";
+            if (property_name == nameof(topdown_theoretical)) return "Top-Down Theoretical";
             return null;
         }
 

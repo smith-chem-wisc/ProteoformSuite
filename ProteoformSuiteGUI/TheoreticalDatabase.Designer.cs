@@ -186,6 +186,7 @@
             // 
             this.cmb_loadTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmb_loadTable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_loadTable.Enabled = false;
             this.cmb_loadTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_loadTable.FormattingEnabled = true;
             this.cmb_loadTable.Location = new System.Drawing.Point(0, 0);

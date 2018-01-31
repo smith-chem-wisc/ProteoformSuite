@@ -19,15 +19,13 @@ namespace ProteoformSuiteGUI
         ///    b. Data processing
         ///    c. Fill the tables figures
         /// </summary>
-        void RunTheGamut();
+        void RunTheGamut(bool full_run);
 
         void ClearListsTablesFigures(bool clear_following_forms);
 
         void InitializeParameterSet();
 
         void FillTablesAndCharts();
-
-        List<DataGridView> GetDGVs();
 
         List<DataTable> DataTables { get; }
         List<DataTable> SetTables();

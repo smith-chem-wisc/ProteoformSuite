@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -35,7 +37,7 @@ namespace ProteoformSuiteInternal
 
         public List<BiorepTechrepIntensity> biorepTechrepIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
 
-        public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>(); 
+       // public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>();
 
         public QuantitativeProteoformValues quant { get; set; }
 
@@ -49,11 +51,19 @@ namespace ProteoformSuiteInternal
 
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
 
-        public string manual_validation_id { get; set; }
+        public string manual_validation_id { get; set; } = "";
 
-        public string manual_validation_verification { get; set; }
+        public string manual_validation_verification { get; set; } = "";
 
-        public string manual_validation_quant { get; set; }
+        public string manual_validation_quant { get; set; } = "";
+
+        public bool topdown_id { get; set; }
+
+        public bool adduct { get; set; } 
+
+        public bool ambiguous { get; set; }
+
+        public double mass_error { get; set; }
 
         #endregion Public Properties
 
@@ -162,6 +172,21 @@ namespace ProteoformSuiteInternal
 
         #endregion
 
+        #region Public Methods
+
+        public double calculate_mass_error()
+        {
+           string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence
+                    .Substring(begin < linked_proteoform_references.First().begin? 0 : begin - linked_proteoform_references.First().begin,
+                    1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin ));
+            if (begin < linked_proteoform_references.First().begin) sequence = "M" + sequence;
+            double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
+            return agg_mass - theoretical_mass;
+        }
+
+        #endregion
+
+
         #region Aggregation Public Methods
 
         public void aggregate()
@@ -207,7 +232,7 @@ namespace ProteoformSuiteInternal
             agg_rt = aggregated.Sum(c => c.rt_apex * c.intensity_sum / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
-            accepted = aggregated.Count >= Sweet.lollipop.min_agg_count && aggregated.Select(c => c.input_file.biological_replicate).Distinct().Count() >= Sweet.lollipop.min_num_bioreps;
+            accepted = true;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
@@ -216,7 +241,7 @@ namespace ProteoformSuiteInternal
         //impact of this difference as of 160812. -AC
         public bool includes(IAggregatable candidate, IAggregatable root)
         {
-            return tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate, root.weighted_monoisotopic_mass)
+            return tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate.weighted_monoisotopic_mass, root.weighted_monoisotopic_mass)
                 && (candidate as NeuCodePair == null || tolerable_lysCt(candidate as NeuCodePair, (root as NeuCodePair).lysine_count));
         }
 
@@ -228,7 +253,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Aggregation Public Methods
-
         #region Aggregation Private Methods
 
         private bool tolerable_rt(IAggregatable candidate, double rt_apex)
@@ -243,7 +267,7 @@ namespace ProteoformSuiteInternal
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
-        private bool tolerable_mass(IAggregatable candidate, double corrected_mass)
+        private bool tolerable_mass(double candidate_mass, double corrected_mass)
         {
             foreach (int missed_mono_count in Sweet.lollipop.missed_monoisotopics_range)
             {
@@ -252,7 +276,7 @@ namespace ProteoformSuiteInternal
                 double mass_tolerance = shifted_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                 double low = shifted_mass - mass_tolerance;
                 double high = shifted_mass + mass_tolerance;
-                bool tolerable_mass = candidate.weighted_monoisotopic_mass >= low && candidate.weighted_monoisotopic_mass <= high;
+                bool tolerable_mass = candidate_mass >= low && candidate_mass <= high;
                 if (tolerable_mass)
                     return true; //Return a true result immediately; acts as an OR between these conditions
             }
@@ -301,7 +325,6 @@ namespace ProteoformSuiteInternal
 
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
             List<BiorepTechrepIntensity> biotechIntensityList = new List<BiorepTechrepIntensity>();
-            List<BiorepFractionTechrepIntensity> bftIntensityList = new List<BiorepFractionTechrepIntensity>();
 
             foreach (string condition in ltConditionStrings.Concat(hvConditionStrings).Distinct().ToList())
             {
@@ -309,15 +332,12 @@ namespace ProteoformSuiteInternal
                 List<InputFile> files = quants_from_condition.Select(x => x.input_file).ToList();
                 List<string> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
                 biorepIntensityList.AddRange(bioreps.Select(b => new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum))));
-                List<Tuple<string, string, string>> bfts = quants_from_condition.Select(c => new Tuple<string, string, string>(c.input_file.biological_replicate, c.input_file.fraction, c.input_file.technical_replicate)).Distinct().ToList();
-                bftIntensityList.AddRange(bfts.Select(x => new BiorepFractionTechrepIntensity(files.FirstOrDefault(f => f.biological_replicate == x.Item1 && f.fraction == x.Item2 && f.technical_replicate == x.Item3), condition, false, quants_from_condition.Where(q => q.input_file.biological_replicate == x.Item1 && q.input_file.fraction == x.Item2 && q.input_file.technical_replicate == x.Item3).Sum(q => q.intensity_sum))));
                 List<Tuple<string, string>> biotechs = quants_from_condition.Select(c => new Tuple<string, string>(c.input_file.biological_replicate, c.input_file.technical_replicate)).Distinct().ToList();
                 biotechIntensityList.AddRange(biotechs.Select(x => new BiorepTechrepIntensity(false, x.Item1, condition, x.Item2, quants_from_condition.Where(c => c.input_file.biological_replicate == x.Item1 && c.input_file.technical_replicate == x.Item2).Sum(asdf => asdf.intensity_sum))));
             }
 
             this.biorepIntensityList = biorepIntensityList;
             this.biorepTechrepIntensityList = biotechIntensityList;
-            this.bftIntensityList = bftIntensityList;
             return biorepIntensityList;
         }
 
@@ -327,16 +347,19 @@ namespace ProteoformSuiteInternal
 
         public void shift_masses(int shift, bool neucode_labeled)
         {
-            foreach (IAggregatable c in aggregated)
+            if (!topdown_id)
             {
-                if (neucode_labeled)
+                foreach (IAggregatable c in aggregated)
                 {
-                    (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                    (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                }
-                else
-                {
-                    (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    if (neucode_labeled)
+                    {
+                        (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    }
+                    else
+                    {
+                        (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    }
                 }
             }
 

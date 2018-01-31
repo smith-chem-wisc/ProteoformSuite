@@ -147,7 +147,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } }
             };
@@ -158,6 +158,8 @@ namespace Test
             Sweet.lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
+            pf2.begin = 1;
+            pf2.end = 4;
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0, TestContext.CurrentContext.TestDirectory);
             pr1.Accepted = true;
@@ -187,15 +189,15 @@ namespace Test
         public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals()
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
-            ProteoformCommunity community = new ProteoformCommunity();
             Sweet.lollipop = new Lollipop();
+            ProteoformCommunity community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = community;
             Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
             {
                 { "unmodified", new List<Modification> { ConstructorsForTesting.get_modWithMass("unmodified", 0) } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
             };
-
+             
             Sweet.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
             Sweet.lollipop.mod_rank_sum_threshold = 2;
             Sweet.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Sweet.lollipop.modification_ranks, 1);
@@ -298,6 +300,7 @@ namespace Test
         [Test]
         public void test_construct_one_proteform_family_from_ET_with_two_theoretical_pf_groups_with_same_accession()
         {
+            Sweet.lollipop = new Lollipop();
             Lollipop.gene_centric_families = false;
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
@@ -330,6 +333,9 @@ namespace Test
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3", 1040, 8, true);
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4", 1050, 5, true);
             TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("t1", 1000, 5);
+            t1.sequence = "ASDF";
+            t1.begin = 1;
+            t1.end = 4;
             TheoreticalProteoform decoy1 = ConstructorsForTesting.make_a_theoretical("Decoy1", 1020, 5);
 
             TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 0 });
@@ -399,8 +405,60 @@ namespace Test
         }
 
         [Test]
+        public void construct_families_with_or_without_td_nodes()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms(-100);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            foreach (ProteoformRelation pr in Sweet.lollipop.et_relations) pr.set_nearby_group(Sweet.lollipop.et_relations, Sweet.lollipop.et_relations.Select(r => r.InstanceId).ToList());
+            Sweet.lollipop.min_peak_count_et = 1;
+            Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
+
+            //include td nodes
+            Sweet.lollipop.clear_all_families();
+            Sweet.lollipop.construct_target_and_decoy_families();
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.families.Count);
+            Sweet.lollipop.target_proteoform_community.families = Sweet.lollipop.target_proteoform_community.families.OrderBy(f => f.proteoforms.Count).ToList();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.families[0].proteoforms.Count);
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.families[1].proteoforms.Count);
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.families[2].proteoforms.Count);
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null));
+        }
+
+        public static ProteoformCommunity construct_community_with_td_proteoforms(int community_number)
+        {
+            Sweet.lollipop.maximum_missed_monos = 1;
+            ProteoformCommunity community = new ProteoformCommunity();
+            // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
+            pf1.agg_rt = 45;
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("A2", 1001.0, 1, true);
+            pf2.agg_rt = 85;
+            TopDownProteoform td1 = ConstructorsForTesting.TopDownProteoform("DIFFACCESSION_2", 1000.0, 45);
+            TopDownProteoform td2 = ConstructorsForTesting.TopDownProteoform("ACCESSION_2", 1001.0, 85);
+
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("ACCESSION", 1000.0, 1);
+            TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("ACCESSION2", 1000.0, 1);
+            t2.topdown_theoretical = true;
+
+            TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 0 });
+            //need to make theoretical accession database
+            community.community_number = community_number;
+            Sweet.lollipop.theoretical_database.theoreticals_by_accession.Add(community_number, new Dictionary<string, List<TheoreticalProteoform>>());
+            Sweet.lollipop.theoretical_database.theoreticals_by_accession[community_number].Add(t1.accession, new List<TheoreticalProteoform>() { t1 });
+            Sweet.lollipop.theoretical_database.theoreticals_by_accession[community_number].Add(t2.accession, new List<TheoreticalProteoform>() { t2 });
+
+            community.theoretical_proteoforms = new List<TheoreticalProteoform>() { t1, t2 }.ToArray();
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform> { td1, td2 };
+            community.experimental_proteoforms = new List<ExperimentalProteoform>(Sweet.lollipop.topdown_proteoforms) { pf1, pf2 }.ToArray();
+            return community;
+        }
+
+        [Test]
         public void test_results_summary_with_peaks()
         {
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[0];
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
@@ -423,6 +481,7 @@ namespace Test
         [Test]
         public void community_clear_et()
         {
+            Sweet.lollipop = new Lollipop();
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
             Assert.IsNotEmpty(Sweet.lollipop.et_relations);
             Assert.IsNotEmpty(Sweet.lollipop.ee_relations);
@@ -479,10 +538,37 @@ namespace Test
         }
 
         [Test]
+        public void community_clear_td()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms(-100);
+            Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());
+            Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"] = construct_community_with_td_proteoforms(0);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            foreach (ProteoformRelation pr in Sweet.lollipop.et_relations) pr.set_nearby_group(Sweet.lollipop.et_relations, Sweet.lollipop.et_relations.Select(r => r.InstanceId).ToList());
+            Sweet.lollipop.min_peak_count_et = 1;
+            Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
+            Sweet.lollipop.target_proteoform_community.construct_families();
+            Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].construct_families();
+            Sweet.lollipop.top_down_hits = new List<TopDownHit>() { new TopDownHit() };
+            Assert.AreEqual(1, Sweet.lollipop.top_down_hits.Count);
+            Assert.IsNotEmpty(Sweet.lollipop.topdown_proteoforms);
+            Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));
+            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Sweet.lollipop.clear_td();
+            Assert.IsEmpty(Sweet.lollipop.topdown_proteoforms);
+            Assert.IsFalse(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));
+            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+        }
+
+        [Test]
         public void community_clear_families()
         {
             Sweet.lollipop = new Lollipop();
             ProteoformCommunity target = construct_two_families_with_potentially_colliding_theoreticals();
+            Sweet.lollipop = new Lollipop();
             ProteoformCommunity decoy = construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = target;
             Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", decoy);
@@ -493,6 +579,27 @@ namespace Test
             Sweet.lollipop.clear_all_families();
             Assert.IsEmpty(Sweet.lollipop.target_proteoform_community.families);
             Assert.True(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.All(p => p.family == null));
+            Assert.IsEmpty(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].families);
+            Assert.True(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms.All(p => p.family == null));
+
+            Sweet.lollipop = new Lollipop();
+            target = construct_community_with_td_proteoforms(-100);
+            decoy = construct_community_with_td_proteoforms(0);
+            target.clear_families();
+            target.construct_families();
+            decoy.clear_families();
+            decoy.construct_families();
+            Sweet.lollipop.target_proteoform_community = target;
+            Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", decoy);
+            Assert.IsNotEmpty(Sweet.lollipop.target_proteoform_community.families);
+            Assert.True(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Any(p => p.family != null));
+            Assert.True(Sweet.lollipop.topdown_proteoforms.Any(p => p.family != null));
+            Assert.IsNotEmpty(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].families);
+            Assert.True(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms.Any(p => p.family != null));
+            Sweet.lollipop.clear_all_families();
+            Assert.IsEmpty(Sweet.lollipop.target_proteoform_community.families);
+            Assert.True(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.All(p => p.family == null));
+            Assert.True(Sweet.lollipop.topdown_proteoforms.All(p => p.family == null));
             Assert.IsEmpty(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].families);
             Assert.True(Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms.All(p => p.family == null));
         }

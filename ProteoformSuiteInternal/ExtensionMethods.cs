@@ -42,20 +42,6 @@ namespace ProteoformSuiteInternal
             return items.GroupBy(property).Select(x => x.First());
         }
 
-        public static void Shuffle<T>(this IList<T> list) //this randomly shuffles a list. useful for permutations
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                //int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
-                int k = SafeRandom.GetNext(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-        }
-
         public static void Shuffle<T>(this Random rng, T[] array)
         {
             int n = array.Length;

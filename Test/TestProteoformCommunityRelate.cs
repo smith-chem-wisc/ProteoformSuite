@@ -184,6 +184,7 @@ namespace Test
 
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
             test_community = new ProteoformCommunity();
+            Sweet.lollipop.ee_relations.Clear();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true),
                 ConstructorsForTesting.ExperimentalProteoform("A2", 2000, 2, true),

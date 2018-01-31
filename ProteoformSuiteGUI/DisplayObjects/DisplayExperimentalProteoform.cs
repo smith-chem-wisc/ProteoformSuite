@@ -91,15 +91,46 @@ namespace ProteoformSuiteGUI
 
         public string ptm_description
         {
-            get { return e.ptm_description; }
+            get { return e.linked_proteoform_references != null ? e.ptm_description : ""; }
         }
 
+        public int Begin
+        {
+            get { return e.begin; }
+        }
+
+        public int End
+        {
+            get { return e.end; }
+        }
         public string gene_name
         {
             get
             {
                 return e.gene_name != null ?
+                    (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != null ?
                     e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) :
+                    "")
+                    :  "";
+            }
+        }
+
+        public string theoretical_accession
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                   (e.linked_proteoform_references[0] as TheoreticalProteoform).accession:
+                    "";
+            }
+        }
+
+        public string Fragment
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                   (e.linked_proteoform_references[0] as TheoreticalProteoform).fragment :
                     "";
             }
         }
@@ -117,6 +148,47 @@ namespace ProteoformSuiteGUI
         public string manual_validation_quant
         {
             get { return e.manual_validation_quant; }
+        }
+
+        //needs to be at same time and mass
+        public bool topdown_id
+        {
+            get { return e.topdown_id; }
+        }
+
+        public double mass_error
+        {
+            get { return e.mass_error; }
+        }
+
+        public bool Adduct
+        {
+            get
+            {
+                return e.adduct;
+            }
+        }
+
+        public bool Ambiguous
+        {
+            get
+            {
+                return e.ambiguous;
+            }
+        }
+
+        public bool Contaminant
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ? (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant 
+                    : false;
+            }
+        }
+
+        public string family_id
+        {
+            get { return e.family != null ? e.family.family_id.ToString() : ""; }
         }
 
         #endregion Public Properties
@@ -154,7 +226,7 @@ namespace ProteoformSuiteGUI
         {
             if (property_name == nameof(Accession)) return "Experimental Proteoform ID";
             if (property_name == nameof(agg_mass)) return "Aggregated Mass";
-            if (property_name == nameof(agg_intensity)) return "Aggregated Intensity";
+            if (property_name == nameof(agg_intensity)) return "Aggregated Deconvolution Intensity";
             if (property_name == nameof(agg_rt)) return "Aggregated RT";
             if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
             if (property_name == nameof(heavy_verification_count)) return "Heavy Verification Component Count";
@@ -165,9 +237,13 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
             if (property_name == nameof(ptm_description)) return "PTM Description";
             if (property_name == nameof(gene_name)) return "Gene Name";
+            if (property_name == nameof(theoretical_accession)) return "Theoretical Accession";
             if (property_name == nameof(manual_validation_id)) return "Abundant Component for Manual Validation of Identification";
             if (property_name == nameof(manual_validation_verification)) return "Abundant Component for Manual Validation of Identification Verification";
             if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
+            if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
+            if (property_name == nameof(family_id)) return "Family ID";
+            if (property_name == nameof(mass_error)) return "Mass Error";
             return null;
         }
 
@@ -182,6 +258,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(agg_mass)) return "0.0000";
             if (property_name == nameof(agg_intensity)) return "0.0000";
             if (property_name == nameof(agg_rt)) return "0.00";
+            if (property_name == nameof(mass_error)) return "0.0000";
             return null;
         }
 

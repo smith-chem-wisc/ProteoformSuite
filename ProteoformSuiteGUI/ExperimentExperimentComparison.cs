@@ -49,18 +49,13 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.target_proteoform_community.has_e_and_t_proteoforms; // Need the ptm dictionary for peak assignment from theoretical database
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ef();
             Sweet.lollipop.ee_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.ee_relations, Sweet.lollipop.ef_relations);
             FillTablesAndCharts();
-        }
-
-        public List<DataGridView> GetDGVs()
-        {
-            return new List<DataGridView> { dgv_EE_Relations, dgv_EE_Peaks };
         }
 
         public List<DataTable> SetTables()
@@ -97,7 +92,10 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    sweet.ClearListsTablesFigures(false);
+                    if (sweet as TopDown == null)
+                    {
+                        sweet.ClearListsTablesFigures(false);
+                    }
                 }
             }
         }
@@ -111,6 +109,8 @@ namespace ProteoformSuiteGUI
             DisplayDeltaMassPeak.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
+            if (cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            else ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += EE_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
@@ -176,7 +176,7 @@ namespace ProteoformSuiteGUI
             if (ReadyToRunTheGamut())
             {
                 Cursor = Cursors.WaitCursor;
-                RunTheGamut();
+                RunTheGamut(false);
                 xMaxEE.Value = Convert.ToDecimal(Sweet.lollipop.ee_max_mass_difference);
                 Cursor = Cursors.Default;
             }

@@ -35,27 +35,45 @@ namespace ProteoformSuiteGUI
             return true;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
-
             Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
-                (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
+            (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
+            (MdiParent as ProteoformSweet).aggregatedProteoforms.InitializeParameterSet();
 
-            Parallel.Invoke
-            (
-                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification),
-                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification)
-            );
+            if (cb_deconvolute.Checked)
+            {
+                Parallel.Invoke
+                (
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => !f.quantitative).ToList(), Sweet.lollipop.raw_experimental_components, Purpose.RawFile, true),
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.quantitative).ToList(), Sweet.lollipop.raw_quantification_components, Purpose.RawFile, true)
+                );
+            }
+            else
+            {
+                Parallel.Invoke
+                (
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
+                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
+                );
+            }
 
             FillTablesAndCharts();
         }
 
         public void InitializeParameterSet()
         {
-            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
+            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0 
+                || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.RawFile).Where(f => f.quantitative).Count() > 0;
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
+            nUD_min_RT.Value = (decimal)Sweet.lollipop.min_RT;
+            nUD_max_RT.Value = (decimal)Sweet.lollipop.max_RT;
+            nUD_agg_tolerance.Value = (decimal)Sweet.lollipop.aggregation_tolerance_ppm;
+            nUD_decon_tolerance.Value = (decimal)Sweet.lollipop.deconvolution_tolerance_ppm;
+            nUD_max_cs.Value = Sweet.lollipop.max_assumed_cs;
+            nUD_min_num_CS.Value = Sweet.lollipop.min_num_cs_deconvolution_component;
+            nUD_min_cs.Value = Sweet.lollipop.min_assumed_cs;
             FillTablesAndCharts();
         }
 
@@ -73,7 +91,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as TheoreticalDatabase == null)
+                    if (sweet as TopDown == null)
                         sweet.ClearListsTablesFigures(false);
                 }
             }
@@ -85,11 +103,6 @@ namespace ProteoformSuiteGUI
             dgv_fileList.DataSource = null;
             dgv_rawComponents.DataSource = null;
             dgv_chargeStates.DataSource = null;
-        }
-
-        public List<DataGridView> GetDGVs()
-        {
-            return new List<DataGridView> { dgv_rawComponents };
         }
 
         public List<DataTable> SetTables()
@@ -120,7 +133,7 @@ namespace ProteoformSuiteGUI
 
             NeuCodePairs pairs_form = (MdiParent as ProteoformSweet).neuCodePairs;
             if (Sweet.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
-                pairs_form.RunTheGamut();
+                pairs_form.RunTheGamut(false);
         }
 
         #endregion Public Methods
@@ -157,7 +170,7 @@ namespace ProteoformSuiteGUI
         private void bt_recalculate_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
-            RunTheGamut();
+            RunTheGamut(false);
             Cursor = Cursors.Default;
         }
 
@@ -166,6 +179,59 @@ namespace ProteoformSuiteGUI
         private void nUD_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.raw_component_mass_tolerance = Convert.ToDouble(nUD_mass_tolerance.Value);
+        }
+
+        private void nUD_min_RT_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_RT = Convert.ToDouble(nUD_min_RT.Value);
+        }
+
+        private void nUD_max_RT_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_RT = Convert.ToDouble(nUD_max_RT.Value);
+        }
+
+        private void nUD_agg_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.aggregation_tolerance_ppm = Convert.ToDouble(nUD_agg_tolerance.Value);
+        }
+
+        private void nUD_decon_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.deconvolution_tolerance_ppm = Convert.ToDouble(nUD_decon_tolerance.Value);
+        }
+
+        private void nUD_max_cs_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_assumed_cs = Convert.ToInt32(nUD_max_cs.Value);
+        }
+
+        private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_num_cs_deconvolution_component = Convert.ToInt32(nUD_min_num_CS.Value);
+        }
+
+        private void cb_deconvolute_CheckedChanged(object sender, EventArgs e)
+        {
+            nUD_min_RT.Visible = cb_deconvolute.Checked;
+            nUD_max_RT.Visible = cb_deconvolute.Checked;
+            nUD_agg_tolerance.Visible = cb_deconvolute.Checked;
+            nUD_decon_tolerance.Visible = cb_deconvolute.Checked;
+            nUD_max_cs.Visible = cb_deconvolute.Checked;
+            nUD_min_num_CS.Visible = cb_deconvolute.Checked;
+            nUD_min_cs.Visible = cb_deconvolute.Checked;
+            label2.Visible = cb_deconvolute.Checked;
+            label3.Visible = cb_deconvolute.Checked;
+            label4.Visible = cb_deconvolute.Checked;
+            label5.Visible = cb_deconvolute.Checked;
+            label6.Visible = cb_deconvolute.Checked;
+            label8.Visible = cb_deconvolute.Checked;
+            label10.Visible = cb_deconvolute.Checked;
+        }
+
+        private void nUD_min_cs_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_assumed_cs = Convert.ToInt32(nUD_min_cs.Value);
         }
     }
 }

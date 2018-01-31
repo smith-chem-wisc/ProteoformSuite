@@ -175,8 +175,8 @@ namespace Test
             List<Component> components = neucodes.Select(nc => nc.neuCodeLight).Concat(neucodes.Select(nc => nc.neuCodeHeavy)).ToList();
             List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
 
-            //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
-            //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
+            //Must use Sweet.lol.remaining_components because ThreadStart only uses void methods
+            //Must use Sweet.lol.remaining_components because ThreadStart only uses void methods
             Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
             List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.aggregate_proteoforms(true, neucodes, components, quant_components, 0);
@@ -200,7 +200,7 @@ namespace Test
             List<Component> components = neucodes.Select(nc => nc.neuCodeLight).Concat(neucodes.Select(nc => nc.neuCodeHeavy)).ToList();
             List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
 
-            //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
+            //Must use Sweet.lol.remaining_components because ThreadStart only uses void methods
             Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> { { "1", new ProteoformCommunity() } };
             Sweet.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
@@ -226,7 +226,6 @@ namespace Test
         [Test]
         public void unlabeled_agg()
         {
-            Sweet.lollipop.min_num_bioreps = 0;
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
 

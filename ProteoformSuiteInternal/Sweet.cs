@@ -145,6 +145,17 @@ namespace ProteoformSuiteInternal
                 field.SetValue(lollipop, Convert.ChangeType(value, type));
             }
 
+            List<FieldInfo> fields = lollipop_fields.Where(f => !f.IsLiteral &&
+                   (f.FieldType == typeof(int) ||
+                   f.FieldType == typeof(double) ||
+                   f.FieldType == typeof(string) ||
+                   f.FieldType == typeof(decimal) ||
+                   f.FieldType == typeof(bool))
+                   && !setting_elements.Any(s => GetAttribute(s, "field_name") == f.Name)).ToList();
+            if (fields.Count > 0)
+            {
+                warning_message += "The following parameters did not have a setting specified: " + String.Join(", ", fields.Select(f => f.Name)) + Environment.NewLine;
+            }
             lollipop.results_folder = !lollipop.results_folder.StartsWith(".") ? lollipop.results_folder : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), lollipop.results_folder));
 
             foreach (XElement action in action_elements)
@@ -217,11 +228,12 @@ namespace ProteoformSuiteInternal
             {
                 string filestring = findchangefile.Match(change_file).Groups[2].ToString();
                 string filepath = !filestring.StartsWith(".") ? filestring : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), filestring));
+                string filename = Path.GetFileNameWithoutExtension(filepath);
                 string property = findproperty.Match(change_file).Groups[2].ToString();
                 string typefullname = findtype.Match(change_file).Groups[2].ToString();
                 string value = findto.Match(change_file).Groups[2].ToString();
                 Purpose? purpose = ExtensionMethods.EnumUntil.GetValues<Purpose>().FirstOrDefault(p => findpurpose.Match(change_file).Groups[2].ToString() == p.ToString());
-                InputFile file = destination.FirstOrDefault(f => f.complete_path == filepath && f.purpose == purpose); //match the filename, not the path, in case it changed folders
+                InputFile file = destination.FirstOrDefault(f => (f.complete_path == filepath || f.filename == filename) && f.purpose == purpose); //match the filename, not the path, in case it changed folders
                 PropertyInfo propertyinfo = typeof(InputFile).GetProperties().FirstOrDefault(p => p.Name == property);
                 Type type = Type.GetType(typefullname);
 
@@ -247,7 +259,7 @@ namespace ProteoformSuiteInternal
                 string shift = findshift.Match(mass_shift).Groups[2].ToString();
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
-                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
+                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
                 if (peak != null)
                 {
                     peak.mass_shifter = shift;
@@ -268,9 +280,9 @@ namespace ProteoformSuiteInternal
                     continue;
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
-                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
+                    peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
                 else if (comparison == ProteoformComparison.ExperimentalExperimental)
-                    peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 4) == Math.Round(mass, 4));
+                    peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
                 if (peak != null)
                 {
                     lollipop.change_peak_acceptance(peak, peak_change.StartsWith("accept "), false);

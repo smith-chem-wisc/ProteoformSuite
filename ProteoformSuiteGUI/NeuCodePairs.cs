@@ -39,7 +39,7 @@ namespace ProteoformSuiteGUI
             return Sweet.lollipop.raw_neucode_pairs.Count > 0;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             //ClearListsTablesFigures(true); No need to clear tables for graphing and filling tables
             GraphLysineCount();
@@ -73,11 +73,6 @@ namespace ProteoformSuiteGUI
                         sweet.ClearListsTablesFigures(false);
                 }
             }
-        }
-
-        public List<DataGridView> GetDGVs()
-        {
-            return new List<DataGridView> { dgv_RawExpNeuCodePairs };
         }
 
         public List<DataTable> SetTables()

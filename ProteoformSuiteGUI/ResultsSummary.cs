@@ -29,11 +29,6 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public List<DataGridView> GetDGVs()
-        {
-            return null;
-        }
-
         public List<DataTable> SetTables()
         {
             return null;
@@ -49,7 +44,7 @@ namespace ProteoformSuiteGUI
             return true;
         }
 
-        public void RunTheGamut()
+        public void RunTheGamut(bool full_run)
         {
             create_summary();
         }

@@ -68,14 +68,16 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.ct_volcano_logFold_logP = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.splitContainer7 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer15 = new System.Windows.Forms.SplitContainer();
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
+            this.rb_significanceByFoldChange = new System.Windows.Forms.RadioButton();
+            this.rb_signficanceByPermutation = new System.Windows.Forms.RadioButton();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.nUD_min_fold_change = new System.Windows.Forms.NumericUpDown();
             this.label21 = new System.Windows.Forms.Label();
             this.nud_benjiHochFDR = new System.Windows.Forms.NumericUpDown();
-            this.cb_significanceByFoldChange = new System.Windows.Forms.CheckBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.cmbx_volcanoChartSelection = new System.Windows.Forms.ComboBox();
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
@@ -88,7 +90,6 @@
             this.cmbx_foldChangeConjunction = new System.Windows.Forms.ComboBox();
             this.nud_foldChangeCutoff = new System.Windows.Forms.NumericUpDown();
             this.cb_useFoldChangeCutoff = new System.Windows.Forms.CheckBox();
-            this.cb_significanceByPermutation = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.cmbx_inducedCondition = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
@@ -185,11 +186,16 @@
             this.splitContainer7.Panel1.SuspendLayout();
             this.splitContainer7.Panel2.SuspendLayout();
             this.splitContainer7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer15)).BeginInit();
+            this.splitContainer15.Panel1.SuspendLayout();
+            this.splitContainer15.Panel2.SuspendLayout();
+            this.splitContainer15.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).BeginInit();
             this.splitContainer8.Panel1.SuspendLayout();
             this.splitContainer8.Panel2.SuspendLayout();
             this.splitContainer8.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_fold_change)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).BeginInit();
             this.splitContainer9.Panel1.SuspendLayout();
@@ -655,25 +661,68 @@
             // 
             // splitContainer7.Panel1
             // 
-            this.splitContainer7.Panel1.Controls.Add(this.btn_refreshCalculation);
+            this.splitContainer7.Panel1.Controls.Add(this.splitContainer15);
             // 
             // splitContainer7.Panel2
             // 
             this.splitContainer7.Panel2.Controls.Add(this.splitContainer8);
             this.splitContainer7.Size = new System.Drawing.Size(485, 548);
-            this.splitContainer7.SplitterDistance = 37;
+            this.splitContainer7.SplitterDistance = 61;
             this.splitContainer7.TabIndex = 0;
+            // 
+            // splitContainer15
+            // 
+            this.splitContainer15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer15.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer15.Name = "splitContainer15";
+            this.splitContainer15.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer15.Panel1
+            // 
+            this.splitContainer15.Panel1.Controls.Add(this.btn_refreshCalculation);
+            // 
+            // splitContainer15.Panel2
+            // 
+            this.splitContainer15.Panel2.Controls.Add(this.rb_significanceByFoldChange);
+            this.splitContainer15.Panel2.Controls.Add(this.rb_signficanceByPermutation);
+            this.splitContainer15.Size = new System.Drawing.Size(485, 61);
+            this.splitContainer15.SplitterDistance = 25;
+            this.splitContainer15.TabIndex = 0;
             // 
             // btn_refreshCalculation
             // 
             this.btn_refreshCalculation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_refreshCalculation.Location = new System.Drawing.Point(0, 0);
             this.btn_refreshCalculation.Name = "btn_refreshCalculation";
-            this.btn_refreshCalculation.Size = new System.Drawing.Size(485, 37);
+            this.btn_refreshCalculation.Size = new System.Drawing.Size(485, 25);
             this.btn_refreshCalculation.TabIndex = 32;
             this.btn_refreshCalculation.Text = "Refresh Calculations";
             this.btn_refreshCalculation.UseVisualStyleBackColor = true;
             this.btn_refreshCalculation.Click += new System.EventHandler(this.btn_refreshCalculation_Click);
+            // 
+            // rb_significanceByFoldChange
+            // 
+            this.rb_significanceByFoldChange.AutoSize = true;
+            this.rb_significanceByFoldChange.Checked = true;
+            this.rb_significanceByFoldChange.Location = new System.Drawing.Point(8, 10);
+            this.rb_significanceByFoldChange.Name = "rb_significanceByFoldChange";
+            this.rb_significanceByFoldChange.Size = new System.Drawing.Size(201, 17);
+            this.rb_significanceByFoldChange.TabIndex = 58;
+            this.rb_significanceByFoldChange.TabStop = true;
+            this.rb_significanceByFoldChange.Text = "Significance by Fold Change Analysis";
+            this.rb_significanceByFoldChange.UseVisualStyleBackColor = true;
+            this.rb_significanceByFoldChange.CheckedChanged += new System.EventHandler(this.rb_significanceByFoldChange_CheckedChanged);
+            // 
+            // rb_signficanceByPermutation
+            // 
+            this.rb_signficanceByPermutation.AutoSize = true;
+            this.rb_signficanceByPermutation.Location = new System.Drawing.Point(216, 10);
+            this.rb_signficanceByPermutation.Name = "rb_signficanceByPermutation";
+            this.rb_signficanceByPermutation.Size = new System.Drawing.Size(197, 17);
+            this.rb_signficanceByPermutation.TabIndex = 59;
+            this.rb_signficanceByPermutation.Text = "Significance by Permutation Analysis";
+            this.rb_signficanceByPermutation.UseVisualStyleBackColor = true;
+            this.rb_signficanceByPermutation.CheckedChanged += new System.EventHandler(this.rb_signficanceByPermutation_CheckedChanged);
             // 
             // splitContainer8
             // 
@@ -690,27 +739,54 @@
             // splitContainer8.Panel2
             // 
             this.splitContainer8.Panel2.Controls.Add(this.splitContainer9);
-            this.splitContainer8.Size = new System.Drawing.Size(485, 507);
-            this.splitContainer8.SplitterDistance = 95;
+            this.splitContainer8.Size = new System.Drawing.Size(485, 483);
+            this.splitContainer8.SplitterDistance = 90;
             this.splitContainer8.TabIndex = 0;
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label20);
+            this.groupBox2.Controls.Add(this.nUD_min_fold_change);
             this.groupBox2.Controls.Add(this.label21);
             this.groupBox2.Controls.Add(this.nud_benjiHochFDR);
-            this.groupBox2.Controls.Add(this.cb_significanceByFoldChange);
-            this.groupBox2.Controls.Add(this.label20);
-            this.groupBox2.Controls.Add(this.cmbx_volcanoChartSelection);
             this.groupBox2.Controls.Add(this.cmbx_ratioDenominator);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.cmbx_ratioNumerator);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(485, 95);
+            this.groupBox2.Size = new System.Drawing.Size(485, 90);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Volcano Plot";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(323, 49);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(111, 13);
+            this.label20.TabIndex = 18;
+            this.label20.Text = "Minimum Fold Change";
+            // 
+            // nUD_min_fold_change
+            // 
+            this.nUD_min_fold_change.DecimalPlaces = 2;
+            this.nUD_min_fold_change.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.nUD_min_fold_change.Location = new System.Drawing.Point(267, 44);
+            this.nUD_min_fold_change.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nUD_min_fold_change.Name = "nUD_min_fold_change";
+            this.nUD_min_fold_change.Size = new System.Drawing.Size(50, 20);
+            this.nUD_min_fold_change.TabIndex = 19;
+            this.nUD_min_fold_change.ValueChanged += new System.EventHandler(this.nUD_min_fold_change_ValueChanged);
             // 
             // label21
             // 
@@ -739,36 +815,6 @@
             this.nud_benjiHochFDR.Size = new System.Drawing.Size(50, 20);
             this.nud_benjiHochFDR.TabIndex = 17;
             this.nud_benjiHochFDR.ValueChanged += new System.EventHandler(this.nud_benjiHochFDR_ValueChanged);
-            // 
-            // cb_significanceByFoldChange
-            // 
-            this.cb_significanceByFoldChange.AutoSize = true;
-            this.cb_significanceByFoldChange.Location = new System.Drawing.Point(267, 49);
-            this.cb_significanceByFoldChange.Name = "cb_significanceByFoldChange";
-            this.cb_significanceByFoldChange.Size = new System.Drawing.Size(202, 17);
-            this.cb_significanceByFoldChange.TabIndex = 16;
-            this.cb_significanceByFoldChange.Text = "Significance by Fold Change Analysis";
-            this.cb_significanceByFoldChange.UseVisualStyleBackColor = true;
-            this.cb_significanceByFoldChange.CheckedChanged += new System.EventHandler(this.cb_significanceByFoldChange_CheckedChanged);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(6, 46);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(142, 13);
-            this.label20.TabIndex = 16;
-            this.label20.Text = "Volcano Plot Chart Selection";
-            // 
-            // cmbx_volcanoChartSelection
-            // 
-            this.cmbx_volcanoChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_volcanoChartSelection.FormattingEnabled = true;
-            this.cmbx_volcanoChartSelection.Location = new System.Drawing.Point(9, 61);
-            this.cmbx_volcanoChartSelection.Name = "cmbx_volcanoChartSelection";
-            this.cmbx_volcanoChartSelection.Size = new System.Drawing.Size(197, 21);
-            this.cmbx_volcanoChartSelection.TabIndex = 15;
-            this.cmbx_volcanoChartSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_volcanoChartSelection_SelectedIndexChanged);
             // 
             // cmbx_ratioDenominator
             // 
@@ -812,8 +858,8 @@
             // splitContainer9.Panel2
             // 
             this.splitContainer9.Panel2.Controls.Add(this.ct_relativeDifference);
-            this.splitContainer9.Size = new System.Drawing.Size(485, 408);
-            this.splitContainer9.SplitterDistance = 155;
+            this.splitContainer9.Size = new System.Drawing.Size(485, 389);
+            this.splitContainer9.SplitterDistance = 147;
             this.splitContainer9.TabIndex = 0;
             // 
             // groupBox6
@@ -825,7 +871,6 @@
             this.groupBox6.Controls.Add(this.cmbx_foldChangeConjunction);
             this.groupBox6.Controls.Add(this.nud_foldChangeCutoff);
             this.groupBox6.Controls.Add(this.cb_useFoldChangeCutoff);
-            this.groupBox6.Controls.Add(this.cb_significanceByPermutation);
             this.groupBox6.Controls.Add(this.label12);
             this.groupBox6.Controls.Add(this.cmbx_inducedCondition);
             this.groupBox6.Controls.Add(this.label19);
@@ -839,7 +884,7 @@
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 0);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(485, 155);
+            this.groupBox6.Size = new System.Drawing.Size(485, 147);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Significance FDR Via Permutation";
@@ -948,17 +993,6 @@
             this.cb_useFoldChangeCutoff.UseVisualStyleBackColor = true;
             this.cb_useFoldChangeCutoff.CheckedChanged += new System.EventHandler(this.cb_useFoldChangeCutoff_CheckedChanged);
             // 
-            // cb_significanceByPermutation
-            // 
-            this.cb_significanceByPermutation.AutoSize = true;
-            this.cb_significanceByPermutation.Location = new System.Drawing.Point(243, 61);
-            this.cb_significanceByPermutation.Name = "cb_significanceByPermutation";
-            this.cb_significanceByPermutation.Size = new System.Drawing.Size(198, 17);
-            this.cb_significanceByPermutation.TabIndex = 15;
-            this.cb_significanceByPermutation.Text = "Significance by Permutation Analysis";
-            this.cb_significanceByPermutation.UseVisualStyleBackColor = true;
-            this.cb_significanceByPermutation.CheckedChanged += new System.EventHandler(this.cb_significanceByPermutation_CheckedChanged);
-            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -1041,6 +1075,7 @@
             // 
             this.tb_FDR.Location = new System.Drawing.Point(104, 130);
             this.tb_FDR.Name = "tb_FDR";
+            this.tb_FDR.ReadOnly = true;
             this.tb_FDR.Size = new System.Drawing.Size(124, 20);
             this.tb_FDR.TabIndex = 6;
             // 
@@ -1097,7 +1132,7 @@
             this.ct_relativeDifference.Series.Add(series4);
             this.ct_relativeDifference.Series.Add(series5);
             this.ct_relativeDifference.Series.Add(series6);
-            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 249);
+            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 238);
             this.ct_relativeDifference.TabIndex = 30;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
             this.ct_relativeDifference.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_relativeDifference_MouseClick);
@@ -1772,12 +1807,18 @@
             this.splitContainer7.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer7)).EndInit();
             this.splitContainer7.ResumeLayout(false);
+            this.splitContainer15.Panel1.ResumeLayout(false);
+            this.splitContainer15.Panel2.ResumeLayout(false);
+            this.splitContainer15.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer15)).EndInit();
+            this.splitContainer15.ResumeLayout(false);
             this.splitContainer8.Panel1.ResumeLayout(false);
             this.splitContainer8.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).EndInit();
             this.splitContainer8.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_fold_change)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).EndInit();
             this.splitContainer9.Panel1.ResumeLayout(false);
             this.splitContainer9.Panel2.ResumeLayout(false);
@@ -1920,10 +1961,6 @@
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.ComboBox cmbx_volcanoChartSelection;
-        private System.Windows.Forms.CheckBox cb_significanceByFoldChange;
-        private System.Windows.Forms.CheckBox cb_significanceByPermutation;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.NumericUpDown nud_benjiHochFDR;
         private System.Windows.Forms.NumericUpDown nud_foldChangeCutoff;
@@ -1937,5 +1974,10 @@
         private System.Windows.Forms.CheckBox cb_useBiorepPermutationFoldChange;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.ComboBox cmbx_quantitativeValuesTableSelection;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.NumericUpDown nUD_min_fold_change;
+        private System.Windows.Forms.SplitContainer splitContainer15;
+        private System.Windows.Forms.RadioButton rb_significanceByFoldChange;
+        private System.Windows.Forms.RadioButton rb_signficanceByPermutation;
     }
 }

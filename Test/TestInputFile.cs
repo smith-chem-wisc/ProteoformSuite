@@ -19,8 +19,8 @@ namespace Test
                 new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.ProteinDatabase),
-                new InputFile("fake.txt", Purpose.Calibration),
-                new InputFile("fake.txt", Purpose.Calibration),
+                new InputFile("fake.txt", Purpose.RawFile),
+                new InputFile("fake.txt", Purpose.RawFile),
                 new InputFile("fake.txt", Purpose.Quantification),
                 new InputFile("fake.txt", Purpose.Quantification),
             };
@@ -82,53 +82,5 @@ namespace Test
             Assert.True(destination[0].biological_replicate == "2");
         }
 
-        [Test]
-        public void matching_calibration_one_match()
-        {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
-            InputFile i = new InputFile("fake.txt", Purpose.Identification);
-            Assert.False(c.matchingCalibrationFile);
-            Assert.False(i.matchingCalibrationFile);
-            c.filename = "hello";
-            i.filename = "hello";
-            Sweet.lollipop.input_files = new List<InputFile> { c, i };
-            Sweet.lollipop.match_calibration_files();
-            Assert.True(c.matchingCalibrationFile);
-            Assert.True(i.matchingCalibrationFile);
-        }
-
-        [Test]
-        public void matching_calibration_two_match()
-        {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
-            InputFile i = new InputFile("fake.txt", Purpose.Identification);
-            InputFile j = new InputFile("fake.txt", Purpose.Identification);
-            c.filename = "hello";
-            i.filename = "hello";
-            j.filename = "hello";
-            Sweet.lollipop.input_files = new List<InputFile> { c, i, j };
-            Assert.AreNotEqual("", Sweet.lollipop.match_calibration_files());
-        }
-
-        [Test]
-        public void matching_calibration_no_match()
-        {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
-            InputFile i = new InputFile("fake.txt", Purpose.Identification);
-            c.filename = "hello";
-            i.filename = "hey";
-            Sweet.lollipop.input_files = new List<InputFile> { c, i };
-            Sweet.lollipop.match_calibration_files();
-            Assert.False(c.matchingCalibrationFile);
-            Assert.False(i.matchingCalibrationFile);
-        }
-
-        [Test]
-        public void matching_calibration_none_possible()
-        {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
-            Sweet.lollipop.input_files = new List<InputFile> { c };
-            Assert.AreNotEqual("", Sweet.lollipop.match_calibration_files());
-        }
     }
 }

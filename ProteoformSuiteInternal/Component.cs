@@ -131,10 +131,9 @@ namespace ProteoformSuiteInternal
         #endregion Constructors
 
         #region Public Methods
-
-        public void add_charge_state(List<string> charge_row, double correction)
+        public void add_charge_state(List<string> charge_row)
         {
-            charge_states.Add(new ChargeState(charge_row, correction));
+            charge_states.Add(new ChargeState(charge_row));
         }
 
         public void calculate_properties()
@@ -205,8 +204,7 @@ namespace ProteoformSuiteInternal
                 }
             }
             return this;
-        } 
-
+        }
         #endregion Public Methods
 
     }
