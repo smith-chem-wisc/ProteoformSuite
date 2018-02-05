@@ -11,6 +11,8 @@ using Chemistry;
 using MassSpectrometry;
 using IO.Thermo;
 using IO.MzML;
+using PRISM;
+using CommandLine;
 
 namespace ProteoformSuiteInternal
 {
@@ -184,6 +186,31 @@ namespace ProteoformSuiteInternal
         #endregion DECONVOLUTION Public Fields
 
         #region DECONVOLUTION
+
+        public bool Promex(string[] args)
+        {
+            PromexParameters options = new PromexParameters();
+
+            Parsed<PromexParameters> result = CommandLine.Parser.Default.ParseArguments<PromexParameters>(args) as Parsed<PromexParameters>;
+           // Parser.Default.ParseArguments(args, options);
+            return true;
+
+            //ProgramArguments arguments = new ProgramArguments();
+            //CommandLine.Parser.Default.ParseArguments(args, arguments);
+
+            //MinSearchMass = 2000;
+            //MaxSearchMass = 50000;
+            //MinSearchCharge = 1;
+            //MaxSearchCharge = 60;
+            //ScoreReport = false;
+            //CsvOutput = false;
+            //LikelihoodScoreThreshold = -10;
+            //MaxThreads = 0;
+            //FeatureMapImage = true;
+
+            //Want this parsed into command line: \ProMex.exe -i rawfile.raw -minCharge 2 -maxCharge 60 -minMass 3000 -maxMass 50000 -score n -csv n -maxThreads 0
+        }
+
         //will add this back in when RM pushes commits to mzlib/next release -LVS 1-22-18
         //public List<Component> deconvolute_file(InputFile raw_file)
         //{
