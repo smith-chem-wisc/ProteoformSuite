@@ -160,6 +160,8 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+
+            cb_ee_peak_accept_rank.Checked = Sweet.lollipop.ee_accept_peaks_based_on_rank;
         }
 
         #endregion Public Methods
@@ -276,7 +278,7 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             Parallel.ForEach(Sweet.lollipop.ee_peaks, p =>
             {
-                p.Accepted = p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_ee;
+                p.Accepted = p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_ee && (!Sweet.lollipop.ee_accept_peaks_based_on_rank || (p.possiblePeakAssignments.Count > 0 && p.possiblePeakAssignments.Any(a => a.ptm_rank_sum < Sweet.lollipop.mod_rank_first_quartile)));
                 Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
             });
             Parallel.ForEach(Sweet.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
@@ -350,5 +352,9 @@ namespace ProteoformSuiteGUI
 
         #endregion Tooltip Private Methods
 
+        private void cb_ee_peak_accept_rank_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = cb_ee_peak_accept_rank.Checked;
+        }
     }
 }
