@@ -276,6 +276,11 @@ namespace ProteoformSuiteGUI
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+            change_peak_acceptance();
+        }
+
+        private void change_peak_acceptance()
+        {
             Parallel.ForEach(Sweet.lollipop.ee_peaks, p =>
             {
                 p.Accepted = p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_ee && (!Sweet.lollipop.ee_accept_peaks_based_on_rank || (p.possiblePeakAssignments.Count > 0 && p.possiblePeakAssignments.Any(a => a.ptm_rank_sum < Sweet.lollipop.mod_rank_first_quartile)));
@@ -355,6 +360,7 @@ namespace ProteoformSuiteGUI
         private void cb_ee_peak_accept_rank_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.ee_accept_peaks_based_on_rank = cb_ee_peak_accept_rank.Checked;
+            change_peak_acceptance();
         }
     }
 }
