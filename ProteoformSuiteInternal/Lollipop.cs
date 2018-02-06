@@ -730,6 +730,8 @@ namespace ProteoformSuiteInternal
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
+        public bool ee_accept_peaks_based_on_rank = true;
+        public bool et_accept_peaks_based_on_rank = true;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
@@ -738,7 +740,7 @@ namespace ProteoformSuiteInternal
         public double no_mans_land_upperBound = 0.88;
         public double peak_width_base_et = 0.03; //need to be separate so you can change one and not other. 
         public double peak_width_base_ee = 0.03;
-        public double min_peak_count_et = 4;
+        public double min_peak_count_et = 10;
         public double min_peak_count_ee = 10;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();

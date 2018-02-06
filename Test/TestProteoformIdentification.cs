@@ -219,6 +219,7 @@ namespace Test
         [Test]
         public void adduct_experimental()
         {
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, !Sweet.lollipop.neucode_labeled, Sweet.lollipop.neucode_labeled, false).AA_Masses;
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("Sulfate Adduct", "", motif, TerminusLocalization.Any, 97.97)) });
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
