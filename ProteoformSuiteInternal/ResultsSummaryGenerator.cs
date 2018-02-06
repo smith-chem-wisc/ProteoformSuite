@@ -181,9 +181,9 @@ namespace ProteoformSuiteInternal
             string report = "";
 
             report += Sweet.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString() + "\tProteoform Families" + Environment.NewLine;
-            List<ProteoformFamily> identified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();
-            List<ProteoformFamily> ambiguous_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() > 1).ToList();
-            List<ProteoformFamily> unidentified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 0 && f.proteoforms.Count > 1).ToList();
+            List<ProteoformFamily> identified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() == 1).ToList();
+            List<ProteoformFamily> ambiguous_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() > 1).ToList();
+            List<ProteoformFamily> unidentified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() == 0 && f.proteoforms.Count > 1).ToList();
             report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += identified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
             report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
