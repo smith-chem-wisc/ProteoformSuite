@@ -14,6 +14,7 @@ using IO.MzML;
 using PRISM;
 using CommandLine;
 using System.Diagnostics;
+using System.Xml;
 
 namespace ProteoformSuiteInternal
 {
@@ -188,58 +189,51 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public static void runcommand(string command, string arguments)
+        public void promex_deconvolute()
         {
-            Process proc = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            string promexlocation = @"C:\Users\j0lte\Desktop\Informed_Proteomics\ProMex\bin\Debug";
+            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
 
-            //startInfo.FileName = promexlocation;
-            startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
-            //startInfo.Arguments = "cd " + promexlocation;
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardInput = true;
-            startInfo.RedirectStandardOutput = false;
-            proc.StartInfo = startInfo;
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
 
-            proc.Start();
+                string input = f.complete_path;
+                DirectoryInfo directory = new DirectoryInfo(Directory.GetCurrentDirectory());
+                string promexlocation = Path.Combine(directory.Parent.Parent.Parent.Parent.FullName, @"ProMex\bin\Debug");
 
-            proc.StandardInput.WriteLine("cd " + promexlocation);
-            
-            proc.StandardInput.WriteLine(command + " " + arguments);
-            proc.StandardInput.Close();
-            proc.WaitForExit();
-            //System.Diagnostics.Debug.WriteLine(command + " " + arguments);
-            //proc.CloseMainWindow();
-            //proc.Close();
-            //proc.Dispose();
+                startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = false;
+                startInfo.CreateNoWindow = true;
+                proc.StartInfo = startInfo;
 
+                proc.Start();
+
+                proc.StandardInput.WriteLine("cd " + promexlocation);
+
+                proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge 2 -maxCharge 60 -minMass 3000 -maxMass 50000 -csv y -maxThreads 0");
+                proc.StandardInput.Close();
+                proc.WaitForExit();
+                //System.Diagnostics.Debug.WriteLine(command + " " + arguments);
+                //proc.CloseMainWindow();
+                //proc.Close();
+                //proc.Dispose();
+                
+            }
             return;
+
         }
 
-        //public bool Promex(string[] args)
-        //{
-        //    PromexParameters options = new PromexParameters();
-
-        //    Parsed<PromexParameters> result = CommandLine.Parser.Default.ParseArguments<PromexParameters>(args) as Parsed<PromexParameters>;
-        //   // Parser.Default.ParseArguments(args, options);
-        //    return true;
-
-        //    //ProgramArguments arguments = new ProgramArguments();
-        //    //CommandLine.Parser.Default.ParseArguments(args, arguments);
-
-        //    //MinSearchMass = 2000;
-        //    //MaxSearchMass = 50000;
-        //    //MinSearchCharge = 1;
-        //    //MaxSearchCharge = 60;
-        //    //ScoreReport = false;
-        //    //CsvOutput = false;
-        //    //LikelihoodScoreThreshold = -10;
-        //    //MaxThreads = 0;
-        //    //FeatureMapImage = true;
-
-        //    //Want this parsed into command line: \ProMex.exe -i rawfile.raw -minCharge 2 -maxCharge 60 -minMass 3000 -maxMass 50000 -score n -csv n -maxThreads 0
-        //}
+        public void convertxml(string filelocation)
+        {
+            //StreamReader streamReader = new StreamReader(filelocation);
+            string[] contents = File.ReadAllLines(filelocation);
+            for(int i =1; i < contents.Length; i++)
+            {
+                System.Diagnostics.Debug.WriteLine(contents[i]);
+                System.Diagnostics.Debug.WriteLine(contents.Length);
+            }
+        }
 
         //will add this back in when RM pushes commits to mzlib/next release -LVS 1-22-18
         //public List<Component> deconvolute_file(InputFile raw_file)

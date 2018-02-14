@@ -137,6 +137,11 @@ namespace ProteoformSuiteGUI
             populate_file_lists();
         }
 
+        private void rb_deconvolution_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
+
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
@@ -175,6 +180,7 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
                 nud_randomSeed.Visible = false;
+                bt_deconvolute.Visible = false;
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -187,6 +193,7 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_td_files.Visible = true;
                 cb_calibrate_raw_files.Visible = true;
                 nud_randomSeed.Visible = true;
+                bt_deconvolute.Visible = false;
 
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 1;
@@ -195,6 +202,29 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.Enabled = false;
                 cmb_loadTable2.Enabled = false;
                 cmb_loadTable3.Enabled = false;
+            }
+
+            else if (rb_deconvolution.Checked)
+            {
+
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable2.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable3.Items.Add(Lollipop.file_lists[4]);
+
+                cmb_loadTable1.SelectedIndex = 0;
+                cmb_loadTable2.SelectedIndex = 0;
+                cmb_loadTable3.SelectedIndex = 0;
+
+                cmb_loadTable1.Enabled = false;
+                cmb_loadTable2.Enabled = false;
+                cmb_loadTable3.Enabled = false;
+
+                bt_calibrate.Visible = false;
+                cb_useRandomSeed.Visible = false;
+                cb_calibrate_raw_files.Visible = false;
+                cb_calibrate_td_files.Visible = false;
+                nud_randomSeed.Visible = false;
+                bt_deconvolute.Visible = true;
             }
 
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
@@ -476,6 +506,16 @@ namespace ProteoformSuiteGUI
             }
             Sweet.lollipop.read_in_calibration_td_hits();
             MessageBox.Show(Sweet.lollipop.calibrate_files());
+        }
+
+        private void bt_deconvolute_Click(object sender, EventArgs e)
+        {
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            {
+                MessageBox.Show("Please enter raw files to deconvolute."); return;
+            }
+            Sweet.lollipop.promex_deconvolute();
+            MessageBox.Show("Successfully deconvoluted raw files.");
         }
         #endregion CHANGED TABLE SELECTION Private Methods
 
