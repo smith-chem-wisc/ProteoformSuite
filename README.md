@@ -1,6 +1,6 @@
 # Proteoform Suite
 Software for constructing, quantifying, and visualizing proteoform families.
-[![Build status](https://ci.appveyor.com/api/projects/status/qbc3xy4b35otnsxe/branch/master?svg=true)](https://ci.appveyor.com/project/stefanks/proteoform-suite/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/0r09noqpa7j3687h/branch/master?svg=true)](https://ci.appveyor.com/project/smith-chem-wisc/proteoformsuite/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/smith-chem-wisc/proteoform-suite/badge.svg?branch=master)](https://coveralls.io/github/smith-chem-wisc/proteoform-suite?branch=master)
 
 ## Papers and Software Releases
