@@ -15,6 +15,7 @@ using PRISM;
 using CommandLine;
 using System.Diagnostics;
 using System.Xml;
+using Microsoft.Office.Interop.Excel;
 
 namespace ProteoformSuiteInternal
 {
@@ -189,7 +190,7 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public void promex_deconvolute()
+        public void promex_deconvolute(int maxcharge, int mincharge, int maxmass, int minmass)
         {
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
 
@@ -198,7 +199,7 @@ namespace ProteoformSuiteInternal
 
                 string input = f.complete_path;
                 DirectoryInfo directory = new DirectoryInfo(Directory.GetCurrentDirectory());
-                string promexlocation = Path.Combine(directory.Parent.Parent.Parent.Parent.FullName, @"ProMex\bin\Debug");
+                string promexlocation = Path.Combine(directory.Parent.Parent.Parent.Parent.FullName, @"ProteoformSuiteInternal\ProMex");
 
                 startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
                 startInfo.UseShellExecute = false;
@@ -211,15 +212,65 @@ namespace ProteoformSuiteInternal
 
                 proc.StandardInput.WriteLine("cd " + promexlocation);
 
-                proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge 2 -maxCharge 60 -minMass 3000 -maxMass 50000 -csv y -maxThreads 0");
+                proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -minMass " + minmass + " -maxMass " + maxmass + " -csv y -maxThreads 0");
                 proc.StandardInput.Close();
                 proc.WaitForExit();
-                //System.Diagnostics.Debug.WriteLine(command + " " + arguments);
-                //proc.CloseMainWindow();
-                //proc.Close();
-                //proc.Dispose();
-                
+
+
+                var type = Envelope.DeconType.ProMex;
+                double minMass = 0;
+                int numChargesRequired = 3;
+                string dir = Directory.GetCurrentDirectory();
+                Loaders.LoadElements(dir + @"\elements.dat");
+                var rawFile = ThermoDynamicData.InitiateDynamicConnection(f.complete_path);
+                Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
+                StreamReader reader = new StreamReader(Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path)) + "_ms1ft.csv");
+                string line;
+                int lineNum = 1;
+
+                while (reader.Peek() > 0)
+                {
+                    line = reader.ReadLine();
+
+                    if (lineNum != 1)
+                    {
+                        var massWithScan = new Envelope(line, type);
+                        massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+
+                        if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
+                            featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
+                        else
+                            featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
+                    }
+
+                    lineNum++;
+                }
+
+                reader.Close();
+
+                string headerForThisFile = "No.\tMonoisotopic Mass\tSum Intensity\tNumber of Charge States\tNumber of Detected Intervals\tDelta Mass\tRelative Abundance\tFractional Abundance\tScan Range\tRT Range\tApex RT";
+
+                List<string> output = new List<string>() { headerForThisFile };
+                foreach (var feature in featureIdToFeature)
+                    if (feature.Value.monoisotopicMass > minMass && feature.Value.isotopicEnvelopes.Select(p => p.charge).Distinct().Count() >= numChargesRequired)
+                        output.Add(feature.Value.GetThermoFormattedString());
+
+                File.WriteAllLines(Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path)) + "_deconv.tsv", output);
+
+                Application excel = new Application();
+                Workbook wb = excel.Workbooks.Open(Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path)) + "_deconv.tsv");
+                excel.DisplayAlerts = false;
+                wb.SaveAs(Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path)) + "_deconv.xlsx", XlFileFormat.xlOpenXMLWorkbook);
+                excel.DisplayAlerts = true;
+                wb.Close();
+                excel.Quit();
             }
+
+            //foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile))
+            //{
+            //    string filepath = Path.GetDirectoryName(f.complete_path);
+            //    string filename = Path.GetFileNameWithoutExtension(f.complete_path);
+            //}
             return;
 
         }
