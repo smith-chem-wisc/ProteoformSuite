@@ -181,6 +181,14 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_td_files.Visible = false;
                 nud_randomSeed.Visible = false;
                 bt_deconvolute.Visible = false;
+                nud_maxcharge.Visible = false;
+                nud_maxmass.Visible = false;
+                nud_mincharge.Visible = false;
+                nud_minmass.Visible = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                label4.Visible = false;
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -194,6 +202,14 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_raw_files.Visible = true;
                 nud_randomSeed.Visible = true;
                 bt_deconvolute.Visible = false;
+                nud_maxcharge.Visible = false;
+                nud_maxmass.Visible = false;
+                nud_mincharge.Visible = false;
+                nud_minmass.Visible = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label3.Visible = false;
+                label4.Visible = false;
 
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 1;
@@ -225,6 +241,14 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_td_files.Visible = false;
                 nud_randomSeed.Visible = false;
                 bt_deconvolute.Visible = true;
+                nud_maxcharge.Visible = true;
+                nud_maxmass.Visible = true;
+                nud_mincharge.Visible = true;
+                nud_minmass.Visible = true;
+                label1.Visible = true;
+                label2.Visible = true;
+                label3.Visible = true;
+                label4.Visible = true;
             }
 
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
@@ -514,9 +538,18 @@ namespace ProteoformSuiteGUI
             {
                 MessageBox.Show("Please enter raw files to deconvolute."); return;
             }
-            Sweet.lollipop.promex_deconvolute();
+            if(Convert.ToInt32(nud_maxcharge.Value) > 60 || Convert.ToInt32(nud_mincharge.Value) < 2)
+            {
+                MessageBox.Show("Charge range must be within 2-60."); return;
+            }
+            if(Convert.ToInt32(nud_maxmass.Value) > 50000 || Convert.ToInt32(nud_minmass.Value) < 3000)
+            {
+                MessageBox.Show("Mass range must be within 3000-50000."); return;
+            }
+            Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxmass.Value), Convert.ToInt32(nud_minmass.Value));
             MessageBox.Show("Successfully deconvoluted raw files.");
         }
+
         #endregion CHANGED TABLE SELECTION Private Methods
 
         //Do nothing when text changes
