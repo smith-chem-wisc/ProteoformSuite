@@ -175,14 +175,6 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
                     String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\mod_ranks.txt"))
-            {
-                writer.WriteLine(Sweet.lollipop.mod_rank_first_quartile);
-                foreach(var x in Sweet.lollipop.theoretical_database.possible_ptmset_dictionary)
-                {
-                    writer.WriteLine(x.Key + "\t" + x.Value.Min(p => p.ptm_rank_sum));
-                }
-            }
         }
 
         public bool ReadyToRunTheGamut()
