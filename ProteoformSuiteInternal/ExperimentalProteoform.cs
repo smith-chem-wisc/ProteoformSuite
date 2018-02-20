@@ -63,7 +63,7 @@ namespace ProteoformSuiteInternal
 
         public bool ambiguous { get; set; }
 
-        public double mass_error { get; set; }
+        public double mass_error { get; set; } = double.NaN;
 
         #endregion Public Properties
 

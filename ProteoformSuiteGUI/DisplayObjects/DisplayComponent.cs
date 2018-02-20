@@ -69,6 +69,11 @@ namespace ProteoformSuiteGUI
             get { return c.charge_states.Count; }
         }
 
+        public string charge_states
+        {
+            get { return String.Join(", ", c.charge_states.Select(cs => cs.charge_count)); }
+        }
+
         public double intensity_sum
         {
             get { return c.intensity_sum; }
@@ -175,6 +180,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(num_detected_intervals)) return "No. Detected Intervals (from Thermo Decon.)";
             if (property_name == nameof(reported_delta_mass)) return "Reported Delta Mass (from Thermo Decon.)";
             if (property_name == nameof(relative_abundance)) return "Relative Abundance (from Thermo Decon.)";
+            if (property_name == nameof(charge_states)) return "Charge States";
             if (property_name == nameof(fract_abundance)) return "Fractional Abundance (from Thermo Decon.)";
             return null;
         }
