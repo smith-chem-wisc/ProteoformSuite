@@ -19,31 +19,15 @@ namespace Test
         public void testpromex()
         {
             Sweet.lollipop = new Lollipop();
-            bool success = false;
+
+            Assert.AreEqual("No files deconvoluted. Ensure correct file locations and try again.", Sweet.lollipop.promex_deconvolute(60, 1, 50000, 2000, 100, 0, TestContext.CurrentContext.TestDirectory));
 
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
+            
+            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 50000, 2000, 100, 0, TestContext.CurrentContext.TestDirectory));
 
-            //string input = @"C:\Users\j0lte\Documents\GitClones\ProteoformSuite\Test\05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw";
-            //string output = @"C:\Users\j0lte\Desktop\ProMex_Test_Results";
-            Sweet.lollipop.promex_deconvolute();
-
-            if(File.Exists(@"C:\Users\j0lte\Documents\GitClones\ProteoformSuite\Test\bin\Debug\05-26-17_B7A_yeast_td_fract5_rep1_MS1_ms1ft.csv") == true)
-            {
-                success = true;
-            }
-
-            Assert.IsTrue(success);
-            //Goal: ProMex.exe -i C:\Users\j0lte\Documents\GitClones\ProteoformSuite\Test\05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw -o C:\Users\j0lte\Desktop\ProMex_Test_Results -minCharge 2 -maxCharge 60 -minMass 3000 -maxMass 50000 -score n -csv n -maxThreads 0
+            Assert.IsTrue(File.Exists(Path.Combine(Path.GetDirectoryName(Sweet.lollipop.input_files[0].complete_path), Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path)) + "_deconv.xlsx"));
+            
         }
-
-        [Test]
-        public void testfileconversion()
-        {
-            Sweet.lollipop = new Lollipop();
-            string filelocation = @"C:\Users\j0lte\Desktop\ProMex_Test_Results\05-26-17_B7A_yeast_td_fract5_rep1_MS1.ms1ft";
-
-            Sweet.lollipop.convertxml(filelocation);
-        }
-
     }
 }
