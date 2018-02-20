@@ -543,7 +543,7 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
-            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray();
+            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && consecutive_charge_states(min_num_CS, p.charge_states)).ToArray();
             remaining_to_aggregate = new List<IAggregatable>(ordered_to_aggregate);
 
             IAggregatable root = ordered_to_aggregate.FirstOrDefault();
@@ -575,6 +575,23 @@ namespace ProteoformSuiteInternal
             }
 
             return candidateExperimentalProteoforms;
+        }
+
+        public bool consecutive_charge_states(int num_charge_states, List<ChargeState> charge_states)
+        {
+            List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
+            int consecutive = 1;
+            foreach(int cs in charges)
+            {
+                consecutive = 1;
+                foreach(int next in charges)
+                {
+                    if (next == cs || next < cs) continue;
+                    if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
+                    if (consecutive >= num_charge_states) return true;
+                }
+            }
+            return false;
         }
 
         public IAggregatable find_next_root(List<IAggregatable> ordered, List<IAggregatable> running)
