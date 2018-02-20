@@ -12,7 +12,7 @@ using MassSpectrometry;
 using IO.Thermo;
 using IO.MzML;
 using System.Diagnostics;
-using Microsoft.Office.Interop.Excel;
+using ClosedXML.Excel;
 
 namespace ProteoformSuiteInternal
 {
@@ -263,15 +263,11 @@ namespace ProteoformSuiteInternal
                             if (feature.Value.monoisotopicMass > minMass && feature.Value.isotopicEnvelopes.Select(p => p.charge).Distinct().Count() >= numChargesRequired)
                                 output.Add(feature.Value.GetThermoFormattedString());
 
-                        File.WriteAllLines(filelocation + "_deconv.tsv", output);
 
-                        Application excel = new Application();
-                        Workbook wb = excel.Workbooks.Open(filelocation + "_deconv.tsv");
-                        excel.DisplayAlerts = false;
-                        wb.SaveAs(Path.Combine(filelocation + "_deconv.xlsx"), XlFileFormat.xlOpenXMLWorkbook);
-                        excel.DisplayAlerts = true;
-                        wb.Close();
-                        excel.Quit();
+                    var wb = new XLWorkbook();
+                    var ws = wb.Worksheets.Add("worksheet");
+                    ws.Cell(1, 1).InsertData(output);
+                    wb.SaveAs(filelocation + "_deconv.xlsx");
                     }
                     if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
                     {
@@ -280,10 +276,6 @@ namespace ProteoformSuiteInternal
                     if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
                     {
                         File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
-                    }
-                    if (File.Exists(Path.Combine(filelocation + "_deconv.tsv")))
-                    {
-                        File.Delete(Path.Combine(filelocation + "_deconv.tsv"));
                     }
                     if (File.Exists(Path.Combine(filelocation + ".pbf")))
                     {
