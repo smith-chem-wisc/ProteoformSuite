@@ -580,15 +580,15 @@ namespace ProteoformSuiteInternal
         public bool consecutive_charge_states(int num_charge_states, List<ChargeState> charge_states)
         {
             List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
-            int consecutive = 1;
+            if (charges.Count < num_charge_states) return false;
             foreach(int cs in charges)
             {
-                consecutive = 1;
+                int consecutive = 1;
                 foreach(int next in charges)
                 {
+                    if (consecutive >= num_charge_states) return true;
                     if (next == cs || next < cs) continue;
                     if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
-                    if (consecutive >= num_charge_states) return true;
                 }
             }
             return false;

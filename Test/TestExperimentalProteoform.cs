@@ -45,7 +45,7 @@ namespace Test
                 light.charge_states = new List<ChargeState> { light_charge_state };
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
                 double mass_difference = heavy.weighted_monoisotopic_mass - light.weighted_monoisotopic_mass;
-                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, mass_difference, new HashSet<int>(), true);
+                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, mass_difference, new HashSet<int>() { 1 }, true);
                 n.lysine_count = starter_lysine_count;
                 components.Add(n);
             }
