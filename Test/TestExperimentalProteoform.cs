@@ -263,6 +263,28 @@ namespace Test
         }
 
         [Test]
+        public void aggregate_consecutive_charge_states()
+        {
+            List<ChargeState> cs = new List<ChargeState>();
+            for(int i = 5; i < 8; i++)
+            {
+                cs.Add(new ChargeState(i, 1000, 1000));
+            }
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(3, cs));
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(4, cs));
+            cs[0].charge_count = 4;
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(3, cs));
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(2, cs));
+            cs[0].charge_count = 5;
+            cs[2].charge_count = 9;
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(3, cs));
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(2, cs));
+            cs = new List<ChargeState>() { new ChargeState(1, 1000, 1000) };
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(2, cs));
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(1, cs));
+        }
+
+        [Test]
         public void test_aggregate_copy()
         { 
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
