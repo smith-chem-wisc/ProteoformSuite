@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
 
             public bool Equals(DoubleUlong du)
             {
-                return du.dbl == this.dbl && du.uu == this.uu;
+                return du.dbl.Equals(this.dbl) && du.uu == this.uu;
             }
         }
 

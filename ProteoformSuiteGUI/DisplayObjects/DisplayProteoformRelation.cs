@@ -382,7 +382,7 @@ namespace ProteoformSuiteGUI
         {
             //round table values
             if (property_name == nameof(DeltaMass)) { return "0.####"; }
-            if (!raw_et_histogram) if (property_name == nameof(PeakCenterDeltaMass)) { return "0.####"; }
+            if (!raw_et_histogram && property_name == nameof(PeakCenterDeltaMass)) { return "0.####"; }
             if (property_name == nameof(proteoform_mass_1)) { return "0.####"; }
             if (property_name == nameof(proteoform_mass_2)) { return "0.####"; }
             if (property_name == nameof(agg_intensity_1)) { return "0.##"; }
