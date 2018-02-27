@@ -50,7 +50,9 @@ namespace ProteoformSuiteGUI
         public void FillTablesAndCharts()
         {
             if (!ReadyToRunTheGamut())
+            {
                 return;
+            }
             GraphLysineCount();
             GraphIntensityRatio();
             FillNeuCodePairsDGV();
@@ -58,8 +60,8 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
-            foreach (var series in ct_IntensityRatio.Series) series.Points.Clear();
-            foreach (var series in ct_LysineCount.Series) series.Points.Clear();
+            foreach (var series in ct_IntensityRatio.Series) { series.Points.Clear(); }
+            foreach (var series in ct_LysineCount.Series) { series.Points.Clear(); }
 
             dgv_RawExpNeuCodePairs.DataSource = null;
             dgv_RawExpNeuCodePairs.Rows.Clear();
@@ -70,7 +72,9 @@ namespace ProteoformSuiteGUI
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
                     if (sweet as TheoreticalDatabase == null)
+                    {
                         sweet.ClearListsTablesFigures(false);
+                    }
                 }
             }
         }
@@ -121,7 +125,9 @@ namespace ProteoformSuiteGUI
             {
                 List<NeuCodePair> proteoforms_by_intensityRatio = Sweet.lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
+                {
                     ymax = proteoforms_by_intensityRatio.Count;
+                }
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
             }
             ct_IntensityRatio.DataSource = intensityRatioHistogram;
@@ -150,7 +156,9 @@ namespace ProteoformSuiteGUI
             {
                 List<NeuCodePair> pf_by_lysCt = Sweet.lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
                 if (pf_by_lysCt.Count > ymax)
+                {
                     ymax = pf_by_lysCt.Count;
+                }
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
             }
             ct_LysineCount.DataSource = lysCtHistogram;
@@ -252,7 +260,9 @@ namespace ProteoformSuiteGUI
         void ct_IntensityRatio_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
+            {
                 DisplayUtility.tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
+            }
         }
 
         Point? ct_LysineCount_prevPosition = null;
@@ -261,7 +271,9 @@ namespace ProteoformSuiteGUI
         void ct_LysineCount_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
+            {
                 DisplayUtility.tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
+            }
         }
 
         #endregion Tooltip Private Methods

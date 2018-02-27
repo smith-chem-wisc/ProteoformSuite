@@ -1,16 +1,15 @@
-﻿using System.Windows.Forms;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
     public class DisplayTopDownHit : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayTopDownHit(TopDownHit h)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.h = h;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private TopDownHit h;
+        private readonly TopDownHit h;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -85,7 +84,7 @@ namespace ProteoformSuiteGUI
                         String.Join("; ", h.ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
             }
         }
-        
+
         public string Accession
         {
             get { return h.accession; }
@@ -114,6 +113,7 @@ namespace ProteoformSuiteGUI
         #endregion Public Properties
 
         #region Public Methods
+
         public static void FormatTopDownHitsTable(DataGridView dgv)
         {
             if (dgv.Columns.Count <= 0) return;
@@ -136,7 +136,7 @@ namespace ProteoformSuiteGUI
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Private Methods
 
@@ -147,25 +147,25 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(input_file_filename)) return "Input Filename";
-            if (property_name == nameof(reported_mass)) return "Reported Mass";
-            if (property_name == nameof(theoretical_mass)) return "Theoretical Mass";
-            if (property_name == nameof(uniprot_id)) return "Uniprot ID";
-            if (property_name == nameof(retention_time)) return "Retention Time";
-            if (property_name == nameof(pscore)) return "P-Score";
-            if (property_name == nameof(ptm_description)) return "PTM Description";
-            if (property_name == nameof(PFR_accession)) return "PFR Accession";
+            if (property_name == nameof(input_file_filename)) { return "Input Filename"; }
+            if (property_name == nameof(reported_mass)) { return "Reported Mass"; }
+            if (property_name == nameof(theoretical_mass)) { return "Theoretical Mass"; }
+            if (property_name == nameof(uniprot_id)) { return "Uniprot ID"; }
+            if (property_name == nameof(retention_time)) { return "Retention Time"; }
+            if (property_name == nameof(pscore)) { return "P-Score"; }
+            if (property_name == nameof(ptm_description)) { return "PTM Description"; }
+            if (property_name == nameof(PFR_accession)) { return "PFR Accession"; }
             return null;
         }
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(reported_mass)) return "0.0000";
-            if (property_name == nameof(theoretical_mass)) return "0.0000";
-            if (property_name == nameof(retention_time)) return "0.00";
+            if (property_name == nameof(reported_mass)) { return "0.0000"; }
+            if (property_name == nameof(theoretical_mass)) { return "0.0000"; }
+            if (property_name == nameof(retention_time)) { return "0.00"; }
             return null;
         }
-        #endregion
 
+        #endregion Private Methods
     }
 }

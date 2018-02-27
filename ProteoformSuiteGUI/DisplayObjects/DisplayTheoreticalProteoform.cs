@@ -6,12 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
-
 namespace ProteoformSuiteGUI
 {
     public class DisplayTheoreticalProteoform : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayTheoreticalProteoform(TheoreticalProteoform t)
@@ -20,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.t = t;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private TheoreticalProteoform t;
+        private readonly TheoreticalProteoform t;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -109,7 +107,7 @@ namespace ProteoformSuiteGUI
         {
             get { return t.goTerm_IDs; }
         }
-        
+
         public string groupedAccessions
         {
             get { return String.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
@@ -117,7 +115,7 @@ namespace ProteoformSuiteGUI
 
         public bool topdown_theoretical
         {
-            get { return t.topdown_theoretical;  }
+            get { return t.topdown_theoretical; }
         }
 
         #endregion Public Properties
@@ -146,22 +144,22 @@ namespace ProteoformSuiteGUI
             IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayTheoreticalProteoform).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
-        
-        #endregion
+
+        #endregion Public Methods
 
         #region Private Methods
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(unmodified_mass)) return "Unmodified Mass";
-            if (property_name == nameof(ptm_mass)) return "PTM Mass";
-            if (property_name == nameof(ptm_description)) return "PTM Description";
-            if (property_name == nameof(modified_mass)) return "Modified Mass";
-            if (property_name == nameof(lysine_count)) return "Lysine Count";
-            if (property_name == nameof(goTerm_IDs)) return "GO Term IDs";
-            if (property_name == nameof(gene_name)) return "Gene Name";
-            if (property_name == nameof(groupedAccessions)) return "Grouped Accessions";
-            if (property_name == nameof(topdown_theoretical)) return "Top-Down Theoretical";
+            if (property_name == nameof(unmodified_mass)) { return "Unmodified Mass"; }
+            if (property_name == nameof(ptm_mass)) { return "PTM Mass"; }
+            if (property_name == nameof(ptm_description)) { return "PTM Description"; }
+            if (property_name == nameof(modified_mass)) { return "Modified Mass"; }
+            if (property_name == nameof(lysine_count)) { return "Lysine Count"; }
+            if (property_name == nameof(goTerm_IDs)) { return "GO Term IDs"; }
+            if (property_name == nameof(gene_name)) { return "Gene Name"; }
+            if (property_name == nameof(groupedAccessions)) { return "Grouped Accessions"; }
+            if (property_name == nameof(topdown_theoretical)) { return "Top-Down Theoretical"; }
             return null;
         }
 
@@ -172,13 +170,12 @@ namespace ProteoformSuiteGUI
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(unmodified_mass)) return "0.####";
-            if (property_name == nameof(ptm_mass)) return "0.####";
-            if (property_name == nameof(modified_mass)) return "0.####";
+            if (property_name == nameof(unmodified_mass)) { return "0.####"; }
+            if (property_name == nameof(ptm_mass)) { return "0.####"; }
+            if (property_name == nameof(modified_mass)) { return "0.####"; }
             return null;
         }
 
         #endregion Private Methods
-
     }
 }

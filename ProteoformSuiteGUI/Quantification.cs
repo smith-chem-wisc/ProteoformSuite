@@ -12,7 +12,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class Quantification : Form, ISweetForm
     {
-
         #region Constructor
 
         public Quantification()
@@ -43,8 +42,8 @@ namespace ProteoformSuiteGUI
 
         #region Private Fields
 
-        TusherAnalysis selected_tusher_analysis;
-        IGoAnalysis selected_analysis;
+        private TusherAnalysis selected_tusher_analysis;
+        private IGoAnalysis selected_analysis;
 
         #endregion Private Fields
 
@@ -76,8 +75,6 @@ namespace ProteoformSuiteGUI
             results = ResultsSummaryGenerator.experimental_results_dataframe(selected_tusher_analysis);
             results.TableName = "Results_" + selected_tusher_analysis.sortedPermutedRelativeDifferences.Count.ToString() + "Perm";
             DataTables.Add(results);
-
-
 
             // Satisfactory proteoforms with and without imputation
             IEnumerable<ExperimentalProteoform> proteoforms;
@@ -258,7 +255,6 @@ namespace ProteoformSuiteGUI
                 nud_minObservations.Value = Sweet.lollipop.minBiorepsWithObservations;
             }
             Sweet.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
-
         }
 
         public void InitializeParameterSet()
@@ -304,7 +300,6 @@ namespace ProteoformSuiteGUI
             cmbx_quantitativeValuesTableSelection.SelectedIndexChanged -= cmbx_quantitativeValuesTableSelection_SelectedIndexChanged;
             cmbx_quantitativeValuesTableSelection.SelectedIndex = 0;
             cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += cmbx_quantitativeValuesTableSelection_SelectedIndexChanged;
-
 
             //Set parameters
             rb_significanceByFoldChange.CheckedChanged -= cb_significanceByFoldChange_CheckedChanged;
@@ -363,7 +358,6 @@ namespace ProteoformSuiteGUI
             cb_useBiorepPermutationFoldChange.Checked = Sweet.lollipop.useBiorepPermutationFoldChange;
             cb_useBiorepPermutationFoldChange.CheckedChanged += cb_useBiorepPermutationFoldChange_CheckedChanged;
 
-
             nud_Offset.ValueChanged -= nud_Offset_ValueChanged;
             nud_Offset.Value = Sweet.lollipop.offsetTestStatistics;
             nud_Offset.ValueChanged += nud_Offset_ValueChanged;
@@ -419,7 +413,7 @@ namespace ProteoformSuiteGUI
             else if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().Count() != 2)
                 MessageBox.Show("Please be sure there are two conditions.");
             else if (!Sweet.lollipop.neucode_labeled && !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
-            Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d))))
+                    Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d))))
                 MessageBox.Show("Please be sure there are the same number and labels for each biological replicate, fraction, and technical replicate for each condition.");
             else if (!Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate).Distinct().Count() >= 2))
                 MessageBox.Show("Please be sure there are at least two biological replicates for each condition.");
@@ -450,23 +444,21 @@ namespace ProteoformSuiteGUI
 
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.backgroundShift = nud_bkgdShift.Value;
-            if (Sweet.lollipop.qVals.Count <= 0)
-                return;
-            Sweet.lollipop.Log2FoldChangeAnalysis.QuantitativeDistributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), Sweet.lollipop.Log2FoldChangeAnalysis.QuantitativeDistributions.logIntensityHistogram);
-            Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.logIntensityHistogram);
-            Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList), Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.logIntensityHistogram);
-            Sweet.lollipop.Log2FoldChangeAnalysis.QuantitativeDistributions.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.condition_count, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
-            Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.condition_count, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
-            Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.condition_count, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
-
+            BackgroundChanged();
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.backgroundWidth = nud_bkgdWidth.Value;
+            BackgroundChanged();
+        }
+
+        private void BackgroundChanged()
+        {
+            Sweet.lollipop.backgroundShift = nud_bkgdShift.Value;
             if (Sweet.lollipop.qVals.Count <= 0)
+            {
                 return;
+            }
             Sweet.lollipop.Log2FoldChangeAnalysis.QuantitativeDistributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), Sweet.lollipop.Log2FoldChangeAnalysis.QuantitativeDistributions.logIntensityHistogram);
             Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), Sweet.lollipop.TusherAnalysis1.QuantitativeDistributions.logIntensityHistogram);
             Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList), Sweet.lollipop.TusherAnalysis2.QuantitativeDistributions.logIntensityHistogram);
@@ -530,7 +522,6 @@ namespace ProteoformSuiteGUI
             "Biorep-Techrep Intensity Sums (Normalized without Imputation) for All Proteoforms", // 9
         };
 
-
         private void fill_quantitative_values_table()
         {
             if (Sweet.lollipop.significance_by_log2FC)
@@ -555,8 +546,8 @@ namespace ProteoformSuiteGUI
                 }
             }
 
-            IEnumerable<ExperimentalProteoform> proteoforms = new int[] { 2,4,6,8 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex) 
-                ? Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform> 
+            IEnumerable<ExperimentalProteoform> proteoforms = new int[] { 2, 4, 6, 8 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex)
+                ? Sweet.lollipop.satisfactoryProteoforms as IEnumerable<ExperimentalProteoform>
                 : Sweet.lollipop.target_proteoform_community.experimental_proteoforms as IEnumerable<ExperimentalProteoform>;
 
             bool include_imputation = new int[] { 2, 3, 6, 7 }.Contains(cmbx_quantitativeValuesTableSelection.SelectedIndex);
@@ -594,15 +585,16 @@ namespace ProteoformSuiteGUI
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q =>  q.Log2FoldChangeValues.logfold2change)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => q.Log2FoldChangeValues.logfold2change)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => q.Log2FoldChangeValues.logfold2change)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(q.Log2FoldChangeValues.pValue_uncorrected)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(q.Log2FoldChangeValues.pValue_uncorrected)));
             }
         }
 
-        Point? ct_volcano_logFold_logP_prevPosition = null;
-        ToolTip ct_volcano_logFold_logP_tt = new ToolTip();
+        private Point? ct_volcano_logFold_logP_prevPosition = null;
+        private ToolTip ct_volcano_logFold_logP_tt = new ToolTip();
+
         private void ct_volcano_logFold_logP_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -628,7 +620,7 @@ namespace ProteoformSuiteGUI
 
         #endregion Volcano Plot Methods
 
-        #region Relative Difference Chart Methods     
+        #region Relative Difference Chart Methods
 
         private TusherAnalysis get_tusher_analysis()
         {
@@ -674,21 +666,19 @@ namespace ProteoformSuiteGUI
                 if (Math.Ceiling(Math.Abs(get_tusher_values(pf.quant).relative_difference)) > max_test_stat_unit)
                     max_test_stat_unit = (int)Math.Ceiling(Math.Abs(get_tusher_values(pf.quant).relative_difference));
             }
+            SetRelativeDifferenceAxisMaxMin(max_test_stat_unit);
+            plotObservedVsExpectedOffsets();
+        }
 
+        private void SetRelativeDifferenceAxisMaxMin(int max_test_stat_unit)
+        {
             if (get_tusher_analysis().avgSortedPermutationRelativeDifferences.Count > 0 && get_tusher_analysis().sortedProteoformRelativeDifferences.Count > 0)
             {
-                //ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.sortedAvgPermutationTestStatistics.First()));
-                //ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.sortedAvgPermutationTestStatistics.Last()));
-                //ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(Sweet.lollipop.sortedAvgPermutationTestStatistics.First()))), Convert.ToDouble(Math.Floor(Sweet.lollipop.sortedProteoformTestStatistics.First())));
-                //ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(Sweet.lollipop.sortedAvgPermutationTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(Sweet.lollipop.sortedProteoformTestStatistics.Last())));
                 ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
                 ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
                 ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;
                 ct_relativeDifference.ChartAreas[0].AxisY.Maximum = max_test_stat_unit;
-
             }
-
-            plotObservedVsExpectedOffsets();
         }
 
         private void plotObservedRelativeDifferenceVsScatter()
@@ -759,13 +749,7 @@ namespace ProteoformSuiteGUI
                 }
             }
 
-            if (get_tusher_analysis().avgSortedPermutationRelativeDifferences.Count > 0 && get_tusher_analysis().sortedProteoformRelativeDifferences.Count > 0)
-            {
-                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
-                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
-                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;
-                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = max_test_stat_unit;
-            }
+            SetRelativeDifferenceAxisMaxMin(max_test_stat_unit);
         }
 
         private void plots()
@@ -865,8 +849,9 @@ namespace ProteoformSuiteGUI
             return (x - (double)nud_Offset.Value);
         }
 
-        Point? ct_relativeDifference_prevPosition = null;
-        ToolTip ct_relativeDifference_tt = new ToolTip();
+        private Point? ct_relativeDifference_prevPosition = null;
+        private ToolTip ct_relativeDifference_tt = new ToolTip();
+
         private void ct_relativeDifference_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -899,12 +884,10 @@ namespace ProteoformSuiteGUI
 
         private void cb_significanceByPermutation_CheckedChanged(object sender, EventArgs e)
         {
-
         }
 
         private void cb_significanceByFoldChange_CheckedChanged(object sender, EventArgs e)
         {
-
         }
 
         #endregion Significance Checkbox Methods
@@ -921,7 +904,6 @@ namespace ProteoformSuiteGUI
             plots();
         }
 
-    
         private void nud_permutationFoldChangeCutoff_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.foldChangeCutoff = nud_foldChangeCutoff.Value;
@@ -1000,7 +982,7 @@ namespace ProteoformSuiteGUI
                 ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Avg. Intensity, " + Sweet.lollipop.denominator_condition;
 
                 List<ExperimentalProteoform> pfs = (selection == 4 ? Sweet.lollipop.target_proteoform_community.experimental_proteoforms.ToList() : Sweet.lollipop.satisfactoryProteoforms)
-                    .Where(pf => Sweet.lollipop.significance_by_log2FC ? 
+                    .Where(pf => Sweet.lollipop.significance_by_log2FC ?
                         pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities != null && pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities != null :
                         tusher_selection < 3 ?
                         pf.quant.TusherValues1.numeratorOriginalIntensities != null && pf.quant.TusherValues1.denominatorOriginalIntensities != null :
@@ -1009,7 +991,7 @@ namespace ProteoformSuiteGUI
 
                 foreach (ExperimentalProteoform pf in pfs)
                 {
-                    int yeah = Sweet.lollipop.significance_by_log2FC?
+                    int yeah = Sweet.lollipop.significance_by_log2FC ?
                         ct_proteoformIntensities.Series["Intensities"].Points.AddXY(pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities == null || pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Count == 0 ? 0 : pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Average(x => x.intensity_sum), pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities == null || pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities.Count == 0 ? 0 : pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities.Average(x => x.intensity_sum)) :
                         tusher_selection < 3 ?
                         ct_proteoformIntensities.Series["Intensities"].Points.AddXY(pf.quant.TusherValues1.numeratorOriginalIntensities == null || pf.quant.TusherValues1.numeratorOriginalIntensities.Count == 0 ? 0 : pf.quant.TusherValues1.numeratorOriginalIntensities.Average(x => x.intensity_sum), pf.quant.TusherValues1.denominatorOriginalIntensities == null || pf.quant.TusherValues1.denominatorOriginalIntensities.Count == 0 ? 0 : pf.quant.TusherValues1.denominatorOriginalIntensities.Average(x => x.intensity_sum)) :
@@ -1070,8 +1052,9 @@ namespace ProteoformSuiteGUI
             plotBiorepIntensities();
         }
 
-        Point? ct_proteoformIntensities_prevPosition = null;
-        ToolTip ct_proteoformIntensities_tt = new ToolTip();
+        private Point? ct_proteoformIntensities_prevPosition = null;
+        private ToolTip ct_proteoformIntensities_tt = new ToolTip();
+
         private void ct_proteoformIntensities_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -1101,14 +1084,7 @@ namespace ProteoformSuiteGUI
 
         private void updateGoTermsTable(object s, EventArgs e)
         {
-            IGoAnalysis g = get_go_analysis();
-            g.GoAnalysis.maxGoTermFDR = nud_FDR.Value;
-            g.GoAnalysis.minProteoformFoldChange = nud_ratio.Value;
-            g.GoAnalysis.minProteoformIntensity = nud_intensity.Value;
-            if (Sweet.lollipop.significance_by_log2FC) g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis);
-            else g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => get_tusher_analysis() as TusherAnalysis1 != null? pf.quant.TusherValues1.significant : pf.quant.TusherValues2.significant), get_tusher_analysis().GoAnalysis);
-            g.GoAnalysis.GO_analysis(g.inducedOrRepressedProteins);
-            fillGoTermsTable();
+            updateGoTermsTable();
         }
 
         private void updateGoTermsTable()
@@ -1128,7 +1104,8 @@ namespace ProteoformSuiteGUI
             fillGoTermsTable();
         }
 
-        bool backgroundUpdated = true;
+        private bool backgroundUpdated = true;
+
         private void goTermBackgroundChanged(object s, EventArgs e)
         {
             if (!backgroundUpdated)
@@ -1178,7 +1155,8 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        OpenFileDialog fileOpen = new OpenFileDialog();
+        private OpenFileDialog fileOpen = new OpenFileDialog();
+
         private void btn_customBackgroundBrowse_Click(object sender, EventArgs e)
         {
             fileOpen.Filter = "Protein accession list (*.txt)|*.txt";
@@ -1200,9 +1178,9 @@ namespace ProteoformSuiteGUI
 
         #region Cytoscape Visualization Private Methods
 
-        OpenFileDialog fileOpener = new OpenFileDialog();
-        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
-        bool got_cyto_temp_folder = false;
+        private OpenFileDialog fileOpener = new OpenFileDialog();
+        private FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        private bool got_cyto_temp_folder = false;
 
         private void btn_browseTempFolder_Click(object sender, EventArgs e)
         {
@@ -1278,7 +1256,7 @@ namespace ProteoformSuiteGUI
             string time_stamp = Sweet.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(go_families, Sweet.lollipop.target_proteoform_community.families,
-                Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), cb_redBorder.Checked, cb_boldLabel.Checked, 
+                Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
                 cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
@@ -1307,7 +1285,9 @@ namespace ProteoformSuiteGUI
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
-        private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
+        private void cmbx_empty_TextChanged(object sender, EventArgs e)
+        {
+        }
 
         #endregion Cytoscape Visualization Private Methods
 

@@ -7,6 +7,7 @@ namespace ProteoformSuiteInternal
     public class ProteinSequenceGroup : ProteinWithGoTerms
     {
         public List<ProteinWithGoTerms> proteinWithGoTermList = new List<ProteinWithGoTerms>();
+
         public ProteinSequenceGroup(IEnumerable<ProteinWithGoTerms> proteins_with_contaminants_first)
             : base(proteins_with_contaminants_first.First().BaseSequence,
                 proteins_with_contaminants_first.First().Accession + "_" + proteins_with_contaminants_first.Count() + "G",
@@ -16,8 +17,8 @@ namespace ProteoformSuiteInternal
                 proteins_with_contaminants_first.First().ProteolysisProducts.ToList(),
                 String.Join(";", proteins_with_contaminants_first.Select(p => p.Name).Distinct()),
                 proteins_with_contaminants_first.First().FullName,
-                false, 
-                proteins_with_contaminants_first.Any(p => p.IsContaminant), 
+                false,
+                proteins_with_contaminants_first.Any(p => p.IsContaminant),
                 proteins_with_contaminants_first.SelectMany(p => p.DatabaseReferences),
                 proteins_with_contaminants_first.SelectMany(p => p.GoTerms))
         {

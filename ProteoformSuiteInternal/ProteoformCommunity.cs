@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace ProteoformSuiteInternal
 {
     public class ProteoformCommunity
     {
+        #region Public Fields
 
-        #region Public Fields 
         public int community_number; //-100 for target, decoy database number for decoys
         public ExperimentalProteoform[] experimental_proteoforms = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms = new TheoreticalProteoform[0];
@@ -30,7 +29,7 @@ namespace ProteoformSuiteInternal
             get { return experimental_proteoforms.Length > 0 && theoretical_proteoforms.Length > 0; }
         }
 
-        #endregion
+        #endregion Public Properties
 
         #region BUILDING RELATIONSHIPS
 
@@ -47,8 +46,8 @@ namespace ProteoformSuiteInternal
             {
                 foreach (Proteoform pf2 in pfs2)
                 {
-                    if (!pfs2_lysine_lookup.TryGetValue(pf2.lysine_count, out List<Proteoform> same_lysine_ct)) pfs2_lysine_lookup.Add(pf2.lysine_count, new List<Proteoform> { pf2 });
-                    else same_lysine_ct.Add(pf2);
+                    if (!pfs2_lysine_lookup.TryGetValue(pf2.lysine_count, out List<Proteoform> same_lysine_ct)) { pfs2_lysine_lookup.Add(pf2.lysine_count, new List<Proteoform> { pf2 }); }
+                    else { same_lysine_ct.Add(pf2); }
                 }
             }
 
@@ -61,13 +60,11 @@ namespace ProteoformSuiteInternal
                         pfs2_lysine_lookup.TryGetValue(pf1.lysine_count, out List<Proteoform> pfs2_same_lysine_count);
                         pf1.candidate_relatives = pfs2_same_lysine_count != null ? pfs2_same_lysine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList() : new List<Proteoform>();
                     }
-
                     else if (Sweet.lollipop.neucode_labeled && relation_type == ProteoformComparison.ExperimentalFalse)
                     {
                         List<Proteoform> pfs2_lysines_outside_tolerance = pfs2_lysine_lookup.Where(kv => Math.Abs(pf1.lysine_count - kv.Key) > Sweet.lollipop.maximum_missed_lysines).SelectMany(kv => kv.Value).ToList();
                         pf1.candidate_relatives = pfs2_lysines_outside_tolerance.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }
-
                     else if (!Sweet.lollipop.neucode_labeled)
                     {
                         pf1.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
@@ -106,28 +103,33 @@ namespace ProteoformSuiteInternal
         public bool allowed_relation(Proteoform pf1, Proteoform pf2_with_allowed_lysines, ProteoformComparison relation_type)
         {
             if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+            {
                 return
                     (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) >= Sweet.lollipop.et_low_mass_difference
                     && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <= Sweet.lollipop.et_high_mass_difference;
-
+            }
             else if (relation_type == ProteoformComparison.ExperimentalExperimental)
+            {
                 return
                     pf1 != pf2_with_allowed_lysines
                     && pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference
                     && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;
-
+            }
             else if (relation_type == ProteoformComparison.ExperimentalFalse)
+            {
                 return
                     pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
                     && (Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) > Sweet.lollipop.ee_max_RetentionTime_difference * 2)
                     && (!Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) < Sweet.lollipop.ee_max_RetentionTime_difference);
-
+            }
             else
+            {
                 return false;
+            }
         }
 
         public static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)
@@ -141,17 +143,17 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
             List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true, Environment.CurrentDirectory, true);
-            Random random = Sweet.lollipop.useRandomSeed_decoys ? new Random(community_number + Sweet.lollipop.randomSeed_decoys) : new Random(); //new random generator for each round of 
+            Random random = Sweet.lollipop.useRandomSeed_decoys ? new Random(community_number + Sweet.lollipop.randomSeed_decoys) : new Random(); //new random generator for each round of
             var shuffled = all_ef_relations.OrderBy(item => random.Next()).ToList();
             return shuffled.Take(Sweet.lollipop.ee_relations.Count).ToList();
         }
-
 
         #endregion BUILDING RELATIONSHIPS
 
         #region GROUP and ANALYZE RELATIONS
 
         public HashSet<ProteoformRelation> remaining_relations_outside_no_mans = new HashSet<ProteoformRelation>();
+
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
@@ -166,7 +168,9 @@ namespace ProteoformSuiteInternal
                 while (root != null && active.Count < Environment.ProcessorCount) // Use Environment.ProcessorCount instead of 1 to enable parallization
                 {
                     if (root.RelationType != ProteoformComparison.ExperimentalExperimental && root.RelationType != ProteoformComparison.ExperimentalTheoretical)
+                    {
                         throw new ArgumentException("Only EE and ET peaks can be accepted");
+                    }
 
                     Thread t = new Thread(new ThreadStart(root.generate_peak));
                     t.Start();
@@ -237,7 +241,7 @@ namespace ProteoformSuiteInternal
             return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
         }
 
-        #endregion  GROUP and ANALYZE RELATIONS
+        #endregion GROUP and ANALYZE RELATIONS
 
         #region CONSTRUCTING FAMILIES
 
@@ -291,7 +295,7 @@ namespace ProteoformSuiteInternal
             if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             Parallel.ForEach(families, f => f.identify_experimentals());
-            //read in BU results if available, map to proteoforms. 
+            //read in BU results if available, map to proteoforms.
             //Sweet.lollipop.BottomUpPSMList.Clear();
             //BottomUpReader.bottom_up_PTMs_not_in_dictionary.Clear();
             //foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
@@ -354,11 +358,11 @@ namespace ProteoformSuiteInternal
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
-                if (p as TopDownProteoform == null) p.gene_name = null;
+                if (p as TopDownProteoform == null) { p.gene_name = null; }
             }
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
         }
-        #endregion CLEAR FAMILIES
 
+        #endregion CLEAR FAMILIES
     }
 }

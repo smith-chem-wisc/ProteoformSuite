@@ -1,7 +1,7 @@
 ﻿using Chemistry;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UsefulProteomicsDatabases;
 
@@ -27,7 +27,6 @@ namespace ProteoformSuiteInternal
     //referring to an individual value.
     public class ProteoformRelation : IMassDifference
     {
-
         #region Fields
 
         private static int instanceCounter = 0;
@@ -56,7 +55,6 @@ namespace ProteoformSuiteInternal
         /// </summary>
         public bool Accepted { get; set; }
 
-
         #endregion Public Properties
 
         #region Public Constructors
@@ -82,7 +80,7 @@ namespace ProteoformSuiteInternal
                 lysine_count = pf1.lysine_count;
             }
 
-            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) 
+            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
                 && Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets)
                 && pf2 as TheoreticalProteoform != null)
             {
@@ -102,7 +100,7 @@ namespace ProteoformSuiteInternal
             double high_decimal_bound = 1 - half_peak_width + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
             double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
 
-            outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound 
+            outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound
                 || high_decimal_bound <= low_decimal_bound;
         }
 
@@ -163,6 +161,5 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Methods
-
     }
 }
