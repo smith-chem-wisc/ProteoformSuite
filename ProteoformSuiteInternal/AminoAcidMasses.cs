@@ -38,7 +38,6 @@ namespace ProteoformSuiteInternal
                     aaMasses.Add('K', 136.1451772);
                     break;
 
-                case "n":
                 default:
                     aaMasses.Add('K', 128.094963);
                     break;

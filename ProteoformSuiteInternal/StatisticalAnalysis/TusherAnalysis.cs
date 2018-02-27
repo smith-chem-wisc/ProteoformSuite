@@ -114,7 +114,9 @@ namespace ProteoformSuiteInternal
                 decimal lower_threshold = sortedAvgPermutationTestStatistics[i] - significanceTestStatOffset;
                 decimal higher_threshold = sortedAvgPermutationTestStatistics[i] + significanceTestStatOffset;
                 if (sortedProteoformTestStatistics[i].relative_difference < lower_threshold && sortedProteoformTestStatistics[i].relative_difference <= 0)
+                {
                     minimumPassingNegativeTestStatistic = sortedProteoformTestStatistics[i].relative_difference; // last one below
+                }
                 if (sortedProteoformTestStatistics[i].relative_difference > higher_threshold && sortedProteoformTestStatistics[i].relative_difference >= 0)
                 {
                     minimumPassingPositiveTestStatisitic = sortedProteoformTestStatistics[i].relative_difference; //first one above
@@ -128,7 +130,7 @@ namespace ProteoformSuiteInternal
             int totalPassingProteoforms = 0;
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                TusherValues tusherValues = (this as TusherAnalysis != null ? pf.quant.TusherValues1 as TusherValues : pf.quant.TusherValues2 as TusherValues);
+                TusherValues tusherValues = this as TusherAnalysis != null ? pf.quant.TusherValues1 as TusherValues : pf.quant.TusherValues2;
                 tusherValues.significant = tusherValues.tusher_statistic.is_passing_real(minimumPassingNegativeTestStatistic, minimumPassingPositiveTestStatisitic, Sweet.lollipop.fold_change_conjunction, Sweet.lollipop.useFoldChangeCutoff, Sweet.lollipop.foldChangeCutoff, Sweet.lollipop.useAveragePermutationFoldChange, Sweet.lollipop.useBiorepPermutationFoldChange, Sweet.lollipop.minBiorepsWithFoldChange, out bool is_passing_relative_difference, out bool is_passing_fold_change);
                 tusherValues.significant_relative_difference = is_passing_relative_difference;
                 tusherValues.significant_fold_change = is_passing_fold_change;
@@ -140,7 +142,7 @@ namespace ProteoformSuiteInternal
                 return Double.NaN;
             }
 
-            double fdr = (double)avgPermutedPassingProteoforms / (double)totalPassingProteoforms;
+            double fdr = avgPermutedPassingProteoforms / (double)totalPassingProteoforms;
             return fdr;
         }
 
@@ -148,7 +150,7 @@ namespace ProteoformSuiteInternal
         {
             Parallel.ForEach(satisfactoryProteoforms, eP =>
             {
-                TusherValues tusherValues = (this as TusherAnalysis != null ? eP.quant.TusherValues1 as TusherValues : eP.quant.TusherValues2 as TusherValues);
+                TusherValues tusherValues = this as TusherAnalysis != null ? eP.quant.TusherValues1 as TusherValues : eP.quant.TusherValues2;
                 tusherValues.roughSignificanceFDR = QuantitativeProteoformValues.computeExperimentalProteoformFDR(tusherValues.relative_difference, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
             });
         }

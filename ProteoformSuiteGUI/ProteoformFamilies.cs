@@ -147,15 +147,6 @@ namespace ProteoformSuiteGUI
             "GO Terms of Families -- " + Aspect.MolecularFunction,
         };
 
-        private static Type[] table_types = new[]
-        {
-            typeof(ProteoformFamily),
-            typeof(TheoreticalProteoform),
-            typeof(GoTerm),
-            typeof(GoTerm),
-            typeof(GoTerm)
-        };
-
         private void CmbxChanged()
         {
             if (cmbx_tableSelector.SelectedIndex == 0) { fill_proteoform_families(tb_tableFilter.Text, -1); }
@@ -281,8 +272,7 @@ namespace ProteoformSuiteGUI
 
         #region Cytoscape Visualization Private Fields
 
-        private OpenFileDialog fileOpener = new OpenFileDialog();
-        private FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        private readonly FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
         private bool got_cyto_temp_folder;
 
         #endregion Cytoscape Visualization Private Fields
@@ -427,13 +417,9 @@ namespace ProteoformSuiteGUI
             update_figures_of_merit();
         }
 
-        /// <summary>
-        /// Simplifies the empty TextChanged methods for combo boxes
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void cmbx_empty_TextChanged(object sender, EventArgs e)
         {
+            // Simplifies the empty TextChanged methods for combo boxes
         }
 
         #endregion Private Methods
