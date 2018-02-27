@@ -8,12 +8,6 @@ namespace ProteoformSuiteInternal
     public class TusherAnalysis2
         : TusherAnalysis
     {
-        #region Public Fields
-
-        public Dictionary<Tuple<string, string>, double> conditionBiorep_sums = new Dictionary<Tuple<string, string>, double>();
-
-        #endregion Public Fields
-
         #region Public Methods
 
         public void compute_proteoform_statistics(List<ExperimentalProteoform> satisfactoryProteoforms, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<string>> conditionsBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal sKnot_minFoldChange, bool define_histogram)
