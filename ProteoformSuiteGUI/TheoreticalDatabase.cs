@@ -342,7 +342,7 @@ namespace ProteoformSuiteGUI
 
         private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
         {
-            Sweet.lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
+            Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             btn_downloadUniProtPtmList.Enabled = false;

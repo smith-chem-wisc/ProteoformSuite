@@ -1,16 +1,15 @@
 ﻿using ProteoformSuiteInternal;
-using System.Windows.Forms;
-using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
     public class DisplayTopDownProteoform : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayTopDownProteoform(TopDownProteoform t)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.t = t;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private TopDownProteoform t;
+        private readonly TopDownProteoform t;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -128,6 +127,7 @@ namespace ProteoformSuiteGUI
         {
             get { return t.mass_error; }
         }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -157,46 +157,47 @@ namespace ProteoformSuiteGUI
 
         public static string header(string name)
         {
-            if (name == nameof(modified_mass)) return "Modified Mass";
-            if (name == nameof(ptm_description)) return "PTM Description";
-            if (name == nameof(retentionTime)) return "Retention Time";
-            if (name == nameof(theoretical_mass)) return "Theoretical Mass";
-            if (name == nameof(correct_id)) return "Correct ID";
-            if (name == nameof(theoretical_accession)) return "Theoretical Accession";
-            if (name == nameof(theoretical_ptm_description)) return "Theoretical PTM Description";
-            if (name == nameof(theoretical_begin)) return "Theoretical Begin";
-            if (name == nameof(theoretical_end)) return "Theoretical End";
-            if (name == nameof(best_c_score)) return "Best Hit C-Score";
-            if (name == nameof(manual_id)) return "Best Hit Info";
-            if (name == nameof(family_id)) return "Family ID";
-            if (name == nameof(mass_error)) return "Mass Error";
-            if (name == nameof(PFR_accession)) return "PFR Accession";
+            if (name == nameof(modified_mass)) { return "Modified Mass"; }
+            if (name == nameof(ptm_description)) { return "PTM Description"; }
+            if (name == nameof(retentionTime)) { return "Retention Time"; }
+            if (name == nameof(theoretical_mass)) { return "Theoretical Mass"; }
+            if (name == nameof(correct_id)) { return "Correct ID"; }
+            if (name == nameof(theoretical_accession)) { return "Theoretical Accession"; }
+            if (name == nameof(theoretical_ptm_description)) { return "Theoretical PTM Description"; }
+            if (name == nameof(theoretical_begin)) { return "Theoretical Begin"; }
+            if (name == nameof(theoretical_end)) { return "Theoretical End"; }
+            if (name == nameof(best_c_score)) { return "Best Hit C-Score"; }
+            if (name == nameof(manual_id)) { return "Best Hit Info"; }
+            if (name == nameof(family_id)) { return "Family ID"; }
+            if (name == nameof(mass_error)) { return "Mass Error"; }
+            if (name == nameof(PFR_accession)) { return "PFR Accession"; }
             return null;
         }
 
         private static bool visible(string property_name, bool current, bool identified_topdown)
         {
-            if(!identified_topdown)
+            if (!identified_topdown)
             {
-                if (property_name == nameof(theoretical_accession)) return false;
-                if (property_name == nameof(correct_id)) return false;
-                if (property_name == nameof(theoretical_ptm_description)) return false;
-                if (property_name == nameof(theoretical_begin)) return false;
-                if (property_name == nameof(theoretical_end)) return false;
-                if (property_name == nameof(family_id)) return false;
-                if (property_name == nameof(mass_error)) return false;
+                if (property_name == nameof(theoretical_accession)) { return false; }
+                if (property_name == nameof(correct_id)) { return false; }
+                if (property_name == nameof(theoretical_ptm_description)) { return false; }
+                if (property_name == nameof(theoretical_begin)) { return false; }
+                if (property_name == nameof(theoretical_end)) { return false; }
+                if (property_name == nameof(family_id)) { return false; }
+                if (property_name == nameof(mass_error)) { return false; }
             }
             return current;
         }
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(modified_mass)) return "0.0000";
-            if (property_name == nameof(theoretical_mass)) return "0.0000";
-            if (property_name == nameof(retentionTime)) return "0.00";
-            if (property_name == nameof(mass_error)) return "0.0000";
+            if (property_name == nameof(modified_mass)) { return "0.0000"; }
+            if (property_name == nameof(theoretical_mass)) { return "0.0000"; }
+            if (property_name == nameof(retentionTime)) { return "0.00"; }
+            if (property_name == nameof(mass_error)) { return "0.0000"; }
             return null;
         }
-        #endregion
+
+        #endregion Public Methods
     }
 }

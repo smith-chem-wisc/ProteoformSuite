@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayGoTermNumber : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayGoTermNumber(GoTermNumber g)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             gtn = g;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private GoTermNumber gtn;
+        private readonly GoTermNumber gtn;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -109,19 +108,19 @@ namespace ProteoformSuiteGUI
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Private Methods
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(by)) return "Benjamini-Yekutieli Corrected p-Value";
-            if (property_name == nameof(p_value)) return "p-Value";
-            if (property_name == nameof(log_odds_ratio)) return "Log Odds Ratio";
-            if (property_name == nameof(q_significantProteinsWithThisGoTerm)) return "Significant Proteins With This Go-Term";
-            if (property_name == nameof(k_significantProteins)) return "Total Significant Proteins";
-            if (property_name == nameof(m_backgroundProteinsWithThisGoTerm)) return "Background Proteins With This Go-Term";
-            if (property_name == nameof(t_backgroundProteins)) return "Total Background Proteins";
+            if (property_name == nameof(by)) { return "Benjamini-Yekutieli Corrected p-Value"; }
+            if (property_name == nameof(p_value)) { return "p-Value"; }
+            if (property_name == nameof(log_odds_ratio)) { return "Log Odds Ratio"; }
+            if (property_name == nameof(q_significantProteinsWithThisGoTerm)) { return "Significant Proteins With This Go-Term"; }
+            if (property_name == nameof(k_significantProteins)) { return "Total Significant Proteins"; }
+            if (property_name == nameof(m_backgroundProteinsWithThisGoTerm)) { return "Background Proteins With This Go-Term"; }
+            if (property_name == nameof(t_backgroundProteins)) { return "Total Background Proteins"; }
             return null;
         }
 
@@ -132,13 +131,12 @@ namespace ProteoformSuiteGUI
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(by)) return "E2";
-            if (property_name == nameof(p_value)) return "E2";
-            if (property_name == nameof(log_odds_ratio)) return "0.####";
+            if (property_name == nameof(by)) { return "E2"; }
+            if (property_name == nameof(p_value)) { return "E2"; }
+            if (property_name == nameof(log_odds_ratio)) { return "0.####"; }
             return null;
         }
 
         #endregion Private Methods
-
     }
 }

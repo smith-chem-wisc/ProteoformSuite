@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayChargeState : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayChargeState(ChargeState c)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.c = c;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private ChargeState c;
+        private readonly ChargeState c;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -56,7 +55,10 @@ namespace ProteoformSuiteGUI
 
         public static void FormatChargeStateTable(DataGridView dgv)
         {
-            if (dgv.Columns.Count <= 0) return;
+            if (dgv.Columns.Count <= 0)
+            {
+                return;
+            }
 
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
@@ -84,10 +86,10 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(intensity)) return "Intensity";
-            if (property_name == nameof(mz_centroid)) return "Centroid m/z";
-            if (property_name == nameof(calculated_mass)) return "Calculated Mass";
-            if (property_name == nameof(charge_count)) return "Charge Count";
+            if (property_name == nameof(intensity)) { return "Intensity"; }
+            if (property_name == nameof(mz_centroid)) { return "Centroid m/z"; }
+            if (property_name == nameof(calculated_mass)) { return "Calculated Mass"; }
+            if (property_name == nameof(charge_count)) { return "Charge Count"; }
             return null;
         }
 
@@ -98,14 +100,12 @@ namespace ProteoformSuiteGUI
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(intensity)) return  "0.0000";
-            if (property_name == nameof(mz_centroid)) return  "0.0000";
-            if (property_name == nameof(calculated_mass)) return  "0.0000";
+            if (property_name == nameof(intensity)) { return "0.0000"; }
+            if (property_name == nameof(mz_centroid)) { return "0.0000"; }
+            if (property_name == nameof(calculated_mass)) { return "0.0000"; }
             return null;
         }
 
-
         #endregion Private Methods
-
     }
 }

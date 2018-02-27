@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayExperimentalProteoform : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayExperimentalProteoform(ExperimentalProteoform e)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.e = e;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private ExperimentalProteoform e;
+        private readonly ExperimentalProteoform e;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -103,6 +102,7 @@ namespace ProteoformSuiteGUI
         {
             get { return e.end; }
         }
+
         public string gene_name
         {
             get
@@ -111,7 +111,7 @@ namespace ProteoformSuiteGUI
                     (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != null ?
                     e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) :
                     "")
-                    :  "";
+                    : "";
             }
         }
 
@@ -120,7 +120,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.linked_proteoform_references != null ?
-                   (e.linked_proteoform_references[0] as TheoreticalProteoform).accession:
+                   (e.linked_proteoform_references[0] as TheoreticalProteoform).accession :
                     "";
             }
         }
@@ -181,7 +181,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return e.linked_proteoform_references != null ? (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant 
+                return e.linked_proteoform_references != null ? (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant
                     : false;
             }
         }
@@ -209,7 +209,7 @@ namespace ProteoformSuiteGUI
                 c.HeaderText = h != null ? h : c.HeaderText;
                 c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
                 c.Visible = visible(c.Name, c.Visible);
-            }            
+            }
         }
 
         public static DataTable FormatAggregatesTable(List<DisplayExperimentalProteoform> display, string table_name)
@@ -224,45 +224,44 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(Accession)) return "Experimental Proteoform ID";
-            if (property_name == nameof(agg_mass)) return "Aggregated Mass";
-            if (property_name == nameof(agg_intensity)) return "Aggregated Deconvolution Intensity";
-            if (property_name == nameof(agg_rt)) return "Aggregated RT";
-            if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
-            if (property_name == nameof(heavy_verification_count)) return "Heavy Verification Component Count";
-            if (property_name == nameof(light_verification_count)) return "Light Verification Component Count";
-            if (property_name == nameof(heavy_observation_count)) return "Heavy Quantitative Component Count";
-            if (property_name == nameof(light_observation_count)) return "Light Quantitative Component Count";
-            if (property_name == nameof(lysine_count)) return "Lysine Count";
-            if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
-            if (property_name == nameof(ptm_description)) return "PTM Description";
-            if (property_name == nameof(gene_name)) return "Gene Name";
-            if (property_name == nameof(theoretical_accession)) return "Theoretical Accession";
-            if (property_name == nameof(manual_validation_id)) return "Abundant Component for Manual Validation of Identification";
-            if (property_name == nameof(manual_validation_verification)) return "Abundant Component for Manual Validation of Identification Verification";
-            if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
-            if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
-            if (property_name == nameof(family_id)) return "Family ID";
-            if (property_name == nameof(mass_error)) return "Mass Error";
+            if (property_name == nameof(Accession)) { return "Experimental Proteoform ID"; }
+            if (property_name == nameof(agg_mass)) { return "Aggregated Mass"; }
+            if (property_name == nameof(agg_intensity)) { return "Aggregated Deconvolution Intensity"; }
+            if (property_name == nameof(agg_rt)) { return "Aggregated RT"; }
+            if (property_name == nameof(observation_count)) { return "Aggregated Component Count for Identification"; }
+            if (property_name == nameof(heavy_verification_count)) { return "Heavy Verification Component Count"; }
+            if (property_name == nameof(light_verification_count)) { return "Light Verification Component Count"; }
+            if (property_name == nameof(heavy_observation_count)) { return "Heavy Quantitative Component Count"; }
+            if (property_name == nameof(light_observation_count)) { return "Light Quantitative Component Count"; }
+            if (property_name == nameof(lysine_count)) { return "Lysine Count"; }
+            if (property_name == nameof(mass_shifted)) { return "Manually Shifted Mass"; }
+            if (property_name == nameof(ptm_description)) { return "PTM Description"; }
+            if (property_name == nameof(gene_name)) { return "Gene Name"; }
+            if (property_name == nameof(theoretical_accession)) { return "Theoretical Accession"; }
+            if (property_name == nameof(manual_validation_id)) { return "Abundant Component for Manual Validation of Identification"; }
+            if (property_name == nameof(manual_validation_verification)) { return "Abundant Component for Manual Validation of Identification Verification"; }
+            if (property_name == nameof(manual_validation_quant)) { return "Abundant Component for Manual Validation of Quantification"; }
+            if (property_name == nameof(topdown_id)) { return "Top-Down Proteoform"; }
+            if (property_name == nameof(family_id)) { return "Family ID"; }
+            if (property_name == nameof(mass_error)) { return "Mass Error"; }
             return null;
         }
 
         private static bool visible(string property_name, bool current)
         {
-            if (property_name == nameof(lysine_count)) return Sweet.lollipop.neucode_labeled;
+            if (property_name == nameof(lysine_count)) { return Sweet.lollipop.neucode_labeled; }
             else return current;
         }
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(agg_mass)) return "0.0000";
-            if (property_name == nameof(agg_intensity)) return "0.0000";
-            if (property_name == nameof(agg_rt)) return "0.00";
-            if (property_name == nameof(mass_error)) return "0.0000";
+            if (property_name == nameof(agg_mass)) { return "0.0000"; }
+            if (property_name == nameof(agg_intensity)) { return "0.0000"; }
+            if (property_name == nameof(agg_rt)) { return "0.00"; }
+            if (property_name == nameof(mass_error)) { return "0.0000"; }
             return null;
         }
 
         #endregion Private Methods
-
     }
 }
