@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    public class NeuCodePair 
+    public class NeuCodePair
         : IFileIntensity, IAggregatable
     {
-
         #region Public Properties
 
         public InputFile input_file { get; set; }
@@ -30,7 +29,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructors
 
-        public NeuCodePair(Component neuCodeLight, double light_intensity_sum_olcs, Component neuCodeHeavy, double heavy_intensity_sum_olcs, double mass_difference, HashSet<int> overlapping_charge_states, bool light_is_lower) 
+        public NeuCodePair(Component neuCodeLight, double light_intensity_sum_olcs, Component neuCodeHeavy, double heavy_intensity_sum_olcs, double mass_difference, HashSet<int> overlapping_charge_states, bool light_is_lower)
         {
             this.scan_range = neuCodeLight.scan_range;
             this.rt_apex = neuCodeLight.rt_apex;
@@ -74,6 +73,5 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Methods
-
     }
 }

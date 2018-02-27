@@ -10,9 +10,8 @@ using System.Xml.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    public class Sweet
+    public static class Sweet
     {
-
         public static Lollipop lollipop = new Lollipop();
         public static string methodFilePath = "";
         public static List<string> save_actions = new List<string>();
@@ -20,7 +19,7 @@ namespace ProteoformSuiteInternal
 
         #region BASICS FOR XML WRITING
 
-        public static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+        public static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings
         {
             Indent = true,
             IndentChars = "  "
@@ -120,9 +119,13 @@ namespace ProteoformSuiteInternal
                     if (reader.NodeType == XmlNodeType.Element)
                     {
                         if (reader.Name == "setting")
+                        {
                             setting_elements.Add(XElement.ReadFrom(reader) as XElement);
+                        }
                         else if (reader.Name == "action")
+                        {
                             action_elements.Add(XElement.ReadFrom(reader) as XElement);
+                        }
                         else return false; //unknown element
                     }
                 }
@@ -162,12 +165,14 @@ namespace ProteoformSuiteInternal
             {
                 loaded_actions.Add(GetAttribute(action, "action"));
             }
-            
-            if (loaded_actions.Any(a => !a.StartsWith("add file ") && !a.StartsWith("change file ") && !a.StartsWith("shift ") && !a.StartsWith("accept ") && !a.StartsWith("unaccept ")))
-                return false;
 
-            if (add_files) add_files_from_presets(lollipop.input_files); 
-            else update_files_from_presets(lollipop.input_files);
+            if (loaded_actions.Any(a => !a.StartsWith("add file ") && !a.StartsWith("change file ") && !a.StartsWith("shift ") && !a.StartsWith("accept ") && !a.StartsWith("unaccept ")))
+            {
+                return false;
+            }
+
+            if (add_files) { add_files_from_presets(lollipop.input_files); }
+            else { update_files_from_presets(lollipop.input_files); }
             return true;
         }
 
@@ -210,10 +215,12 @@ namespace ProteoformSuiteInternal
                 string filepath = !filestring.StartsWith(".") ? filestring : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), filestring));
                 Purpose? purpose = ExtensionMethods.EnumUntil.GetValues<Purpose>().FirstOrDefault(p => findpurpose.Match(add_file).Groups[2].ToString() == p.ToString());
                 if (purpose == null || !File.Exists(filepath))
+                {
                     continue;
+                }
                 string ext = Path.GetExtension(filepath);
-                lollipop.enter_input_files(new string[] { filepath }, new string[] { ext }, new List<Purpose> { (Purpose)purpose }, destination, false);
-                if(!save_actions.Contains(add_file)) save_actions.Add(add_file);
+                lollipop.enter_input_files(new[] { filepath }, new[] { ext }, new List<Purpose> { (Purpose)purpose }, destination, false);
+                if (!save_actions.Contains(add_file)) save_actions.Add(add_file);
             }
         }
 
@@ -238,13 +245,16 @@ namespace ProteoformSuiteInternal
                 Type type = Type.GetType(typefullname);
 
                 if (file == null || propertyinfo == null)
+                {
                     continue;
+                }
                 propertyinfo.SetValue(file, Convert.ChangeType(value, type));
                 if (!save_actions.Contains(change_file)) save_actions.Add(change_file);
             }
         }
 
         private static Regex findmass = new Regex(@"(mass )(\S+)");
+
         public static void mass_shifts_from_presets()
         {
             Regex findshift = new Regex(@"( by )(.+)");
@@ -255,11 +265,15 @@ namespace ProteoformSuiteInternal
                 ProteoformComparison? comparison = ExtensionMethods.EnumUntil.GetValues<ProteoformComparison>().FirstOrDefault(x => relationshiptype == x.ToString());
                 bool converted = Double.TryParse(findmass.Match(mass_shift).Groups[2].ToString(), out double mass);
                 if (comparison == null || !converted)
+                {
                     continue;
+                }
                 string shift = findshift.Match(mass_shift).Groups[2].ToString();
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
+                {
                     peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
+                }
                 if (peak != null)
                 {
                     peak.mass_shifter = shift;
@@ -277,12 +291,18 @@ namespace ProteoformSuiteInternal
                 ProteoformComparison? comparison = ExtensionMethods.EnumUntil.GetValues<ProteoformComparison>().FirstOrDefault(x => relationshiptype == x.ToString());
                 bool converted = Double.TryParse(findmass.Match(peak_change).Groups[2].ToString(), out double mass);
                 if (comparison == null || comparison != comparison_to_update || !converted)
+                {
                     continue;
+                }
                 DeltaMassPeak peak = null;
                 if (comparison == ProteoformComparison.ExperimentalTheoretical)
+                {
                     peak = lollipop.et_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
+                }
                 else if (comparison == ProteoformComparison.ExperimentalExperimental)
+                {
                     peak = lollipop.ee_peaks.FirstOrDefault(p => Math.Round(p.DeltaMass, 2) == Math.Round(mass, 2));
+                }
                 if (peak != null)
                 {
                     lollipop.change_peak_acceptance(peak, peak_change.StartsWith("accept "), false);
@@ -292,6 +312,5 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Action Methods
-
     }
 }

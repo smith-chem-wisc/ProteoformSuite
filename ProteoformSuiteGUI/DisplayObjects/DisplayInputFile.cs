@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayInputFile : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayInputFile(InputFile file)
@@ -19,22 +18,21 @@ namespace ProteoformSuiteGUI
             this.file = file;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private InputFile file;
+        private readonly InputFile file;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
-
 
         public string Filename
         {
             get { return file.filename; }
         }
-       
+
         // For quantification or calibration files
         public string biological_replicate
         {
@@ -101,14 +99,13 @@ namespace ProteoformSuiteGUI
             set
             {
                 Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition, value);
-                file.lt_condition = value != null? value : "";
+                file.lt_condition = value != null ? value : "";
                 ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
-
         public string hv_condition
-        { 
+        {
             get
             {
                 return file.hv_condition;
@@ -120,7 +117,6 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)(LoadDeconvolutionResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
-
 
         public bool Quantitative
         {
@@ -165,7 +161,6 @@ namespace ProteoformSuiteGUI
             get { return file.UniqueId; }
         }
 
-
         #endregion Public Properties
 
         #region Public Methods
@@ -198,33 +193,32 @@ namespace ProteoformSuiteGUI
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Private Methods
 
-
         private static string header(string property_name, IEnumerable<Purpose> dgv_purposes)
         {
-            if (property_name == nameof(UniqueId)) return "File ID";
-            if (property_name == nameof(complete_path)) return "File Path";
-            if (property_name == nameof(biological_replicate)) return "Biological Replicate";
-            if (property_name == nameof(TechnicalReplicate)) return "Technical Replicate";
-            if (property_name == nameof(lt_condition)) return (Sweet.lollipop.neucode_labeled && !dgv_purposes.Contains(Purpose.CalibrationIdentification) && !dgv_purposes.Contains(Purpose.RawFile)) ? "NeuCode Light Condition" : "Condition";
-            if (property_name == nameof(hv_condition)) return "NeuCode Heavy Condition";
-            if (property_name == nameof(ContaminantDB)) return "Contaminant Database";
+            if (property_name == nameof(UniqueId)) { return "File ID"; }
+            if (property_name == nameof(complete_path)) { return "File Path"; }
+            if (property_name == nameof(biological_replicate)) { return "Biological Replicate"; }
+            if (property_name == nameof(TechnicalReplicate)) { return "Technical Replicate"; }
+            if (property_name == nameof(lt_condition)) { return (Sweet.lollipop.neucode_labeled && !dgv_purposes.Contains(Purpose.CalibrationIdentification) && !dgv_purposes.Contains(Purpose.RawFile)) ? "NeuCode Light Condition" : "Condition"; }
+            if (property_name == nameof(hv_condition)) { return "NeuCode Heavy Condition"; }
+            if (property_name == nameof(ContaminantDB)) { return "Contaminant Database"; }
             return null;
         }
 
         private static bool visible(string property_name, bool current, IEnumerable<Purpose> dgv_purposes)
         {
-            if (property_name == nameof(Labeling)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(biological_replicate)) return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(Fraction)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(TechnicalReplicate)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(lt_condition)) return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            if (property_name == nameof(hv_condition)) return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
-            if (property_name == nameof(ContaminantDB)) return dgv_purposes.Contains(Purpose.ProteinDatabase);
-            if (property_name == nameof(Quantitative)) return dgv_purposes.Contains(Purpose.RawFile);
+            if (property_name == nameof(Labeling)) { return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
+            if (property_name == nameof(biological_replicate)) { return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
+            if (property_name == nameof(Fraction)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
+            if (property_name == nameof(TechnicalReplicate)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
+            if (property_name == nameof(lt_condition)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
+            if (property_name == nameof(hv_condition)) { return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification); }
+            if (property_name == nameof(ContaminantDB)) { return dgv_purposes.Contains(Purpose.ProteinDatabase); }
+            if (property_name == nameof(Quantitative)) { return dgv_purposes.Contains(Purpose.RawFile); }
             return current;
         }
 
