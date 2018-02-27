@@ -63,12 +63,18 @@ namespace ProteoformSuiteInternal
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct DoubleUlong
+            : IEquatable<DoubleUlong>
         {
             [FieldOffset(0)]
             public double dbl;
 
             [FieldOffset(0)]
             public ulong uu;
+
+            public bool Equals(DoubleUlong du)
+            {
+                return du.dbl == this.dbl && du.uu == this.uu;
+            }
         }
 
         private const int DoubleMaxScale = 308;
@@ -78,12 +84,18 @@ namespace ProteoformSuiteInternal
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct DecimalUInt32
+            : IEquatable<DecimalUInt32>
         {
             [FieldOffset(0)]
             public Decimal dec;
 
             [FieldOffset(0)]
             public int flags;
+
+            public bool Equals(DecimalUInt32 du)
+            {
+                return this.dec == du.dec && this.flags == du.flags;
+            }
         }
 
         private const int DecimalScaleMask = 0x00FF0000;

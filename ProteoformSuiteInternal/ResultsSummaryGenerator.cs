@@ -119,7 +119,7 @@ namespace ProteoformSuiteInternal
             {
                 report.Append(p.ToString() + ":" + Environment.NewLine + String.Join(Environment.NewLine, Sweet.lollipop.get_files(Sweet.lollipop.input_files, p).Select(f => f.filename + f.extension + "\t" + f.complete_path)) + Environment.NewLine + Environment.NewLine);
             }
-            return header + report.ToString();
+            return header + report;
         }
 
         public static string raw_components_report()
