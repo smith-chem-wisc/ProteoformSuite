@@ -292,7 +292,7 @@ namespace ProteoformSuiteGUI
                     DialogResult d1 = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
                     if (d1 == DialogResult.OK)
                     {
-                        Sweet.lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
+                        Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
                         if (loadDeconvolutionResults.ReadyToRunTheGamut())
                             loadDeconvolutionResults.RunTheGamut(true); // updates the dgvs
                     }

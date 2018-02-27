@@ -4,7 +4,6 @@ namespace ProteoformSuiteInternal
 {
     public class InputFile
     {
-
         #region Private Fields
 
         private static int instanceCounter;
@@ -20,7 +19,6 @@ namespace ProteoformSuiteInternal
             get { return this.instanceId; }
             set { this.instanceId = value; }
         }
-
 
         //For all files
         public string complete_path { get; set; }
@@ -80,8 +78,8 @@ namespace ProteoformSuiteInternal
             this.purpose = purpose;
             this.instanceId = ++instanceCounter;
         }
-        #endregion Public Constructors
 
+        #endregion Public Constructors
     }
 
     public enum Purpose
@@ -101,5 +99,5 @@ namespace ProteoformSuiteInternal
     {
         NeuCode,
         Unlabeled
-    } 
+    }
 }

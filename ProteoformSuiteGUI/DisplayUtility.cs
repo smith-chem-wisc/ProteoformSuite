@@ -42,7 +42,7 @@ namespace ProteoformSuiteGUI
         {
             t.RemoveAll();
             Point pos = e.Location;
-            if (p.HasValue && pos == p.Value) return;
+            if (p.HasValue && pos == p.Value) { return; }
 
             HitTestResult[] results = new HitTestResult[4];
 

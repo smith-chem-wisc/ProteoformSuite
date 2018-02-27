@@ -13,7 +13,6 @@ namespace ProteoformSuiteInternal
 
     public class GoTerm
     {
-
         #region Public Constructors
 
         public GoTerm(DatabaseReference goTerm)
@@ -26,9 +25,11 @@ namespace ProteoformSuiteInternal
                 case "C":
                     this.Aspect = Aspect.CellularComponent;
                     break;
+
                 case "F":
                     this.Aspect = Aspect.MolecularFunction;
                     break;
+
                 case "P":
                     this.Aspect = Aspect.BiologicalProcess;
                     break;
