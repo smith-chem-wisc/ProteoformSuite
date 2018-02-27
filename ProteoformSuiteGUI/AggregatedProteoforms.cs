@@ -11,7 +11,7 @@ namespace ProteoformSuiteGUI
     {
         #region Private Field
 
-        private ExperimentalProteoform selected_pf = null;
+        private ExperimentalProteoform selected_pf;
 
         #endregion Private Field
 

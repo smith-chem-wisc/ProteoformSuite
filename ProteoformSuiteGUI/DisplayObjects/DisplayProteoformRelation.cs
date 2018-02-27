@@ -297,9 +297,9 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(NearbyRelationCount)) { return "Nearby Relation Count"; }
             if (property_name == nameof(Accepted)) { return "Accepted"; }
             if (property_name == nameof(PeakCenterDeltaMass)) { return "Peak Center Delta Mass"; }
-            if (!raw_et_histogram) if (property_name == nameof(PeakCenterCount)) { return "Peak Center Count"; }
+            if (!raw_et_histogram && property_name == nameof(PeakCenterCount)) { return "Peak Center Count"; }
             if (property_name == nameof(LysineCount)) { return "Lysine Count"; }
-            if (!raw_et_histogram) if (property_name == nameof(OutsideNoMansLand)) { return "Outside No Man's Land"; }
+            if (!raw_et_histogram && property_name == nameof(OutsideNoMansLand)) { return "Outside No Man's Land"; }
 
             //ET formatting
             if (property_name == nameof(PTMDescription)) { return "PTM Description"; }

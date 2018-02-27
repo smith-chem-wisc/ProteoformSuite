@@ -115,7 +115,7 @@ namespace ProteoformSuiteInternal
             //checks if any experimentals have same mods as e's ptmset, except e has additional adduct only mods.
             Parallel.ForEach(experimental_proteoforms, e =>
             {
-                (e as ExperimentalProteoform).adduct =
+                e.adduct =
                     e.linked_proteoform_references != null
                     && e.ptm_set.ptm_combination.Any(m =>
                         m.modification.id == "Sulfate Adduct"
