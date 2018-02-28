@@ -279,7 +279,9 @@ namespace ProteoformSuiteInternal
                 List<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass).ToList();
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
+                    lock (lower_component)
+                    {
+                        lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
                         {
                             double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
                             if (mass_difference < 6)
@@ -303,6 +305,7 @@ namespace ProteoformSuiteInternal
                                 }
                             }
                         }
+                    }
                 }
             });
 

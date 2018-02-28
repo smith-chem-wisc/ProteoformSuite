@@ -75,7 +75,8 @@ namespace ProteoformSuiteGUI
                 {
                     try
                     {
-                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ?
+                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = 
+                            Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ?
                             XLCellValues.Number :
                             XLCellValues.Text;
                     }
