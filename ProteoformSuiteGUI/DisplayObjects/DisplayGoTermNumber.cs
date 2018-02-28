@@ -87,7 +87,7 @@ namespace ProteoformSuiteGUI
 
         public static void FormatGridView(DataGridView dgv)
         {
-            if (dgv.Columns.Count <= 0) return;
+            if (dgv.Columns.Count <= 0) { return; }
 
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;

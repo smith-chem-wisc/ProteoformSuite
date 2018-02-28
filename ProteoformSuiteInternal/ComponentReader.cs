@@ -1,29 +1,25 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
     public class ComponentReader
     {
-
         #region Private Fields
 
-        private List<Component> raw_components_in_file = new List<Component>();
+        private readonly List<Component> raw_components_in_file = new List<Component>();
         private static List<NeuCodePair> neucodePairs_in_file = new List<NeuCodePair>();
         private static Dictionary<Component, List<NeuCodePair>> heavy_hashed_pairs_in_file = new Dictionary<Component, List<NeuCodePair>>();
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Fields
 
         public List<Component> final_components = new List<Component>();
         public List<string> scan_ranges = new List<string>();
-        public int unprocessed_components = 0;
-        public int missed_mono_merges = 0;
-        public int harmonic_merges = 0;
+        public int unprocessed_components;
+        public int missed_mono_merges;
+        public int harmonic_merges;
 
         #endregion Public Fields
 
@@ -39,11 +35,17 @@ namespace ProteoformSuiteInternal
             List<List<string>> cells = ExcelReader.get_cell_strings(file, false);
             for (int i = 0; i < cells.Count; i++)
             {
-                if (i == 0) continue; //skip component header                        
+                if (i == 0)
+                {
+                    continue; //skip component header
+                }
                 List<string> cellStrings = cells[i];
                 if (cellStrings.Count > 7) //component row
                 {
-                    if (i > 1) add_component(new_component); // here we're adding the previously read component
+                    if (i > 1)
+                    {
+                        add_component(new_component); // here we're adding the previously read component
+                    }
                     new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                     charge_row_index = 0;
                     scan_range = cellStrings[8];
@@ -55,7 +57,10 @@ namespace ProteoformSuiteInternal
                         charge_row_index += 1;
                         continue; //skip charge state headers=
                     }
-                    else new_component.add_charge_state(cellStrings);
+                    else
+                    {
+                        new_component.add_charge_state(cellStrings);
+                    }
                 }
             }
             add_component(new_component);
@@ -93,10 +98,12 @@ namespace ProteoformSuiteInternal
             foreach (string scan in scans)
             {
                 List<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderByDescending(i => i.intensity_sum).ToList();
-                foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component. components are sorted by mass. in one scan, there should only be one missed mono per 
+                foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component. components are sorted by mass. in one scan, there should only be one missed mono per
                 {
                     if (removeThese.Contains(sc))
+                    {
                         continue;
+                    }
 
                     List<double> possibleMissedMonoisotopicsList =
                         Enumerable.Range(-3, 7).Select(x =>
@@ -105,9 +112,9 @@ namespace ProteoformSuiteInternal
                     foreach (double missedMonoMass in possibleMissedMonoisotopicsList)
                     {
                         double massTolerance = missedMonoMass / 1000000d * Sweet.lollipop.raw_component_mass_tolerance;
-                        List<Component> missedMonoisotopics = scanComps.Where(cp => 
-                            !removeThese.Contains(cp) 
-                            && cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance) 
+                        List<Component> missedMonoisotopics = scanComps.Where(cp =>
+                            !removeThese.Contains(cp)
+                            && cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance)
                             && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)).ToList(); // this is a list of harmonics to hc
 
                         foreach (Component c in missedMonoisotopics.Where(m => m.id != sc.id).ToList())
@@ -118,7 +125,6 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
-
 
                 if (Sweet.lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
                 {
@@ -139,7 +145,9 @@ namespace ProteoformSuiteInternal
                 foreach (Component hc in someComponents)
                 {
                     if (removeThese.Contains(hc))
+                    {
                         continue;
+                    }
 
                     List<double> possibleHarmonicList = // 2 missed on the top means up to 4 missed monos on the 2nd harmonic and 6 missed monos on the 3rd harmonic
                         Enumerable.Range(-4, 9).Select(x => (hc.weighted_monoisotopic_mass + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 2d).Concat(
@@ -148,15 +156,17 @@ namespace ProteoformSuiteInternal
                     foreach (double harmonicMass in possibleHarmonicList)
                     {
                         double massTolerance = harmonicMass / 1000000d * Sweet.lollipop.raw_component_mass_tolerance;
-                        List<Component> harmonics = scanComps.Where(cp => 
-                            !removeThese.Contains(cp) 
-                            && cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance) 
+                        List<Component> harmonics = scanComps.Where(cp =>
+                            !removeThese.Contains(cp)
+                            && cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance)
                             && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)).ToList(); // this is a list of harmonics to hc
                         List<Component> someHarmonics = harmonics.Where(harmonicComponent => harmonicComponent.id != hc.id).ToList();
                         foreach (Component h in someHarmonics) // now that we have a list of harmonics to hc, we have to figure out what to do with them
                         {
                             if (removeThese.Contains(h) || removeThese.Contains(hc))
+                            {
                                 continue;
+                            }
 
                             int parCsCount = hc.charge_states.Count;
                             int cldCsCount = h.charge_states.Count;
@@ -170,18 +180,18 @@ namespace ProteoformSuiteInternal
                                 h.mergeTheseComponents(hc);
                                 removeThese.Add(hc);
                             }
-
                             else
                             {
                                 if (hc.charge_states.Count >= 4 && h.charge_states.Count >= 4)
+                                {
                                     continue;
+                                }
 
                                 if (hc.charge_states.Count == h.charge_states.Count)
                                 {
                                     hc.mergeTheseComponents(h);
                                     removeThese.Add(h);
                                 }
-
                                 else
                                 {
                                     if (hc.charge_states.Count > h.charge_states.Count)
@@ -203,6 +213,7 @@ namespace ProteoformSuiteInternal
             }
             return raw_components.Except(removeThese).ToList();
         }
+
         #endregion Private Methods
     }
 }
