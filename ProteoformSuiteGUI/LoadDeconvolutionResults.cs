@@ -182,17 +182,21 @@ namespace ProteoformSuiteGUI
                 nud_randomSeed.Visible = false;
                 bt_deconvolute.Visible = false;
                 nud_maxcharge.Visible = false;
-                nud_maxmass.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_minmass.Visible = false;
                 nud_maxRT.Visible = false;
                 nud_minRT.Visible = false;
                 label1.Visible = false;
                 label2.Visible = false;
-                label3.Visible = false;
-                label4.Visible = false;
                 label5.Visible = false;
                 label6.Visible = false;
+                dgv_loadFiles2.Visible = true;
+                cmb_loadTable2.Visible = true;
+                btn_addFiles2.Visible = true;
+                btn_clearFiles2.Visible = true;
+                dgv_loadFiles3.Visible = true;
+                cmb_loadTable3.Visible = true;
+                btn_addFiles3.Visible = true;
+                btn_clearFiles3.Visible = true;
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -207,17 +211,21 @@ namespace ProteoformSuiteGUI
                 nud_randomSeed.Visible = true;
                 bt_deconvolute.Visible = false;
                 nud_maxcharge.Visible = false;
-                nud_maxmass.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_minmass.Visible = false;
                 nud_maxRT.Visible = false;
                 nud_minRT.Visible = false;
                 label1.Visible = false;
                 label2.Visible = false;
-                label3.Visible = false;
-                label4.Visible = false;
                 label5.Visible = false;
                 label6.Visible = false;
+                dgv_loadFiles2.Visible = true;
+                cmb_loadTable2.Visible = true;
+                btn_addFiles2.Visible = true;
+                btn_clearFiles2.Visible = true;
+                dgv_loadFiles3.Visible = true;
+                cmb_loadTable3.Visible = true;
+                btn_addFiles3.Visible = true;
+                btn_clearFiles3.Visible = true;
 
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 1;
@@ -250,17 +258,21 @@ namespace ProteoformSuiteGUI
                 nud_randomSeed.Visible = false;
                 bt_deconvolute.Visible = true;
                 nud_maxcharge.Visible = true;
-                nud_maxmass.Visible = true;
                 nud_mincharge.Visible = true;
-                nud_minmass.Visible = true;
                 nud_maxRT.Visible = true;
                 nud_minRT.Visible = true;
                 label1.Visible = true;
                 label2.Visible = true;
-                label3.Visible = true;
-                label4.Visible = true;
                 label5.Visible = true;
                 label6.Visible = true;
+                dgv_loadFiles2.Visible = false;
+                cmb_loadTable2.Visible = false;
+                btn_addFiles2.Visible = false;
+                btn_clearFiles2.Visible = false;
+                dgv_loadFiles3.Visible = false;
+                cmb_loadTable3.Visible = false;
+                btn_addFiles3.Visible = false;
+                btn_clearFiles3.Visible = false;
             }
 
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
@@ -550,20 +562,7 @@ namespace ProteoformSuiteGUI
             {
                 MessageBox.Show("Please enter raw files to deconvolute."); return;
             }
-            if(Convert.ToInt32(nud_maxcharge.Value) > 60 || Convert.ToInt32(nud_mincharge.Value) < 1)
-            {
-                MessageBox.Show("Charge range must be within 1-60."); return;
-            }
-            if(Convert.ToInt32(nud_maxmass.Value) > 100000 || Convert.ToInt32(nud_minmass.Value) < 2000)
-            {
-                MessageBox.Show("Mass range must be within 2000-100000."); return;
-            }
-            if (Convert.ToInt32(nud_maxRT.Value) > 100 || Convert.ToInt32(nud_minRT.Value) < 0)
-            {
-                MessageBox.Show("Retention time must be within 0-100."); return;
-            }
-
-            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxmass.Value), Convert.ToInt32(nud_minmass.Value), Convert.ToInt32(nud_maxRT.Value), Convert.ToInt32(nud_minRT.Value), Environment.CurrentDirectory);
+            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxRT.Value), Convert.ToInt32(nud_minRT.Value), Environment.CurrentDirectory);
             MessageBox.Show(deconv_results);
         }
 

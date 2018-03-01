@@ -81,13 +81,9 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.nud_minRT = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.nud_maxRT = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.nud_maxmass = new System.Windows.Forms.NumericUpDown();
-            this.nud_minmass = new System.Windows.Forms.NumericUpDown();
             this.nud_mincharge = new System.Windows.Forms.NumericUpDown();
             this.nud_maxcharge = new System.Windows.Forms.NumericUpDown();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
@@ -205,8 +201,6 @@
             this.splitContainer17.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_maxmass)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_minmass)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
@@ -941,13 +935,9 @@
             this.splitContainer17.Panel1.Controls.Add(this.label6);
             this.splitContainer17.Panel1.Controls.Add(this.label5);
             this.splitContainer17.Panel1.Controls.Add(this.nud_minRT);
-            this.splitContainer17.Panel1.Controls.Add(this.label4);
-            this.splitContainer17.Panel1.Controls.Add(this.label3);
             this.splitContainer17.Panel1.Controls.Add(this.nud_maxRT);
             this.splitContainer17.Panel1.Controls.Add(this.label2);
             this.splitContainer17.Panel1.Controls.Add(this.label1);
-            this.splitContainer17.Panel1.Controls.Add(this.nud_maxmass);
-            this.splitContainer17.Panel1.Controls.Add(this.nud_minmass);
             this.splitContainer17.Panel1.Controls.Add(this.nud_mincharge);
             this.splitContainer17.Panel1.Controls.Add(this.nud_maxcharge);
             this.splitContainer17.Panel1.Controls.Add(this.cb_calibrate_td_files);
@@ -966,7 +956,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(175, 48);
+            this.label6.Location = new System.Drawing.Point(53, 48);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(42, 13);
             this.label6.TabIndex = 73;
@@ -975,7 +965,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(55, 48);
+            this.label5.Location = new System.Drawing.Point(175, 49);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(45, 13);
             this.label5.TabIndex = 72;
@@ -983,32 +973,14 @@
             // 
             // nud_minRT
             // 
-            this.nud_minRT.Location = new System.Drawing.Point(120, 43);
+            this.nud_minRT.Location = new System.Drawing.Point(0, 46);
             this.nud_minRT.Name = "nud_minRT";
             this.nud_minRT.Size = new System.Drawing.Size(49, 20);
             this.nud_minRT.TabIndex = 71;
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(175, 27);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(52, 13);
-            this.label4.TabIndex = 69;
-            this.label4.Text = "Min Mass";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(55, 27);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 13);
-            this.label3.TabIndex = 68;
-            this.label3.Text = "Max Mass";
-            // 
             // nud_maxRT
             // 
-            this.nud_maxRT.Location = new System.Drawing.Point(0, 43);
+            this.nud_maxRT.Location = new System.Drawing.Point(120, 46);
             this.nud_maxRT.Name = "nud_maxRT";
             this.nud_maxRT.Size = new System.Drawing.Size(49, 20);
             this.nud_maxRT.TabIndex = 70;
@@ -1021,7 +993,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(175, 5);
+            this.label2.Location = new System.Drawing.Point(53, 4);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(61, 13);
             this.label2.TabIndex = 67;
@@ -1030,59 +1002,15 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(55, 4);
+            this.label1.Location = new System.Drawing.Point(175, 4);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(64, 13);
             this.label1.TabIndex = 66;
             this.label1.Text = "Max Charge";
             // 
-            // nud_maxmass
-            // 
-            this.nud_maxmass.Location = new System.Drawing.Point(0, 21);
-            this.nud_maxmass.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nud_maxmass.Minimum = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
-            this.nud_maxmass.Name = "nud_maxmass";
-            this.nud_maxmass.Size = new System.Drawing.Size(49, 20);
-            this.nud_maxmass.TabIndex = 65;
-            this.nud_maxmass.Value = new decimal(new int[] {
-            50000,
-            0,
-            0,
-            0});
-            // 
-            // nud_minmass
-            // 
-            this.nud_minmass.Location = new System.Drawing.Point(120, 22);
-            this.nud_minmass.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nud_minmass.Minimum = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
-            this.nud_minmass.Name = "nud_minmass";
-            this.nud_minmass.Size = new System.Drawing.Size(49, 20);
-            this.nud_minmass.TabIndex = 64;
-            this.nud_minmass.Value = new decimal(new int[] {
-            2000,
-            0,
-            0,
-            0});
-            // 
             // nud_mincharge
             // 
-            this.nud_mincharge.Location = new System.Drawing.Point(120, 0);
+            this.nud_mincharge.Location = new System.Drawing.Point(0, 0);
             this.nud_mincharge.Maximum = new decimal(new int[] {
             60,
             0,
@@ -1104,7 +1032,7 @@
             // 
             // nud_maxcharge
             // 
-            this.nud_maxcharge.Location = new System.Drawing.Point(0, 0);
+            this.nud_maxcharge.Location = new System.Drawing.Point(120, 0);
             this.nud_maxcharge.Maximum = new decimal(new int[] {
             60,
             0,
@@ -1192,7 +1120,7 @@
             this.bt_deconvolute.Name = "bt_deconvolute";
             this.bt_deconvolute.Size = new System.Drawing.Size(97, 75);
             this.bt_deconvolute.TabIndex = 41;
-            this.bt_deconvolute.Text = "Deconvolution";
+            this.bt_deconvolute.Text = "Deconvolute";
             this.bt_deconvolute.UseVisualStyleBackColor = true;
             this.bt_deconvolute.Click += new System.EventHandler(this.bt_deconvolute_Click);
             // 
@@ -1442,8 +1370,6 @@
             this.splitContainer17.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_maxmass)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_minmass)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
@@ -1530,12 +1456,8 @@
         private System.Windows.Forms.CheckBox cb_calibrate_raw_files;
         private System.Windows.Forms.RadioButton rb_deconvolution;
         private System.Windows.Forms.Button bt_deconvolute;
-        private System.Windows.Forms.NumericUpDown nud_maxmass;
-        private System.Windows.Forms.NumericUpDown nud_minmass;
         private System.Windows.Forms.NumericUpDown nud_mincharge;
         private System.Windows.Forms.NumericUpDown nud_maxcharge;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label6;

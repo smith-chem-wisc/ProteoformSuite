@@ -9,10 +9,10 @@ namespace ProteoformSuiteInternal
 {
     public class Feature
     {
-        public readonly int featureID;
-        public double monoisotopicMass;
-        public Envelope mostIntenseEnv;
-        public List<Envelope> isotopicEnvelopes;
+        public int featureID { get; private set; }
+        public double monoisotopicMass { get; set; }
+        public Envelope mostIntenseEnv { get; set; }
+        public List<Envelope> isotopicEnvelopes { get; set; }
 
         public Feature(Envelope env)
         {
@@ -32,9 +32,9 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public string GetThermoFormattedString()
+        public List<string> GetThermoFormattedStrings()
         {
-            string returnStr = "";
+            List<string> returnStrings = new List<string>();
 
             double minRT = isotopicEnvelopes.Min(v => v.retentionTime);
             double maxRT = isotopicEnvelopes.Max(v => v.retentionTime);
@@ -45,24 +45,21 @@ namespace ProteoformSuiteInternal
             int minScan = isotopicEnvelopes.Min(v => v.scan_num);
             int maxScan = isotopicEnvelopes.Max(v => v.scan_num);
 
-            string headerForThisFeature = featureID + "\t" + monoisotopicMass + "\t" + intensity + "\t" + isotopicEnvelopes.Select(p => p.charge).Distinct().Count() + "\t" + "1" + "\t" + "0" + "20.0" + "\t" + "0.1" + "\t" + "0.1" + "\t" + minScan + "-" + maxScan + "\t" + minRT + "-" + maxRT + "\t" + apex.retentionTime + "\n";
-            returnStr += headerForThisFeature;
+            string headerForThisFeature = featureID + "\t" + monoisotopicMass + "\t" + intensity + "\t" + isotopicEnvelopes.Select(p => p.charge).Distinct().Count() + "\t" + "1" + "\t" + "0" + "20.0" + "\t" + "0.1" + "\t" + "0.1" + "\t" + minScan + "-" + maxScan + "\t" + minRT + "-" + maxRT + "\t" + apex.retentionTime;
+            returnStrings.Add(headerForThisFeature);
 
-            string chargeHeader = "\tCharge State\tIntensity\tMZ Centroid\tCalculated Mass\n";
-            returnStr += chargeHeader;
+            string chargeHeader = "\tCharge State\tIntensity\tMZ Centroid\tCalculated Mass";
+            returnStrings.Add(chargeHeader);
 
             foreach (var charge in charges)
             {
-                string chargeString;
-                if (charge == charges.Last())
-                    chargeString = "\t" + charge.Key + "\t" + charge.Sum(v => v.abundance / v.charge) + "\t" + ClassExtensions.ToMz(monoisotopicMass, charge.Key) + "\t" + monoisotopicMass;
-                else
-                    chargeString = "\t" + charge.Key + "\t" + charge.Sum(v => v.abundance / v.charge) + "\t" + ClassExtensions.ToMz(monoisotopicMass, charge.Key) + "\t" + monoisotopicMass + "\n";
+                string chargeString = "\t" + charge.Key + "\t" + charge.Sum(v => v.abundance) + "\t" + ClassExtensions.ToMz(monoisotopicMass, charge.Key) + "\t" + monoisotopicMass;
 
-                returnStr += chargeString;
+                returnStrings.Add(chargeString);
             }
 
-            return returnStr;
+            return returnStrings;
         }
+
     }
 }
