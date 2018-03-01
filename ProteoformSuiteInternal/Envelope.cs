@@ -8,14 +8,14 @@ namespace ProteoformSuiteInternal
 {
     public class Envelope
     {
-        public int scan_num;
-        public int charge;
-        public double abundance;
-        public double mz;
-        public double fit;
-        public double monoisotopicMass;
-        public int FeatureID;
-        public double retentionTime;
+        public int scan_num { get; set; }
+        public int charge { get; set; }
+        public double abundance { get; set; }
+        public double mz { get; set; }
+        public double fit { get; set; }
+        public double monoisotopicMass { get; set; }
+        public int FeatureID { get; set; }
+        public double retentionTime { get; set; }
 
         public Envelope(string line)
         {            

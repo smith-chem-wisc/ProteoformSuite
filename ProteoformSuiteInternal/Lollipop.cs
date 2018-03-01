@@ -187,7 +187,7 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public string promex_deconvolute(int maxcharge, int mincharge, int maxmass, int minmass, int maxRT, int minRT, string directory)
+        public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, string directory)
         {
                 int successfully_deconvoluted_files = 0;
                 foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
@@ -217,59 +217,66 @@ namespace ProteoformSuiteInternal
 
                     proc.StandardInput.WriteLine("cd " + promexlocation);
 
-                    proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -minMass " + minmass + " -maxMass " + maxmass + " -csv y -maxThreads 0");
+                    proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
                     proc.StandardInput.Close();
                     proc.WaitForExit();
+                proc.Close();
 
-                    if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
+                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
+                {
+                    double minMass = 0;
+                    int numChargesRequired = 3;
+                    string dir = Directory.GetCurrentDirectory();
+                    Loaders.LoadElements(dir + @"\elements.dat");
+                    var rawFile = ThermoDynamicData.InitiateDynamicConnection(input);
+                    Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
+                    StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
+                    string line;
+                    int lineNum = 1;
+
+                    while (reader.Peek() > 0)
                     {
-                        double minMass = 0;
-                        int numChargesRequired = 3;
-                        string dir = Directory.GetCurrentDirectory();
-                        Loaders.LoadElements(dir + @"\elements.dat");
-                        var rawFile = ThermoDynamicData.InitiateDynamicConnection(input);
-                        Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
-                        StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
-                        string line;
-                        int lineNum = 1;
+                        line = reader.ReadLine();
 
-                        while (reader.Peek() > 0)
+                        if (lineNum != 1)
                         {
-                            line = reader.ReadLine();
-
-                            if (lineNum != 1)
+                            var massWithScan = new Envelope(line);
+                            if (massWithScan.retentionTime >= minRT || massWithScan.retentionTime <= max_RT)
                             {
-                                var massWithScan = new Envelope(line);
-                                if (massWithScan.retentionTime >= minRT || massWithScan.retentionTime <= max_RT)
-                                {
-                                    massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+                                massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
 
-                                    if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
-                                        featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
-                                    else
-                                        featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
-                                }
+                                if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
+                                    featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
+                                else
+                                    featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
                             }
-
-                            lineNum++;
                         }
 
-                        reader.Close();
-
-                        string headerForThisFile = "No.\tMonoisotopic Mass\tSum Intensity\tNumber of Charge States\tNumber of Detected Intervals\tDelta Mass\tRelative Abundance\tFractional Abundance\tScan Range\tRT Range\tApex RT";
-
-                        List<string> output = new List<string>() { headerForThisFile };
-                        foreach (var feature in featureIdToFeature)
-                            if (feature.Value.monoisotopicMass > minMass && feature.Value.isotopicEnvelopes.Select(p => p.charge).Distinct().Count() >= numChargesRequired)
-                                output.Add(feature.Value.GetThermoFormattedString());
-
-
-                    var wb = new XLWorkbook();
-                    var ws = wb.Worksheets.Add("worksheet");
-                    ws.Cell(1, 1).InsertData(output);
-                    wb.SaveAs(filelocation + "_deconv.xlsx");
+                        lineNum++;
                     }
-                    if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
+
+                    reader.Close();
+
+                    string headerForThisFile = "No.\tMonoisotopic Mass\tSum Intensity\tNumber of Charge States\tNumber of Detected Intervals\tDelta Mass\tRelative Abundance\tFractional Abundance\tScan Range\tRT Range\tApex RT";
+
+                    List<string> output = new List<string>() { headerForThisFile };
+                    foreach (var feature in featureIdToFeature)
+                        if (feature.Value.monoisotopicMass > minMass && feature.Value.isotopicEnvelopes.Select(p => p.charge).Distinct().Count() >= numChargesRequired)
+                            output.AddRange(feature.Value.GetThermoFormattedStrings());
+                    var workbook = new XLWorkbook();
+                    var worksheet = workbook.Worksheets.Add("ws1");
+                    for (int r = 0; r < output.Count; r++)
+                    {
+                        string[] columns = output[r].Split('\t');
+                        for (int c = 0; c < columns.Length; c++)
+                        {
+                            worksheet.Row(r + 1).Cell(c + 1).SetValue(columns[c]);
+                            worksheet.Row(r + 1).Cell(c + 1).DataType = Double.TryParse(columns[c], out double isNumber) ? XLCellValues.Number : XLCellValues.Text;
+                        }
+                    }
+                    workbook.SaveAs(filelocation + "_deconv.xlsx");
+                }
+                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
                     {
                         File.Delete(Path.Combine(filelocation + "_ms1ft.csv"));
                     }
@@ -285,11 +292,16 @@ namespace ProteoformSuiteInternal
                     {
                         File.Delete(Path.Combine(filelocation + ".ms1ft"));
                     }
+
                     if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
                     {
                         successfully_deconvoluted_files++;
                     }
+                using (StreamWriter writer = new StreamWriter(filelocation + "_parameters.txt", false))
+                {
+                    writer.WriteLine("Minimum Charge: " + mincharge + " Maximum Charge: " + maxcharge + " Minimum Retention Time: " + minRT + " Maximum Retention Time: " + maxRT);
                 }
+            }
                 if (successfully_deconvoluted_files == 1)
                 {
                     return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";
