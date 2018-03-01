@@ -5,16 +5,15 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    public class Component 
+    public class Component
         : IFileIntensity, IAggregatable
     {
-
         #region Private Fields
 
-        private double _manual_mass_shift = 0;
-        private int _num_charge_states = 0;
-        private double _intensity_sum = 0;
-        private double _weighted_monoisotopic_mass = 0;
+        private double _manual_mass_shift;
+        private int _num_charge_states;
+        private double _intensity_sum;
+        private double _weighted_monoisotopic_mass;
 
         #endregion Private Fields
 
@@ -23,7 +22,7 @@ namespace ProteoformSuiteInternal
         public InputFile input_file { get; set; }
         public string id { get; set; } // deconvolution 4.0 assigns a component id. This is made unique by appending the inputFile id.
         public double reported_monoisotopic_mass { get; set; }  //from deconvolution 4.0
-        public double intensity_reported { get; set; } //from deconvolution 4.0         
+        public double intensity_reported { get; set; } //from deconvolution 4.0
         public double reported_delta_mass { get; set; } // the difference between the mass of the compound and the highest intensity component in the window
         public double relative_abundance { get; set; }
         public double fract_abundance { get; set; }
@@ -58,9 +57,13 @@ namespace ProteoformSuiteInternal
             set
             {
                 if (!calculating_properties && charge_states.Count > 0)
+                {
                     throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+                }
                 else
+                {
                     _num_charge_states = value;
+                }
             }
         }
 
@@ -98,10 +101,10 @@ namespace ProteoformSuiteInternal
                 else
                     _weighted_monoisotopic_mass = value;
             }
-        } 
+        }
 
         #endregion Public Properties
-    
+
         #region Constructors
 
         public Component()
@@ -123,7 +126,7 @@ namespace ProteoformSuiteInternal
             this.scan_range = cellStrings[8];
             this.rt_range = cellStrings[9];
             this.rt_apex = Convert.ToDouble(cellStrings[10]);
-            this.intensity_sum = Convert.ToDouble(cellStrings[2]); // this needs to be fixed.       
+            this.intensity_sum = Convert.ToDouble(cellStrings[2]); // this needs to be fixed.
             this.accepted = true;
             this.charge_states = new List<ChargeState>();
         }
@@ -131,6 +134,7 @@ namespace ProteoformSuiteInternal
         #endregion Constructors
 
         #region Public Methods
+
         public void add_charge_state(List<string> charge_row)
         {
             charge_states.Add(new ChargeState(charge_row));
@@ -167,10 +171,15 @@ namespace ProteoformSuiteInternal
                         cpCS.calculated_mass = cpCS.calculated_mass + monoIsoTopicDifference;
                         cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
                     }
+
                     if (this.charge_states.Exists(thisCS => thisCS.charge_count == cpCS.charge_count))
+                    {
                         this.charge_states.Where(thisCS => thisCS.charge_count == cpCS.charge_count).First().mergeTheseChargeStates(cpCS);
+                    }
                     else
+                    {
                         this.charge_states.Add(cpCS);
+                    }
 
                     this.calculate_properties();
                 }
@@ -205,7 +214,7 @@ namespace ProteoformSuiteInternal
             }
             return this;
         }
-        #endregion Public Methods
 
+        #endregion Public Methods
     }
 }

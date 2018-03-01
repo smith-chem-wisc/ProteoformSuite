@@ -17,7 +17,7 @@ namespace Test
         public void load_uniprot_ptmlist()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.enter_uniprot_ptmlist(TestContext.CurrentContext.TestDirectory);
+            Lollipop.enter_uniprot_ptmlist(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.PtmList);
             Sweet.lollipop = new Lollipop();
         }
