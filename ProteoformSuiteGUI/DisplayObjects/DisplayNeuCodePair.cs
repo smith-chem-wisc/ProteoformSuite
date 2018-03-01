@@ -6,12 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
-
 namespace ProteoformSuiteGUI
 {
     public class DisplayNeuCodePair : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayNeuCodePair(NeuCodePair c)
@@ -20,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.c = c;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private NeuCodePair c;
+        private readonly NeuCodePair c;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -79,7 +77,7 @@ namespace ProteoformSuiteGUI
         {
             get { return c.rt_apex; }
         }
-        
+
         public double rt_apex_heavy
         {
             get { return c.neuCodeHeavy.rt_apex; }
@@ -116,18 +114,21 @@ namespace ProteoformSuiteGUI
 
         public static void FormatNeuCodeTable(DataGridView dgv)
         {
-            if (dgv.Columns.Count <= 0) return;
+            if (dgv.Columns.Count <= 0)
+            {
+                return;
+            }
 
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            foreach (DataGridViewColumn c in dgv.Columns)
+            foreach (DataGridViewColumn col in dgv.Columns)
             {
-                string h = header(c.Name);
-                string n = number_format(c.Name);
-                c.HeaderText = h != null ? h : c.HeaderText;
-                c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
-                c.Visible = visible(c.Name, c.Visible);
+                string h = header(col.Name);
+                string n = number_format(col.Name);
+                col.HeaderText = h != null ? h : col.HeaderText;
+                col.DefaultCellStyle.Format = n != null ? n : col.DefaultCellStyle.Format;
+                col.Visible = visible(col.Name, col.Visible);
             }
         }
 
@@ -143,20 +144,20 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(id_light)) return "Light NeuCode Component ID";
-            if (property_name == nameof(id_heavy)) return "Heavy NeuCode Component ID";
-            if (property_name == nameof(intensity_ratio)) return "Intensity Ratio";
-            if (property_name == nameof(intensity_sum)) return "Intensity Sum Overlapping Charge States";
-            if (property_name == nameof(lysine_count)) return "Lysine Count";
-            if (property_name == nameof(input_file_filename)) return "Input Filename";
-            if (property_name == nameof(input_file_purpose)) return "Input File Purpose";
-            if (property_name == nameof(input_file_uniqueId)) return "Input File Unique ID";
-            if (property_name == nameof(scan_range)) return "Scan Range";
-            if (property_name == nameof(mass)) return "Corrected NeuCode Light Weighted Monoisotopic Mass";
-            if (property_name == nameof(mass_light)) return "Light Weighted Monoisotopic Mass";
-            if (property_name == nameof(mass_heavy)) return "Heavy Weighted Monoisotopic Mass";
-            if (property_name == nameof(rt_apex)) return "Light Apex RT";
-            if (property_name == nameof(rt_apex_heavy)) return "Heavy Apex RT";
+            if (property_name == nameof(id_light)) { return "Light NeuCode Component ID"; }
+            if (property_name == nameof(id_heavy)) { return "Heavy NeuCode Component ID"; }
+            if (property_name == nameof(intensity_ratio)) { return "Intensity Ratio"; }
+            if (property_name == nameof(intensity_sum)) { return "Intensity Sum Overlapping Charge States"; }
+            if (property_name == nameof(lysine_count)) { return "Lysine Count"; }
+            if (property_name == nameof(input_file_filename)) { return "Input Filename"; }
+            if (property_name == nameof(input_file_purpose)) { return "Input File Purpose"; }
+            if (property_name == nameof(input_file_uniqueId)) { return "Input File Unique ID"; }
+            if (property_name == nameof(scan_range)) { return "Scan Range"; }
+            if (property_name == nameof(mass)) { return "Corrected NeuCode Light Weighted Monoisotopic Mass"; }
+            if (property_name == nameof(mass_light)) { return "Light Weighted Monoisotopic Mass"; }
+            if (property_name == nameof(mass_heavy)) { return "Heavy Weighted Monoisotopic Mass"; }
+            if (property_name == nameof(rt_apex)) { return "Light Apex RT"; }
+            if (property_name == nameof(rt_apex_heavy)) { return "Heavy Apex RT"; }
             return null;
         }
 
@@ -167,12 +168,11 @@ namespace ProteoformSuiteGUI
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(intensity_ratio)) return "0.####";
-            if (property_name == nameof(intensity_sum)) return "0.####";
+            if (property_name == nameof(intensity_ratio)) { return "0.####"; }
+            if (property_name == nameof(intensity_sum)) { return "0.####"; }
             return null;
         }
 
         #endregion Private Methods
-
     }
 }

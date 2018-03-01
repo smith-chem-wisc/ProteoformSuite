@@ -2,12 +2,7 @@
 using ProteoformSuiteInternal;
 using System.Collections.Generic;
 using System.IO;
-using Proteomics;
 using System.Linq;
-using System;
-using Chemistry;
-using PRISM;
-using CommandLine;
 
 namespace Test
 {

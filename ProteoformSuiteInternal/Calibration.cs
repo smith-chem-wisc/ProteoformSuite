@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using IO.Thermo;
-using IO.MzML;
-using Chemistry;
-using Spectra;
-using System.IO;
+﻿using Chemistry;
 using ClosedXML.Excel;
-using System.Text.RegularExpressions;
+using IO.MzML;
+using IO.Thermo;
 using MassSpectrometry;
 using MathNet.Numerics.Statistics;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -18,6 +17,7 @@ namespace ProteoformSuiteInternal
     {
         //CALIBRATION WITH TD HITS
         private IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
+
         private List<TopDownHit> all_topdown_hits;
         private List<TopDownHit> high_scoring_topdown_hits;
         private InputFile raw_file;
@@ -28,45 +28,65 @@ namespace ProteoformSuiteInternal
             high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
             this.raw_file = raw_file;
 
-            if (high_scoring_topdown_hits.Count < 5) return false;
+            if (high_scoring_topdown_hits.Count < 5)
+            {
+                return false;
+            }
 
             var trainingPointCounts = new List<int>();
 
             myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
                 ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
                 null;
-            if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
-            if (myMsDataFile == null) return false;
+            if (myMsDataFile == null) { myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path); }
+            if (myMsDataFile == null) { return false; }
             DataPointAquisitionResults dataPointAcquisitionResult = null;
 
-            //need to reset m/z in case same td hits used for multiple calibration raw files... 
+            //need to reset m/z in case same td hits used for multiple calibration raw files...
             Parallel.ForEach(all_topdown_hits, h => h.mz = h.reported_mass.ToMz(h.charge));
             int round = 0;
-            for (int linearCalibrationRound = 1; ; linearCalibrationRound++)
+            int linearCalibrationRound = 1;
+            while (true)
             {
                 dataPointAcquisitionResult = GetDataPoints();
                 // go until same # training points as previous round
                 if (linearCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
+                {
                     break;
+                }
                 round++;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-                if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
+                if (dataPointAcquisitionResult.Ms1List.Count < 5)
+                {
+                    return false;
+                }
 
                 CalibrateLinear(dataPointAcquisitionResult.Ms1List.OrderBy(p => p.Label).ToList(), round);
+                linearCalibrationRound++;
             }
 
             trainingPointCounts = new List<int>();
-            for (int forestCalibrationRound = 1; ; forestCalibrationRound++)
+            int forestCalibrationRound = 1;
+            while (true)
             {
                 CalibrationFunction calibrationFunction = CalibrateRF(dataPointAcquisitionResult.Ms1List.OrderBy(p => p.Label).ToList(), round);
                 dataPointAcquisitionResult = GetDataPoints();
                 if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
+                {
                     break;
+                }
                 round++;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-                if (dataPointAcquisitionResult.Ms1List.Count < 5) return false;
+                if (dataPointAcquisitionResult.Ms1List.Count < 5)
+                {
+                    return false;
+                }
+                forestCalibrationRound++;
             }
-            if(Sweet.lollipop.calibrate_raw_files) MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
+            if (Sweet.lollipop.calibrate_raw_files)
+            {
+                MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
+            }
             return true;
         }
 
@@ -81,7 +101,7 @@ namespace ProteoformSuiteInternal
             double bestMS1MSE = bestMS1predictor.GetMSE(testList1);
             if (trainList1.Count > 0)
             {
-                var ms1regressorRF = new RandomForestCalibrationFunction(40, 10, new bool[] { true, true });
+                var ms1regressorRF = new RandomForestCalibrationFunction(40, 10, new[] { true, true });
                 ms1regressorRF.Train(trainList1);
                 var MS1mse = ms1regressorRF.GetMSE(testList1);
                 if (MS1mse < bestMS1MSE)
@@ -95,7 +115,6 @@ namespace ProteoformSuiteInternal
             CalibrateHitsAndComponents(bestCf);
             return bestCf;
         }
-
 
         public void CalibrateHitsAndComponents(CalibrationFunction bestCf)
         {
@@ -128,7 +147,7 @@ namespace ProteoformSuiteInternal
 
         private void CalibrateLinear(List<LabeledMs1DataPoint> res, int round)
         {
-            Random decoy_rng = Sweet.lollipop.calibration_use_random_seed ? new Random(round + Sweet.lollipop.calibration_random_seed) : new Random(); //new random generator for each round of 
+            Random decoy_rng = Sweet.lollipop.calibration_use_random_seed ? new Random(round + Sweet.lollipop.calibration_random_seed) : new Random(); //new random generator for each round of
             var shuffledMs1TrainingPoints = res.OrderBy(item => decoy_rng.Next()).ToList();
             var trainList1 = shuffledMs1TrainingPoints.Take((int)(shuffledMs1TrainingPoints.Count * 0.75)).ToList();
             var testList1 = shuffledMs1TrainingPoints.Skip((int)(shuffledMs1TrainingPoints.Count * 0.75)).ToList();
@@ -199,11 +218,20 @@ namespace ProteoformSuiteInternal
                         && c.input_file.fraction == raw_file.fraction
                         && c.input_file.technical_replicate == raw_file.technical_replicate).ToList();
                     if (potential_matches.Count > 0)
+                    {
                         matching_component = potential_matches.Where(c =>
-                   Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
-                   && Math.Abs(c.rt_apex - identification.ms1_retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
-                    else matching_component = null;
-                    if (matching_component == null) continue;
+                           Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
+                           && Math.Abs(c.rt_apex - identification.ms1_retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
+                    }
+                    else
+                    {
+                        matching_component = null;
+                    }
+
+                    if (matching_component == null)
+                    {
+                        continue;
+                    }
                     scanNumbers.Clear();
                     //get scan numbers using retention time (if raw file is spliced, scan numbers change)
                     double rt = Convert.ToDouble(matching_component.rt_range.Split('-')[0]);
@@ -214,12 +242,13 @@ namespace ProteoformSuiteInternal
                         rt = myMsDataFile.GetOneBasedScan(scanNumber + 1).RetentionTime;
                     }
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
-                }  
-                else if(identification.technical_replicate != raw_file.technical_replicate) continue;
-                
+                }
+                else if (identification.technical_replicate != raw_file.technical_replicate)
+                {
+                    continue;
+                }
 
-                var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula
-                    ();
+                var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
                 if (SequenceWithChemicalFormulas == null)
                 {
                     continue;
@@ -248,14 +277,8 @@ namespace ProteoformSuiteInternal
 
         private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, List<int> scansAdded, HashSet<Tuple<double, int>> peaksAddedHashSet, int proteinCharge, TopDownHit identification)
         {
-            var theIndex = -1;
-            if (direction == 1)
-                theIndex = ms2spectrumIndex;
-            else
-                theIndex = ms2spectrumIndex - 1;
-
+            int theIndex = direction == 1 ? ms2spectrumIndex : ms2spectrumIndex - 1;
             bool addedAscan = true;
-
             int highestKnownChargeForThisPeptide = proteinCharge;
             while (theIndex >= 1 && theIndex <= myMsDataFile.NumSpectra && addedAscan)
             {
@@ -277,9 +300,11 @@ namespace ProteoformSuiteInternal
                 var scanWindowRange = fullMS1scan.ScanWindowRange;
                 var fullMS1spectrum = fullMS1scan.MassSpectrum;
                 if (fullMS1spectrum.Size == 0)
+                {
                     break;
+                }
 
-                //look in both charge state directions for proteins -- likely to have multiple charge states. 
+                //look in both charge state directions for proteins -- likely to have multiple charge states.
                 for (int i = -1; i <= 1; i += 2)
                 {
                     bool startingToAddCharges = false;
@@ -287,7 +312,7 @@ namespace ProteoformSuiteInternal
                     int chargeToLookAt = i == 1 ? proteinCharge : (proteinCharge - 1);
                     do
                     {
-                        //if m/z too big or small and going in correct direction, increase or decrease charge state. otherwise break. 
+                        //if m/z too big or small and going in correct direction, increase or decrease charge state. otherwise break.
                         if (originalMasses[0].ToMz(chargeToLookAt) > scanWindowRange.Maximum)
                         {
                             if (i == 1)
@@ -295,7 +320,10 @@ namespace ProteoformSuiteInternal
                                 chargeToLookAt++;
                                 continue;
                             }
-                            else break;
+                            else
+                            {
+                                break;
+                            }
                         }
                         if (originalMasses[0].ToMz(chargeToLookAt) < scanWindowRange.Minimum)
                         {
@@ -304,7 +332,10 @@ namespace ProteoformSuiteInternal
                                 chargeToLookAt--;
                                 continue;
                             }
-                            else break;
+                            else
+                            {
+                                break;
+                            }
                         }
                         var trainingPointsToAverage = new List<LabeledMs1DataPoint>();
                         foreach (double a in originalMasses)
@@ -330,15 +361,21 @@ namespace ProteoformSuiteInternal
                             var closestPeak = fullMS1spectrum.GetClosestPeakXvalue(theMZ);
                             var closestPeakMZ = closestPeak;
 
-                            var theTuple = Tuple.Create(closestPeakMZ, ms1ScanNumber);
+                            var theTuple = closestPeakMZ != null ? Tuple.Create((double)closestPeakMZ, ms1ScanNumber) : null;
+                            if (theTuple == null)
+                            {
+                                continue;
+                            }
                             if (!peaksAddedHashSet.Contains(theTuple))
                             {
                                 peaksAddedHashSet.Add(theTuple);
                                 highestKnownChargeForThisPeptide = Math.Max(highestKnownChargeForThisPeptide, chargeToLookAt);
-                                trainingPointsToAverage.Add(new LabeledMs1DataPoint(closestPeakMZ, double.NaN, closestPeakMZ - theMZ, null));
+                                trainingPointsToAverage.Add(new LabeledMs1DataPoint((double)closestPeakMZ, double.NaN, (double)closestPeakMZ - theMZ, null));
                             }
                             else
+                            {
                                 break;
+                            }
                         }
                         // If started adding and suddnely stopped, go to next one, no need to look at higher charges
                         if (trainingPointsToAverage.Count == 0 && startingToAddCharges == true)
@@ -359,9 +396,9 @@ namespace ProteoformSuiteInternal
                             startingToAddCharges = true;
                             countForThisScan++;
                             yield return new LabeledMs1DataPoint(trainingPointsToAverage.Select(b => b.mz).Average(),
-                                                                 fullMS1scan.RetentionTime,
-                                                                 trainingPointsToAverage.Select(b => b.Label).Median(),
-                                                                 identification);
+                                fullMS1scan.RetentionTime,
+                                trainingPointsToAverage.Select(b => b.Label).Median(),
+                                identification);
                         }
                         chargeToLookAt += i;
                     } while (continueAddingCharges);
@@ -370,7 +407,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        //READ AND WRITE NEW CALIBRATED TD HITS FILE 
+        //READ AND WRITE NEW CALIBRATED TD HITS FILE
         public static void calibrate_td_hits_file(InputFile file)
         {
             //Copy file to new worksheet
@@ -381,7 +418,7 @@ namespace ProteoformSuiteInternal
             byte[] byteArray = File.ReadAllBytes(old_absolute_path);
             using (MemoryStream stream = new MemoryStream())
             {
-                stream.Write(byteArray, 0, (int)byteArray.Length);
+                stream.Write(byteArray, 0, byteArray.Length);
                 File.WriteAllBytes(new_absolute_path, stream.ToArray());
             }
             // Get Data in Sheet1 of Excel file
@@ -404,7 +441,10 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
-            foreach (IXLRow row in rows_to_delete) row.Delete(); //can't parallelize
+            foreach (IXLRow row in rows_to_delete)
+            {
+                row.Delete(); //can't parallelize
+            }
             workbook.Save();
         }
 
@@ -442,4 +482,3 @@ namespace ProteoformSuiteInternal
         }
     }
 }
-
