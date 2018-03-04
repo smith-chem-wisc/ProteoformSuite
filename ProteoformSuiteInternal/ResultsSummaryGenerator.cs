@@ -415,6 +415,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Family ID", typeof(string));
             results.Columns.Add((Sweet.lollipop.numerator_condition == "" ? "Condition #1" : Sweet.lollipop.numerator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add((Sweet.lollipop.denominator_condition == "" ? "Condition #2" : Sweet.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
+            results.Columns.Add("M/z values", typeof(string));
+            results.Columns.Add("Charges values", typeof(string));
             results.Columns.Add("Statistically Significant", typeof(bool));
 
             foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
@@ -446,6 +448,8 @@ namespace ProteoformSuiteInternal
                     e.family != null ? e.family.family_id.ToString() : "",
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.numeratorIntensitySum : get_tusher_values(e.quant, analysis).numeratorIntensitySum,
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.denominatorIntensitySum : get_tusher_values(e.quant, analysis).denominatorIntensitySum,
+                    e.aggregated.Count > 0 ? String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2))) : "",
+                    e.aggregated.Count > 0 ? String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => cs.charge_count)) : "",
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
                 );
             }
