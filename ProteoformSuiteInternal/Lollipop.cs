@@ -589,6 +589,7 @@ namespace ProteoformSuiteInternal
                     if (consecutive >= num_charge_states) return true;
                     if (next == cs || next < cs) continue;
                     if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
+                    if (consecutive >= num_charge_states) return true;
                 }
             }
             return false;
