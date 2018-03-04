@@ -191,6 +191,24 @@ namespace ProteoformSuiteGUI
             get { return e.family != null ? e.family.family_id.ToString() : ""; }
         }
 
+        public string mz_values
+        {
+            get
+            {
+                return e.topdown_id ? "" :
+                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2)));
+            }
+        }
+
+        public string Charges
+        {
+            get
+            {
+                return e.topdown_id ? "" :
+                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => cs.charge_count));
+            }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -244,6 +262,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
             if (property_name == nameof(family_id)) return "Family ID";
             if (property_name == nameof(mass_error)) return "Mass Error";
+            if (property_name == nameof(mz_values)) return "M/z values";
             return null;
         }
 
