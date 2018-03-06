@@ -272,7 +272,7 @@ namespace ProteoformSuiteInternal
                         for (int c = 0; c < columns.Length; c++)
                         {
                             worksheet.Row(r + 1).Cell(c + 1).SetValue(columns[c]);
-                            worksheet.Row(r + 1).Cell(c + 1).DataType = Double.TryParse(columns[c], out double isNumber) ? XLDataType.Number : XLDataType.Text;
+                            worksheet.Row(r + 1).Cell(c + 1).DataType = Double.TryParse(columns[c], out double isNumber) ? XLCellValues.Number : XLCellValues.Text;
                         }
                     }
                     workbook.SaveAs(filelocation + "_deconv.xlsx");
