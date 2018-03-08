@@ -200,7 +200,6 @@
     <Compile Include="CalibrationFunctions\RegressionTree.cs" />
     <Compile Include="Feature.cs" />
     <Compile Include="Envelope.cs" />
-    <Compile Include="PromexParameters.cs" />
     <Compile Include="IAggregatable.cs" />
     <Compile Include="StatisticalAnalysis\GoAnalysis.cs" />
     <Compile Include="Intensities\BiorepIntensity.cs" />
