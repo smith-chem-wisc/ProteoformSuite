@@ -1,4 +1,0 @@
-comment:
-  layout: "header, diff, changes, sunburst, suggestions, tree"
-  branches: null           # -> see "branch patterns" below
-  behavior: default
