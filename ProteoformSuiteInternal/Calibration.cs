@@ -137,7 +137,6 @@ namespace ProteoformSuiteInternal
             double bestMS1MSE = bestMS1predictor.GetMSE(testList1);
             {
                 var ms1regressor = new ConstantCalibrationFunction();
-                var ms2regressor = new ConstantCalibrationFunction();
                 ms1regressor.Train(trainList1);
                 double MS1mse = ms1regressor.GetMSE(testList1);
                 if (MS1mse < bestMS1MSE)
