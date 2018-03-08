@@ -277,10 +277,6 @@ namespace ProteoformSuiteInternal
                     }
                     workbook.SaveAs(filelocation + "_deconv.xlsx");
                 }
-                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
-                    {
-                        File.Delete(Path.Combine(filelocation + "_ms1ft.csv"));
-                    }
                     if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
                     {
                         File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
@@ -288,10 +284,6 @@ namespace ProteoformSuiteInternal
                     if (File.Exists(Path.Combine(filelocation + ".pbf")))
                     {
                         File.Delete(Path.Combine(filelocation + ".pbf"));
-                    }
-                    if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
-                    {
-                        File.Delete(Path.Combine(filelocation + ".ms1ft"));
                     }
 
                     if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
