@@ -11,6 +11,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using System.Diagnostics;
+using ClosedXML.Excel;
+
 
 namespace ProteoformSuiteInternal
 {
@@ -184,6 +187,139 @@ namespace ProteoformSuiteInternal
         #endregion DECONVOLUTION Public Fields
 
         #region DECONVOLUTION
+
+        public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, string directory)
+        {
+                int successfully_deconvoluted_files = 0;
+                foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
+
+                    Process proc = new Process();
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    string input = f.complete_path;
+                    string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
+                    string promexlocation = directory + @"\ProMex";
+
+                    if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                    {
+                        startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                    }
+                    else
+                    {
+                        return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                    }
+
+                    startInfo.UseShellExecute = false;
+                    startInfo.RedirectStandardInput = true;
+                    startInfo.RedirectStandardOutput = false;
+                    startInfo.CreateNoWindow = true;
+                    proc.StartInfo = startInfo;
+
+                    proc.Start();
+
+                    proc.StandardInput.WriteLine("cd " + promexlocation);
+
+                    proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
+                    proc.StandardInput.Close();
+                    proc.WaitForExit();
+                proc.Close();
+
+                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
+                {
+                    double minMass = 0;
+                    int numChargesRequired = 3;
+                    string dir = Directory.GetCurrentDirectory();
+                    Loaders.LoadElements(dir + @"\elements.dat");
+                    var rawFile = ThermoDynamicData.InitiateDynamicConnection(input);
+                    Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
+                    StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
+                    string line;
+                    int lineNum = 1;
+
+                    while (reader.Peek() > 0)
+                    {
+                        line = reader.ReadLine();
+
+                        if (lineNum != 1)
+                        {
+                            var massWithScan = new Envelope(line);
+                            if (massWithScan.retentionTime >= minRT || massWithScan.retentionTime <= max_RT)
+                            {
+                                massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+
+                                if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
+                                    featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
+                                else
+                                    featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
+                            }
+                        }
+
+                        lineNum++;
+                    }
+
+                    reader.Close();
+
+                    string headerForThisFile = "No.\tMonoisotopic Mass\tSum Intensity\tNumber of Charge States\tNumber of Detected Intervals\tDelta Mass\tRelative Abundance\tFractional Abundance\tScan Range\tRT Range\tApex RT";
+
+                    List<string> output = new List<string>() { headerForThisFile };
+                    foreach (var feature in featureIdToFeature)
+                        if (feature.Value.monoisotopicMass > minMass && feature.Value.isotopicEnvelopes.Select(p => p.charge).Distinct().Count() >= numChargesRequired)
+                            output.AddRange(feature.Value.GetThermoFormattedStrings());
+                    var workbook = new XLWorkbook();
+                    var worksheet = workbook.Worksheets.Add("ws1");
+                    for (int r = 0; r < output.Count; r++)
+                    {
+                        string[] columns = output[r].Split('\t');
+                        for (int c = 0; c < columns.Length; c++)
+                        {
+                            worksheet.Row(r + 1).Cell(c + 1).SetValue(columns[c]);
+                            worksheet.Row(r + 1).Cell(c + 1).DataType = Double.TryParse(columns[c], out double isNumber) ? XLCellValues.Number : XLCellValues.Text;
+                        }
+                    }
+                    workbook.SaveAs(filelocation + "_deconv.xlsx");
+                }
+                    if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
+                    {
+                        File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
+                    }
+                    if (File.Exists(Path.Combine(filelocation + ".pbf")))
+                    {
+                        File.Delete(Path.Combine(filelocation + ".pbf"));
+                    }
+
+                    if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
+                    {
+                        successfully_deconvoluted_files++;
+                    }
+                using (StreamWriter writer = new StreamWriter(filelocation + "_parameters.txt", false))
+                {
+                    writer.WriteLine("Minimum Charge: " + mincharge + " Maximum Charge: " + maxcharge + " Minimum Retention Time: " + minRT + " Maximum Retention Time: " + maxRT);
+                }
+            }
+                if (successfully_deconvoluted_files == 1)
+                {
+                    return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";
+                }
+                else if (successfully_deconvoluted_files > 1)
+                {
+                    return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw files.";
+                }
+                else
+                {
+                    return "No files deconvoluted. Ensure correct file locations and try again.";
+                }
+        }
+
+
+        //public void convertxml(string filelocation)
+        //{
+        //    //StreamReader streamReader = new StreamReader(filelocation);
+        //    string[] contents = File.ReadAllLines(filelocation);
+        //    for(int i =1; i < contents.Length; i++)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine(contents[i]);
+        //        System.Diagnostics.Debug.WriteLine(contents.Length);
+        //    }
+        //}
 
         //will add this back in when RM pushes commits to mzlib/next release -LVS 1-22-18
         //public List<Component> deconvolute_file(InputFile raw_file)
