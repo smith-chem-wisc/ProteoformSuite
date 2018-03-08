@@ -19,6 +19,8 @@ Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Construct
 Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
 * The version used for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.1.12).
 
+Vignettes are housed in releases and also at [this repository](https://github.com/smith-chem-wisc/ProteoformSuiteVignettes).
+
 ## Functionality
 * Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
 * Custom Database: PTMs archived and UniProt and discovered using [G-PTM-D](https://github.com/smith-chem-wisc/gptmd) or [MetaMopheus](https://github.com/smith-chem-wisc/MetaMorpheus) are used in the construction of theoretical proteoforms.
