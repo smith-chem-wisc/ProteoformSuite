@@ -60,6 +60,7 @@
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rb_deconvolution = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -77,10 +78,19 @@
             this.splitContainer16 = new System.Windows.Forms.SplitContainer();
             this.splitContainer24 = new System.Windows.Forms.SplitContainer();
             this.splitContainer17 = new System.Windows.Forms.SplitContainer();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.nud_minRT = new System.Windows.Forms.NumericUpDown();
+            this.nud_maxRT = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.nud_mincharge = new System.Windows.Forms.NumericUpDown();
+            this.nud_maxcharge = new System.Windows.Forms.NumericUpDown();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
             this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
+            this.bt_deconvolute = new System.Windows.Forms.Button();
             this.bt_calibrate = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer27 = new System.Windows.Forms.SplitContainer();
@@ -189,6 +199,10 @@
             this.splitContainer17.Panel1.SuspendLayout();
             this.splitContainer17.Panel2.SuspendLayout();
             this.splitContainer17.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer27)).BeginInit();
@@ -220,8 +234,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer13);
-            this.splitContainer3.Size = new System.Drawing.Size(1362, 736);
-            this.splitContainer3.SplitterDistance = 551;
+            this.splitContainer3.Size = new System.Drawing.Size(1462, 812);
+            this.splitContainer3.SplitterDistance = 607;
             this.splitContainer3.TabIndex = 40;
             // 
             // splitContainer1
@@ -238,8 +252,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1362, 551);
-            this.splitContainer1.SplitterDistance = 429;
+            this.splitContainer1.Size = new System.Drawing.Size(1462, 607);
+            this.splitContainer1.SplitterDistance = 460;
             this.splitContainer1.TabIndex = 40;
             // 
             // splitContainer4
@@ -257,8 +271,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer4.Size = new System.Drawing.Size(425, 547);
-            this.splitContainer4.SplitterDistance = 498;
+            this.splitContainer4.Size = new System.Drawing.Size(456, 603);
+            this.splitContainer4.SplitterDistance = 548;
             this.splitContainer4.TabIndex = 43;
             // 
             // splitContainer9
@@ -276,8 +290,8 @@
             // splitContainer9.Panel2
             // 
             this.splitContainer9.Panel2.Controls.Add(this.dgv_loadFiles1);
-            this.splitContainer9.Size = new System.Drawing.Size(425, 498);
-            this.splitContainer9.SplitterDistance = 26;
+            this.splitContainer9.Size = new System.Drawing.Size(456, 548);
+            this.splitContainer9.SplitterDistance = 27;
             this.splitContainer9.TabIndex = 0;
             // 
             // cmb_loadTable1
@@ -288,7 +302,7 @@
             this.cmb_loadTable1.FormattingEnabled = true;
             this.cmb_loadTable1.Location = new System.Drawing.Point(0, 0);
             this.cmb_loadTable1.Name = "cmb_loadTable1";
-            this.cmb_loadTable1.Size = new System.Drawing.Size(425, 26);
+            this.cmb_loadTable1.Size = new System.Drawing.Size(456, 26);
             this.cmb_loadTable1.TabIndex = 41;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             this.cmb_loadTable1.TextChanged += new System.EventHandler(this.cmb_loadTable1_TextChanged);
@@ -302,7 +316,7 @@
             this.dgv_loadFiles1.Location = new System.Drawing.Point(0, 0);
             this.dgv_loadFiles1.Name = "dgv_loadFiles1";
             this.dgv_loadFiles1.RowTemplate.Height = 28;
-            this.dgv_loadFiles1.Size = new System.Drawing.Size(425, 468);
+            this.dgv_loadFiles1.Size = new System.Drawing.Size(456, 517);
             this.dgv_loadFiles1.TabIndex = 39;
             this.dgv_loadFiles1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles1_CellFormatting);
             this.dgv_loadFiles1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_loadFiles1_CellMouseClick);
@@ -323,8 +337,8 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.btn_clearFiles1);
-            this.splitContainer5.Size = new System.Drawing.Size(425, 45);
-            this.splitContainer5.SplitterDistance = 212;
+            this.splitContainer5.Size = new System.Drawing.Size(456, 51);
+            this.splitContainer5.SplitterDistance = 227;
             this.splitContainer5.TabIndex = 0;
             // 
             // btn_AddFiles1
@@ -332,7 +346,7 @@
             this.btn_AddFiles1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_AddFiles1.Location = new System.Drawing.Point(0, 0);
             this.btn_AddFiles1.Name = "btn_AddFiles1";
-            this.btn_AddFiles1.Size = new System.Drawing.Size(212, 45);
+            this.btn_AddFiles1.Size = new System.Drawing.Size(227, 51);
             this.btn_AddFiles1.TabIndex = 46;
             this.btn_AddFiles1.Text = "Add";
             this.btn_AddFiles1.UseVisualStyleBackColor = true;
@@ -343,7 +357,7 @@
             this.btn_clearFiles1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_clearFiles1.Location = new System.Drawing.Point(0, 0);
             this.btn_clearFiles1.Name = "btn_clearFiles1";
-            this.btn_clearFiles1.Size = new System.Drawing.Size(209, 45);
+            this.btn_clearFiles1.Size = new System.Drawing.Size(225, 51);
             this.btn_clearFiles1.TabIndex = 46;
             this.btn_clearFiles1.Text = "Clear";
             this.btn_clearFiles1.UseVisualStyleBackColor = true;
@@ -363,8 +377,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer10);
-            this.splitContainer2.Size = new System.Drawing.Size(929, 551);
-            this.splitContainer2.SplitterDistance = 499;
+            this.splitContainer2.Size = new System.Drawing.Size(998, 607);
+            this.splitContainer2.SplitterDistance = 536;
             this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer6
@@ -382,8 +396,8 @@
             // splitContainer6.Panel2
             // 
             this.splitContainer6.Panel2.Controls.Add(this.splitContainer7);
-            this.splitContainer6.Size = new System.Drawing.Size(495, 547);
-            this.splitContainer6.SplitterDistance = 498;
+            this.splitContainer6.Size = new System.Drawing.Size(532, 603);
+            this.splitContainer6.SplitterDistance = 548;
             this.splitContainer6.TabIndex = 38;
             // 
             // splitContainer8
@@ -401,8 +415,8 @@
             // splitContainer8.Panel2
             // 
             this.splitContainer8.Panel2.Controls.Add(this.dgv_loadFiles2);
-            this.splitContainer8.Size = new System.Drawing.Size(495, 498);
-            this.splitContainer8.SplitterDistance = 28;
+            this.splitContainer8.Size = new System.Drawing.Size(532, 548);
+            this.splitContainer8.SplitterDistance = 30;
             this.splitContainer8.TabIndex = 0;
             // 
             // cmb_loadTable2
@@ -413,7 +427,7 @@
             this.cmb_loadTable2.FormattingEnabled = true;
             this.cmb_loadTable2.Location = new System.Drawing.Point(0, 0);
             this.cmb_loadTable2.Name = "cmb_loadTable2";
-            this.cmb_loadTable2.Size = new System.Drawing.Size(495, 26);
+            this.cmb_loadTable2.Size = new System.Drawing.Size(532, 26);
             this.cmb_loadTable2.TabIndex = 40;
             this.cmb_loadTable2.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable2_SelectedIndexChanged);
             this.cmb_loadTable2.TextChanged += new System.EventHandler(this.cmb_loadTable2_TextChanged);
@@ -426,7 +440,7 @@
             this.dgv_loadFiles2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_loadFiles2.Location = new System.Drawing.Point(0, 0);
             this.dgv_loadFiles2.Name = "dgv_loadFiles2";
-            this.dgv_loadFiles2.Size = new System.Drawing.Size(495, 466);
+            this.dgv_loadFiles2.Size = new System.Drawing.Size(532, 514);
             this.dgv_loadFiles2.TabIndex = 36;
             this.dgv_loadFiles2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles2_CellFormatting);
             this.dgv_loadFiles2.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_loadFiles2_CellMouseClick);
@@ -447,8 +461,8 @@
             // splitContainer7.Panel2
             // 
             this.splitContainer7.Panel2.Controls.Add(this.btn_clearFiles2);
-            this.splitContainer7.Size = new System.Drawing.Size(495, 45);
-            this.splitContainer7.SplitterDistance = 246;
+            this.splitContainer7.Size = new System.Drawing.Size(532, 51);
+            this.splitContainer7.SplitterDistance = 264;
             this.splitContainer7.TabIndex = 0;
             // 
             // btn_addFiles2
@@ -456,7 +470,7 @@
             this.btn_addFiles2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_addFiles2.Location = new System.Drawing.Point(0, 0);
             this.btn_addFiles2.Name = "btn_addFiles2";
-            this.btn_addFiles2.Size = new System.Drawing.Size(246, 45);
+            this.btn_addFiles2.Size = new System.Drawing.Size(264, 51);
             this.btn_addFiles2.TabIndex = 35;
             this.btn_addFiles2.Text = "Add";
             this.btn_addFiles2.UseVisualStyleBackColor = true;
@@ -467,7 +481,7 @@
             this.btn_clearFiles2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_clearFiles2.Location = new System.Drawing.Point(0, 0);
             this.btn_clearFiles2.Name = "btn_clearFiles2";
-            this.btn_clearFiles2.Size = new System.Drawing.Size(245, 45);
+            this.btn_clearFiles2.Size = new System.Drawing.Size(264, 51);
             this.btn_clearFiles2.TabIndex = 34;
             this.btn_clearFiles2.Text = "Clear";
             this.btn_clearFiles2.UseVisualStyleBackColor = true;
@@ -488,8 +502,8 @@
             // splitContainer10.Panel2
             // 
             this.splitContainer10.Panel2.Controls.Add(this.splitContainer11);
-            this.splitContainer10.Size = new System.Drawing.Size(422, 547);
-            this.splitContainer10.SplitterDistance = 498;
+            this.splitContainer10.Size = new System.Drawing.Size(454, 603);
+            this.splitContainer10.SplitterDistance = 548;
             this.splitContainer10.TabIndex = 0;
             // 
             // splitContainer12
@@ -507,8 +521,8 @@
             // splitContainer12.Panel2
             // 
             this.splitContainer12.Panel2.Controls.Add(this.dgv_loadFiles3);
-            this.splitContainer12.Size = new System.Drawing.Size(422, 498);
-            this.splitContainer12.SplitterDistance = 26;
+            this.splitContainer12.Size = new System.Drawing.Size(454, 548);
+            this.splitContainer12.SplitterDistance = 27;
             this.splitContainer12.TabIndex = 0;
             // 
             // cmb_loadTable3
@@ -519,7 +533,7 @@
             this.cmb_loadTable3.FormattingEnabled = true;
             this.cmb_loadTable3.Location = new System.Drawing.Point(0, 0);
             this.cmb_loadTable3.Name = "cmb_loadTable3";
-            this.cmb_loadTable3.Size = new System.Drawing.Size(422, 26);
+            this.cmb_loadTable3.Size = new System.Drawing.Size(454, 26);
             this.cmb_loadTable3.TabIndex = 43;
             this.cmb_loadTable3.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable3_SelectedIndexChanged);
             this.cmb_loadTable3.TextChanged += new System.EventHandler(this.cmb_loadTable3_TextChanged);
@@ -532,7 +546,7 @@
             this.dgv_loadFiles3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_loadFiles3.Location = new System.Drawing.Point(0, 0);
             this.dgv_loadFiles3.Name = "dgv_loadFiles3";
-            this.dgv_loadFiles3.Size = new System.Drawing.Size(422, 468);
+            this.dgv_loadFiles3.Size = new System.Drawing.Size(454, 517);
             this.dgv_loadFiles3.TabIndex = 41;
             this.dgv_loadFiles3.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles3_CellFormatting);
             this.dgv_loadFiles3.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_loadFiles3_CellMouseClick);
@@ -553,8 +567,8 @@
             // splitContainer11.Panel2
             // 
             this.splitContainer11.Panel2.Controls.Add(this.btn_clearFiles3);
-            this.splitContainer11.Size = new System.Drawing.Size(422, 45);
-            this.splitContainer11.SplitterDistance = 211;
+            this.splitContainer11.Size = new System.Drawing.Size(454, 51);
+            this.splitContainer11.SplitterDistance = 227;
             this.splitContainer11.TabIndex = 0;
             // 
             // btn_addFiles3
@@ -562,7 +576,7 @@
             this.btn_addFiles3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_addFiles3.Location = new System.Drawing.Point(0, 0);
             this.btn_addFiles3.Name = "btn_addFiles3";
-            this.btn_addFiles3.Size = new System.Drawing.Size(211, 45);
+            this.btn_addFiles3.Size = new System.Drawing.Size(227, 51);
             this.btn_addFiles3.TabIndex = 41;
             this.btn_addFiles3.Text = "Add";
             this.btn_addFiles3.UseVisualStyleBackColor = true;
@@ -573,7 +587,7 @@
             this.btn_clearFiles3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_clearFiles3.Location = new System.Drawing.Point(0, 0);
             this.btn_clearFiles3.Name = "btn_clearFiles3";
-            this.btn_clearFiles3.Size = new System.Drawing.Size(207, 45);
+            this.btn_clearFiles3.Size = new System.Drawing.Size(223, 51);
             this.btn_clearFiles3.TabIndex = 40;
             this.btn_clearFiles3.Text = "Clear";
             this.btn_clearFiles3.UseVisualStyleBackColor = true;
@@ -592,8 +606,8 @@
             // splitContainer13.Panel2
             // 
             this.splitContainer13.Panel2.Controls.Add(this.splitContainer16);
-            this.splitContainer13.Size = new System.Drawing.Size(1362, 181);
-            this.splitContainer13.SplitterDistance = 508;
+            this.splitContainer13.Size = new System.Drawing.Size(1462, 201);
+            this.splitContainer13.SplitterDistance = 545;
             this.splitContainer13.TabIndex = 0;
             // 
             // splitContainer14
@@ -610,8 +624,8 @@
             // splitContainer14.Panel2
             // 
             this.splitContainer14.Panel2.Controls.Add(this.groupBox3);
-            this.splitContainer14.Size = new System.Drawing.Size(508, 181);
-            this.splitContainer14.SplitterDistance = 81;
+            this.splitContainer14.Size = new System.Drawing.Size(545, 201);
+            this.splitContainer14.SplitterDistance = 89;
             this.splitContainer14.TabIndex = 0;
             // 
             // splitContainer15
@@ -627,8 +641,8 @@
             // splitContainer15.Panel2
             // 
             this.splitContainer15.Panel2.Controls.Add(this.groupBox4);
-            this.splitContainer15.Size = new System.Drawing.Size(508, 81);
-            this.splitContainer15.SplitterDistance = 251;
+            this.splitContainer15.Size = new System.Drawing.Size(545, 89);
+            this.splitContainer15.SplitterDistance = 269;
             this.splitContainer15.TabIndex = 0;
             // 
             // groupBox1
@@ -638,7 +652,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(251, 81);
+            this.groupBox1.Size = new System.Drawing.Size(269, 89);
             this.groupBox1.TabIndex = 47;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proteoform Identification Results";
@@ -668,15 +682,27 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.rb_deconvolution);
             this.groupBox4.Controls.Add(this.rb_standardOptions);
             this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(0, 0);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(253, 81);
+            this.groupBox4.Size = new System.Drawing.Size(272, 89);
             this.groupBox4.TabIndex = 51;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
+            // 
+            // rb_deconvolution
+            // 
+            this.rb_deconvolution.AutoSize = true;
+            this.rb_deconvolution.Location = new System.Drawing.Point(18, 58);
+            this.rb_deconvolution.Name = "rb_deconvolution";
+            this.rb_deconvolution.Size = new System.Drawing.Size(94, 17);
+            this.rb_deconvolution.TabIndex = 58;
+            this.rb_deconvolution.TabStop = true;
+            this.rb_deconvolution.Text = "Deconvolution";
+            this.rb_deconvolution.UseVisualStyleBackColor = true;
             // 
             // rb_standardOptions
             // 
@@ -708,7 +734,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(508, 96);
+            this.groupBox3.Size = new System.Drawing.Size(545, 108);
             this.groupBox3.TabIndex = 50;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Text Filters";
@@ -727,8 +753,8 @@
             // splitContainer19.Panel2
             // 
             this.splitContainer19.Panel2.Controls.Add(this.splitContainer22);
-            this.splitContainer19.Size = new System.Drawing.Size(502, 77);
-            this.splitContainer19.SplitterDistance = 167;
+            this.splitContainer19.Size = new System.Drawing.Size(539, 89);
+            this.splitContainer19.SplitterDistance = 179;
             this.splitContainer19.TabIndex = 0;
             // 
             // splitContainer20
@@ -745,8 +771,8 @@
             // splitContainer20.Panel2
             // 
             this.splitContainer20.Panel2.Controls.Add(this.tb_filter3);
-            this.splitContainer20.Size = new System.Drawing.Size(167, 77);
-            this.splitContainer20.SplitterDistance = 48;
+            this.splitContainer20.Size = new System.Drawing.Size(179, 89);
+            this.splitContainer20.SplitterDistance = 55;
             this.splitContainer20.TabIndex = 0;
             // 
             // splitContainer21
@@ -764,7 +790,7 @@
             // splitContainer21.Panel2
             // 
             this.splitContainer21.Panel2.Controls.Add(this.tb_filter2);
-            this.splitContainer21.Size = new System.Drawing.Size(167, 48);
+            this.splitContainer21.Size = new System.Drawing.Size(179, 55);
             this.splitContainer21.SplitterDistance = 25;
             this.splitContainer21.TabIndex = 0;
             // 
@@ -773,7 +799,7 @@
             this.tb_filter1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tb_filter1.Location = new System.Drawing.Point(0, 0);
             this.tb_filter1.Name = "tb_filter1";
-            this.tb_filter1.Size = new System.Drawing.Size(167, 20);
+            this.tb_filter1.Size = new System.Drawing.Size(179, 20);
             this.tb_filter1.TabIndex = 54;
             this.tb_filter1.TextChanged += new System.EventHandler(this.tb_filter1_TextChanged);
             // 
@@ -782,7 +808,7 @@
             this.tb_filter2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tb_filter2.Location = new System.Drawing.Point(0, 0);
             this.tb_filter2.Name = "tb_filter2";
-            this.tb_filter2.Size = new System.Drawing.Size(167, 20);
+            this.tb_filter2.Size = new System.Drawing.Size(179, 20);
             this.tb_filter2.TabIndex = 55;
             this.tb_filter2.TextChanged += new System.EventHandler(this.tb_filter2_TextChanged);
             // 
@@ -791,7 +817,7 @@
             this.tb_filter3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tb_filter3.Location = new System.Drawing.Point(0, 0);
             this.tb_filter3.Name = "tb_filter3";
-            this.tb_filter3.Size = new System.Drawing.Size(167, 20);
+            this.tb_filter3.Size = new System.Drawing.Size(179, 20);
             this.tb_filter3.TabIndex = 58;
             this.tb_filter3.TextChanged += new System.EventHandler(this.tb_filter3_TextChanged);
             // 
@@ -809,8 +835,8 @@
             // splitContainer22.Panel2
             // 
             this.splitContainer22.Panel2.Controls.Add(this.lb_filter3);
-            this.splitContainer22.Size = new System.Drawing.Size(331, 77);
-            this.splitContainer22.SplitterDistance = 48;
+            this.splitContainer22.Size = new System.Drawing.Size(356, 89);
+            this.splitContainer22.SplitterDistance = 55;
             this.splitContainer22.TabIndex = 0;
             // 
             // splitContainer23
@@ -828,7 +854,7 @@
             // splitContainer23.Panel2
             // 
             this.splitContainer23.Panel2.Controls.Add(this.lb_filter2);
-            this.splitContainer23.Size = new System.Drawing.Size(331, 48);
+            this.splitContainer23.Size = new System.Drawing.Size(356, 55);
             this.splitContainer23.SplitterDistance = 25;
             this.splitContainer23.TabIndex = 0;
             // 
@@ -877,8 +903,8 @@
             // splitContainer16.Panel2
             // 
             this.splitContainer16.Panel2.Controls.Add(this.splitContainer25);
-            this.splitContainer16.Size = new System.Drawing.Size(850, 181);
-            this.splitContainer16.SplitterDistance = 68;
+            this.splitContainer16.Size = new System.Drawing.Size(913, 201);
+            this.splitContainer16.SplitterDistance = 75;
             this.splitContainer16.TabIndex = 0;
             // 
             // splitContainer24
@@ -894,8 +920,8 @@
             // splitContainer24.Panel2
             // 
             this.splitContainer24.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer24.Size = new System.Drawing.Size(850, 68);
-            this.splitContainer24.SplitterDistance = 283;
+            this.splitContainer24.Size = new System.Drawing.Size(913, 75);
+            this.splitContainer24.SplitterDistance = 303;
             this.splitContainer24.TabIndex = 0;
             // 
             // splitContainer17
@@ -906,6 +932,14 @@
             // 
             // splitContainer17.Panel1
             // 
+            this.splitContainer17.Panel1.Controls.Add(this.label6);
+            this.splitContainer17.Panel1.Controls.Add(this.label5);
+            this.splitContainer17.Panel1.Controls.Add(this.nud_minRT);
+            this.splitContainer17.Panel1.Controls.Add(this.nud_maxRT);
+            this.splitContainer17.Panel1.Controls.Add(this.label2);
+            this.splitContainer17.Panel1.Controls.Add(this.label1);
+            this.splitContainer17.Panel1.Controls.Add(this.nud_mincharge);
+            this.splitContainer17.Panel1.Controls.Add(this.nud_maxcharge);
             this.splitContainer17.Panel1.Controls.Add(this.cb_calibrate_td_files);
             this.splitContainer17.Panel1.Controls.Add(this.cb_calibrate_raw_files);
             this.splitContainer17.Panel1.Controls.Add(this.nud_randomSeed);
@@ -913,10 +947,110 @@
             // 
             // splitContainer17.Panel2
             // 
+            this.splitContainer17.Panel2.Controls.Add(this.bt_deconvolute);
             this.splitContainer17.Panel2.Controls.Add(this.bt_calibrate);
-            this.splitContainer17.Size = new System.Drawing.Size(283, 68);
-            this.splitContainer17.SplitterDistance = 189;
+            this.splitContainer17.Size = new System.Drawing.Size(303, 75);
+            this.splitContainer17.SplitterDistance = 202;
             this.splitContainer17.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(53, 48);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(42, 13);
+            this.label6.TabIndex = 73;
+            this.label6.Text = "Min RT";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(175, 49);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(45, 13);
+            this.label5.TabIndex = 72;
+            this.label5.Text = "Max RT";
+            // 
+            // nud_minRT
+            // 
+            this.nud_minRT.Location = new System.Drawing.Point(0, 46);
+            this.nud_minRT.Name = "nud_minRT";
+            this.nud_minRT.Size = new System.Drawing.Size(49, 20);
+            this.nud_minRT.TabIndex = 71;
+            // 
+            // nud_maxRT
+            // 
+            this.nud_maxRT.Location = new System.Drawing.Point(120, 46);
+            this.nud_maxRT.Name = "nud_maxRT";
+            this.nud_maxRT.Size = new System.Drawing.Size(49, 20);
+            this.nud_maxRT.TabIndex = 70;
+            this.nud_maxRT.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(53, 4);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(61, 13);
+            this.label2.TabIndex = 67;
+            this.label2.Text = "Min Charge";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(175, 4);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(64, 13);
+            this.label1.TabIndex = 66;
+            this.label1.Text = "Max Charge";
+            // 
+            // nud_mincharge
+            // 
+            this.nud_mincharge.Location = new System.Drawing.Point(0, 0);
+            this.nud_mincharge.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.nud_mincharge.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_mincharge.Name = "nud_mincharge";
+            this.nud_mincharge.Size = new System.Drawing.Size(49, 20);
+            this.nud_mincharge.TabIndex = 63;
+            this.nud_mincharge.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // nud_maxcharge
+            // 
+            this.nud_maxcharge.Location = new System.Drawing.Point(120, 0);
+            this.nud_maxcharge.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.nud_maxcharge.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_maxcharge.Name = "nud_maxcharge";
+            this.nud_maxcharge.Size = new System.Drawing.Size(49, 20);
+            this.nud_maxcharge.TabIndex = 62;
+            this.nud_maxcharge.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
             // 
             // cb_calibrate_td_files
             // 
@@ -978,13 +1112,25 @@
             this.cb_useRandomSeed.Visible = false;
             this.cb_useRandomSeed.CheckedChanged += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
             // 
+            // bt_deconvolute
+            // 
+            this.bt_deconvolute.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bt_deconvolute.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.bt_deconvolute.Location = new System.Drawing.Point(0, 0);
+            this.bt_deconvolute.Name = "bt_deconvolute";
+            this.bt_deconvolute.Size = new System.Drawing.Size(97, 75);
+            this.bt_deconvolute.TabIndex = 41;
+            this.bt_deconvolute.Text = "Deconvolute";
+            this.bt_deconvolute.UseVisualStyleBackColor = true;
+            this.bt_deconvolute.Click += new System.EventHandler(this.bt_deconvolute_Click);
+            // 
             // bt_calibrate
             // 
             this.bt_calibrate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bt_calibrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.bt_calibrate.Location = new System.Drawing.Point(0, 0);
             this.bt_calibrate.Name = "bt_calibrate";
-            this.bt_calibrate.Size = new System.Drawing.Size(90, 68);
+            this.bt_calibrate.Size = new System.Drawing.Size(97, 75);
             this.bt_calibrate.TabIndex = 40;
             this.bt_calibrate.Text = "Calibrate";
             this.bt_calibrate.UseVisualStyleBackColor = true;
@@ -996,7 +1142,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(563, 68);
+            this.groupBox2.Size = new System.Drawing.Size(606, 75);
             this.groupBox2.TabIndex = 61;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Full Run Save Options";
@@ -1014,8 +1160,8 @@
             // splitContainer27.Panel2
             // 
             this.splitContainer27.Panel2.Controls.Add(this.btn_browseSummarySaveFolder);
-            this.splitContainer27.Size = new System.Drawing.Size(557, 49);
-            this.splitContainer27.SplitterDistance = 294;
+            this.splitContainer27.Size = new System.Drawing.Size(600, 56);
+            this.splitContainer27.SplitterDistance = 316;
             this.splitContainer27.TabIndex = 0;
             // 
             // tb_resultsFolder
@@ -1023,7 +1169,7 @@
             this.tb_resultsFolder.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tb_resultsFolder.Location = new System.Drawing.Point(0, 0);
             this.tb_resultsFolder.Name = "tb_resultsFolder";
-            this.tb_resultsFolder.Size = new System.Drawing.Size(294, 20);
+            this.tb_resultsFolder.Size = new System.Drawing.Size(316, 20);
             this.tb_resultsFolder.TabIndex = 34;
             // 
             // btn_browseSummarySaveFolder
@@ -1032,7 +1178,7 @@
             this.btn_browseSummarySaveFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.btn_browseSummarySaveFolder.Location = new System.Drawing.Point(0, 0);
             this.btn_browseSummarySaveFolder.Name = "btn_browseSummarySaveFolder";
-            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(259, 49);
+            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(280, 56);
             this.btn_browseSummarySaveFolder.TabIndex = 36;
             this.btn_browseSummarySaveFolder.Text = "Browse Results Folder";
             this.btn_browseSummarySaveFolder.UseVisualStyleBackColor = true;
@@ -1052,8 +1198,8 @@
             // splitContainer25.Panel2
             // 
             this.splitContainer25.Panel2.Controls.Add(this.splitContainer26);
-            this.splitContainer25.Size = new System.Drawing.Size(850, 109);
-            this.splitContainer25.SplitterDistance = 283;
+            this.splitContainer25.Size = new System.Drawing.Size(913, 122);
+            this.splitContainer25.SplitterDistance = 303;
             this.splitContainer25.TabIndex = 0;
             // 
             // btn_stepThrough
@@ -1061,7 +1207,7 @@
             this.btn_stepThrough.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_stepThrough.Location = new System.Drawing.Point(0, 0);
             this.btn_stepThrough.Name = "btn_stepThrough";
-            this.btn_stepThrough.Size = new System.Drawing.Size(283, 109);
+            this.btn_stepThrough.Size = new System.Drawing.Size(303, 122);
             this.btn_stepThrough.TabIndex = 60;
             this.btn_stepThrough.Text = "Step Through Processing";
             this.btn_stepThrough.UseVisualStyleBackColor = true;
@@ -1081,8 +1227,8 @@
             // splitContainer26.Panel2
             // 
             this.splitContainer26.Panel2.Controls.Add(this.bt_clearResults);
-            this.splitContainer26.Size = new System.Drawing.Size(563, 109);
-            this.splitContainer26.SplitterDistance = 283;
+            this.splitContainer26.Size = new System.Drawing.Size(606, 122);
+            this.splitContainer26.SplitterDistance = 304;
             this.splitContainer26.TabIndex = 0;
             // 
             // btn_fullRun
@@ -1090,7 +1236,7 @@
             this.btn_fullRun.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_fullRun.Location = new System.Drawing.Point(0, 0);
             this.btn_fullRun.Name = "btn_fullRun";
-            this.btn_fullRun.Size = new System.Drawing.Size(283, 109);
+            this.btn_fullRun.Size = new System.Drawing.Size(304, 122);
             this.btn_fullRun.TabIndex = 58;
             this.btn_fullRun.Text = "Full Run";
             this.btn_fullRun.UseVisualStyleBackColor = true;
@@ -1101,7 +1247,7 @@
             this.bt_clearResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bt_clearResults.Location = new System.Drawing.Point(0, 0);
             this.bt_clearResults.Name = "bt_clearResults";
-            this.bt_clearResults.Size = new System.Drawing.Size(276, 109);
+            this.bt_clearResults.Size = new System.Drawing.Size(298, 122);
             this.bt_clearResults.TabIndex = 59;
             this.bt_clearResults.Text = "Clear Results";
             this.bt_clearResults.UseVisualStyleBackColor = true;
@@ -1109,7 +1255,7 @@
             // 
             // LoadDeconvolutionResults
             // 
-            this.ClientSize = new System.Drawing.Size(1362, 736);
+            this.ClientSize = new System.Drawing.Size(1462, 812);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer3);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1222,6 +1368,10 @@
             this.splitContainer17.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer17)).EndInit();
             this.splitContainer17.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.splitContainer27.Panel1.ResumeLayout(false);
@@ -1304,5 +1454,15 @@
         private System.Windows.Forms.Button bt_calibrate;
         private System.Windows.Forms.CheckBox cb_calibrate_td_files;
         private System.Windows.Forms.CheckBox cb_calibrate_raw_files;
+        private System.Windows.Forms.RadioButton rb_deconvolution;
+        private System.Windows.Forms.Button bt_deconvolute;
+        private System.Windows.Forms.NumericUpDown nud_mincharge;
+        private System.Windows.Forms.NumericUpDown nud_maxcharge;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown nud_minRT;
+        private System.Windows.Forms.NumericUpDown nud_maxRT;
     }
 }

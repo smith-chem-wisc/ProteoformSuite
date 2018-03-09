@@ -2,7 +2,6 @@
 {
     public abstract class DisplayObject
     {
-
         #region Public Field
 
         public object display_object;
@@ -17,6 +16,5 @@
         }
 
         #endregion Public Constructor
-
     }
 }

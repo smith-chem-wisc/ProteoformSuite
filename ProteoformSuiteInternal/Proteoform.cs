@@ -8,7 +8,6 @@ namespace ProteoformSuiteInternal
 {
     public class Proteoform
     {
-
         #region Public Properties
 
         public string accession { get; set; }
@@ -18,6 +17,7 @@ namespace ProteoformSuiteInternal
         public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; } = "";
+
         public PtmSet ptm_set
         {
             get
@@ -28,13 +28,14 @@ namespace ProteoformSuiteInternal
             set
             {
                 _ptm_set = value;
-                ptm_description = ptm_set == null || ptm_set.ptm_combination == null ? 
-                    "Unknown" : 
+                ptm_description = ptm_set == null || ptm_set.ptm_combination == null ?
+                    "Unknown" :
                     ptm_set.ptm_combination.Count == 0 ?
-                        "Unmodified" : 
+                        "Unmodified" :
                         String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
             }
         }
+
         public int begin { get; set; }
         public int end { get; set; }
 
@@ -85,7 +86,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).OrderBy(r => r.candidate_ptmset != null ? Math.Abs(r.candidate_ptmset.mass - r.DeltaMass) : r.DeltaMass * 1e6).Distinct().ToList())
             {
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
-                if (e == null) continue; // Looking at an ET pair, expecting an EE pair
+                if (e == null) { continue; }// Looking at an ET pair, expecting an EE pair
 
                 double mass_tolerance = modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
@@ -95,7 +96,6 @@ namespace ProteoformSuiteInternal
                     (linked_proteoform_references.First() as TheoreticalProteoform != null ?
                         linked_proteoform_references.First() as TheoreticalProteoform : //Experimental with theoretical reference
                         null); //Experimental without theoretical reference
-                string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
 
                 List<PtmSet> possible_additions = r.peak.possiblePeakAssignments.Where(p => Math.Abs(p.mass - deltaM) <= 1).ToList(); // EE relations have PtmSets around both positive and negative deltaM, so remove the ones around the opposite of the deltaM of interest
                 PtmSet best_addition = generate_possible_added_ptmsets(possible_additions, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
@@ -124,7 +124,9 @@ namespace ProteoformSuiteInternal
                 }
 
                 if (best_addition == null && best_loss == null)
+                {
                     continue;
+                }
 
                 // Make the new ptmset with ptms removed or added
                 PtmSet with_mod_change = null;
@@ -192,15 +194,21 @@ namespace ProteoformSuiteInternal
                     // 1. First, we observe I/L/A cleavage to be the most common, other degradations and methionine cleavage are weighted mid-level
                     // 2. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
                     if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
+                    {
                         rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
+                    }
                     else if (m.modificationType == "Deconvolution Error")
-                        rank_sum += Sweet.lollipop.neucode_labeled ? 
+                    {
+                        rank_sum += Sweet.lollipop.neucode_labeled ?
                             Sweet.lollipop.mod_rank_third_quartile :   //in neucode-labeled data, fewer missed monoisotopics - don't prioritize
-                            1 ; //in label-free, more missed monoisotoipcs, should prioritize (set to same priority as variable modification)
+                            1; //in label-free, more missed monoisotoipcs, should prioritize (set to same priority as variable modification)
+                    }
                     else
+                    {
                         rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ?
                             mod_rank :
                             mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
+                    }
                 }
 
                 if (rank_sum <= Sweet.lollipop.mod_rank_sum_threshold)
@@ -223,7 +231,10 @@ namespace ProteoformSuiteInternal
             if (r.represented_ptmset == null)
             {
                 r.represented_ptmset = change;
-                if (r.RelationType == ProteoformComparison.ExperimentalExperimental) r.DeltaMass *= sign;
+                if (r.RelationType == ProteoformComparison.ExperimentalExperimental)
+                {
+                    r.DeltaMass *= sign;
+                }
             }
 
             if (e.linked_proteoform_references == null)
@@ -259,19 +270,22 @@ namespace ProteoformSuiteInternal
                 }
                 e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
             }
-            else
+            //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
+            else if (!e.topdown_id && (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
             {
-                //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
-                if (!e.topdown_id && (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
-                    e.ambiguous = true;
+                e.ambiguous = true;
             }
 
             if (e.gene_name == null)
+            {
                 e.gene_name = this.gene_name;
+            }
             else if (!e.topdown_id)
+            {
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
-
+            }
         }
+
         #endregion Private Methods
     }
 }
