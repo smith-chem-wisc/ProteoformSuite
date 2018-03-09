@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayUnlocalizedModification : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayUnlocalizedModification(UnlocalizedModification m)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.m = m;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private UnlocalizedModification m;
+        private readonly UnlocalizedModification m;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -50,7 +49,7 @@ namespace ProteoformSuiteGUI
             get { return m.original_modification.modificationType; }
             set { m.id = value; }
         }
-            
+
         public int PtmCount
         {
             get { return m.ptm_count; }
@@ -93,7 +92,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-
         public static DataTable FormatUnlocalizedModificationTable(List<DisplayUnlocalizedModification> display, string table_name)
         {
             IEnumerable<Tuple<PropertyInfo, string, bool>> property_stuff = typeof(DisplayUnlocalizedModification).GetProperties().Select(x => new Tuple<PropertyInfo, string, bool>(x, header(x.Name), visible(x.Name, true)));
@@ -106,11 +104,11 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(OriginalID)) return "Original ID";
-            if (property_name == nameof(ID)) return "New ID";
-            if (property_name == nameof(PtmCount)) return "Num. PTMs Represented";
-            if (property_name == nameof(require_proteoform_without_mod)) return "Require Proteoform Without This Modification";
-            if (property_name == nameof(PtmRank)) return "Frequency-Based Rank of PTM Mass";
+            if (property_name == nameof(OriginalID)) { return "Original ID"; }
+            if (property_name == nameof(ID)) { return "New ID"; }
+            if (property_name == nameof(PtmCount)) { return "Num. PTMs Represented"; }
+            if (property_name == nameof(require_proteoform_without_mod)) { return "Require Proteoform Without This Modification"; }
+            if (property_name == nameof(PtmRank)) { return "Frequency-Based Rank of PTM Mass"; }
             return null;
         }
 
@@ -125,6 +123,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Methods
-
     }
 }

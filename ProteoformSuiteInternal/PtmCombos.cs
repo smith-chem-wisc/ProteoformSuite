@@ -30,14 +30,14 @@ namespace ProteoformSuiteInternal
                 List<ModificationWithMass> unique_mods = ptm_data.Values.SelectMany(m => m).OfType<ModificationWithMass>().Distinct().ToList();
                 for (int i = 3; i < num_ptms_needed + 1; i++)
                 {
-                    List<ModificationWithMass> mods_to_repeat = unique_mods.Where(m => ptm_data.Count(kv => kv.Value.Contains(m)) >= i).ToList(); // where the number of unique positions is greater than the number of times to repeat;
+                    List<ModificationWithMass> mods_to_repeat = unique_mods.Where(m => ptm_data.Count(kv => kv.Value.Contains(m)) >= i).ToList(); // where the number of unique positions is greater than the number of times to repeat
                     unique_mass_combinations.AddRange(mods_to_repeat.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, added_ptm_penalization)));
                 }
             }
 
             unique_mass_combinations = unique_mass_combinations
                 .OrderBy(x => x.ptm_rank_sum).DistinctBy(set => set.mass)
-                .ToList(); 
+                .ToList();
 
             return unique_mass_combinations;
         }
@@ -46,9 +46,9 @@ namespace ProteoformSuiteInternal
         //generate all the combinations, with the shortest combinations first, and with the modifications at the first positions first
         private static List<PtmSet> all_unique_positional_combinations(List<Ptm> all_ptms, int max_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
         {
-            max_length = Math.Min(max_length, all_ptms.Count);
+            int max = Math.Min(max_length, all_ptms.Count);
             List<PtmSet> combos = new List<PtmSet>(
-                from i in Enumerable.Range(1, max_length)
+                from i in Enumerable.Range(1, max)
                 from combination in unique_positional_combinations(all_ptms, i, modification_ranks, added_ptm_penalization)
                 select combination
             );
@@ -67,18 +67,22 @@ namespace ProteoformSuiteInternal
             {
                 int result_index = stack.Count - 1;
                 int mod_index = stack.Pop();
-                Ptm value = all_ptms[mod_index];
+                Ptm ptm = all_ptms[mod_index];
                 while (mod_index < all_ptms.Count)
                 {
-                    value = all_ptms[mod_index];
-                    result[result_index] = value;
+                    ptm = all_ptms[mod_index];
+                    result[result_index] = ptm;
                     mod_index++;
-                    if (prev_position == value.position)
+                    if (prev_position == ptm.position)
+                    {
                         continue;
-                    prev_position = value.position;
+                    }
+                    prev_position = ptm.position;
                     result_index++;
                     if (mod_index < all_ptms.Count)
+                    {
                         stack.Push(mod_index);
+                    }
                     if (result_index == combination_length)
                     {
                         Ptm[] destinationArray = new Ptm[combination_length];
@@ -91,12 +95,11 @@ namespace ProteoformSuiteInternal
             }
         }
 
-
         // UNLOCALIZED MODIFICATION COMBINATIONS
         public static List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<ModificationWithMass> mods, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             List<PtmSet> sets = new List<PtmSet>();
-            List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new Ptm[] { new Ptm() }).ToList();
+            List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new[] { new Ptm() }).ToList();
             Parallel.For(1, max_num_ptms + 1, ptm_set_length =>
             {
                 List<PtmSet> new_ptmsets = combinations(unlocalized_ptms, ptm_set_length, modification_ranks, added_ptm_penalization).ToList();

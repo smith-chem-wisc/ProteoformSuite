@@ -7,10 +7,9 @@ namespace ProteoformSuiteInternal
     //Please see ProteoformRelation class for notes on naming this one.
     public class DeltaMassPeak : IMassDifference
     {
-
         #region Private Fields
 
-        private static int instance_counter = 0;
+        private static int instance_counter;
 
         #endregion Private Fields
 
@@ -21,13 +20,13 @@ namespace ProteoformSuiteInternal
         public int peak_relation_group_count { get { return grouped_relations.Count; } }
         public double decoy_relation_count { get; set; }
         public double peak_group_fdr { get; set; }
-        public bool Accepted { get; set; } = false;
+        public bool Accepted { get; set; }
         public string mass_shifter { get; set; } = "0";
         public List<PtmSet> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string { get; set; }
         public ProteoformComparison RelationType { get; set; }
         public int InstanceId { get; set; }
-        
+
         #endregion Public Properties
 
         #region Public Constructor
@@ -41,7 +40,7 @@ namespace ProteoformSuiteInternal
 
             lock (Sweet.lollipop)
             {
-                instance_counter += 1; //Not thread safe
+                IncrementInstanceCounter(); //Not thread safe
             }
 
             RelationType = base_relation.RelationType;
@@ -51,23 +50,23 @@ namespace ProteoformSuiteInternal
             grouped_relations = find_nearby_relations(relations_to_group);
 
             bool are_positive_candidates = Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out List<PtmSet> positive_candidates);
-            bool are_negative_candidates = Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(-DeltaMass, 1), out List<PtmSet> negative_candidates) 
+            bool are_negative_candidates = Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(-DeltaMass, 1), out List<PtmSet> negative_candidates)
                 && (RelationType == ProteoformComparison.ExperimentalExperimental || RelationType == ProteoformComparison.ExperimentalFalse);
 
             if (are_positive_candidates || are_negative_candidates)
             {
                 List<PtmSet> candidates = (are_positive_candidates ? positive_candidates : new List<PtmSet>()).Concat(are_negative_candidates ? negative_candidates : new List<PtmSet>()).ToList();
                 possiblePeakAssignments = candidates.Where(c => RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
-                    Math.Abs(DeltaMass - c.mass) <= (grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ? Sweet.lollipop.peak_width_base_et / 2 : Sweet.lollipop.peak_width_base_ee / 2) :
-                    Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= (grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ? Sweet.lollipop.peak_width_base_et / 2 : Sweet.lollipop.peak_width_base_ee / 2)).ToList();
+                    Math.Abs(DeltaMass - c.mass) <= (grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ? Sweet.lollipop.peak_width_base_et : Sweet.lollipop.peak_width_base_ee) :
+                    Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= (grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ? Sweet.lollipop.peak_width_base_et : Sweet.lollipop.peak_width_base_ee)).ToList();
             }
             else
             {
                 possiblePeakAssignments = new List<PtmSet>();
             }
 
-            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.OrderBy(p => p.ptm_rank_sum).Select(ptmset => 
-                String.Join(";", ptmset.ptm_combination.Select(ptm => 
+            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.OrderBy(p => p.ptm_rank_sum).Select(ptmset =>
+                String.Join(";", ptmset.ptm_combination.Select(ptm =>
                     Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id))).Distinct()) + "]";
 
             Accepted = grouped_relations != null && grouped_relations.Count > 0 && grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ?
@@ -82,6 +81,7 @@ namespace ProteoformSuiteInternal
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
+
         private List<ProteoformRelation> find_nearby_relations(HashSet<ProteoformRelation> ungrouped_relations)
         {
             if (ungrouped_relations.Count <= 0)
@@ -102,21 +102,25 @@ namespace ProteoformSuiteInternal
             }
 
             foreach (ProteoformRelation mass_difference in grouped_relations)
+            {
                 foreach (Proteoform p in mass_difference.connected_proteoforms)
+                {
                     lock (p) p.relationships.Add(mass_difference);
+                }
+            }
 
             return grouped_relations;
         }
 
         public int count_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            if (all_relations.Count == 0) return 0;
-            double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? 
-                DeltaMass - Sweet.lollipop.peak_width_base_et / 2 : 
+            if (all_relations.Count == 0) { return 0; }
+            double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ?
+                DeltaMass - Sweet.lollipop.peak_width_base_et / 2 :
                 DeltaMass - Sweet.lollipop.peak_width_base_ee / 2;
 
-            double upper_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? 
-                DeltaMass + Sweet.lollipop.peak_width_base_et / 2 : 
+            double upper_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ?
+                DeltaMass + Sweet.lollipop.peak_width_base_et / 2 :
                 DeltaMass + Sweet.lollipop.peak_width_base_ee / 2;
 
             List<ProteoformRelation> decoys_in_peaks = all_relations.Where(relation => relation.DeltaMass >= lower_limit_of_peak_width && relation.DeltaMass <= upper_limit_of_peak_width).ToList();
@@ -133,6 +137,11 @@ namespace ProteoformSuiteInternal
                 }
             }
             return decoys_in_peaks.Count;
+        }
+
+        private static void IncrementInstanceCounter()
+        {
+            instance_counter += 1;
         }
 
         #endregion Private Methods
@@ -159,19 +168,22 @@ namespace ProteoformSuiteInternal
         public bool shift_experimental_masses(int shift, bool neucode_labeled)
         {
             if (RelationType != ProteoformComparison.ExperimentalTheoretical)
+            {
                 return false; //Not currently intended for ee relations
+            }
 
             foreach (ProteoformRelation r in this.grouped_relations)
             {
                 Proteoform p = r.connected_proteoforms[0];
                 if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Contains(p))
+                {
                     (p as ExperimentalProteoform).shift_masses(shift, neucode_labeled);
+                }
             }
 
             return true;
         }
 
         #endregion Public Methods
-
     }
 }

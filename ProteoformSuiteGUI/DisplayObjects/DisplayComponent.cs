@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayComponent : DisplayObject
     {
-
         #region Public Constructors
 
         public DisplayComponent(Component c)
@@ -19,13 +18,13 @@ namespace ProteoformSuiteGUI
             this.c = c;
         }
 
-        #endregion
+        #endregion Public Constructors
 
         #region Private Fields
 
-        private Component c;
+        private readonly Component c;
 
-        #endregion
+        #endregion Private Fields
 
         #region Public Properties
 
@@ -94,7 +93,6 @@ namespace ProteoformSuiteGUI
             get { return c.manual_mass_shift; }
         }
 
-
         // Pulled from the Thermo Deconvolution Results. Not used elsewhere.
         public double reported_monoisotopic_mass
         {
@@ -152,7 +150,7 @@ namespace ProteoformSuiteGUI
             return DisplayUtility.FormatTable(display.OfType<DisplayObject>().ToList(), property_stuff, table_name);
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Private Methods
 
@@ -187,19 +185,18 @@ namespace ProteoformSuiteGUI
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(reported_monoisotopic_mass)) return "0.0000";
-            if (property_name == nameof(reported_delta_mass)) return "0.0000";
-            if (property_name == nameof(weighted_monoisotopic_mass)) return "0.0000";
-            if (property_name == nameof(rt_apex)) return "0.00";
-            if (property_name == nameof(relative_abundance)) return "0.0000";
-            if (property_name == nameof(fract_abundance)) return "0.0000";
-            if (property_name == nameof(intensity_sum)) return "0.0000";
-            if (property_name == nameof(intensity_reported)) return "0.0000";
-            if (property_name == nameof(manual_mass_shift)) return "0.0000";
+            if (property_name == nameof(reported_monoisotopic_mass)) { return "0.0000"; }
+            if (property_name == nameof(reported_delta_mass)) { return "0.0000"; }
+            if (property_name == nameof(weighted_monoisotopic_mass)) { return "0.0000"; }
+            if (property_name == nameof(rt_apex)) { return "0.00"; }
+            if (property_name == nameof(relative_abundance)) { return "0.0000"; }
+            if (property_name == nameof(fract_abundance)) { return "0.0000"; }
+            if (property_name == nameof(intensity_sum)) { return "0.0000"; }
+            if (property_name == nameof(intensity_reported)) { return "0.0000"; }
+            if (property_name == nameof(manual_mass_shift)) { return "0.0000"; }
             return null;
         }
 
         #endregion Private Methods
-
     }
 }

@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayDeltaMassPeak : DisplayObject
     {
-
         #region Public Constructor
 
         public DisplayDeltaMassPeak(DeltaMassPeak peak)
@@ -104,35 +103,34 @@ namespace ProteoformSuiteGUI
 
         private static bool visible(string property_name, bool current, bool mask_mass_shifter)
         {
-            if (property_name == nameof(PeakRelationGroupCount)) return true;
-            if (property_name == nameof(DeltaMass)) return true;
-            if (property_name == nameof(PeakGroupFDR)) return true;
-            if (property_name == nameof(Accepted)) return true;
-            if (property_name == nameof(possiblePeakAssignments_string)) return true;
-            if (!mask_mass_shifter && property_name == nameof(MassShifter)) return true;
+            if (property_name == nameof(PeakRelationGroupCount)) { return true; }
+            if (property_name == nameof(DeltaMass)) { return true; }
+            if (property_name == nameof(PeakGroupFDR)) { return true; }
+            if (property_name == nameof(Accepted)) { return true; }
+            if (property_name == nameof(possiblePeakAssignments_string)) { return true; }
+            if (!mask_mass_shifter && property_name == nameof(MassShifter)) { return true; }
             return current;
         }
 
         private static string header(string property_name, bool mask_mass_shifter)
         {
-            if (property_name == nameof(PeakRelationGroupCount)) return "Peak Center Count";
-            if (property_name == nameof(DecoyRelationCount)) return "Decoy Count under Peak";
-            if (property_name == nameof(DeltaMass)) return "Peak Center Delta Mass";
-            if (property_name == nameof(PeakGroupFDR)) return "Peak FDR";
-            if (property_name == nameof(Accepted)) return "Peak Accepted";
-            if (property_name == nameof(possiblePeakAssignments_string)) return "Peak Assignment Possibilites";
-            if (!mask_mass_shifter && property_name == nameof(MassShifter)) return "Mass Shifter";
+            if (property_name == nameof(PeakRelationGroupCount)) { return "Peak Center Count"; }
+            if (property_name == nameof(DecoyRelationCount)) { return "Decoy Count under Peak"; }
+            if (property_name == nameof(DeltaMass)) { return "Peak Center Delta Mass"; }
+            if (property_name == nameof(PeakGroupFDR)) { return "Peak FDR"; }
+            if (property_name == nameof(Accepted)) { return "Peak Accepted"; }
+            if (property_name == nameof(possiblePeakAssignments_string)) { return "Peak Assignment Possibilites"; }
+            if (!mask_mass_shifter && property_name == nameof(MassShifter)) { return "Mass Shifter"; }
             return null;
         }
 
         private static string number_format(string property_name)
         {
-            if (property_name == nameof(DeltaMass)) return "0.0000";
-            if (property_name == nameof(PeakGroupFDR)) return "0.00";
+            if (property_name == nameof(DeltaMass)) { return "0.0000"; }
+            if (property_name == nameof(PeakGroupFDR)) { return "0.00"; }
             return null;
         }
 
         #endregion Private Methods
-
     }
 }

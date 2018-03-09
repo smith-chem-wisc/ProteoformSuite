@@ -137,6 +137,11 @@ namespace ProteoformSuiteGUI
             populate_file_lists();
         }
 
+        private void rb_deconvolution_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
+
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
@@ -175,6 +180,23 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
                 nud_randomSeed.Visible = false;
+                bt_deconvolute.Visible = false;
+                nud_maxcharge.Visible = false;
+                nud_mincharge.Visible = false;
+                nud_maxRT.Visible = false;
+                nud_minRT.Visible = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label5.Visible = false;
+                label6.Visible = false;
+                dgv_loadFiles2.Visible = true;
+                cmb_loadTable2.Visible = true;
+                btn_addFiles2.Visible = true;
+                btn_clearFiles2.Visible = true;
+                dgv_loadFiles3.Visible = true;
+                cmb_loadTable3.Visible = true;
+                btn_addFiles3.Visible = true;
+                btn_clearFiles3.Visible = true;
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -187,6 +209,23 @@ namespace ProteoformSuiteGUI
                 cb_calibrate_td_files.Visible = true;
                 cb_calibrate_raw_files.Visible = true;
                 nud_randomSeed.Visible = true;
+                bt_deconvolute.Visible = false;
+                nud_maxcharge.Visible = false;
+                nud_mincharge.Visible = false;
+                nud_maxRT.Visible = false;
+                nud_minRT.Visible = false;
+                label1.Visible = false;
+                label2.Visible = false;
+                label5.Visible = false;
+                label6.Visible = false;
+                dgv_loadFiles2.Visible = true;
+                cmb_loadTable2.Visible = true;
+                btn_addFiles2.Visible = true;
+                btn_clearFiles2.Visible = true;
+                dgv_loadFiles3.Visible = true;
+                cmb_loadTable3.Visible = true;
+                btn_addFiles3.Visible = true;
+                btn_clearFiles3.Visible = true;
 
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 1;
@@ -195,6 +234,45 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.Enabled = false;
                 cmb_loadTable2.Enabled = false;
                 cmb_loadTable3.Enabled = false;
+            }
+
+            else if (rb_deconvolution.Checked)
+            {
+
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable2.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable3.Items.Add(Lollipop.file_lists[4]);
+
+                cmb_loadTable1.SelectedIndex = 0;
+                cmb_loadTable2.SelectedIndex = 0;
+                cmb_loadTable3.SelectedIndex = 0;
+
+                cmb_loadTable1.Enabled = false;
+                cmb_loadTable2.Enabled = false;
+                cmb_loadTable3.Enabled = false;
+
+                bt_calibrate.Visible = false;
+                cb_useRandomSeed.Visible = false;
+                cb_calibrate_raw_files.Visible = false;
+                cb_calibrate_td_files.Visible = false;
+                nud_randomSeed.Visible = false;
+                bt_deconvolute.Visible = true;
+                nud_maxcharge.Visible = true;
+                nud_mincharge.Visible = true;
+                nud_maxRT.Visible = true;
+                nud_minRT.Visible = true;
+                label1.Visible = true;
+                label2.Visible = true;
+                label5.Visible = true;
+                label6.Visible = true;
+                dgv_loadFiles2.Visible = false;
+                cmb_loadTable2.Visible = false;
+                btn_addFiles2.Visible = false;
+                btn_clearFiles2.Visible = false;
+                dgv_loadFiles3.Visible = false;
+                cmb_loadTable3.Visible = false;
+                btn_addFiles3.Visible = false;
+                btn_clearFiles3.Visible = false;
             }
 
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
@@ -477,6 +555,17 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.read_in_calibration_td_hits();
             MessageBox.Show(Sweet.lollipop.calibrate_files());
         }
+
+        private void bt_deconvolute_Click(object sender, EventArgs e)
+        {
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            {
+                MessageBox.Show("Please enter raw files to deconvolute."); return;
+            }
+            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxRT.Value), Convert.ToInt32(nud_minRT.Value), Environment.CurrentDirectory);
+            MessageBox.Show(deconv_results);
+        }
+
         #endregion CHANGED TABLE SELECTION Private Methods
 
         //Do nothing when text changes

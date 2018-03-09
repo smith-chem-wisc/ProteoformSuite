@@ -30,14 +30,16 @@ namespace ProteoformSuiteInternal
             aaMasses.Add('L', 113.084064);
             switch (kI)
             {
-                case "n":
-                    aaMasses.Add('K', 128.094963);
-                    break;
                 case "l":
                     aaMasses.Add('K', 136.109162);
                     break;
+
                 case "h":
                     aaMasses.Add('K', 136.1451772);
+                    break;
+
+                default:
+                    aaMasses.Add('K', 128.094963);
                     break;
             }
             aaMasses.Add('M', 131.040485);
@@ -54,10 +56,10 @@ namespace ProteoformSuiteInternal
 
         private static string WhichLysineIsotopeComposition(bool natural_lysine_isotope_abundance, bool neucode_light_lysine, bool neucode_heavy_lysine)
         {
-            if (natural_lysine_isotope_abundance) return "n";
-            else if (neucode_light_lysine) return "l";
-            else if (neucode_heavy_lysine) return "h";
-            else return "";
+            if (natural_lysine_isotope_abundance) { return "n"; }
+            else if (neucode_light_lysine) { return "l"; }
+            else if (neucode_heavy_lysine) { return "h"; }
+            else { return ""; }
         }
     }
 }
