@@ -57,8 +57,9 @@ namespace ProteoformSuiteInternal
                     Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
 
-                message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.significance_by_log2FC ? Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis) :
-                Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => tusher_analysis as TusherAnalysis1 != null ? pf.quant.TusherValues1.significant : pf.quant.TusherValues2.significant), tusher_analysis.GoAnalysis)
+                message += CytoscapeScript.write_cytoscape_script(tusher_analysis == null ? Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis) :
+                Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => tusher_analysis as TusherAnalysis1 != null ? pf.quant.TusherValues1.significant : pf.quant.TusherValues2.significant), 
+                tusher_analysis as TusherAnalysis != null ? tusher_analysis.GoAnalysis : Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis)
                 .Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
                     directory, "SignificantChanges_", timestamp,
                     go_analysis as IGoAnalysis,
