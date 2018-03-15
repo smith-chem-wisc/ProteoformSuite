@@ -2,6 +2,7 @@
 Software for constructing, quantifying, and visualizing proteoform families.
 [![Build status](https://ci.appveyor.com/api/projects/status/0r09noqpa7j3687h/branch/master?svg=true)](https://ci.appveyor.com/project/smith-chem-wisc/proteoformsuite/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/smith-chem-wisc/proteoform-suite/badge.svg?branch=master)](https://coveralls.io/github/smith-chem-wisc/proteoform-suite?branch=master)
+[![codecov](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite/branch/master/graph/badge.svg)](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/932cdbf7f3694271bb03abb5dbba036c)](https://www.codacy.com/app/acesnik/ProteoformSuite?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=smith-chem-wisc/ProteoformSuite&amp;utm_campaign=Badge_Grade)
 
 ## Papers and Software Releases
@@ -18,6 +19,8 @@ Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Construct
 
 Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
 * The version used for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.1.12).
+
+Vignettes are housed in releases and also at [this repository](https://github.com/smith-chem-wisc/ProteoformSuiteVignettes).
 
 ## Functionality
 * Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
