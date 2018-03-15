@@ -33,7 +33,7 @@ namespace ProteoformSuiteGUI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RawExperimentalComponents));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_fileList = new System.Windows.Forms.DataGridView();
             this.bt_recalculate = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -65,10 +65,10 @@ namespace ProteoformSuiteGUI
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_fileList)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_rawComponents)).BeginInit();
@@ -102,7 +102,7 @@ namespace ProteoformSuiteGUI
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel1.Controls.Add(this.param_splitcontainer);
             // 
             // splitContainer1.Panel2
             // 
@@ -112,26 +112,26 @@ namespace ProteoformSuiteGUI
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2);
-            this.splitContainer2.Name = "splitContainer2";
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Margin = new System.Windows.Forms.Padding(2);
+            this.param_splitcontainer.Name = "param_splitcontainer";
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.dgv_fileList);
-            this.splitContainer2.Panel1.Controls.Add(this.bt_recalculate);
-            this.splitContainer2.Panel1.Controls.Add(this.groupBox1);
+            this.param_splitcontainer.Panel1.Controls.Add(this.dgv_fileList);
+            this.param_splitcontainer.Panel1.Controls.Add(this.bt_recalculate);
+            this.param_splitcontainer.Panel1.Controls.Add(this.groupBox1);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.dgv_rawComponents);
-            this.splitContainer2.Size = new System.Drawing.Size(1121, 241);
-            this.splitContainer2.SplitterDistance = 371;
-            this.splitContainer2.SplitterWidth = 3;
-            this.splitContainer2.TabIndex = 0;
+            this.param_splitcontainer.Panel2.Controls.Add(this.dgv_rawComponents);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1121, 241);
+            this.param_splitcontainer.SplitterDistance = 371;
+            this.param_splitcontainer.SplitterWidth = 3;
+            this.param_splitcontainer.TabIndex = 0;
             // 
             // dgv_fileList
             // 
@@ -461,11 +461,11 @@ namespace ProteoformSuiteGUI
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel1.PerformLayout();
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.PerformLayout();
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_fileList)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -495,7 +495,7 @@ namespace ProteoformSuiteGUI
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private SplitContainer splitContainer2;
+        private SplitContainer param_splitcontainer;
         private DataGridView dgv_rawComponents;
         private SplitContainer splitContainer3;
         private DataGridView dgv_chargeStates;

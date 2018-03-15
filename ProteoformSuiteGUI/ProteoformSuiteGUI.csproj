@@ -250,6 +250,12 @@
     <Compile Include="DisplayObjects\DisplayQuantitativeValues.cs" />
     <Compile Include="DisplayObjects\DisplayProteoformRelation.cs" />
     <Compile Include="DisplayObjects\DisplayUnlocalizedModification.cs" />
+    <Compile Include="LoadResults.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadResults.Designer.cs">
+      <DependentUpon>LoadResults.cs</DependentUpon>
+    </Compile>
     <Compile Include="IdentifiedProteoforms.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -282,12 +288,6 @@
     </Compile>
     <Compile Include="ProteoformSweet.Designer.cs">
       <DependentUpon>ProteoformSweet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LoadDeconvolutionResults.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LoadDeconvolutionResults.Designer.cs">
-      <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
     </Compile>
     <Compile Include="NeuCodePairs.cs">
       <SubType>Form</SubType>
@@ -338,6 +338,9 @@
     <EmbeddedResource Include="ExperimentTheoreticalComparison.resx">
       <DependentUpon>ExperimentTheoreticalComparison.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LoadResults.resx">
+      <DependentUpon>LoadResults.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="IdentifiedProteoforms.resx">
       <DependentUpon>IdentifiedProteoforms.cs</DependentUpon>
     </EmbeddedResource>
@@ -346,9 +349,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProteoformSweet.resx">
       <DependentUpon>ProteoformSweet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LoadDeconvolutionResults.resx">
-      <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NeuCodePairs.resx">
       <DependentUpon>NeuCodePairs.cs</DependentUpon>

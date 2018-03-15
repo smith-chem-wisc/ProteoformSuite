@@ -61,7 +61,7 @@
             this.ct_EE_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dgv_EE_Relations = new System.Windows.Forms.DataGridView();
             this.ct_EE_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.label5 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
@@ -99,10 +99,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_Histogram)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Relations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_peakList)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).BeginInit();
             this.splitContainer6.Panel1.SuspendLayout();
             this.splitContainer6.Panel2.SuspendLayout();
@@ -411,23 +411,23 @@
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
+            this.param_splitcontainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Name = "param_splitcontainer";
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.splitContainer6);
+            this.param_splitcontainer.Panel1.Controls.Add(this.splitContainer6);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer2.Size = new System.Drawing.Size(1652, 711);
-            this.splitContainer2.SplitterDistance = 812;
-            this.splitContainer2.TabIndex = 28;
+            this.param_splitcontainer.Panel2.Controls.Add(this.splitContainer3);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1652, 711);
+            this.param_splitcontainer.SplitterDistance = 812;
+            this.param_splitcontainer.TabIndex = 28;
             // 
             // splitContainer6
             // 
@@ -741,7 +741,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1652, 711);
             this.ControlBox = false;
-            this.Controls.Add(this.splitContainer2);
+            this.Controls.Add(this.param_splitcontainer);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExperimentExperimentComparison";
             this.Text = "ExperimentExperimentComparison";
@@ -759,10 +759,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_Histogram)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Relations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_peakList)).EndInit();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             this.splitContainer6.Panel1.ResumeLayout(false);
             this.splitContainer6.Panel1.PerformLayout();
             this.splitContainer6.Panel2.ResumeLayout(false);
@@ -822,7 +822,7 @@
         public System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_Histogram;
         private System.Windows.Forms.DataGridView dgv_EE_Relations;
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_peakList;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.SplitContainer splitContainer4;
         private System.Windows.Forms.SplitContainer splitContainer3;
