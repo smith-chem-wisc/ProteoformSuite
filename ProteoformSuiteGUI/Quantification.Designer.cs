@@ -64,7 +64,7 @@
             this.nud_bkgdWidth = new System.Windows.Forms.NumericUpDown();
             this.nud_bkgdShift = new System.Windows.Forms.NumericUpDown();
             this.ct_proteoformIntensities = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.ct_volcano_logFold_logP = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.splitContainer7 = new System.Windows.Forms.SplitContainer();
@@ -173,10 +173,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).BeginInit();
             this.splitContainer6.Panel1.SuspendLayout();
             this.splitContainer6.Panel2.SuspendLayout();
@@ -250,7 +250,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel2.Controls.Add(this.param_splitcontainer);
             this.splitContainer1.Size = new System.Drawing.Size(1454, 861);
             this.splitContainer1.SplitterDistance = 484;
             this.splitContainer1.TabIndex = 0;
@@ -599,22 +599,22 @@
             this.ct_proteoformIntensities.Text = "log2_intensity";
             this.ct_proteoformIntensities.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_proteoformIntensities_MouseClick);
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Name = "param_splitcontainer";
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.splitContainer6);
+            this.param_splitcontainer.Panel1.Controls.Add(this.splitContainer6);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.splitContainer10);
-            this.splitContainer2.Size = new System.Drawing.Size(966, 861);
-            this.splitContainer2.SplitterDistance = 485;
-            this.splitContainer2.TabIndex = 0;
+            this.param_splitcontainer.Panel2.Controls.Add(this.splitContainer10);
+            this.param_splitcontainer.Size = new System.Drawing.Size(966, 861);
+            this.param_splitcontainer.SplitterDistance = 485;
+            this.param_splitcontainer.TabIndex = 0;
             // 
             // splitContainer6
             // 
@@ -1794,10 +1794,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).EndInit();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             this.splitContainer6.Panel1.ResumeLayout(false);
             this.splitContainer6.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).EndInit();
@@ -1874,7 +1874,7 @@
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.SplitContainer splitContainer4;
         private System.Windows.Forms.SplitContainer splitContainer5;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.SplitContainer splitContainer6;
         private System.Windows.Forms.SplitContainer splitContainer7;
         private System.Windows.Forms.SplitContainer splitContainer8;

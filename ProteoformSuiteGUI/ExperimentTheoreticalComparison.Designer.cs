@@ -79,7 +79,7 @@
             this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Relations = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -114,10 +114,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.yMinET)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xMaxET)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Relations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
             this.SuspendLayout();
@@ -135,7 +135,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel2.Controls.Add(this.param_splitcontainer);
             this.splitContainer1.Size = new System.Drawing.Size(1545, 819);
             this.splitContainer1.SplitterDistance = 832;
             this.splitContainer1.SplitterWidth = 3;
@@ -714,25 +714,25 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Lower Bound Model Formula";
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Margin = new System.Windows.Forms.Padding(2);
+            this.param_splitcontainer.Name = "param_splitcontainer";
+            this.param_splitcontainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.dgv_ET_Relations);
+            this.param_splitcontainer.Panel1.Controls.Add(this.dgv_ET_Relations);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.ct_ET_Histogram);
-            this.splitContainer2.Size = new System.Drawing.Size(710, 819);
-            this.splitContainer2.SplitterDistance = 508;
-            this.splitContainer2.SplitterWidth = 3;
-            this.splitContainer2.TabIndex = 0;
+            this.param_splitcontainer.Panel2.Controls.Add(this.ct_ET_Histogram);
+            this.param_splitcontainer.Size = new System.Drawing.Size(710, 819);
+            this.param_splitcontainer.SplitterDistance = 508;
+            this.param_splitcontainer.SplitterWidth = 3;
+            this.param_splitcontainer.TabIndex = 0;
             // 
             // dgv_ET_Relations
             // 
@@ -818,10 +818,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.xMaxET)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Relations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
             this.ResumeLayout(false);
@@ -831,7 +831,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.NumericUpDown nUD_PeakCountMinThreshold;
