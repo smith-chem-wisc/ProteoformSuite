@@ -92,7 +92,7 @@ namespace ProteoformSuiteInternal
         CalibrationIdentification,
         CalibrationTopDown,
         ProteinDatabase,
-        PtmList
+        PtmList,
     }
 
     public enum Labeling
