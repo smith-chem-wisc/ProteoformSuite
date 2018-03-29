@@ -139,7 +139,7 @@ namespace ProteoformSuiteInternal
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    double midpoint = Math.Round(set.mass, 1) - 0.5 + i * 0.1;
+                    double midpoint = Math.Round(Math.Round(set.mass, 1) - 0.5 + i * 0.1, 1);
                     if (possible_ptmsets.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
                     else possible_ptmsets.Add(midpoint, new List<PtmSet> { set });
                 }

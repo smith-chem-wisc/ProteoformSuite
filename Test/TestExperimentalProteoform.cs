@@ -45,7 +45,7 @@ namespace Test
                 light.charge_states = new List<ChargeState> { light_charge_state };
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
                 double mass_difference = heavy.weighted_monoisotopic_mass - light.weighted_monoisotopic_mass;
-                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, mass_difference, new HashSet<int>(), true);
+                NeuCodePair n = new NeuCodePair(light, light.intensity_sum, heavy, heavy.intensity_sum, mass_difference, new HashSet<int>() { 1 }, true);
                 n.lysine_count = starter_lysine_count;
                 components.Add(n);
             }
@@ -260,6 +260,28 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated.Count);
             Assert.AreEqual(components[0], e.aggregated.First());
+        }
+
+        [Test]
+        public void aggregate_consecutive_charge_states()
+        {
+            List<ChargeState> cs = new List<ChargeState>();
+            for(int i = 5; i < 8; i++)
+            {
+                cs.Add(new ChargeState(i, 1000, 1000));
+            }
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(3, cs));
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(4, cs));
+            cs[0].charge_count = 4;
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(3, cs));
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(2, cs));
+            cs[0].charge_count = 5;
+            cs[2].charge_count = 9;
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(3, cs));
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(2, cs));
+            cs = new List<ChargeState>() { new ChargeState(1, 1000, 1000) };
+            Assert.IsFalse(Sweet.lollipop.consecutive_charge_states(2, cs));
+            Assert.IsTrue(Sweet.lollipop.consecutive_charge_states(1, cs));
         }
 
         [Test]

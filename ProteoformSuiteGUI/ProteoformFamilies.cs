@@ -363,49 +363,6 @@ namespace ProteoformSuiteGUI
             cb_boldLabel.Enabled = cb_buildAsQuantitative.Checked;
         }
 
-        private void btn_inclusion_list_all_families_Click(object sender, EventArgs e)
-        {
-            List<ExperimentalProteoform> proteoforms = new List<ExperimentalProteoform>();
-            if (cb_identified_families.Checked) { proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null).ToList()); }
-            if (cb_unidentified_families.Checked) { proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references == null).ToList()); }
-            if (cb_orphans.Checked) { proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.families.Where(f => f.relations.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList()); }
-            write_inclusion_list(proteoforms);
-        }
-
-        private void btn_inclusion_list_selected_families_Click(object sender, EventArgs e)
-        {
-            object[] selected = DisplayUtility.get_selected_objects(dgv_main);
-            List<ProteoformFamily> families = selected.OfType<ProteoformFamily>().ToList();
-            write_inclusion_list(families.SelectMany(f => f.experimental_proteoforms).ToList());
-        }
-
-        private void write_inclusion_list(List<ExperimentalProteoform> proteoforms)
-        {
-            SaveFileDialog saveDialog = new SaveFileDialog();
-            saveDialog.Filter = "Text files (*.txt)|*.txt";
-            saveDialog.FileName = "inclusion_list.txt";
-            DialogResult dr = saveDialog.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                using (var writer = new StreamWriter(saveDialog.FileName))
-                {
-                    foreach (ExperimentalProteoform proteoform in proteoforms)
-                    {
-                        //get highest intensity charge state
-                        ChargeState max = proteoform.aggregated.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
-                        double mz = max.mz_centroid;
-                        if (Sweet.lollipop.neucode_labeled)
-                        {
-                            mz = mz - (136.109162 * proteoform.lysine_count / max.charge_count) + (128.094963 * proteoform.lysine_count / max.charge_count);
-                        }
-                        writer.WriteLine(mz + "\t" + max.charge_count + "\t" + proteoform.agg_rt);
-                    }
-                }
-                MessageBox.Show("Successfully exported inclusion list.");
-            }
-            else return;
-        }
-
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.gene_centric_families = cb_geneCentric.Checked;
