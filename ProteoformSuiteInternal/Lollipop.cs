@@ -167,7 +167,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
-                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
+                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.min_scan + "-" + c.max_scan == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
             }
         }

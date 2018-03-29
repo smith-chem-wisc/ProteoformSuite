@@ -63,10 +63,10 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            add_component(new_component);
+            if (new_component.charge_states != null && new_component.charge_states.Count > 0) add_component(new_component); //don't add if empty component
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
-            scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range)).ToList();
+            scan_ranges = new HashSet<string>(final_components.Select(c => c.min_scan + "-" + c.max_scan)).ToList();
             return final_components;
         }
 
@@ -91,13 +91,13 @@ namespace ProteoformSuiteInternal
 
         public List<Component> remove_monoisotopic_duplicates_harmonics_from_same_scan(List<Component> raw_components)
         {
-            List<string> scans = raw_components.Select(c => c.scan_range).Distinct().ToList();
+            List<string> scans = raw_components.Select(c => c.min_scan + "-" + c.max_scan).Distinct().ToList();
             HashSet<Component> removeThese = new HashSet<Component>();
             List<NeuCodePair> ncPairsInScan = new List<NeuCodePair>();
 
             foreach (string scan in scans)
             {
-                List<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderByDescending(i => i.intensity_sum).ToList();
+                List<Component> scanComps = raw_components.Where(c => c.min_scan + "-" + c.max_scan == scan).OrderByDescending(i => i.intensity_sum).ToList();
                 foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component. components are sorted by mass. in one scan, there should only be one missed mono per
                 {
                     if (removeThese.Contains(sc))

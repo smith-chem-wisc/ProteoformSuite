@@ -166,7 +166,7 @@ namespace ProteoformSuiteInternal
                 return "";
 
             return "File: " + intense.input_file.filename 
-                + "; Scan Range: " + intense.scan_range 
+                + "; Scan Range: " + intense.min_scan + "-" + intense.max_scan 
                 + "; Charge State m/z (+" + intense_cs.charge_count.ToString() + "): " + intense_cs.mz_centroid + "; RT (min): " + intense.rt_apex;
         }
 
