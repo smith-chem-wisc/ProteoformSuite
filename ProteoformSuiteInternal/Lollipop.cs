@@ -688,7 +688,7 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
-            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray();
+            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && consecutive_charge_states(min_num_CS, p.charge_states)).ToArray();
             remaining_to_aggregate = new List<IAggregatable>(ordered_to_aggregate);
 
             IAggregatable root = ordered_to_aggregate.FirstOrDefault();
@@ -720,6 +720,24 @@ namespace ProteoformSuiteInternal
             }
 
             return candidateExperimentalProteoforms;
+        }
+
+        public bool consecutive_charge_states(int num_charge_states, List<ChargeState> charge_states)
+        {
+            List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
+            if (charges.Count < num_charge_states) return false;
+            foreach(int cs in charges)
+            {
+                int consecutive = 1;
+                foreach(int next in charges)
+                {
+                    if (consecutive >= num_charge_states) return true;
+                    if (next == cs || next < cs) continue;
+                    if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
+                    if (consecutive >= num_charge_states) return true;
+                }
+            }
+            return false;
         }
 
         public IAggregatable find_next_root(List<IAggregatable> ordered, List<IAggregatable> running)
@@ -878,6 +896,8 @@ namespace ProteoformSuiteInternal
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
+        public bool ee_accept_peaks_based_on_rank = true;
+        public bool et_accept_peaks_based_on_rank = true;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
@@ -886,7 +906,7 @@ namespace ProteoformSuiteInternal
         public double no_mans_land_upperBound = 0.88;
         public double peak_width_base_et = 0.03; //need to be separate so you can change one and not other.
         public double peak_width_base_ee = 0.03;
-        public double min_peak_count_et = 4;
+        public double min_peak_count_et = 10;
         public double min_peak_count_ee = 10;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();

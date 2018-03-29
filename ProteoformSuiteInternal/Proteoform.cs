@@ -248,7 +248,7 @@ namespace ProteoformSuiteInternal
                 List<Ptm> remove = new List<Ptm>();
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "Missing"))
                 {
-                    if (theoretical_base.sequence[this.begin - 1].ToString() == mod.modification.motif.ToString())
+                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() == mod.modification.motif.ToString())
                     {
                         e.begin++;
                         remove.Add(mod); //dont have in ptmset --> change the begin & end

@@ -339,7 +339,7 @@ namespace ProteoformSuiteInternal
 
                     string node_type = quantitative != null && ep.quant.intensitySum == 0 ?
                         experimental_notQuantified_label :
-                        ep.topdown_id? 
+                        quantitative == null && ep.topdown_id? 
                         td_label :
                         experimental_label;
 

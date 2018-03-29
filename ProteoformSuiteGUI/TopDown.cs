@@ -59,24 +59,27 @@ namespace ProteoformSuiteGUI
         {
             if (!full_run)
             {
-                if(Sweet.lollipop.top_down_hits.Count == 0)
+                if (Sweet.lollipop.top_down_hits.Count == 0)
                 {
-                    MessageBox.Show("Click Read In Top-Down Hits first!");
-                    return;
-                }
-
-                if(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-                {
-                    MessageBox.Show("Go back and construct a theoretical database.");
-                    return;
-                }
-                if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
-                {
-                    MessageBox.Show("Go back and load in top-down results.");
-                    return;
+                    ClearListsTablesFigures(true);
+                    if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+                    {
+                        MessageBox.Show("Go back and load in top-down results.");
+                        return;
+                    }
+                    if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                    {
+                        MessageBox.Show("Go back and construct a theoretical database.");
+                        return;
+                    }
+                    Sweet.lollipop.read_in_td_hits();
+                    tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
                 }
             }
-            else Sweet.lollipop.read_in_td_hits();
+            else
+            {
+                Sweet.lollipop.read_in_td_hits();
+            }
             ClearListsTablesFigures(true);
             AggregateTdHits();
             if (!full_run)
@@ -254,24 +257,6 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, selected_td.OfType<TopDownProteoform>().Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
 
-        }
-
-        private void bt_read_in_td_hits_Click(object sender, EventArgs e)
-        {
-            ClearListsTablesFigures(true);
-            if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
-            {
-                MessageBox.Show("Go back and load in top-down results.");
-                return;
-            }
-            if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-            {
-                MessageBox.Show("Go back and construct a theoretical database.");
-                return;
-            }
-            Sweet.lollipop.read_in_td_hits();
-            tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
-            MessageBox.Show("Successfully read in " + Sweet.lollipop.top_down_hits.Count + " top-down hits.");
         }
 
         private void nUD_td_rt_tolerance_ValueChanged(object sender, EventArgs e)

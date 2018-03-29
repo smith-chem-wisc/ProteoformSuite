@@ -287,7 +287,7 @@
             // 
             // nUD_min_num_CS
             // 
-            this.nUD_min_num_CS.Location = new System.Drawing.Point(161, 114);
+            this.nUD_min_num_CS.Location = new System.Drawing.Point(188, 115);
             this.nUD_min_num_CS.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_num_CS.Minimum = new decimal(new int[] {
             1,
@@ -307,12 +307,12 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(38, 116);
+            this.label8.Location = new System.Drawing.Point(6, 116);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(107, 13);
+            this.label8.Size = new System.Drawing.Size(169, 13);
             this.label8.TabIndex = 15;
-            this.label8.Text = "Min. # Charge States";
+            this.label8.Text = "Min. # Consecutive Charge States";
             // 
             // bt_aggregate
             // 
@@ -346,7 +346,7 @@
             // 
             // nUD_Missed_Ks
             // 
-            this.nUD_Missed_Ks.Location = new System.Drawing.Point(170, 92);
+            this.nUD_Missed_Ks.Location = new System.Drawing.Point(188, 92);
             this.nUD_Missed_Ks.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_Missed_Ks.Maximum = new decimal(new int[] {
             3,
@@ -370,7 +370,7 @@
             // 
             // nUD_Missed_Monos
             // 
-            this.nUD_Missed_Monos.Location = new System.Drawing.Point(170, 67);
+            this.nUD_Missed_Monos.Location = new System.Drawing.Point(188, 67);
             this.nUD_Missed_Monos.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_Missed_Monos.Maximum = new decimal(new int[] {
             5,
@@ -390,7 +390,7 @@
             0,
             0,
             131072});
-            this.nUD_RetTimeToleranace.Location = new System.Drawing.Point(170, 44);
+            this.nUD_RetTimeToleranace.Location = new System.Drawing.Point(188, 44);
             this.nUD_RetTimeToleranace.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_RetTimeToleranace.Maximum = new decimal(new int[] {
             200,
@@ -404,7 +404,7 @@
             // 
             // nUP_mass_tolerance
             // 
-            this.nUP_mass_tolerance.Location = new System.Drawing.Point(170, 20);
+            this.nUP_mass_tolerance.Location = new System.Drawing.Point(188, 20);
             this.nUP_mass_tolerance.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUP_mass_tolerance.Maximum = new decimal(new int[] {
             10,
