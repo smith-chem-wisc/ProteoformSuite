@@ -4,7 +4,8 @@ namespace ProteoformSuiteInternal
 {
     public interface IAggregatable
     {
-        string scan_range { get; set; }
+        int min_scan { get; set; }
+        int max_scan { get; set; }
         double rt_apex { get; set; }
         double weighted_monoisotopic_mass { get; set; }
         double intensity_sum { get; set; }

@@ -45,7 +45,7 @@ namespace ProteoformSuiteGUI
 
         public string scan_range
         {
-            get { return c.scan_range; }
+            get { return c.min_scan + "-" + c.max_scan; }
         }
 
         public string component_id
@@ -80,7 +80,7 @@ namespace ProteoformSuiteGUI
 
         public string rt_range
         {
-            get { return c.rt_range; }
+            get { return c.min_rt + "-" + c.max_rt; }
         }
 
         public double rt_apex

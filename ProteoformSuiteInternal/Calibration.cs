@@ -233,8 +233,8 @@ namespace ProteoformSuiteInternal
                     }
                     scanNumbers.Clear();
                     //get scan numbers using retention time (if raw file is spliced, scan numbers change)
-                    double rt = Convert.ToDouble(matching_component.rt_range.Split('-')[0]);
-                    while (Math.Round(rt, 2) <= Math.Round(Convert.ToDouble(matching_component.rt_range.Split('-')[1]), 2))
+                    double rt = matching_component.min_rt;
+                    while (Math.Round(rt, 2) <= Math.Round(matching_component.max_rt, 2))
                     {
                         int scanNumber = myMsDataFile.GetClosestOneBasedSpectrumNumber(rt);
                         scanNumbers.Add(scanNumber);

@@ -39,7 +39,12 @@ namespace ProteoformSuiteInternal
                         string[] ptms = cellStrings[10].Split('|');
                         foreach (string ptm in ptms)
                         {
-                            int position = Convert.ToInt32(cellStrings[5]);
+                            int position = Int32.TryParse(cellStrings[5], out int i) ? i : 0;
+                            if (position == 0)
+                            {
+                                add_topdown_hit = false;
+                                continue;
+                            }
                             if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                             {
                                 ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == "N-terminal Acetyl").FirstOrDefault()));
@@ -75,10 +80,31 @@ namespace ProteoformSuiteInternal
                         {
                             ModificationWithMass mod = null;
                             string id = "";
-                            int position_after_begin = Convert.ToInt16(ptm.Split(':')[1].Split('@')[1]) + 1; //one based sequence
-                                                                                                             //they give position # as from begin site -> want to report in terms of overall sequence #'s
-                                                                                                             //begin + position from begin - 1 => position in overall sequence
-                            int position = Convert.ToInt32(cellStrings[5]) + position_after_begin - 1;
+                            if (ptm.Split(':').Length < 2)
+                            {
+                                add_topdown_hit = false;
+                                continue;
+                            }
+                            if (ptm.Split(':')[1].Split('@').Length < 2)
+                            {
+                                add_topdown_hit = false;
+                                continue;
+                            }
+                            int position_after_begin = (Int32.TryParse(ptm.Split(':')[1].Split('@')[1], out int j) ? j : -1) + 1; //one based sequence
+                                                                                                                                  //they give position # as from begin site -> want to report in terms of overall sequence #'s
+                                                                                                                                  //begin + position from begin - 1 => position in overall sequence
+                            if(position_after_begin == 0)
+                            {
+                                add_topdown_hit = false;
+                                continue;
+                            }
+                            int begin = Int32.TryParse(cellStrings[5], out int k) ? k : 0;
+                            if (begin == 0)
+                            {
+                                add_topdown_hit = false;
+                                continue;
+                            }
+                            int position = begin + position_after_begin - 1;
                             if (ptm.Split(':')[0] == "RESID")
                             {
                                 string resid = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
@@ -144,8 +170,8 @@ namespace ProteoformSuiteInternal
                     if (add_topdown_hit)
                     {
                         TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, tdResultType, cellStrings[2], cellStrings[0], cellStrings[1], cellStrings[3], cellStrings[4],
-                        Convert.ToInt32(cellStrings[5]), Convert.ToInt32(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
-                        Convert.ToInt32(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], Convert.ToDouble(cellStrings[20]), Convert.ToDouble(cellStrings[22]));
+                        Int32.TryParse(cellStrings[5], out int i) ? i : 0, Int32.TryParse(cellStrings[6], out i) ? i : 0, ptm_list, Double.TryParse(cellStrings[16], out double d) ? d : 0, Double.TryParse(cellStrings[12], out d) ? d : 0,
+                        Int32.TryParse(cellStrings[17], out i) ? i : 0, Double.TryParse(cellStrings[18], out d) ? d : 0, cellStrings[14].Split('.')[0], Double.TryParse(cellStrings[20], out d) ? d : 0, Double.TryParse(cellStrings[22], out d) ? d : 0);
                         lock (td_hits) td_hits.Add(td_hit);
                     }
                 }
