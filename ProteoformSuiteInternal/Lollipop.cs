@@ -1307,7 +1307,14 @@ namespace ProteoformSuiteInternal
                         if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum <= myMsDataFile.NumSpectra)
                         {
                             hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge
-                            hit.mz = hit.reported_mass.ToMz(hit.charge);
+                            if(hit.charge > 0)
+                            {
+                                hit.mz = hit.reported_mass.ToMz(hit.charge);
+                            }
+                            else
+                            {
+                                hit.score = -100;
+                            }
                         }
                         while (myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
                         hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
@@ -1327,8 +1334,8 @@ namespace ProteoformSuiteInternal
             if (input_files.Where(f => f.purpose == Purpose.RawFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.RawFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
-            if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
-                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
+            if (td_hits_calibration.Any(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
+                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
             foreach (string condition in input_files.Select(f => f.lt_condition).Distinct())
             {
                 foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())

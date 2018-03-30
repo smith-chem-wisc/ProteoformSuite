@@ -25,8 +25,8 @@ namespace Test
             Assert.AreEqual(0.02d, createdComponent1.reported_delta_mass);
             Assert.AreEqual(88.8d, createdComponent1.relative_abundance);
             Assert.AreEqual(0.888, createdComponent1.fract_abundance);
-            Assert.AreEqual("10-15", createdComponent1.scan_range);
-            Assert.AreEqual("11.1-12.2", createdComponent1.rt_range);
+            Assert.AreEqual("10-15", createdComponent1.min_scan + "-" + createdComponent1.max_scan);
+            Assert.AreEqual("11.1-12.2", createdComponent1.min_rt + "-" + createdComponent1.max_rt);
             Assert.AreEqual(10.55d, createdComponent1.rt_apex);
             Assert.AreEqual(99.9d, createdComponent1.intensity_sum);
             Assert.AreEqual(true, createdComponent1.accepted);
@@ -52,8 +52,8 @@ namespace Test
             Assert.AreEqual(0.02d, createdComponent2.reported_delta_mass);
             Assert.AreEqual(88.8d, createdComponent2.relative_abundance);
             Assert.AreEqual(0.888, createdComponent2.fract_abundance);
-            Assert.AreEqual("10-15", createdComponent2.scan_range);
-            Assert.AreEqual("11.1-12.2", createdComponent2.rt_range);
+            Assert.AreEqual("10-15", createdComponent2.min_scan + "-" + createdComponent2.max_scan);
+            Assert.AreEqual("11.1-12.2", createdComponent2.min_rt + "-" + createdComponent2.max_rt);
             Assert.AreEqual(10.55d, createdComponent2.rt_apex);
             Assert.AreEqual(200d, createdComponent2.intensity_sum);
             Assert.AreEqual(true, createdComponent2.accepted);

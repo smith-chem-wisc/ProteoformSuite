@@ -43,7 +43,8 @@ namespace Test
                     c.charge_states.Add(cs1);
                 }
 
-                c.scan_range = "1-2";
+                c.min_scan = 1;
+                c.max_scan = 2;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -73,7 +74,8 @@ namespace Test
                     c.charge_states.Add(cs1);
                 }
 
-                c.scan_range = "3-4";
+                c.min_scan = 3;
+                c.max_scan = 4;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -124,7 +126,8 @@ namespace Test
                     }
                 }
 
-                c.scan_range = "1-2";
+                c.min_scan = 1;
+                c.max_scan = 2;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -158,7 +161,8 @@ namespace Test
                     ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs);
                 }
-                c.scan_range = "1-2";
+                c.min_scan = 1;
+                c.max_scan = 2;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -191,7 +195,8 @@ namespace Test
                     ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs);
                 }
-                c.scan_range = "1-2";
+                c.min_scan = 1;
+                c.max_scan = 2;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -236,7 +241,8 @@ namespace Test
                         c.charge_states.Add(cs);
                     }
                 }
-                c.scan_range = "1-2";
+                c.min_scan = 1;
+                c.max_scan = 2;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -282,7 +288,8 @@ namespace Test
                         c.charge_states.Add(cs);
                     }
                 }
-                c.scan_range = "1-2";
+                c.min_scan = 1;
+                c.max_scan = 2;
                 c.calculate_properties();
                 cList.Add(c);
                 counter++;
@@ -305,7 +312,8 @@ namespace Test
             c1.id = 1.ToString();
             ChargeState csOne = new ChargeState(10, 200d, 100.8068165d);//(int charge_count, double intensity, double mz_centroid) ** Because of NeuCode correction, this mass is stepped down by 2.0046 Da to make sure it's a neucode pair
             c1.charge_states.Add(csOne);
-            c1.scan_range = "1-2";
+            c1.min_scan = 1;
+            c1.max_scan = 2;
             c1.calculate_properties();
             cList.Add(c1);
 
@@ -314,7 +322,8 @@ namespace Test
             c2.id = 2.ToString();
             ChargeState csTwo = new ChargeState(10, 100d, 101.057698);//(int charge_count, double intensity, double mz_centroid)
             c2.charge_states.Add(csTwo);
-            c2.scan_range = "1-2";
+            c2.min_scan = 1;
+            c2.max_scan = 2;
             c2.calculate_properties();
             cList.Add(c2);
 
@@ -323,7 +332,8 @@ namespace Test
             c3.id = 3.ToString();
             ChargeState csThree = new ChargeState(10, 50d, 201.1081195d);//(int charge_count, double intensity, double mz_centroid)
             c3.charge_states.Add(csThree);
-            c3.scan_range = "1-2";
+            c3.min_scan = 1;
+            c3.max_scan = 2;
             c3.calculate_properties();
             cList.Add(c3);
 
