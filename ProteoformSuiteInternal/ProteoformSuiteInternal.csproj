@@ -270,7 +270,6 @@
     <Compile Include="TheoreticalProteoformDatabase.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />
     <Compile Include="TopDownProteoform.cs" />
-    <Compile Include="TransformFunction.cs" />
     <Compile Include="StatisticalAnalysis\TusherAnalysis1.cs" />
     <Compile Include="StatisticalAnalysis\TusherAnalysis2.cs" />
     <Compile Include="StatisticalAnalysis\TusherValues1.cs" />
