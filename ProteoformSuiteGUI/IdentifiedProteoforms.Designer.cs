@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IdentifiedProteoforms));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.btn_compare_with_td = new System.Windows.Forms.Button();
             this.tb_not_td = new System.Windows.Forms.TextBox();
             this.dgv_identified_experimentals = new System.Windows.Forms.DataGridView();
             this.dgv_td_proteoforms = new System.Windows.Forms.DataGridView();
             this.tb_topdown = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -90,6 +90,23 @@
             this.param_splitcontainer.SplitterDistance = 25;
             this.param_splitcontainer.TabIndex = 0;
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(397, 5);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(64, 13);
+            this.label12.TabIndex = 5;
+            this.label12.Text = "Table Filters";
+            // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(246, 2);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(145, 20);
+            this.tb_tableFilter.TabIndex = 4;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
+            // 
             // btn_compare_with_td
             // 
             this.btn_compare_with_td.Location = new System.Drawing.Point(0, 0);
@@ -140,27 +157,10 @@
             this.tb_topdown.Size = new System.Drawing.Size(1287, 20);
             this.tb_topdown.TabIndex = 6;
             // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(397, 5);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(64, 13);
-            this.label12.TabIndex = 5;
-            this.label12.Text = "Table Filters";
-            // 
-            // tb_tableFilter
-            // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(246, 2);
-            this.tb_tableFilter.Name = "tb_tableFilter";
-            this.tb_tableFilter.Size = new System.Drawing.Size(145, 20);
-            this.tb_tableFilter.TabIndex = 4;
-            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
-            // 
             // IdentifiedProteoforms
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1287, 659);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);

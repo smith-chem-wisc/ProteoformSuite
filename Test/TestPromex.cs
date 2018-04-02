@@ -43,7 +43,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
-            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 46, 45, 0.1, 0, TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 46, 45, 0.1, 70, TestContext.CurrentContext.TestDirectory));
 
             string filepath = Path.Combine(Path.GetDirectoryName(Sweet.lollipop.input_files[0].complete_path), Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path));
 
@@ -51,11 +51,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { filepath + "_deconv.xlsx" }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             List<Component> deconv_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
-            //foreach (Component i in deconv_components)
-            //{
-            //    Debug.WriteLine(i.reported_monoisotopic_mass);
-            //}
-            Assert.AreEqual(69, deconv_components.Count());
+            Assert.AreEqual(22, deconv_components.Count());
         }
     }
 }
