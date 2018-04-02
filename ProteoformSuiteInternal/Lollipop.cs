@@ -283,10 +283,8 @@ namespace ProteoformSuiteInternal
                                 if (ms1ft_likelihoods[featureID - 1] >= minlikelihood)
                                 {
                                     massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
-
                                     if (massWithScan.retentionTime >= minRT & massWithScan.retentionTime <= maxRT)
                                     {
-                                        Debug.WriteLine(massWithScan.retentionTime);
                                         if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
                                             featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
                                         else

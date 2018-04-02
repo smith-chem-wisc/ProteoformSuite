@@ -159,7 +159,7 @@ namespace ProteoformSuiteGUI
                     cmb_loadTable1.Items.Add(Lollipop.file_lists[1]);
                 }
 
-                for (int i = 2; i < 5; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 2; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -181,13 +181,14 @@ namespace ProteoformSuiteGUI
                 nud_mincharge.Visible = false;
                 nud_maxRT.Visible = false;
                 nud_minRT.Visible = false;
-                label1.Visible = false;
-                label2.Visible = false;
-                label5.Visible = false;
-                label6.Visible = false;
+                label_maxcharge.Visible = false;
+                label_mincharge.Visible = false;
+                label_maxRT.Visible = false;
+                label_minRT.Visible = false;
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
-                param_splitcontainer.Visible = false;
+                calib_stand_splitContainer.Visible = true;
+                fullrun_groupbox.Visible = true;
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -208,13 +209,14 @@ namespace ProteoformSuiteGUI
                 nud_mincharge.Visible = false;
                 nud_maxRT.Visible = false;
                 nud_minRT.Visible = false;
-                label1.Visible = false;
-                label2.Visible = false;
-                label5.Visible = false;
-                label6.Visible = false;
-                rb_neucode.Visible = false;
-                rb_unlabeled.Visible = false;
-                param_splitcontainer.Visible = true;
+                label_maxcharge.Visible = false;
+                label_mincharge.Visible = false;
+                label_maxRT.Visible = false;
+                label_minRT.Visible = false;
+                rb_neucode.Visible = true;
+                rb_unlabeled.Visible = true;
+                calib_stand_splitContainer.Visible = true;
+                fullrun_groupbox.Visible = false;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -245,13 +247,14 @@ namespace ProteoformSuiteGUI
                 nud_mincharge.Visible = true;
                 nud_maxRT.Visible = true;
                 nud_minRT.Visible = true;
-                label1.Visible = true;
-                label2.Visible = true;
-                label5.Visible = true;
-                label6.Visible = true;
+                label_maxcharge.Visible = true;
+                label_mincharge.Visible = true;
+                label_maxRT.Visible = true;
+                label_minRT.Visible = true;
                 rb_neucode.Visible = false;
                 rb_unlabeled.Visible = false;
-                param_splitcontainer.Visible = true;
+                calib_stand_splitContainer.Visible = false;
+                fullrun_groupbox.Visible = false;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -267,6 +270,21 @@ namespace ProteoformSuiteGUI
         #endregion GENERAL TABLE OPTIONS Private Methods
 
         #region DGV DRAG AND DROP Private Methods
+
+        private void dgv_deconResults_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
+        }
+
+        private void dgv_quantResults_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
+        }
+
+        private void dgv_calibrationResults_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
+        }
 
         private void dgv_deconResults_DragEnter(object sender, DragEventArgs e)
         {
@@ -312,6 +330,12 @@ namespace ProteoformSuiteGUI
         #endregion DGV DRAG AND DROP Private Methods
 
         #region CELL FORMATTING Private Methods
+
+        private void dgv_loadFiles1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName);
+        }
 
         private string BindProperty(object property, string propertyName)
         {
@@ -409,7 +433,7 @@ namespace ProteoformSuiteGUI
             if (dr == DialogResult.OK)
             {
                 string temp_folder_path = folderBrowser.SelectedPath;
-                //tb_resultsFolder.Text = temp_folder_path;
+                tb_resultsFolder.Text = temp_folder_path;
                 Sweet.lollipop.results_folder = temp_folder_path;
             }
         }
@@ -455,6 +479,12 @@ namespace ProteoformSuiteGUI
         #endregion CHANGED TABLE SELECTION Private Methods
 
         #region CHANGE ALL CELLS private methods
+
+        private void dgv_loadFiles1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                change_all_selected_cells(dgv_loadFiles1);
+        }
 
         private class InputBox : Form
         {
@@ -570,5 +600,6 @@ namespace ProteoformSuiteGUI
         {
 
         }
+
     }
 }
