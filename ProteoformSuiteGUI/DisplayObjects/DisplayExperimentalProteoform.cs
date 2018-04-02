@@ -115,6 +115,16 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string GeneID
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                    String.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())
+                : "";
+            }
+        }
+
         public string theoretical_accession
         {
             get

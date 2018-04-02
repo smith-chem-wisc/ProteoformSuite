@@ -53,6 +53,14 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string GeneID
+        {
+            get
+            {
+                return String.Join("; ", t.ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
+            }
+        }
+
         public string Fragment
         {
             get { return t.fragment; }
