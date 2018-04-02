@@ -1317,7 +1317,7 @@ namespace ProteoformSuiteInternal
                             }
                         }
                         while (myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
-                        hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
+                        hit.ms1_scan = myMsDataFile.GetOneBasedScan(scanNum);
                         hit.technical_replicate = raw_file.technical_replicate;
                         hit.biological_replicate = raw_file.biological_replicate;
                         hit.fraction = raw_file.fraction;

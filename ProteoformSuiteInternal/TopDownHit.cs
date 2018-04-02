@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Proteomics;
+using MassSpectrometry;
 
 namespace ProteoformSuiteInternal
 {
@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
         public string condition { get; set; } = "";
         public double mz { get; set; }
         public int charge { get; set; }
-        public double ms1_retention_time { get; set; }
+        public IMsDataScan<IMzSpectrum<IMzPeak>> ms1_scan {get; set;}
 
 
         public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score)
