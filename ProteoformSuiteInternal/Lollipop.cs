@@ -188,7 +188,7 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, double maxfit, double minlikelihood, string directory)
+        public string promex_deconvolute(int maxcharge, int mincharge, double maxRT, double minRT, double maxfit, double minlikelihood, string directory)
         {
             int successfully_deconvoluted_files = 0;
 
@@ -520,11 +520,56 @@ namespace ProteoformSuiteInternal
 
         #endregion NEUCODE PAIRS
 
-        #region MSPathFinder
-        
+        #region MSPathFinderT
 
+        public string MSPathFinderT(string directory)
+        {
+            int successfully_analyzed_files = 0;
 
-        #endregion
+            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile))
+            {
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                string input = f.complete_path;
+                string databaselocation = "";
+                foreach(InputFile database in input_files.Where(database => database.purpose == Purpose.ProteinDatabase)) 
+                {
+                    databaselocation = database.complete_path;
+                }
+                string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
+                string mspathlocation = directory + @"\MSPathFinderT";
+
+                if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                {
+                    startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                }
+                else
+                {
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                }
+
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = false;
+                startInfo.CreateNoWindow = true;
+                proc.StartInfo = startInfo;
+
+                proc.Start();
+
+                proc.StandardInput.WriteLine("cd " + mspathlocation);
+
+                proc.StandardInput.WriteLine("MSPathFinderT.exe " + "-s " + input + " " + "-d " + databaselocation);
+                proc.StandardInput.Close();
+                proc.WaitForExit();
+                proc.Close();
+
+                successfully_analyzed_files++;
+            }
+
+            return "Successfully analyzed " + successfully_analyzed_files + " file(s).";
+        }
+
+        #endregion MSPathFinderT
 
         #region TOPDOWN
 

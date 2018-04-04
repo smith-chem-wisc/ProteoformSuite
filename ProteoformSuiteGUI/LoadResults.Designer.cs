@@ -84,6 +84,8 @@
             this.panel_clearbtn = new System.Windows.Forms.Panel();
             this.bt_clearFiles1 = new System.Windows.Forms.Button();
             this.cmb_loadTable1 = new System.Windows.Forms.ComboBox();
+            this.rb_topdown = new System.Windows.Forms.RadioButton();
+            this.bt_topdown = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.base_splitcontainer)).BeginInit();
             this.base_splitcontainer.Panel1.SuspendLayout();
             this.base_splitcontainer.Panel2.SuspendLayout();
@@ -170,10 +172,10 @@
             this.topbar_splitcontainer.Size = new System.Drawing.Size(1395, 116);
             this.topbar_splitcontainer.SplitterDistance = 140;
             this.topbar_splitcontainer.TabIndex = 0;
-            this.topbar_splitcontainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.topbar_splitcontainer_SplitterMoved);
             // 
             // box_loadoptions
             // 
+            this.box_loadoptions.Controls.Add(this.rb_topdown);
             this.box_loadoptions.Controls.Add(this.rb_deconvolution);
             this.box_loadoptions.Controls.Add(this.rb_standardOptions);
             this.box_loadoptions.Controls.Add(this.rb_chemicalCalibration);
@@ -240,7 +242,8 @@
             // 
             // calib_stand_splitContainer
             // 
-            this.calib_stand_splitContainer.Location = new System.Drawing.Point(3, 15);
+            this.calib_stand_splitContainer.Dock = System.Windows.Forms.DockStyle.Left;
+            this.calib_stand_splitContainer.Location = new System.Drawing.Point(3, 16);
             this.calib_stand_splitContainer.Name = "calib_stand_splitContainer";
             // 
             // calib_stand_splitContainer.Panel1
@@ -254,7 +257,7 @@
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_useRandomSeed);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_td_files);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_raw_files);
-            this.calib_stand_splitContainer.Size = new System.Drawing.Size(483, 98);
+            this.calib_stand_splitContainer.Size = new System.Drawing.Size(483, 97);
             this.calib_stand_splitContainer.SplitterDistance = 128;
             this.calib_stand_splitContainer.TabIndex = 74;
             // 
@@ -350,8 +353,8 @@
             // 
             // param_splitcontainer
             // 
-            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.param_splitcontainer.Location = new System.Drawing.Point(3, 15);
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(3, 16);
             this.param_splitcontainer.Name = "param_splitcontainer";
             // 
             // param_splitcontainer.Panel1
@@ -372,7 +375,7 @@
             // param_splitcontainer.Panel2
             // 
             this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
-            this.param_splitcontainer.Size = new System.Drawing.Size(1245, 98);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1245, 97);
             this.param_splitcontainer.SplitterDistance = 648;
             this.param_splitcontainer.TabIndex = 1;
             // 
@@ -398,6 +401,7 @@
             // 
             // nud_fit
             // 
+            this.nud_fit.DecimalPlaces = 3;
             this.nud_fit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_fit.Location = new System.Drawing.Point(240, 46);
             this.nud_fit.Name = "nud_fit";
@@ -406,6 +410,7 @@
             // 
             // nud_likelihood
             // 
+            this.nud_likelihood.DecimalPlaces = 2;
             this.nud_likelihood.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_likelihood.Location = new System.Drawing.Point(354, 46);
             this.nud_likelihood.Name = "nud_likelihood";
@@ -434,6 +439,7 @@
             // 
             // nud_minRT
             // 
+            this.nud_minRT.DecimalPlaces = 2;
             this.nud_minRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_minRT.Location = new System.Drawing.Point(0, 45);
             this.nud_minRT.Name = "nud_minRT";
@@ -442,6 +448,7 @@
             // 
             // nud_maxRT
             // 
+            this.nud_maxRT.DecimalPlaces = 2;
             this.nud_maxRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_maxRT.Location = new System.Drawing.Point(120, 46);
             this.nud_maxRT.Name = "nud_maxRT";
@@ -526,7 +533,7 @@
             this.fullrun_groupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fullrun_groupbox.Location = new System.Drawing.Point(4, 0);
             this.fullrun_groupbox.Name = "fullrun_groupbox";
-            this.fullrun_groupbox.Size = new System.Drawing.Size(589, 98);
+            this.fullrun_groupbox.Size = new System.Drawing.Size(589, 97);
             this.fullrun_groupbox.TabIndex = 62;
             this.fullrun_groupbox.TabStop = false;
             this.fullrun_groupbox.Text = "Full Run Save Options";
@@ -544,7 +551,7 @@
             // fullrun_splitContainer.Panel2
             // 
             this.fullrun_splitContainer.Panel2.Controls.Add(this.btn_browseSummarySaveFolder);
-            this.fullrun_splitContainer.Size = new System.Drawing.Size(583, 79);
+            this.fullrun_splitContainer.Size = new System.Drawing.Size(583, 78);
             this.fullrun_splitContainer.SplitterDistance = 400;
             this.fullrun_splitContainer.TabIndex = 0;
             // 
@@ -562,7 +569,7 @@
             this.btn_browseSummarySaveFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.btn_browseSummarySaveFolder.Location = new System.Drawing.Point(0, 0);
             this.btn_browseSummarySaveFolder.Name = "btn_browseSummarySaveFolder";
-            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(179, 79);
+            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(179, 78);
             this.btn_browseSummarySaveFolder.TabIndex = 36;
             this.btn_browseSummarySaveFolder.Text = "Browse Results Folder";
             this.btn_browseSummarySaveFolder.UseVisualStyleBackColor = true;
@@ -571,7 +578,6 @@
             // box_start
             // 
             this.box_start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.box_start.Controls.Add(this.panel_step);
             this.box_start.Controls.Add(this.panel_clearresults);
             this.box_start.Controls.Add(this.panel_deconv_calib);
             this.box_start.Controls.Add(this.panel_fullrun);
@@ -586,7 +592,8 @@
             // panel_step
             // 
             this.panel_step.Controls.Add(this.bt_stepthru);
-            this.panel_step.Location = new System.Drawing.Point(6, 18);
+            this.panel_step.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel_step.Location = new System.Drawing.Point(0, 0);
             this.panel_step.Name = "panel_step";
             this.panel_step.Size = new System.Drawing.Size(200, 88);
             this.panel_step.TabIndex = 1;
@@ -625,6 +632,8 @@
             // 
             // panel_deconv_calib
             // 
+            this.panel_deconv_calib.Controls.Add(this.panel_step);
+            this.panel_deconv_calib.Controls.Add(this.bt_topdown);
             this.panel_deconv_calib.Controls.Add(this.bt_deconvolute);
             this.panel_deconv_calib.Controls.Add(this.bt_calibrate);
             this.panel_deconv_calib.Location = new System.Drawing.Point(6, 18);
@@ -800,6 +809,7 @@
             this.tb_filter1.Name = "tb_filter1";
             this.tb_filter1.Size = new System.Drawing.Size(201, 20);
             this.tb_filter1.TabIndex = 55;
+            this.tb_filter1.TextChanged += new System.EventHandler(this.tb_filter1_TextChanged);
             // 
             // panel_clearbtn
             // 
@@ -832,6 +842,31 @@
             this.cmb_loadTable1.Size = new System.Drawing.Size(474, 26);
             this.cmb_loadTable1.TabIndex = 42;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
+            // 
+            // rb_topdown
+            // 
+            this.rb_topdown.AutoSize = true;
+            this.rb_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_topdown.Location = new System.Drawing.Point(18, 76);
+            this.rb_topdown.Name = "rb_topdown";
+            this.rb_topdown.Size = new System.Drawing.Size(75, 17);
+            this.rb_topdown.TabIndex = 59;
+            this.rb_topdown.TabStop = true;
+            this.rb_topdown.Text = "Top Down";
+            this.rb_topdown.UseVisualStyleBackColor = true;
+            this.rb_topdown.CheckedChanged += new System.EventHandler(this.rb_topdown_CheckedChanged);
+            // 
+            // bt_topdown
+            // 
+            this.bt_topdown.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bt_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_topdown.Location = new System.Drawing.Point(0, 0);
+            this.bt_topdown.Name = "bt_topdown";
+            this.bt_topdown.Size = new System.Drawing.Size(200, 88);
+            this.bt_topdown.TabIndex = 41;
+            this.bt_topdown.Text = "Top Down Analysis";
+            this.bt_topdown.UseVisualStyleBackColor = true;
+            this.bt_topdown.Click += new System.EventHandler(this.bt_topdown_Click);
             // 
             // LoadResults
             // 
@@ -955,5 +990,7 @@
         private System.Windows.Forms.NumericUpDown nud_likelihood;
         private System.Windows.Forms.Label label_likelihood;
         private System.Windows.Forms.Label label_fit;
+        private System.Windows.Forms.RadioButton rb_topdown;
+        private System.Windows.Forms.Button bt_topdown;
     }
 }

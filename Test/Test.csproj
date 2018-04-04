@@ -187,6 +187,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="testMSPathFinderT.cs" />
     <Compile Include="TestPromex.cs" />
     <Compile Include="ConstructorsForTesting.cs" />
     <Compile Include="TestCalibration.cs" />
