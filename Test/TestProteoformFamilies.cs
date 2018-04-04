@@ -48,6 +48,8 @@ namespace Test
         {
             //Four experimental proteoforms, three relations (linear), all accepted; should give 1 bundled family
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.et_accept_peaks_based_on_rank = false;
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
             ProteoformCommunity test_community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = test_community;
 
@@ -91,6 +93,8 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
+            Sweet.lollipop.et_accept_peaks_based_on_rank = false;
             ProteoformCommunity test_community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = test_community;
 
@@ -197,7 +201,8 @@ namespace Test
                 { "unmodified", new List<Modification> { ConstructorsForTesting.get_modWithMass("unmodified", 0) } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
             };
-             
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
+            Sweet.lollipop.et_accept_peaks_based_on_rank = false;
             Sweet.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
             Sweet.lollipop.mod_rank_sum_threshold = 2;
             Sweet.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Sweet.lollipop.modification_ranks, 1);
@@ -327,6 +332,8 @@ namespace Test
         public void test_construct_target_and_decoy_families()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
+            Sweet.lollipop.et_accept_peaks_based_on_rank = false;
             Sweet.lollipop.neucode_labeled = true;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1", 1000, 5, true);
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2", 1020, 5, true);
@@ -408,6 +415,8 @@ namespace Test
         public void construct_families_with_or_without_td_nodes()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.et_accept_peaks_based_on_rank = false;
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms(-100);
             Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);

@@ -82,6 +82,7 @@
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Relations = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.cb_et_peak_accept_rank = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -404,24 +405,26 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.groupBox4.Controls.Add(this.cb_et_peak_accept_rank);
             this.groupBox4.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(29, 82);
+
+            this.groupBox4.Location = new System.Drawing.Point(29, 59);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(242, 108);
+            this.groupBox4.Size = new System.Drawing.Size(242, 131);
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
             // 
             // tb_max_accepted_fdr
             // 
-            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(138, 76);
+            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(137, 97);
             this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
             this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
             this.tb_max_accepted_fdr.ReadOnly = true;
@@ -432,7 +435,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(4, 79);
+            this.label9.Location = new System.Drawing.Point(4, 102);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(129, 13);
@@ -443,7 +446,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 25);
+            this.label4.Location = new System.Drawing.Point(16, 21);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(113, 13);
@@ -454,7 +457,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 55);
+            this.label3.Location = new System.Drawing.Point(16, 51);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
@@ -470,7 +473,7 @@
             0,
             0,
             196608});
-            this.nUD_PeakWidthBase.Location = new System.Drawing.Point(138, 23);
+            this.nUD_PeakWidthBase.Location = new System.Drawing.Point(138, 19);
             this.nUD_PeakWidthBase.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakWidthBase.Maximum = new decimal(new int[] {
             5,
@@ -490,7 +493,7 @@
             // nUD_PeakCountMinThreshold
             // 
             this.nUD_PeakCountMinThreshold.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(138, 50);
+            this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(138, 46);
             this.nUD_PeakCountMinThreshold.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakCountMinThreshold.Name = "nUD_PeakCountMinThreshold";
             this.nUD_PeakCountMinThreshold.Size = new System.Drawing.Size(86, 20);
@@ -769,6 +772,19 @@
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
             // 
+            // cb_et_peak_accept_rank
+            // 
+            this.cb_et_peak_accept_rank.AutoSize = true;
+            this.cb_et_peak_accept_rank.Checked = true;
+            this.cb_et_peak_accept_rank.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_et_peak_accept_rank.Location = new System.Drawing.Point(7, 75);
+            this.cb_et_peak_accept_rank.Name = "cb_et_peak_accept_rank";
+            this.cb_et_peak_accept_rank.Size = new System.Drawing.Size(222, 17);
+            this.cb_et_peak_accept_rank.TabIndex = 33;
+            this.cb_et_peak_accept_rank.Text = "Auto-Accept Peaks Based on Delta Mass";
+            this.cb_et_peak_accept_rank.UseVisualStyleBackColor = true;
+            this.cb_et_peak_accept_rank.CheckedChanged += new System.EventHandler(this.cb_et_peak_accept_rank_CheckedChanged);
+            // 
             // ExperimentTheoreticalComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -875,5 +891,6 @@
         private System.Windows.Forms.TextBox tb_noMansUpperBound;
         private System.Windows.Forms.TextBox tb_noMansLowerBound;
         private System.Windows.Forms.CheckBox cb_discoveryHistogram;
+        private System.Windows.Forms.CheckBox cb_et_peak_accept_rank;
     }
 }

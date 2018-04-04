@@ -191,6 +191,24 @@ namespace ProteoformSuiteGUI
             get { return e.family != null ? e.family.family_id.ToString() : ""; }
         }
 
+        public string mz_values
+        {
+            get
+            {
+                return e.topdown_id ? "" :
+                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2)));
+            }
+        }
+
+        public string Charges
+        {
+            get
+            {
+                return e.topdown_id ? "" :
+                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => cs.charge_count));
+            }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -224,26 +242,27 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(Accession)) { return "Experimental Proteoform ID"; }
-            if (property_name == nameof(agg_mass)) { return "Aggregated Mass"; }
-            if (property_name == nameof(agg_intensity)) { return "Aggregated Deconvolution Intensity"; }
-            if (property_name == nameof(agg_rt)) { return "Aggregated RT"; }
-            if (property_name == nameof(observation_count)) { return "Aggregated Component Count for Identification"; }
-            if (property_name == nameof(heavy_verification_count)) { return "Heavy Verification Component Count"; }
-            if (property_name == nameof(light_verification_count)) { return "Light Verification Component Count"; }
-            if (property_name == nameof(heavy_observation_count)) { return "Heavy Quantitative Component Count"; }
-            if (property_name == nameof(light_observation_count)) { return "Light Quantitative Component Count"; }
-            if (property_name == nameof(lysine_count)) { return "Lysine Count"; }
-            if (property_name == nameof(mass_shifted)) { return "Manually Shifted Mass"; }
-            if (property_name == nameof(ptm_description)) { return "PTM Description"; }
-            if (property_name == nameof(gene_name)) { return "Gene Name"; }
-            if (property_name == nameof(theoretical_accession)) { return "Theoretical Accession"; }
-            if (property_name == nameof(manual_validation_id)) { return "Abundant Component for Manual Validation of Identification"; }
-            if (property_name == nameof(manual_validation_verification)) { return "Abundant Component for Manual Validation of Identification Verification"; }
-            if (property_name == nameof(manual_validation_quant)) { return "Abundant Component for Manual Validation of Quantification"; }
-            if (property_name == nameof(topdown_id)) { return "Top-Down Proteoform"; }
-            if (property_name == nameof(family_id)) { return "Family ID"; }
-            if (property_name == nameof(mass_error)) { return "Mass Error"; }
+            if (property_name == nameof(Accession)) return "Experimental Proteoform ID";
+            if (property_name == nameof(agg_mass)) return "Aggregated Mass";
+            if (property_name == nameof(agg_intensity)) return "Aggregated Deconvolution Intensity";
+            if (property_name == nameof(agg_rt)) return "Aggregated RT";
+            if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
+            if (property_name == nameof(heavy_verification_count)) return "Heavy Verification Component Count";
+            if (property_name == nameof(light_verification_count)) return "Light Verification Component Count";
+            if (property_name == nameof(heavy_observation_count)) return "Heavy Quantitative Component Count";
+            if (property_name == nameof(light_observation_count)) return "Light Quantitative Component Count";
+            if (property_name == nameof(lysine_count)) return "Lysine Count";
+            if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
+            if (property_name == nameof(ptm_description)) return "PTM Description";
+            if (property_name == nameof(gene_name)) return "Gene Name";
+            if (property_name == nameof(theoretical_accession)) return "Theoretical Accession";
+            if (property_name == nameof(manual_validation_id)) return "Abundant Component for Manual Validation of Identification";
+            if (property_name == nameof(manual_validation_verification)) return "Abundant Component for Manual Validation of Identification Verification";
+            if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
+            if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
+            if (property_name == nameof(family_id)) return "Family ID";
+            if (property_name == nameof(mass_error)) return "Mass Error";
+            if (property_name == nameof(mz_values)) return "M/z values";
             return null;
         }
 
