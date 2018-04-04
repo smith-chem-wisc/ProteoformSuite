@@ -50,12 +50,6 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btn_inclusion_list_selected_families = new System.Windows.Forms.Button();
-            this.cb_orphans = new System.Windows.Forms.CheckBox();
-            this.btn_inclusion_list_all_families = new System.Windows.Forms.Button();
-            this.cb_unidentified_families = new System.Windows.Forms.CheckBox();
-            this.cb_identified_families = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
@@ -87,7 +81,6 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).BeginInit();
             this.SuspendLayout();
@@ -336,7 +329,6 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
-            this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
             this.splitContainer3.Panel2.Controls.Add(this.cb_count_adducts_as_id);
@@ -368,83 +360,13 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.btn_inclusion_list_selected_families);
-            this.groupBox1.Controls.Add(this.cb_orphans);
-            this.groupBox1.Controls.Add(this.btn_inclusion_list_all_families);
-            this.groupBox1.Controls.Add(this.cb_unidentified_families);
-            this.groupBox1.Controls.Add(this.cb_identified_families);
-            this.groupBox1.Location = new System.Drawing.Point(35, 256);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(349, 86);
-            this.groupBox1.TabIndex = 67;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Inclusion List";
-            // 
-            // btn_inclusion_list_selected_families
-            // 
-            this.btn_inclusion_list_selected_families.Location = new System.Drawing.Point(128, 44);
-            this.btn_inclusion_list_selected_families.Name = "btn_inclusion_list_selected_families";
-            this.btn_inclusion_list_selected_families.Size = new System.Drawing.Size(214, 23);
-            this.btn_inclusion_list_selected_families.TabIndex = 69;
-            this.btn_inclusion_list_selected_families.Text = "Export Inclusion List: Selected Families";
-            this.btn_inclusion_list_selected_families.UseVisualStyleBackColor = true;
-            this.btn_inclusion_list_selected_families.Click += new System.EventHandler(this.btn_inclusion_list_selected_families_Click);
-            // 
-            // cb_orphans
-            // 
-            this.cb_orphans.AutoSize = true;
-            this.cb_orphans.Checked = true;
-            this.cb_orphans.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_orphans.Location = new System.Drawing.Point(6, 65);
-            this.cb_orphans.Name = "cb_orphans";
-            this.cb_orphans.Size = new System.Drawing.Size(66, 17);
-            this.cb_orphans.TabIndex = 58;
-            this.cb_orphans.Text = "Orphans";
-            this.cb_orphans.UseVisualStyleBackColor = true;
-            // 
-            // btn_inclusion_list_all_families
-            // 
-            this.btn_inclusion_list_all_families.Location = new System.Drawing.Point(128, 13);
-            this.btn_inclusion_list_all_families.Name = "btn_inclusion_list_all_families";
-            this.btn_inclusion_list_all_families.Size = new System.Drawing.Size(214, 23);
-            this.btn_inclusion_list_all_families.TabIndex = 68;
-            this.btn_inclusion_list_all_families.Text = "Export Inclusion List: All Families";
-            this.btn_inclusion_list_all_families.UseVisualStyleBackColor = true;
-            this.btn_inclusion_list_all_families.Click += new System.EventHandler(this.btn_inclusion_list_all_families_Click);
-            // 
-            // cb_unidentified_families
-            // 
-            this.cb_unidentified_families.AutoSize = true;
-            this.cb_unidentified_families.Checked = true;
-            this.cb_unidentified_families.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_unidentified_families.Location = new System.Drawing.Point(6, 42);
-            this.cb_unidentified_families.Name = "cb_unidentified_families";
-            this.cb_unidentified_families.Size = new System.Drawing.Size(122, 17);
-            this.cb_unidentified_families.TabIndex = 57;
-            this.cb_unidentified_families.Text = "Unidentified Families";
-            this.cb_unidentified_families.UseVisualStyleBackColor = true;
-            // 
-            // cb_identified_families
-            // 
-            this.cb_identified_families.AutoSize = true;
-            this.cb_identified_families.Checked = true;
-            this.cb_identified_families.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_identified_families.Location = new System.Drawing.Point(6, 19);
-            this.cb_identified_families.Name = "cb_identified_families";
-            this.cb_identified_families.Size = new System.Drawing.Size(109, 17);
-            this.cb_identified_families.TabIndex = 56;
-            this.cb_identified_families.Text = "Identified Families";
-            this.cb_identified_families.UseVisualStyleBackColor = true;
-            // 
             // rtb_proteoformFamilyResults
             // 
             this.rtb_proteoformFamilyResults.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 348);
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 246);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
             this.rtb_proteoformFamilyResults.ReadOnly = true;
-            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(575, 155);
+            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(575, 257);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
             this.rtb_proteoformFamilyResults.Text = "";
             // 
@@ -638,8 +560,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).EndInit();
@@ -687,11 +607,5 @@
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox cb_unidentified_families;
-        private System.Windows.Forms.CheckBox cb_identified_families;
-        private System.Windows.Forms.CheckBox cb_orphans;
-        private System.Windows.Forms.Button btn_inclusion_list_selected_families;
-        private System.Windows.Forms.Button btn_inclusion_list_all_families;
     }
 }

@@ -68,6 +68,11 @@ namespace ProteoformSuiteGUI
             get { return c.charge_states.Count; }
         }
 
+        public string charge_states
+        {
+            get { return String.Join(", ", c.charge_states.Select(cs => cs.charge_count)); }
+        }
+
         public double intensity_sum
         {
             get { return c.intensity_sum; }
@@ -157,23 +162,24 @@ namespace ProteoformSuiteGUI
 
         private static string header(string property_name)
         {
-            if (property_name == nameof(weighted_monoisotopic_mass)) { return "Weighted Monoisotopic Mass"; }
-            if (property_name == nameof(rt_apex)) { return "Apex RT"; }
-            if (property_name == nameof(intensity_sum)) { return "Intensity Sum"; }
-            if (property_name == nameof(input_file_filename)) { return "Input Filename"; }
-            if (property_name == nameof(input_file_purpose)) { return "Input File Purpose"; }
-            if (property_name == nameof(input_file_uniqueId)) { return "Input File Unique ID"; }
-            if (property_name == nameof(component_id)) { return "Component ID"; }
-            if (property_name == nameof(scan_range)) { return "Scan Range"; }
-            if (property_name == nameof(rt_range)) { return "RT Range"; }
-            if (property_name == nameof(num_charge_states)) { return "No. Charge States"; }
-            if (property_name == nameof(manual_mass_shift)) { return "Manual Mass Shift"; }
-            if (property_name == nameof(reported_monoisotopic_mass)) { return "Monoisotopic Mass (from Thermo Decon.)"; }
-            if (property_name == nameof(intensity_reported)) { return "Intensity (from Thermo Decon.)"; }
-            if (property_name == nameof(num_detected_intervals)) { return "No. Detected Intervals (from Thermo Decon.)"; }
-            if (property_name == nameof(reported_delta_mass)) { return "Reported Delta Mass (from Thermo Decon.)"; }
-            if (property_name == nameof(relative_abundance)) { return "Relative Abundance (from Thermo Decon.)"; }
-            if (property_name == nameof(fract_abundance)) { return "Fractional Abundance (from Thermo Decon.)"; }
+            if (property_name == nameof(weighted_monoisotopic_mass)) return "Weighted Monoisotopic Mass";
+            if (property_name == nameof(rt_apex)) return "Apex RT";
+            if (property_name == nameof(intensity_sum)) return "Intensity Sum";
+            if (property_name == nameof(input_file_filename)) return "Input Filename";
+            if (property_name == nameof(input_file_purpose)) return "Input File Purpose";
+            if (property_name == nameof(input_file_uniqueId)) return "Input File Unique ID";
+            if (property_name == nameof(component_id)) return "Component ID";
+            if (property_name == nameof(scan_range)) return "Scan Range";
+            if (property_name == nameof(rt_range)) return "RT Range";
+            if (property_name == nameof(num_charge_states)) return "No. Charge States";
+            if (property_name == nameof(manual_mass_shift)) return "Manual Mass Shift";
+            if (property_name == nameof(reported_monoisotopic_mass)) return "Monoisotopic Mass (from Thermo Decon.)";
+            if (property_name == nameof(intensity_reported)) return "Intensity (from Thermo Decon.)";
+            if (property_name == nameof(num_detected_intervals)) return "No. Detected Intervals (from Thermo Decon.)";
+            if (property_name == nameof(reported_delta_mass)) return "Reported Delta Mass (from Thermo Decon.)";
+            if (property_name == nameof(relative_abundance)) return "Relative Abundance (from Thermo Decon.)";
+            if (property_name == nameof(charge_states)) return "Charge States";
+            if (property_name == nameof(fract_abundance)) return "Fractional Abundance (from Thermo Decon.)";
             return null;
         }
 

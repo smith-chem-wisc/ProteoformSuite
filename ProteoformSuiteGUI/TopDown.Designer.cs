@@ -38,7 +38,6 @@
             this.tb_unique_PFRs = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tb_td_hits = new System.Windows.Forms.TextBox();
-            this.bt_read_in_td_hits = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -114,7 +113,6 @@
             this.splitContainer3.Panel1.Controls.Add(this.tb_unique_PFRs);
             this.splitContainer3.Panel1.Controls.Add(this.label4);
             this.splitContainer3.Panel1.Controls.Add(this.tb_td_hits);
-            this.splitContainer3.Panel1.Controls.Add(this.bt_read_in_td_hits);
             this.splitContainer3.Panel1.Controls.Add(this.label2);
             this.splitContainer3.Panel1.Controls.Add(this.tb_tableFilter);
             this.splitContainer3.Panel1.Controls.Add(this.label5);
@@ -189,16 +187,6 @@
             this.tb_td_hits.Size = new System.Drawing.Size(100, 20);
             this.tb_td_hits.TabIndex = 19;
             // 
-            // bt_read_in_td_hits
-            // 
-            this.bt_read_in_td_hits.Location = new System.Drawing.Point(12, 19);
-            this.bt_read_in_td_hits.Name = "bt_read_in_td_hits";
-            this.bt_read_in_td_hits.Size = new System.Drawing.Size(231, 46);
-            this.bt_read_in_td_hits.TabIndex = 17;
-            this.bt_read_in_td_hits.Text = "Read In Top-Down Hits";
-            this.bt_read_in_td_hits.UseVisualStyleBackColor = true;
-            this.bt_read_in_td_hits.Click += new System.EventHandler(this.bt_read_in_td_hits_Click);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -267,9 +255,9 @@
             // 
             // bt_td_relations
             // 
-            this.bt_td_relations.Location = new System.Drawing.Point(298, 84);
+            this.bt_td_relations.Location = new System.Drawing.Point(26, 12);
             this.bt_td_relations.Name = "bt_td_relations";
-            this.bt_td_relations.Size = new System.Drawing.Size(179, 23);
+            this.bt_td_relations.Size = new System.Drawing.Size(178, 25);
             this.bt_td_relations.TabIndex = 2;
             this.bt_td_relations.Text = "Aggregate Top-Down Proteoforms";
             this.bt_td_relations.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -333,7 +321,6 @@
         private System.Windows.Forms.NumericUpDown nUD_min_score_td;
         private System.Windows.Forms.TextBox tb_tableFilter;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button bt_read_in_td_hits;
         private System.Windows.Forms.RichTextBox rtb_sequence;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_unique_PFRs;

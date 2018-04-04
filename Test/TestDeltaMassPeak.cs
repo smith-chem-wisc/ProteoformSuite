@@ -132,6 +132,8 @@ namespace Test
 
             Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
+            //auto accept set to false
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
             Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, Sweet.lollipop.ee_peaks.Count);
             DeltaMassPeak peak = Sweet.lollipop.ee_peaks[0];
@@ -145,6 +147,43 @@ namespace Test
             Assert.True(pf3.relationships.Contains(pr2));
             Assert.True(pf4.relationships.Contains(pr2) && pf4.relationships.Contains(pr3));
             Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
+
+            //autoaccept set to true, must be less than first quartile rank...
+            Sweet.lollipop.clear_ee();
+            Sweet.lollipop.mod_rank_first_quartile = 0;
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = true;
+            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+             peak = Sweet.lollipop.ee_peaks[0];
+            Assert.IsFalse(peak.Accepted);
+            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
+
+            Sweet.lollipop.clear_ee();
+            Sweet.lollipop.mod_rank_first_quartile = 1;
+            Sweet.lollipop.ee_accept_peaks_based_on_rank = true;
+            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            peak = Sweet.lollipop.ee_peaks[0];
+            Assert.IsTrue(peak.Accepted);
+            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
+
+            //test autoaccept for et relations
+            foreach (var r in prs2) r.RelationType = ProteoformComparison.ExperimentalTheoretical;
+            Sweet.lollipop.clear_ee();
+            Sweet.lollipop.clear_et();
+            Sweet.lollipop.mod_rank_first_quartile = 0;
+            Sweet.lollipop.et_accept_peaks_based_on_rank = true;
+            Sweet.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            peak = Sweet.lollipop.et_peaks[0];
+            Assert.IsFalse(peak.Accepted);
+            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
+
+            Sweet.lollipop.clear_et();
+            Sweet.lollipop.min_peak_count_et = 2;
+            Sweet.lollipop.mod_rank_first_quartile = 1;
+            Sweet.lollipop.et_accept_peaks_based_on_rank = true;
+            Sweet.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            peak = Sweet.lollipop.et_peaks[0];
+            Assert.IsTrue(peak.Accepted);
+            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
         }
 
         [Test]

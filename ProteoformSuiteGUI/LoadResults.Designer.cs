@@ -36,7 +36,6 @@
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.box_parameters = new System.Windows.Forms.GroupBox();
-            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.calib_stand_splitContainer = new System.Windows.Forms.SplitContainer();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
@@ -44,6 +43,11 @@
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
+            this.label_likelihood = new System.Windows.Forms.Label();
+            this.label_fit = new System.Windows.Forms.Label();
+            this.nud_fit = new System.Windows.Forms.NumericUpDown();
+            this.nud_likelihood = new System.Windows.Forms.NumericUpDown();
             this.label_minRT = new System.Windows.Forms.Label();
             this.label_maxRT = new System.Windows.Forms.Label();
             this.nud_minRT = new System.Windows.Forms.NumericUpDown();
@@ -80,10 +84,6 @@
             this.panel_clearbtn = new System.Windows.Forms.Panel();
             this.bt_clearFiles1 = new System.Windows.Forms.Button();
             this.cmb_loadTable1 = new System.Windows.Forms.ComboBox();
-            this.nud_likelihood = new System.Windows.Forms.NumericUpDown();
-            this.nud_fit = new System.Windows.Forms.NumericUpDown();
-            this.label_fit = new System.Windows.Forms.Label();
-            this.label_likelihood = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.base_splitcontainer)).BeginInit();
             this.base_splitcontainer.Panel1.SuspendLayout();
             this.base_splitcontainer.Panel2.SuspendLayout();
@@ -94,15 +94,17 @@
             this.topbar_splitcontainer.SuspendLayout();
             this.box_loadoptions.SuspendLayout();
             this.box_parameters.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
-            this.param_splitcontainer.Panel1.SuspendLayout();
-            this.param_splitcontainer.Panel2.SuspendLayout();
-            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).BeginInit();
             this.calib_stand_splitContainer.Panel1.SuspendLayout();
             this.calib_stand_splitContainer.Panel2.SuspendLayout();
             this.calib_stand_splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_likelihood)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).BeginInit();
@@ -126,8 +128,6 @@
             this.box_filter.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel_clearbtn.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_likelihood)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fit)).BeginInit();
             this.SuspendLayout();
             // 
             // base_splitcontainer
@@ -238,34 +238,6 @@
             this.box_parameters.TabStop = false;
             this.box_parameters.Text = "2. Set Parameters";
             // 
-            // param_splitcontainer
-            // 
-            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.param_splitcontainer.Location = new System.Drawing.Point(3, 15);
-            this.param_splitcontainer.Name = "param_splitcontainer";
-            // 
-            // param_splitcontainer.Panel1
-            // 
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_likelihood);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_fit);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_fit);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_likelihood);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_minRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_minRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_maxRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_mincharge);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxcharge);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_mincharge);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_maxcharge);
-            // 
-            // param_splitcontainer.Panel2
-            // 
-            this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
-            this.param_splitcontainer.Size = new System.Drawing.Size(1245, 98);
-            this.param_splitcontainer.SplitterDistance = 648;
-            this.param_splitcontainer.TabIndex = 1;
-            // 
             // calib_stand_splitContainer
             // 
             this.calib_stand_splitContainer.Location = new System.Drawing.Point(3, 15);
@@ -375,6 +347,70 @@
             this.cb_calibrate_raw_files.UseVisualStyleBackColor = true;
             this.cb_calibrate_raw_files.Visible = false;
             this.cb_calibrate_raw_files.Click += new System.EventHandler(this.cb_calibrate_raw_files_CheckedChanged);
+            // 
+            // param_splitcontainer
+            // 
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.param_splitcontainer.Location = new System.Drawing.Point(3, 15);
+            this.param_splitcontainer.Name = "param_splitcontainer";
+            // 
+            // param_splitcontainer.Panel1
+            // 
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_likelihood);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_fit);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_fit);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_likelihood);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_minRT);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxRT);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_minRT);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_maxRT);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_mincharge);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxcharge);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_mincharge);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_maxcharge);
+            // 
+            // param_splitcontainer.Panel2
+            // 
+            this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1245, 98);
+            this.param_splitcontainer.SplitterDistance = 648;
+            this.param_splitcontainer.TabIndex = 1;
+            // 
+            // label_likelihood
+            // 
+            this.label_likelihood.AutoSize = true;
+            this.label_likelihood.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_likelihood.Location = new System.Drawing.Point(408, 49);
+            this.label_likelihood.Name = "label_likelihood";
+            this.label_likelihood.Size = new System.Drawing.Size(75, 13);
+            this.label_likelihood.TabIndex = 77;
+            this.label_likelihood.Text = "Min Likelihood";
+            // 
+            // label_fit
+            // 
+            this.label_fit.AutoSize = true;
+            this.label_fit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_fit.Location = new System.Drawing.Point(293, 49);
+            this.label_fit.Name = "label_fit";
+            this.label_fit.Size = new System.Drawing.Size(41, 13);
+            this.label_fit.TabIndex = 76;
+            this.label_fit.Text = "Max Fit";
+            // 
+            // nud_fit
+            // 
+            this.nud_fit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_fit.Location = new System.Drawing.Point(240, 46);
+            this.nud_fit.Name = "nud_fit";
+            this.nud_fit.Size = new System.Drawing.Size(49, 20);
+            this.nud_fit.TabIndex = 75;
+            // 
+            // nud_likelihood
+            // 
+            this.nud_likelihood.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_likelihood.Location = new System.Drawing.Point(354, 46);
+            this.nud_likelihood.Name = "nud_likelihood";
+            this.nud_likelihood.Size = new System.Drawing.Size(49, 20);
+            this.nud_likelihood.TabIndex = 74;
             // 
             // label_minRT
             // 
@@ -797,42 +833,6 @@
             this.cmb_loadTable1.TabIndex = 42;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             // 
-            // nud_likelihood
-            // 
-            this.nud_likelihood.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_likelihood.Location = new System.Drawing.Point(354, 46);
-            this.nud_likelihood.Name = "nud_likelihood";
-            this.nud_likelihood.Size = new System.Drawing.Size(49, 20);
-            this.nud_likelihood.TabIndex = 74;
-            // 
-            // nud_fit
-            // 
-            this.nud_fit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_fit.Location = new System.Drawing.Point(240, 46);
-            this.nud_fit.Name = "nud_fit";
-            this.nud_fit.Size = new System.Drawing.Size(49, 20);
-            this.nud_fit.TabIndex = 75;
-            // 
-            // label_fit
-            // 
-            this.label_fit.AutoSize = true;
-            this.label_fit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_fit.Location = new System.Drawing.Point(293, 49);
-            this.label_fit.Name = "label_fit";
-            this.label_fit.Size = new System.Drawing.Size(41, 13);
-            this.label_fit.TabIndex = 76;
-            this.label_fit.Text = "Max Fit";
-            // 
-            // label_likelihood
-            // 
-            this.label_likelihood.AutoSize = true;
-            this.label_likelihood.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_likelihood.Location = new System.Drawing.Point(408, 49);
-            this.label_likelihood.Name = "label_likelihood";
-            this.label_likelihood.Size = new System.Drawing.Size(75, 13);
-            this.label_likelihood.TabIndex = 77;
-            this.label_likelihood.Text = "Min Likelihood";
-            // 
             // LoadResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -854,11 +854,6 @@
             this.box_loadoptions.ResumeLayout(false);
             this.box_loadoptions.PerformLayout();
             this.box_parameters.ResumeLayout(false);
-            this.param_splitcontainer.Panel1.ResumeLayout(false);
-            this.param_splitcontainer.Panel1.PerformLayout();
-            this.param_splitcontainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
-            this.param_splitcontainer.ResumeLayout(false);
             this.calib_stand_splitContainer.Panel1.ResumeLayout(false);
             this.calib_stand_splitContainer.Panel1.PerformLayout();
             this.calib_stand_splitContainer.Panel2.ResumeLayout(false);
@@ -866,6 +861,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).EndInit();
             this.calib_stand_splitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.PerformLayout();
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_likelihood)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).EndInit();
@@ -892,8 +894,6 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel_clearbtn.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_likelihood)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_fit)).EndInit();
             this.ResumeLayout(false);
 
         }

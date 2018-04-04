@@ -85,6 +85,7 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.cb_ee_peak_accept_rank = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -650,6 +651,7 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Controls.Add(this.cb_ee_peak_accept_rank);
             this.groupBox1.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.nUD_MaxRetTimeDifference);
@@ -658,16 +660,16 @@
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nUD_PeakWidthBase);
-            this.groupBox1.Location = new System.Drawing.Point(12, 25);
+            this.groupBox1.Location = new System.Drawing.Point(12, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(218, 188);
+            this.groupBox1.Size = new System.Drawing.Size(224, 210);
             this.groupBox1.TabIndex = 28;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "EE Peak List Parameters";
             // 
             // tb_max_accepted_fdr
             // 
-            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(52, 111);
+            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(52, 135);
             this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
             this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
             this.tb_max_accepted_fdr.ReadOnly = true;
@@ -678,7 +680,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(5, 96);
+            this.label9.Location = new System.Drawing.Point(5, 120);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(129, 13);
@@ -693,7 +695,7 @@
             0,
             0,
             65536});
-            this.nUD_MaxRetTimeDifference.Location = new System.Drawing.Point(52, 154);
+            this.nUD_MaxRetTimeDifference.Location = new System.Drawing.Point(52, 179);
             this.nUD_MaxRetTimeDifference.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MaxRetTimeDifference.Maximum = new decimal(new int[] {
             50,
@@ -708,7 +710,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 138);
+            this.label1.Location = new System.Drawing.Point(5, 163);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(178, 13);
@@ -734,6 +736,19 @@
             this.splitContainer3.Size = new System.Drawing.Size(836, 711);
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
+            // 
+            // cb_ee_peak_accept_rank
+            // 
+            this.cb_ee_peak_accept_rank.AutoSize = true;
+            this.cb_ee_peak_accept_rank.Checked = true;
+            this.cb_ee_peak_accept_rank.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_ee_peak_accept_rank.Location = new System.Drawing.Point(6, 98);
+            this.cb_ee_peak_accept_rank.Name = "cb_ee_peak_accept_rank";
+            this.cb_ee_peak_accept_rank.Size = new System.Drawing.Size(222, 17);
+            this.cb_ee_peak_accept_rank.TabIndex = 32;
+            this.cb_ee_peak_accept_rank.Text = "Auto-Accept Peaks Based on Delta Mass";
+            this.cb_ee_peak_accept_rank.UseVisualStyleBackColor = true;
+            this.cb_ee_peak_accept_rank.CheckedChanged += new System.EventHandler(this.cb_ee_peak_accept_rank_CheckedChanged);
             // 
             // ExperimentExperimentComparison
             // 
@@ -846,6 +861,7 @@
         private System.Windows.Forms.TextBox tb_peakTableFilter;
         private System.Windows.Forms.TextBox tb_noMansUpperBound;
         private System.Windows.Forms.TextBox tb_noMansLowerBound;
+        private System.Windows.Forms.CheckBox cb_ee_peak_accept_rank;
     }
 }
 
