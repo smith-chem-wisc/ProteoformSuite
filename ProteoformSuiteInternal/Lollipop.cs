@@ -49,7 +49,7 @@ namespace ProteoformSuiteInternal
             "Top-Down Results (Unlabeled) (.xlsx)",
             "Raw Files (.raw, .mzml)",
             "Uncalibrated Proteoform Identification Results (.xlsx)",
-            "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
+            "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)",
         };
 
         public static readonly List<string>[] acceptable_extensions = new[]
@@ -60,7 +60,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> {".raw", ".mzML"},
             new List<string> { ".xlsx" },
-            new List<string> { ".xlsx" }
+            new List<string> { ".xlsx" },
         };
 
         public static readonly string[] file_filters = new[]
@@ -82,7 +82,7 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.TopDown },
             new List<Purpose> { Purpose.RawFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
-            new List<Purpose> { Purpose.CalibrationTopDown }
+            new List<Purpose> { Purpose.CalibrationTopDown },
         };
 
         public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination, bool user_directed)
@@ -188,18 +188,21 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, string directory)
+        public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, double maxfit, double minlikelihood, string directory)
         {
-                int successfully_deconvoluted_files = 0;
-                foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
+            int successfully_deconvoluted_files = 0;
 
+            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
+                    
                     Process proc = new Process();
                     ProcessStartInfo startInfo = new ProcessStartInfo();
                     string input = f.complete_path;
                     string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
                     string promexlocation = directory + @"\ProMex";
+                    List<int> ms1ft_featureIDs = new List<int>();
+                    List<double> ms1ft_likelihoods = new List<double>();
 
-                    if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
                     {
                         startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
                     }
@@ -223,6 +226,27 @@ namespace ProteoformSuiteInternal
                     proc.WaitForExit();
                 proc.Close();
 
+                if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
+                {
+                    StreamReader reader = File.OpenText(Path.Combine(filelocation + ".ms1ft"));
+                    string line;
+                    string ignore = "FeatureID";
+
+                    while (reader.Peek() > 0)
+                    {
+                        line = reader.ReadLine();
+                        // 16 total fields
+                        string[] fields = line.Split('\t');
+                        if (fields[0] != ignore)
+                        {
+                            int featureID = int.Parse(fields[0]);
+                            double likelihood = double.Parse(fields[16]);
+                            ms1ft_featureIDs.Add(featureID);
+                            ms1ft_likelihoods.Add(likelihood);
+                        }
+                    }
+                }
+
                 if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
                 {
                     double minMass = 0;
@@ -233,27 +257,44 @@ namespace ProteoformSuiteInternal
                     Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
                     StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
                     string line;
-                    int lineNum = 1;
+                    int linenum = 1;
 
                     while (reader.Peek() > 0)
                     {
                         line = reader.ReadLine();
-
-                        if (lineNum != 1)
+                        if (linenum != 1)
                         {
-                            var massWithScan = new Envelope(line);
-                            if (massWithScan.retentionTime >= minRT || massWithScan.retentionTime <= max_RT)
-                            {
-                                massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+                            int featureID = 0;
 
-                                if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
-                                    featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
-                                else
-                                    featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
+                            var massWithScan = new Envelope(line);
+
+                            if (massWithScan.fit <= maxfit)
+                            {
+                                for (int i = 0; i <= ms1ft_featureIDs.Capacity; i++)
+                                {
+                                    //Debug.WriteLine(massWithScan.FeatureID);
+                                    //Debug.WriteLine(ms1ft_featureIDs[i]);
+                                    if (massWithScan.FeatureID == ms1ft_featureIDs[i])
+                                    {
+                                        featureID = ms1ft_featureIDs[i];
+                                        break;
+                                    }
+                                }
+                                if (ms1ft_likelihoods[featureID - 1] >= minlikelihood)
+                                {
+                                    massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+                                    if (massWithScan.retentionTime >= minRT & massWithScan.retentionTime <= maxRT)
+                                    {
+                                        if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
+                                            featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
+                                        else
+                                            featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
+                                    }
+                                }
                             }
                         }
 
-                        lineNum++;
+                        linenum++;
                     }
 
                     reader.Close();
@@ -478,6 +519,12 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion NEUCODE PAIRS
+
+        #region MSPathFinder
+        
+
+
+        #endregion
 
         #region TOPDOWN
 

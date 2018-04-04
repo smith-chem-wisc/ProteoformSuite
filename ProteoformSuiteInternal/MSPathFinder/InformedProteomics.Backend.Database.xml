@@ -1,0 +1,516 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>InformedProteomics.Backend.Database</name>
+    </assembly>
+    <members>
+        <member name="T:InformedProteomics.Backend.Database.AnnotationAndOffset">
+            <summary>
+            Annotation and offset data
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.AnnotationAndOffset.#ctor(System.Int64,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="offset"></param>
+            <param name="sequence"></param>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.AnnotationAndOffset.Offset">
+            <summary>
+            Sequence offset
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.AnnotationAndOffset.Annotation">
+            <summary>
+            Sequence annotation
+            </summary>
+        </member>
+        <member name="T:InformedProteomics.Backend.Database.FastaDatabase">
+            <summary>
+            Facilitates working with a Fasta sequence database, using suffix arrays
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.FileFormatId">
+            <summary>
+            File format identifier to avoid incompatible backing files
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.SeqFileExtension">
+            <summary>
+            Extension used for the Seq file
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.AnnotationFileExtension">
+            <summary>
+            Extension used for the Annotation file
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.DecoyDatabaseFileExtension">
+            <summary>
+            Extension used for the Decoy database file
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.ShuffleDecoyFileExtension">
+            <summary>
+            Extension used for the shuffled decoy database file
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.NumMutations">
+            <summary>
+            For shuffled decoys, number of mutations
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase.Encoding">
+            <summary>
+            Encoding used in the backing files
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.FastaDatabase.IsDecoy">
+            <summary>
+            True if this instance is tied to the decoy database
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="databaseFilePath"></param>
+            <param name="isDecoy"></param>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.Decoy(InformedProteomics.Backend.Data.Biology.Enzyme,System.Boolean)">
+            <summary>
+            Get the Decoy version of this database (create it if missing)
+            </summary>
+            <param name="enzyme"></param>
+            <param name="shuffle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.CreateDecoyDatabase(InformedProteomics.Backend.Data.Biology.Enzyme,System.Boolean)">
+            <summary>
+            Create the decoy version of this databse
+            </summary>
+            <param name="enzyme"></param>
+            <param name="shuffle"></param>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.Characters">
+            <summary>
+            Returns the characters in the sequence file
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.Read">
+            <summary>
+            Read in the backing files
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetFastaFilePath">
+            <summary>
+            Path to the Fasta file
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetNumEntries">
+            <summary>
+            Number of proteins in the database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinNames">
+            <summary>
+            Get the names of all proteins in the database
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetSequence">
+            <summary>
+            Get the entire concatenated sequence
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.PrintSequence">
+            <summary>
+            Print the entire sequence to console
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetDecoyDatabasePath(InformedProteomics.Backend.Data.Biology.Enzyme,System.Boolean)">
+            <summary>
+            Generate the path for the decoy database according to the supplied parameters
+            </summary>
+            <param name="enzyme"></param>
+            <param name="shuffle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinName(System.Int64)">
+            <summary>
+            Get the name of the protein that starts at <paramref name="offset"/> in the concatenated sequence
+            </summary>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinDescription(System.Int64)">
+            <summary>
+            Get the description of the protein that starts at <paramref name="offset"/> in the concatenated sequence
+            </summary>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetOffset(System.String)">
+            <summary>
+            Get the offset in the concatenated sequence of the protein with name <paramref name="name"/>
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinDescription(System.String)">
+            <summary>
+            Get the description of the protein with name <paramref name="name"/>
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinLength(System.String)">
+            <summary>
+            Get the length of the protein with name <paramref name="name"/>
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinSequence(System.String)">
+            <summary>
+            Get the sequence of the protein with name <paramref name="name"/>
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetProteinSequence(System.Int64,System.Int32)">
+            <summary>
+            Return the protein sequence starting at the given offset, spanning the given length
+            </summary>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetOneBasedPositionInProtein(System.Int64)">
+            <summary>
+            Get the position in the protein sequence of the offset in the concatenated sequence (one-based index)
+            </summary>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetZeroBasedPositionInProtein(System.Int64)">
+            <summary>
+            Get the position in the protein sequence of the offset in the concatenated sequence (zero-based index)
+            </summary>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.GetLastWriteTimeHash">
+            <summary>
+            Returns the hash based on last write time, used for consistency verification
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.FastaDatabase.CheckHashCodeBinaryFile(System.String,System.Int32)">
+            <summary>
+            For file <paramref name="filePath"/>, check the last write time hash against <paramref name="code"/>
+            </summary>
+            <param name="filePath"></param>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.FastaDatabase._duplicateNameCounts">
+            <summary>
+            Tracks duplicate names along with a count for each name
+            </summary>
+            <remarks>Used to auto-rename proteins</remarks>
+        </member>
+        <member name="T:InformedProteomics.Backend.Database.IndexedDatabase">
+            <summary>
+            Provide fast, indexed access to Fasta database information using Permuted Longest Common Prefix data
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.IndexedDatabase.PermutedLongestCommonPrefixFileExtension">
+            <summary>
+            File extension to use for Permuted Longest Common Prefix file
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.IndexedDatabase.Encoding">
+            <summary>
+            Encoding to use for writing and reading indexed database files
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.IndexedDatabase.FastaDatabase">
+            <summary>
+            The Fasta database that will be indexed
+            </summary>
+        </member>
+        <member name="F:InformedProteomics.Backend.Database.IndexedDatabase.PLcp">
+            <summary>
+            Cached Permuted Longest Common Prefix data
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.#ctor(InformedProteomics.Backend.Database.FastaDatabase)">
+            <summary>
+            Constructor - build the index
+            </summary>
+            <param name="fastaDatabase"></param>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.Read">
+            <summary>
+            Read in the Permuted Longest Common Prefix file
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.AnnotationsAndOffsets(System.Int32,System.Int32,System.Int32,System.Int32,InformedProteomics.Backend.Data.Biology.Enzyme)">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="numTolerableTermini"></param>
+            <param name="numMissedCleavages"></param>
+            <param name="enzyme"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.AnnotationsAndOffsetsParallel(System.Int32,System.Int32,System.Int32,System.Int32,InformedProteomics.Backend.Data.Biology.Enzyme,System.Int32,System.Nullable{System.Threading.CancellationToken})">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="numTolerableTermini"></param>
+            <param name="numMissedCleavages"></param>
+            <param name="enzyme"></param>
+            <param name="threads"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.AnnotationsAndOffsetsNoEnzyme(System.Int32,System.Int32)">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.AnnotationsAndOffsetsNoEnzymeParallel(System.Int32,System.Int32,System.Int32,System.Nullable{System.Threading.CancellationToken})">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="threads"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.IntactSequenceAnnotationsAndOffsets(System.Int32,System.Int32)">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.IntactSequenceAnnotationsAndOffsets(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="numCTermCleavages"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.IntactSequenceAnnotationsAndOffsetsWithCTermCleavagesLargerThan(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="numCTermCleavages"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.SequenceAnnotationsAndOffsetsWithNtermOrCtermCleavageNoLargerThan(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Get the annotation and offset data from the database for all sequences that comply with the parameters
+            </summary>
+            <param name="minSequenceLength"></param>
+            <param name="maxSequenceLength"></param>
+            <param name="maxNumNTermCleavages"></param>
+            <param name="maxNumCTermCleavages"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.GetLongestSequenceLength">
+            <summary>
+            Length of the longest sequence
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.EstimateTotalPeptides(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Estimate the total number of peptides that will be used in processing - essential for reasonably accurate progress reporting
+            </summary>
+            <param name="mode"></param>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="numNTermCleavages"></param>
+            <param name="numCTermCleavages"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.EstimateTotalPeptides(InformedProteomics.Backend.Database.InternalCleavageType,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Estimate the total number of peptides that will be used in processing - essential for reasonably accurate progress reporting
+            </summary>
+            <param name="mode"></param>
+            <param name="minLength"></param>
+            <param name="maxLength"></param>
+            <param name="numNTermCleavages"></param>
+            <param name="numCTermCleavages"></param>
+            <returns></returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.IndexedDatabase.GetLcp(System.Collections.Generic.IList{System.Byte},System.Int32,System.Int32)">
+            <summary>
+            Get the longest common prefix for the supplied sequence
+            </summary>
+            <param name="sequence"></param>
+            <param name="index1"></param>
+            <param name="index2"></param>
+            <returns></returns>
+        </member>
+        <member name="T:InformedProteomics.Backend.Database.SequenceAndOffset">
+            <summary>
+            Container for holding a sequence and its offset
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SequenceAndOffset.#ctor(System.Byte[],System.Int64)">
+            <summary>
+            Constructor - set the data
+            </summary>
+            <param name="sequence"></param>
+            <param name="offset"></param>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.SequenceAndOffset.Sequence">
+            <summary>
+            Sequence
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.SequenceAndOffset.Offset">
+            <summary>
+            Offset
+            </summary>
+        </member>
+        <member name="T:InformedProteomics.Backend.Database.PeptideEnumerator">
+            <summary>
+            Enumerate over peptides for bottom-up searches
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.PeptideEnumerator.#ctor(InformedProteomics.Backend.Data.Biology.Enzyme,System.Int32)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="enzyme"></param>
+            <param name="ntt"></param>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.PeptideEnumerator.Enzyme">
+            <summary>
+            Enzyme
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.PeptideEnumerator.Ntt">
+            <summary>
+            Number of tolerable termini
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.ProteinHashInfo.ObservationCount">
+            <summary>
+            Number of times this protein name has been encountered in the source FASTA file
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.ProteinHashInfo.SequenceLength">
+            <summary>
+            Number of residues in the protein sequqence
+            </summary>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.ProteinHashInfo.SequenceHash">
+            <summary>
+            SHA-1 Hash of the protein sequence
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.ProteinHashInfo.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.ProteinHashInfo.Sha1Hash(System.String)">
+            <summary>
+            Compute the SHA1 Hash of the given text
+            </summary>
+            <param name="text"></param>
+            <returns>String representation of the SHA1 hash</returns>
+        </member>
+        <member name="T:InformedProteomics.Backend.Database.SearchableDatabase">
+            <summary>
+            In memory algorithm for database search
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.#ctor(InformedProteomics.Backend.Database.FastaDatabase)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="fastaDatabase"></param>
+        </member>
+        <member name="P:InformedProteomics.Backend.Database.SearchableDatabase.FastaDatabase">
+            <summary>
+            Fasta database that is being searched
+            </summary>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.FindAllMatchedSequenceIndices(System.String)">
+            <summary>
+            Find all occurrences of pattern in the fasta sequence. Return all matched indices.
+            </summary>
+            <param name="patternStr">pattern to search</param>
+            <returns>the matched sequence indices.</returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.FindAllMatchedSequenceIndices(System.Byte[])">
+            <summary>
+            Find all occurrences of pattern in the fasta sequence. Return all matched indices.
+            </summary>
+            <param name="pattern">pattern to search</param>
+            <returns>the matched sequence indices.</returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.Search(System.String)">
+            <summary>
+            Suffix array based O(m) search, where m is the pattern length
+            </summary>
+            <param name="patternStr">pattern to search</param>
+            <returns>the relative position in this suffix array.</returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.Search(System.Byte[])">
+            <summary>
+            Suffix array based O(m) search, where m is the pattern length
+            </summary>
+            <param name="pattern">pattern to search</param>
+            <returns>the relative position in this suffix array.</returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.Compare(System.Collections.Generic.IList{System.Byte},System.Int32,System.Byte)">
+            <summary>
+            Compares two suffices (index1 and index2)
+            </summary>
+            <param name="index">suffix index</param>
+            <param name="pattern">sequence to compare</param>
+            <param name="startIndex">known common prefix</param>
+            <returns>a positive number if 1 is larger,
+            a negative if 1 is smaller and 0 if they are equal.
+            The longest common prefix length can be retrieved by taking absolute value of the return value minus 1
+            </returns>
+        </member>
+        <member name="M:InformedProteomics.Backend.Database.SearchableDatabase.GetLcp(System.Collections.Generic.IList{System.Byte},System.Int32,System.Byte)">
+            <summary>
+            Get the longest common prefix for the supplied arguments
+            </summary>
+            <param name="pattern"></param>
+            <param name="index"></param>
+            <param name="startIndex"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProteoformFamilies));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_main = new System.Windows.Forms.DataGridView();
             this.label11 = new System.Windows.Forms.Label();
             this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
@@ -71,10 +71,10 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
@@ -95,7 +95,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel1.Controls.Add(this.param_splitcontainer);
             // 
             // splitContainer1.Panel2
             // 
@@ -104,39 +104,39 @@
             this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 3;
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer2.Cursor = System.Windows.Forms.Cursors.Default;
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
+            this.param_splitcontainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.param_splitcontainer.Cursor = System.Windows.Forms.Cursors.Default;
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Name = "param_splitcontainer";
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.dgv_main);
+            this.param_splitcontainer.Panel1.Controls.Add(this.dgv_main);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.label11);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_nodeLabel);
-            this.splitContainer2.Panel2.Controls.Add(this.label10);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_geneLabel);
-            this.splitContainer2.Panel2.Controls.Add(this.label9);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_edgeLabel);
-            this.splitContainer2.Panel2.Controls.Add(this.label6);
-            this.splitContainer2.Panel2.Controls.Add(this.tb_tableFilter);
-            this.splitContainer2.Panel2.Controls.Add(this.label4);
-            this.splitContainer2.Panel2.Controls.Add(this.label3);
-            this.splitContainer2.Panel2.Controls.Add(this.label2);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_nodeLabelPositioning);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_nodeLayout);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_colorScheme);
-            this.splitContainer2.Panel2.Controls.Add(this.lb_dgv_selection);
-            this.splitContainer2.Panel2.Controls.Add(this.cmbx_tableSelector);
-            this.splitContainer2.Size = new System.Drawing.Size(1354, 376);
-            this.splitContainer2.SplitterDistance = 782;
-            this.splitContainer2.TabIndex = 5;
+            this.param_splitcontainer.Panel2.Controls.Add(this.label11);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_nodeLabel);
+            this.param_splitcontainer.Panel2.Controls.Add(this.label10);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_geneLabel);
+            this.param_splitcontainer.Panel2.Controls.Add(this.label9);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_edgeLabel);
+            this.param_splitcontainer.Panel2.Controls.Add(this.label6);
+            this.param_splitcontainer.Panel2.Controls.Add(this.tb_tableFilter);
+            this.param_splitcontainer.Panel2.Controls.Add(this.label4);
+            this.param_splitcontainer.Panel2.Controls.Add(this.label3);
+            this.param_splitcontainer.Panel2.Controls.Add(this.label2);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_nodeLabelPositioning);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_nodeLayout);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_colorScheme);
+            this.param_splitcontainer.Panel2.Controls.Add(this.lb_dgv_selection);
+            this.param_splitcontainer.Panel2.Controls.Add(this.cmbx_tableSelector);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1354, 376);
+            this.param_splitcontainer.SplitterDistance = 782;
+            this.param_splitcontainer.TabIndex = 5;
             // 
             // dgv_main
             // 
@@ -536,8 +536,8 @@
             // 
             // ProteoformFamilies
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1354, 910);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
@@ -548,11 +548,11 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            this.splitContainer2.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).EndInit();
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
@@ -570,7 +570,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.DataGridView dgv_main;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.DataGridView dgv_proteoform_family_members;

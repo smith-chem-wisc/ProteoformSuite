@@ -76,7 +76,7 @@
             this.tb_modTableFilter = new System.Windows.Forms.TextBox();
             this.btn_loadModNames = new System.Windows.Forms.Button();
             this.btn_saveModNames = new System.Windows.Forms.Button();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
@@ -117,10 +117,10 @@
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).BeginInit();
             this.SuspendLayout();
@@ -139,7 +139,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel2.Controls.Add(this.param_splitcontainer);
             this.splitContainer1.Panel2.Controls.Add(this.splitter1);
             this.splitContainer1.Size = new System.Drawing.Size(1362, 741);
             this.splitContainer1.SplitterDistance = 499;
@@ -758,23 +758,23 @@
             this.btn_saveModNames.UseVisualStyleBackColor = true;
             this.btn_saveModNames.Click += new System.EventHandler(this.btn_saveModNames_Click);
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(3, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(3, 0);
+            this.param_splitcontainer.Name = "param_splitcontainer";
+            this.param_splitcontainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.dgv_Database);
+            this.param_splitcontainer.Panel1.Controls.Add(this.dgv_Database);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.dgv_unlocalizedModifications);
-            this.splitContainer2.Size = new System.Drawing.Size(853, 737);
-            this.splitContainer2.SplitterDistance = 442;
-            this.splitContainer2.TabIndex = 2;
+            this.param_splitcontainer.Panel2.Controls.Add(this.dgv_unlocalizedModifications);
+            this.param_splitcontainer.Size = new System.Drawing.Size(853, 737);
+            this.param_splitcontainer.SplitterDistance = 442;
+            this.param_splitcontainer.TabIndex = 2;
             // 
             // dgv_Database
             // 
@@ -811,8 +811,8 @@
             // 
             // TheoreticalDatabase
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1362, 741);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
@@ -862,10 +862,10 @@
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).EndInit();
             this.ResumeLayout(false);
@@ -906,7 +906,7 @@
         private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Button btn_downloadUniProtPtmList;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.DataGridView dgv_Database;
         private System.Windows.Forms.DataGridView dgv_unlocalizedModifications;
         private System.Windows.Forms.GroupBox groupBox2;
