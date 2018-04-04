@@ -50,6 +50,8 @@ namespace ProteoformSuiteInternal
 
             DataPointAquisitionResults dataPointAcquisitionResult = GetDataPoints();
 
+            if (dataPointAcquisitionResult.Ms1List.Count < 10) return false;
+
             var myMs1DataPoints = new List<(double[] xValues, double yValue)>();
 
             for (int i = 0; i < dataPointAcquisitionResult.Ms1List.Count; i++)
