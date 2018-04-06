@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AggregatedProteoforms));
             this.dgv_AggregatedProteoforms = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.cb_add_td_proteoforms = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.nud_minObservations = new System.Windows.Forms.NumericUpDown();
@@ -62,10 +62,10 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -102,7 +102,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel1.Controls.Add(this.param_splitcontainer);
             // 
             // splitContainer1.Panel2
             // 
@@ -112,43 +112,43 @@
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 1;
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.splitContainer2.Name = "splitContainer2";
+            this.param_splitcontainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.param_splitcontainer.Name = "param_splitcontainer";
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.cb_add_td_proteoforms);
-            this.splitContainer2.Panel1.Controls.Add(this.groupBox2);
-            this.splitContainer2.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer2.Panel1.Controls.Add(this.label9);
-            this.splitContainer2.Panel1.Controls.Add(this.tb_tableFilter);
-            this.splitContainer2.Panel1.Controls.Add(this.cb_validateProteoforms);
-            this.splitContainer2.Panel1.Controls.Add(this.nUD_min_num_CS);
-            this.splitContainer2.Panel1.Controls.Add(this.label8);
-            this.splitContainer2.Panel1.Controls.Add(this.bt_aggregate);
-            this.splitContainer2.Panel1.Controls.Add(this.label5);
-            this.splitContainer2.Panel1.Controls.Add(this.tb_totalAggregatedProteoforms);
-            this.splitContainer2.Panel1.Controls.Add(this.nUD_Missed_Ks);
-            this.splitContainer2.Panel1.Controls.Add(this.label4);
-            this.splitContainer2.Panel1.Controls.Add(this.nUD_Missed_Monos);
-            this.splitContainer2.Panel1.Controls.Add(this.nUD_RetTimeToleranace);
-            this.splitContainer2.Panel1.Controls.Add(this.nUP_mass_tolerance);
-            this.splitContainer2.Panel1.Controls.Add(this.label3);
-            this.splitContainer2.Panel1.Controls.Add(this.label2);
-            this.splitContainer2.Panel1.Controls.Add(this.label1);
+            this.param_splitcontainer.Panel1.Controls.Add(this.cb_add_td_proteoforms);
+            this.param_splitcontainer.Panel1.Controls.Add(this.groupBox2);
+            this.param_splitcontainer.Panel1.Controls.Add(this.groupBox1);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label9);
+            this.param_splitcontainer.Panel1.Controls.Add(this.tb_tableFilter);
+            this.param_splitcontainer.Panel1.Controls.Add(this.cb_validateProteoforms);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nUD_min_num_CS);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label8);
+            this.param_splitcontainer.Panel1.Controls.Add(this.bt_aggregate);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label5);
+            this.param_splitcontainer.Panel1.Controls.Add(this.tb_totalAggregatedProteoforms);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nUD_Missed_Ks);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label4);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nUD_Missed_Monos);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nUD_RetTimeToleranace);
+            this.param_splitcontainer.Panel1.Controls.Add(this.nUP_mass_tolerance);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label3);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label2);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label1);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.dgv_AggregatedProteoforms);
-            this.splitContainer2.Size = new System.Drawing.Size(1277, 430);
-            this.splitContainer2.SplitterDistance = 472;
-            this.splitContainer2.SplitterWidth = 3;
-            this.splitContainer2.TabIndex = 0;
+            this.param_splitcontainer.Panel2.Controls.Add(this.dgv_AggregatedProteoforms);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1277, 430);
+            this.param_splitcontainer.SplitterDistance = 472;
+            this.param_splitcontainer.SplitterWidth = 3;
+            this.param_splitcontainer.TabIndex = 0;
             // 
             // cb_add_td_proteoforms
             // 
@@ -460,8 +460,8 @@
             // 
             // AggregatedProteoforms
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1277, 848);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
@@ -474,11 +474,11 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel1.PerformLayout();
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.PerformLayout();
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -497,7 +497,7 @@
 
         private System.Windows.Forms.DataGridView dgv_AggregatedProteoforms;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.NumericUpDown nUD_Missed_Monos;
         private System.Windows.Forms.NumericUpDown nUD_RetTimeToleranace;
         private System.Windows.Forms.NumericUpDown nUP_mass_tolerance;

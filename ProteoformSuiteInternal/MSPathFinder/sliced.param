@@ -1,0 +1,14 @@
+SpecFile	sliced.raw
+DatabaseFile	Short.fasta
+Enzyme	Trypsin
+NumTolerableTermini	2
+Tda	False
+PrecursorIonTolerancePpm	10
+ProductIonTolerancePpm	10
+MinSequenceLength	6
+MaxSequenceLength	40
+MinPrecursorIonCharge	1
+MaxPrecursorIonCharge	4
+MinProductIonCharge	1
+MaxProductIonCharge	3
+MaxDynamicModificationsPerSequence	0

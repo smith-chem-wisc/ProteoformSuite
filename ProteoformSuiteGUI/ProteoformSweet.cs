@@ -17,7 +17,7 @@ namespace ProteoformSuiteGUI
 
         #region Public Fields
 
-        public LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
+        public LoadResults loadResults = new LoadResults();
         public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
         public NeuCodePairs neuCodePairs = new NeuCodePairs();
         public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
@@ -53,7 +53,7 @@ namespace ProteoformSuiteGUI
             InitializeForms();
             WindowState = FormWindowState.Maximized;
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            showForm(loadDeconvolutionResults);
+            showForm(loadResults);
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
@@ -73,7 +73,7 @@ namespace ProteoformSuiteGUI
 
             forms = new List<ISweetForm>
             {
-                loadDeconvolutionResults,
+                loadResults,
                 theoreticalDatabase,
                 topDown,
                 rawExperimentalComponents,
@@ -113,9 +113,9 @@ namespace ProteoformSuiteGUI
 
         #region RESULTS TOOL STRIP Private Methods
 
-        private void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            showForm(loadDeconvolutionResults);
+            showForm(loadResults);
         }
 
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -230,9 +230,9 @@ namespace ProteoformSuiteGUI
                     MessageBox.Show("Method file was not loaded succesffully.");
                     return false;
                 };
-                loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
-                if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                   loadDeconvolutionResults.RunTheGamut(false); // updates the dgvs
+                loadResults.InitializeParameterSet(); // updates the textbox
+                if (loadResults.ReadyToRunTheGamut())
+                   loadResults.RunTheGamut(false); // updates the dgvs
                 return true;
             }
             return false;
@@ -270,7 +270,7 @@ namespace ProteoformSuiteGUI
             }
             else if (d3 == DialogResult.Cancel) return null;
 
-            loadDeconvolutionResults.FillTablesAndCharts(); // updates the filelists in form
+            loadResults.FillTablesAndCharts(); // updates the filelists in form
 
             // Check that there are input files
             if (Sweet.lollipop.input_files.Count == 0)
@@ -293,8 +293,8 @@ namespace ProteoformSuiteGUI
                     if (d1 == DialogResult.OK)
                     {
                         Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
-                        if (loadDeconvolutionResults.ReadyToRunTheGamut())
-                            loadDeconvolutionResults.RunTheGamut(true); // updates the dgvs
+                        if (loadResults.ReadyToRunTheGamut())
+                            loadResults.RunTheGamut(true); // updates the dgvs
                     }
                     else return null;
                 }
@@ -312,7 +312,7 @@ namespace ProteoformSuiteGUI
                     {
                         string temp_folder_path = folderBrowser.SelectedPath;
                         Sweet.lollipop.results_folder = temp_folder_path;
-                        loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
+                        loadResults.InitializeParameterSet(); // updates the textbox
                     }
                     else if (dr == DialogResult.Cancel) return null;
                 }
@@ -437,5 +437,9 @@ namespace ProteoformSuiteGUI
 
         #endregion Results Summary Methods
 
+        private void resultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
