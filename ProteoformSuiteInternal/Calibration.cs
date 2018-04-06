@@ -132,8 +132,7 @@ namespace ProteoformSuiteInternal
                     List<Component> potential_matches = Sweet.lollipop.calibration_components.
                         Where(c => c.input_file.lt_condition == raw_file.lt_condition
                         && (Sweet.lollipop.neucode_labeled || c.input_file.biological_replicate == raw_file.biological_replicate)
-                        && c.input_file.fraction == raw_file.fraction
-                        && c.input_file.technical_replicate == raw_file.technical_replicate).ToList();
+                        && c.input_file.fraction == raw_file.fraction).ToList();
                     if (potential_matches.Count > 0)
                     {
                         matching_component = potential_matches.Where(c =>

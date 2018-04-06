@@ -65,6 +65,10 @@ namespace ProteoformSuiteInternal
 
         public double mass_error { get; set; } = double.NaN;
 
+        public string uniprot_mods { get; set; }
+
+        public bool novel_mods { get; set; }
+        
         #endregion Public Properties
 
         #region Public Constructors

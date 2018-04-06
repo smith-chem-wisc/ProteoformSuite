@@ -93,6 +93,16 @@ namespace ProteoformSuiteGUI
             get { return e.linked_proteoform_references != null ? e.ptm_description : ""; }
         }
 
+        public string uniprot_mods
+        {
+            get { return e.linked_proteoform_references != null ? e.uniprot_mods : ""; }
+        }
+
+        public bool novel_mods
+        {
+            get { return e.novel_mods;  }
+        }
+
         public int Begin
         {
             get { return e.begin; }
@@ -273,6 +283,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(family_id)) return "Family ID";
             if (property_name == nameof(mass_error)) return "Mass Error";
             if (property_name == nameof(mz_values)) return "M/z values";
+            if (property_name == nameof(uniprot_mods)) return "UniProt=Annotated Modifications";
+            if (property_name == nameof(novel_mods)) return "Potentially Novel Mods";
             return null;
         }
 

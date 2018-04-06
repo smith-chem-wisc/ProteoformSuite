@@ -248,7 +248,6 @@ namespace ProteoformSuiteInternal
         public List<ProteoformFamily> construct_families()
         {
             ProteoformFamily.reset_family_counter();
-            Parallel.ForEach(experimental_proteoforms, e => e.ambiguous = false); //need to reset all as falsely ambigous
             Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToArray());
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
@@ -359,6 +358,13 @@ namespace ProteoformSuiteInternal
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
                 if (p as TopDownProteoform == null) { p.gene_name = null; }
+                if (p as ExperimentalProteoform != null)
+                {
+                    ExperimentalProteoform e = p as ExperimentalProteoform;
+                    e.ambiguous = false;
+                    e.novel_mods = false;
+                    e.uniprot_mods = "";
+                }
             }
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
         }
