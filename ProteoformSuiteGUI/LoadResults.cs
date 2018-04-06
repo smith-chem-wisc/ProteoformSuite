@@ -453,10 +453,10 @@ namespace ProteoformSuiteGUI
 
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
-            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
-            {
-                MessageBox.Show("Please enter raw files to calibrate."); return;
-            }
+            //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            //{
+            //    MessageBox.Show("Please enter raw files to calibrate."); return;
+            //}
             if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
             {
                 MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");

@@ -326,7 +326,6 @@ namespace ProteoformSuiteInternal
                     {
                         File.Delete(Path.Combine(filelocation + ".pbf"));
                     }
-
                     if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
                     {
                         successfully_deconvoluted_files++;
