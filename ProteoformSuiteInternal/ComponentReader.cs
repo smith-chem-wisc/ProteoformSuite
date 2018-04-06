@@ -63,7 +63,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            if (new_component.charge_states != null && new_component.charge_states.Count > 0) add_component(new_component); //don't add if empty component
+            if(new_component.charge_states != null && new_component.charge_states.Count > 0) add_component(new_component); //don't add if empty component
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             scan_ranges = new HashSet<string>(final_components.Select(c => c.min_scan + "-" + c.max_scan)).ToList();

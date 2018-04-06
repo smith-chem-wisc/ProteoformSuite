@@ -30,22 +30,22 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IdentifiedProteoforms));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.btn_compare_with_td = new System.Windows.Forms.Button();
             this.tb_not_td = new System.Windows.Forms.TextBox();
             this.dgv_identified_experimentals = new System.Windows.Forms.DataGridView();
             this.dgv_td_proteoforms = new System.Windows.Forms.DataGridView();
             this.tb_topdown = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
+            this.param_splitcontainer.Panel1.SuspendLayout();
+            this.param_splitcontainer.Panel2.SuspendLayout();
+            this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identified_experimentals)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_td_proteoforms)).BeginInit();
             this.SuspendLayout();
@@ -59,7 +59,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel1.Controls.Add(this.param_splitcontainer);
             // 
             // splitContainer1.Panel2
             // 
@@ -69,26 +69,43 @@
             this.splitContainer1.SplitterDistance = 317;
             this.splitContainer1.TabIndex = 0;
             // 
-            // splitContainer2
+            // param_splitcontainer
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param_splitcontainer.Location = new System.Drawing.Point(0, 0);
+            this.param_splitcontainer.Name = "param_splitcontainer";
+            this.param_splitcontainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer2.Panel1
+            // param_splitcontainer.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.label12);
-            this.splitContainer2.Panel1.Controls.Add(this.tb_tableFilter);
-            this.splitContainer2.Panel1.Controls.Add(this.btn_compare_with_td);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label12);
+            this.param_splitcontainer.Panel1.Controls.Add(this.tb_tableFilter);
+            this.param_splitcontainer.Panel1.Controls.Add(this.btn_compare_with_td);
             // 
-            // splitContainer2.Panel2
+            // param_splitcontainer.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.tb_not_td);
-            this.splitContainer2.Panel2.Controls.Add(this.dgv_identified_experimentals);
-            this.splitContainer2.Size = new System.Drawing.Size(1287, 317);
-            this.splitContainer2.SplitterDistance = 25;
-            this.splitContainer2.TabIndex = 0;
+            this.param_splitcontainer.Panel2.Controls.Add(this.tb_not_td);
+            this.param_splitcontainer.Panel2.Controls.Add(this.dgv_identified_experimentals);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1287, 317);
+            this.param_splitcontainer.SplitterDistance = 25;
+            this.param_splitcontainer.TabIndex = 0;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(397, 5);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(64, 13);
+            this.label12.TabIndex = 5;
+            this.label12.Text = "Table Filters";
+            // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(246, 2);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(145, 20);
+            this.tb_tableFilter.TabIndex = 4;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
             // btn_compare_with_td
             // 
@@ -140,27 +157,10 @@
             this.tb_topdown.Size = new System.Drawing.Size(1287, 20);
             this.tb_topdown.TabIndex = 6;
             // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(397, 5);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(64, 13);
-            this.label12.TabIndex = 5;
-            this.label12.Text = "Table Filters";
-            // 
-            // tb_tableFilter
-            // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(246, 2);
-            this.tb_tableFilter.Name = "tb_tableFilter";
-            this.tb_tableFilter.Size = new System.Drawing.Size(145, 20);
-            this.tb_tableFilter.TabIndex = 4;
-            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
-            // 
             // IdentifiedProteoforms
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1287, 659);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
@@ -172,12 +172,12 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel1.PerformLayout();
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            this.splitContainer2.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.PerformLayout();
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identified_experimentals)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_td_proteoforms)).EndInit();
             this.ResumeLayout(false);
@@ -189,7 +189,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView dgv_td_proteoforms;
         private System.Windows.Forms.TextBox tb_topdown;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.Button btn_compare_with_td;
         private System.Windows.Forms.TextBox tb_not_td;
         private System.Windows.Forms.DataGridView dgv_identified_experimentals;
