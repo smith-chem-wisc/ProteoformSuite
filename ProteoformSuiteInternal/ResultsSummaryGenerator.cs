@@ -411,6 +411,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Accessions", typeof(string));
             results.Columns.Add("PTM Type", typeof(string));
             results.Columns.Add("Begin and End", typeof(string));
+            results.Columns.Add("UniProt-Annotated Modifications");
+            results.Columns.Add("Potentially Novel Modifications");
             results.Columns.Add("Mass Error", typeof(double));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
@@ -445,6 +447,8 @@ namespace ProteoformSuiteInternal
                         "Unmodified" :
                         String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
                     e.begin + " to " + e.end,
+                    e.uniprot_mods,
+                    e.novel_mods,
                     e.mass_error,
                     e.modified_mass,
                     e.agg_rt,
