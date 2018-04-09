@@ -352,19 +352,15 @@ namespace ProteoformSuiteInternal
         public void clear_families()
         {
             families.Clear();
-            foreach (Proteoform p in experimental_proteoforms)
+            foreach (ExperimentalProteoform p in experimental_proteoforms)
             {
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
                 if (p as TopDownProteoform == null) { p.gene_name = null; }
-                if (p as ExperimentalProteoform != null)
-                {
-                    ExperimentalProteoform e = p as ExperimentalProteoform;
-                    e.ambiguous = false;
-                    e.novel_mods = false;
-                    e.uniprot_mods = "";
-                }
+                p.ambiguous = false;
+                p.novel_mods = false;
+                p.uniprot_mods = "";
             }
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
         }

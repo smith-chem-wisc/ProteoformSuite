@@ -97,13 +97,24 @@ namespace Test
         public void testBadValuesComponentFile()
         {
             Sweet.lollipop = new Lollipop();
-            InputFile badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            InputFile badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues1.xlsx"), Labeling.NeuCode, Purpose.Identification);
             Sweet.lollipop.input_files.Add(badValues);
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
 
             Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
             Assert.AreEqual(0, badValues.reader.final_components.Count());
             Assert.AreEqual(1, ComponentReader.components_with_errors.Count);
+            Assert.AreEqual("badValues1 component 1", ComponentReader.components_with_errors.First());
+
+            Sweet.lollipop = new Lollipop();
+            badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues2.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Sweet.lollipop.input_files.Add(badValues);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
+
+            Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(0, badValues.reader.final_components.Count());
+            Assert.AreEqual(1, ComponentReader.components_with_errors.Count);
+            Assert.AreEqual("badValues2 component 2", ComponentReader.components_with_errors.First());
         }
 
     }
