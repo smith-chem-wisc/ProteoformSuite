@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
                     continue; //skip component header
                 }
                 List<string> cellStrings = cells[i];
-                if (cellStrings.Count > 7) //component row
+                if (cellStrings.Count > 10) //component row
                 {
                     if (i > 1)
                     {

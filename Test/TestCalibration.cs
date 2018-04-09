@@ -91,6 +91,36 @@ namespace Test
         }
 
         [Test]
+        public void bad_components_file()
+        {
+            //get raw file
+            Sweet.lollipop = new Lollipop();
+            int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.RawFile)).First());
+            int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
+            int cali_td_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationTopDown)).First());
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[raw_file_index], Lollipop.file_types[raw_file_index], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().lt_condition = "1";
+
+            //get deconvolution results - same file as topdown file/diff tech rep - should be calibrated
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().lt_condition = "1";
+
+            //td calibration hits -- treat as same file as topdown file
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration.xlsx") }, Lollipop.acceptable_extensions[cali_td_file], Lollipop.file_types[cali_td_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_calibration_td_hits();
+            Assert.AreEqual("Error in Deconvolution Results File: badValues1 component 1", Sweet.lollipop.calibrate_files());
+        }
+
+        [Test]
         public void calibrate_file_with_same_techrep()
         {
             //get raw file

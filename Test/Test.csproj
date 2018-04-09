@@ -217,7 +217,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="app.config" />
-    <None Include="badValues.xlsx">
+    <None Include="badValues1.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="badValues2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="BU_result_sliced-raw_5ppmAroundZero.mzid">

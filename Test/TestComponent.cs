@@ -229,5 +229,27 @@ namespace Test
         {
             Assert.AreEqual("10\t1", testChargeStateNoCorrection.ToString());
         }
+
+        [Test]
+        public void badComponent()
+        {
+            List<string> cellStrings = new List<string>()
+            {
+                "1", "asdf", "asdf", "asdf", "asdf", "asdf", "asdf", "asdf", "a22-43s", "292d-d2d", "asdf"
+            };
+            Component c = new Component(cellStrings, new InputFile("filepath", Purpose.Identification));
+            Assert.AreEqual(0, c.reported_monoisotopic_mass);
+            Assert.AreEqual(0, c.intensity_reported);
+            Assert.AreEqual(0, c.num_charge_states);
+            Assert.AreEqual(0, c.num_detected_intervals);
+            Assert.AreEqual(0, c.reported_delta_mass);
+            Assert.AreEqual(0, c.relative_abundance);
+            Assert.AreEqual(0, c.fract_abundance);
+            Assert.AreEqual(0, c.min_scan);
+            Assert.AreEqual(0, c.max_scan);
+            Assert.AreEqual(0, c.min_rt);
+            Assert.AreEqual(0, c.max_rt);
+            Assert.AreEqual(0, c.rt_apex);
+        }
     }
 }
