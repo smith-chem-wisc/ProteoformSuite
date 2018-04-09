@@ -73,6 +73,17 @@ namespace ProteoformSuiteGUI
             get { return t.ptm_description; }
         }
 
+        public string uniprot_mods
+        {
+            get { return t.linked_proteoform_references != null ? t.uniprot_mods : ""; }
+        }
+
+        public bool novel_mods
+        {
+            get { return t.novel_mods; }
+        }
+
+
         public int theoretical_begin
         {
             get { return t.begin; }
@@ -171,6 +182,8 @@ namespace ProteoformSuiteGUI
             if (name == nameof(family_id)) { return "Family ID"; }
             if (name == nameof(mass_error)) { return "Mass Error"; }
             if (name == nameof(PFR_accession)) { return "PFR Accession"; }
+            if (name == nameof(uniprot_mods)) return "UniProt=Annotated Modifications";
+            if (name == nameof(novel_mods)) return "Potentially Novel Mods";
             return null;
         }
 
@@ -185,6 +198,8 @@ namespace ProteoformSuiteGUI
                 if (property_name == nameof(theoretical_end)) { return false; }
                 if (property_name == nameof(family_id)) { return false; }
                 if (property_name == nameof(mass_error)) { return false; }
+                if (property_name == nameof(uniprot_mods)) { return false; }
+                if (property_name == nameof(novel_mods)) { return false; }
             }
             return current;
         }
