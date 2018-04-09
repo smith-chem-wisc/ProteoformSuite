@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -378,11 +379,44 @@ namespace ProteoformSuiteGUI
                 if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
                 refresh_dgvs();
+                if (openFileDialog.FileNames.Any(f => Path.GetExtension(f) == ".raw")) ValidateThermoMsFileReaderVersion();
             }
 
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
+
+        private const string AssumedThermoMsFileReaderDllPath = @"C:\Program Files\Thermo\MSFileReader";
+        private const string DesiredFileIoVersion = "3.0";
+        private const string DesiredFregistryVersion = "3.0";
+        private const string DesiredXRawFileVersion = "3.0.29.0";
+
+        public static void ValidateThermoMsFileReaderVersion()
+        {
+            string fileIoAssumedPath = Path.Combine(AssumedThermoMsFileReaderDllPath, "Fileio_x64.dll");
+            string fregistryAssumedPath = Path.Combine(AssumedThermoMsFileReaderDllPath, "fregistry_x64.dll");
+            string xRawFileAssumedPath = Path.Combine(AssumedThermoMsFileReaderDllPath, "XRawfile2_x64.dll");
+
+            if (File.Exists(fileIoAssumedPath) && File.Exists(fregistryAssumedPath) && File.Exists(xRawFileAssumedPath))
+            {
+                string fileIoVersion = FileVersionInfo.GetVersionInfo(fileIoAssumedPath).FileVersion;
+                string fregistryVersion = FileVersionInfo.GetVersionInfo(fregistryAssumedPath).FileVersion;
+                string xRawFileVersion = FileVersionInfo.GetVersionInfo(xRawFileAssumedPath).FileVersion;
+
+                if (fileIoVersion.Equals(DesiredFileIoVersion) && fregistryVersion.Equals(DesiredFregistryVersion) && xRawFileVersion.Equals(DesiredXRawFileVersion))
+                {
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("Warning!Thermo MSFileReader is not version 3.0 SP2; a crash may result from searching this .raw file.");
+                    return;
+                }
+            }
+            MessageBox.Show("Warning! Cannot find Thermo MSFileReader (v3.0 SP2 is preferred); a crash may result from searching this .raw file");
+        }
+    
+
 
         #endregion ADD BUTTONS Private Methods
 
@@ -454,7 +488,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
-            //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             //{
             //    MessageBox.Show("Please enter raw files to calibrate."); return;
             //}
@@ -469,7 +503,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_deconvolute_Click(object sender, EventArgs e)
         {
-            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
                 MessageBox.Show("Please enter raw files to deconvolute."); return;
             }

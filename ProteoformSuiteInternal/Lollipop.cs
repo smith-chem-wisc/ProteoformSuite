@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
             "Deconvolution Results for Quantification (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
             "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
-            "Raw Files (.raw, .mzml)",
+            "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
         };
@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
-            new List<string> {".raw", ".mzML"},
+            new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx" },
             new List<string> { ".xlsx" },
         };
@@ -69,7 +69,7 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
-            "Raw Files (*.raw, *.mzML) | *.raw;*.mzML",
+            "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
         };
@@ -80,7 +80,7 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
             new List<Purpose> { Purpose.TopDown },
-            new List<Purpose> { Purpose.RawFile },
+            new List<Purpose> { Purpose.SpectraFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> { Purpose.CalibrationTopDown },
         };
@@ -193,7 +193,7 @@ namespace ProteoformSuiteInternal
         {
             int successfully_deconvoluted_files = 0;
 
-            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
+            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile)) {
                     
                     Process proc = new Process();
                     ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -254,7 +254,7 @@ namespace ProteoformSuiteInternal
                     int numChargesRequired = 3;
                     string dir = Directory.GetCurrentDirectory();
                     Loaders.LoadElements(dir + @"\elements.dat");
-                    var rawFile = ThermoDynamicData.InitiateDynamicConnection(input);
+                    var SpectraFile = ThermoDynamicData.InitiateDynamicConnection(input);
                     Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
                     StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
                     string line;
@@ -283,7 +283,7 @@ namespace ProteoformSuiteInternal
                                 }
                                 if (ms1ft_likelihoods[featureID - 1] >= minlikelihood)
                                 {
-                                    massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+                                    massWithScan.retentionTime = SpectraFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
                                     if (massWithScan.retentionTime >= minRT & massWithScan.retentionTime <= maxRT)
                                     {
                                         if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
@@ -1258,7 +1258,7 @@ namespace ProteoformSuiteInternal
 
         public void get_td_hit_chargestates()
         {
-            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile))
+            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
@@ -1295,9 +1295,9 @@ namespace ProteoformSuiteInternal
 
         public string calibrate_files()
         {
-            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
+            if (input_files.Where(f => f.purpose == Purpose.SpectraFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
                 return "Label condition, fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
-            if (input_files.Where(f => f.purpose == Purpose.RawFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.RawFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
+            if (input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
             if (td_hits_calibration.Any(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
@@ -1316,7 +1316,7 @@ namespace ProteoformSuiteInternal
                         {
                             return "Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors);
                         }
-                        foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
+                        foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.SpectraFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
                             if (!Sweet.lollipop.calibrate_td_files && td_hits_calibration.Any(h => h.filename == raw_file.filename)) continue;
 
@@ -1369,7 +1369,7 @@ namespace ProteoformSuiteInternal
 
             if (calibrate_td_files)
             {
-                //get topdown shifts if this rawfile is the same name as the topdown hit's file
+                //get topdown shifts if this SpectraFile is the same name as the topdown hit's file
                 foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
                 {
                     Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
