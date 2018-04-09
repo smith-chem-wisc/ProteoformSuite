@@ -149,6 +149,7 @@ namespace ProteoformSuiteInternal
 
         public void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose, bool remove_missed_monos_and_harmonics)
         {
+            ComponentReader.components_with_errors.Clear();
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics);
@@ -1390,7 +1391,12 @@ namespace ProteoformSuiteInternal
                     {
                         Calibration calibration = new Calibration();
                         calibration_components.Clear();
+                        ComponentReader.components_with_errors.Clear();
                         process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && (Sweet.lollipop.neucode_labeled || f.biological_replicate == biological_replicate) && f.fraction == fraction && f.lt_condition == condition).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
+                        if(ComponentReader.components_with_errors.Count > 0)
+                        {
+                            return "Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors);
+                        }
                         foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
                             if (!Sweet.lollipop.calibrate_td_files && td_hits_calibration.Any(h => h.filename == raw_file.filename)) continue;

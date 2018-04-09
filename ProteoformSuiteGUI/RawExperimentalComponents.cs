@@ -47,6 +47,12 @@ namespace ProteoformSuiteGUI
                 () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
                 () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
             );
+            if (ComponentReader.components_with_errors.Count > 0)
+            {
+                MessageBox.Show("Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors));
+                ClearListsTablesFigures(true);
+                return;
+            }
 
             FillTablesAndCharts();
         }
