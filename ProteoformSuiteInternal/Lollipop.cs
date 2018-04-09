@@ -191,20 +191,12 @@ namespace ProteoformSuiteInternal
         public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, double maxfit, double minlikelihood, string directory)
         {
             int successfully_deconvoluted_files = 0;
-            Loaders.LoadElements(directory  + @"\elements.dat");
 
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
-
-                Process proc = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
-                    ThermoStaticData.LoadAllStaticData(f.complete_path) :
-                    null;
-                if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(f.complete_path);
-                myMsDataFile = new SummedMsDataFile(myMsDataFile, 6, 5);
-                MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, f.directory + "\\" + f.filename + "_averaged.mzML", false);
-                //  string input = f.complete_path;
-                string input = f.directory + "\\" + f.filename + "_averaged.mzML";
+                    
+                    Process proc = new Process();
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    string input = f.complete_path;
                     string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
                     string promexlocation = directory + @"\ProMex";
                     List<int> ms1ft_featureIDs = new List<int>();
