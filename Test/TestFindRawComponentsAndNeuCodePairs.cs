@@ -92,5 +92,19 @@ namespace Test
 
         }
 
+
+        [Test]
+        public void testBadValuesComponentFile()
+        {
+            Sweet.lollipop = new Lollipop();
+            InputFile badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Sweet.lollipop.input_files.Add(badValues);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
+
+            Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(0, badValues.reader.final_components.Count());
+            Assert.AreEqual(1, ComponentReader.components_with_errors.Count);
+        }
+
     }
 }

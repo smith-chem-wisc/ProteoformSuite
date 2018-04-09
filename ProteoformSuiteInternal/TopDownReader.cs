@@ -174,7 +174,12 @@ namespace ProteoformSuiteInternal
                             TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, tdResultType, cellStrings[2], cellStrings[0], cellStrings[1], cellStrings[3], cellStrings[4],
                             Int32.TryParse(cellStrings[5], out int i) ? i : 0, Int32.TryParse(cellStrings[6], out i) ? i : 0, ptm_list, Double.TryParse(cellStrings[16], out double d) ? d : 0, Double.TryParse(cellStrings[12], out d) ? d : 0,
                             Int32.TryParse(cellStrings[17], out i) ? i : 0, Double.TryParse(cellStrings[18], out d) ? d : 0, cellStrings[14].Split('.')[0], Double.TryParse(cellStrings[20], out d) ? d : 0, Double.TryParse(cellStrings[22], out d) ? d : 0);
-                            lock (td_hits) td_hits.Add(td_hit);
+
+                            if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 && td_hit.pscore > 0 && td_hit.reported_mass > 0 && td_hit.score > 0
+                            && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
+                            {
+                                lock (td_hits) td_hits.Add(td_hit);
+                            }
                         }
                     }
                 }

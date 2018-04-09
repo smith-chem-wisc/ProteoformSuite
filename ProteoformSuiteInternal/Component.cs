@@ -114,13 +114,12 @@ namespace ProteoformSuiteInternal
 
         public Component(List<string> cellStrings, InputFile input_file) // this is used when we read stored data from previous computation.
         {
-            this.id = (Int32.TryParse(cellStrings[0], out int i) ? i : 0).ToString();
             this.input_file = input_file;
-            this.id = input_file.UniqueId.ToString() + "_" + (Int32.TryParse(cellStrings[0], out i) ? i : 0);
+            this.id = input_file.UniqueId.ToString() + "_" + cellStrings[0];
             this.reported_monoisotopic_mass = Double.TryParse(cellStrings[1], out double d) ? d : 0;
             this.weighted_monoisotopic_mass = reported_monoisotopic_mass ; // this will get immediately replaced and updated as charge states are added.
             this.intensity_reported = Double.TryParse(cellStrings[2], out d) ? d : 0;
-            this.num_charge_states = Int32.TryParse(cellStrings[3], out i) ? i : 0;
+            this.num_charge_states = Int32.TryParse(cellStrings[3], out int i) ? i : 0;
             this.num_detected_intervals = Int32.TryParse(cellStrings[4], out i) ? i : 0;
             this.reported_delta_mass = Double.TryParse(cellStrings[5], out d) ? d : 0;
             this.relative_abundance = Double.TryParse(cellStrings[6], out d) ? d : 0;

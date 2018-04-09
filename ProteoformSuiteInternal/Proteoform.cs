@@ -293,15 +293,15 @@ namespace ProteoformSuiteInternal
                 if (theo_ptms.Count > 0)
                 {
                     e.uniprot_mods += mod + " @ " + String.Join(", ", theo_ptms) + "; ";
-                    if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Count(m => m == mod)
-                        > theo_ptms.Count)
-                    {
-                        e.novel_mods = true;
-                    }
+                }
+                if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Count(m => m == mod)
+                    > theo_ptms.Count)
+                {
+                    e.novel_mods = true;
                 }
             }
         }
-    }
 
-    #endregion Private Methods
+        #endregion Private Methods
+    }
 }
