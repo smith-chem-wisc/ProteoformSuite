@@ -173,13 +173,13 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(rt_range)) return "RT Range";
             if (property_name == nameof(num_charge_states)) return "No. Charge States";
             if (property_name == nameof(manual_mass_shift)) return "Manual Mass Shift";
-            if (property_name == nameof(reported_monoisotopic_mass)) return "Monoisotopic Mass (from Thermo Decon.)";
-            if (property_name == nameof(intensity_reported)) return "Intensity (from Thermo Decon.)";
-            if (property_name == nameof(num_detected_intervals)) return "No. Detected Intervals (from Thermo Decon.)";
-            if (property_name == nameof(reported_delta_mass)) return "Reported Delta Mass (from Thermo Decon.)";
-            if (property_name == nameof(relative_abundance)) return "Relative Abundance (from Thermo Decon.)";
+            if (property_name == nameof(reported_monoisotopic_mass)) return "Reported Monoisotopic Mass";
+            if (property_name == nameof(intensity_reported)) return "Reported Intensity";
+            if (property_name == nameof(num_detected_intervals)) return "Reported No. Detected Intervals";
+            if (property_name == nameof(reported_delta_mass)) return "Reported Delta Mass";
+            if (property_name == nameof(relative_abundance)) return "Reported Relative Abundance";
             if (property_name == nameof(charge_states)) return "Charge States";
-            if (property_name == nameof(fract_abundance)) return "Fractional Abundance (from Thermo Decon.)";
+            if (property_name == nameof(fract_abundance)) return "Reported Fractional Abundance";
             return null;
         }
 

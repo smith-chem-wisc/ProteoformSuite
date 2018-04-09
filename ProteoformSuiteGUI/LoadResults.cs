@@ -41,6 +41,8 @@ namespace ProteoformSuiteGUI
             cb_calibrate_td_files.Checked = Sweet.lollipop.calibrate_td_files;
             cb_calibrate_raw_files.Checked = Sweet.lollipop.calibrate_raw_files;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
+            ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+            ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
         }
 
         public List<DataTable> SetTables()
@@ -151,15 +153,7 @@ namespace ProteoformSuiteGUI
 
             if (rb_standardOptions.Checked)
             {
-                cmb_loadTable1.Items.Add(Lollipop.file_lists[0]);
-
-                //if unlabeled add quant
-                //   if (Sweet.lollipop.neucode_labeled)
-                {
-                    cmb_loadTable1.Items.Add(Lollipop.file_lists[1]);
-                }
-
-                for (int i = 2; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -189,6 +183,7 @@ namespace ProteoformSuiteGUI
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
                 fullrun_groupbox.Visible = true;
+
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -318,6 +313,12 @@ namespace ProteoformSuiteGUI
             foreach (DataGridView dgv in new List<DataGridView> { dgv_loadFiles1 })
             {
                 dgv.Refresh();
+            }
+
+            if (MdiParent != null) //doesn't work first time
+            {
+                ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+                ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
             }
         }
 

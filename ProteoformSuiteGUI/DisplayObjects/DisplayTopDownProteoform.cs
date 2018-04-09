@@ -182,7 +182,7 @@ namespace ProteoformSuiteGUI
             if (name == nameof(family_id)) { return "Family ID"; }
             if (name == nameof(mass_error)) { return "Mass Error"; }
             if (name == nameof(PFR_accession)) { return "PFR Accession"; }
-            if (name == nameof(uniprot_mods)) return "UniProt=Annotated Modifications";
+            if (name == nameof(uniprot_mods)) return "UniProt-Annotated Modifications";
             if (name == nameof(novel_mods)) return "Potentially Novel Mods";
             return null;
         }
