@@ -43,13 +43,13 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Proteoform Identification Results (.xlsx)",
-            "Proteoform Quantification Results (.xlsx)",
+            "Deconvolution Results for Identification (.xlsx)",
+            "Deconvolution Results for Quantification (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "Top-Down Results (Unlabeled) (.xlsx)",
+            "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
             "Raw Files (.raw, .mzml)",
-            "Uncalibrated Proteoform Identification Results (.xlsx)",
-            "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)",
+            "Uncalibrated Deconvolution Results (.xlsx)",
+            "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
         };
 
         public static readonly List<string>[] acceptable_extensions = new[]
