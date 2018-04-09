@@ -505,13 +505,6 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
             Sweet.lollipop.target_proteoform_community.community_number = -100;
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\asdf.txt"))
-            {
-                foreach (var x in expanded_proteins)
-                {
-                    writer.WriteLine(x.Accession + "\t" + String.Join("; ", x.OneBasedPossibleLocalizedModifications.Values.SelectMany(m => m).Select(d => d.id).Distinct()));
-                }
-            }
         }
 
         private void process_decoys(TheoreticalProteoform[] entries)
