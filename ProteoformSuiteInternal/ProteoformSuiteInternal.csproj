@@ -96,9 +96,6 @@
     <Reference Include="pepXML, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\mzLib.1.0.297\lib\net45\pepXML.dll</HintPath>
     </Reference>
-    <Reference Include="PRISM, Version=2.4.58.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PRISM-Library.2.4.58\lib\net45\PRISM.dll</HintPath>
-    </Reference>
     <Reference Include="Proteomics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\mzLib.1.0.297\lib\net45\Proteomics.dll</HintPath>
     </Reference>
