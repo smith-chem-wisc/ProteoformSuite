@@ -86,7 +86,7 @@ namespace ProteoformSuiteInternal
         Quantification,
         BottomUp,
         TopDown,
-        RawFile,
+        SpectraFile,
         CalibrationIdentification,
         CalibrationTopDown,
         ProteinDatabase,
