@@ -47,8 +47,6 @@ namespace ProteoformSuiteInternal
 
         public string hv_condition { get; set; } = "";
 
-        public bool quantitative { get; set; }
-
         //For database files
         public bool ContaminantDB { get; set; } = false;
 
@@ -88,7 +86,7 @@ namespace ProteoformSuiteInternal
         Quantification,
         BottomUp,
         TopDown,
-        RawFile,
+        SpectraFile,
         CalibrationIdentification,
         CalibrationTopDown,
         ProteinDatabase,

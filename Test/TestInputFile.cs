@@ -19,8 +19,8 @@ namespace Test
                 new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.ProteinDatabase),
-                new InputFile("fake.txt", Purpose.RawFile),
-                new InputFile("fake.txt", Purpose.RawFile),
+                new InputFile("fake.txt", Purpose.SpectraFile),
+                new InputFile("fake.txt", Purpose.SpectraFile),
                 new InputFile("fake.txt", Purpose.Quantification),
                 new InputFile("fake.txt", Purpose.Quantification),
             };

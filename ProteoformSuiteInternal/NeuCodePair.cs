@@ -10,8 +10,8 @@ namespace ProteoformSuiteInternal
         #region Public Properties
 
         public InputFile input_file { get; set; }
-        public string scan_range { get; set; }
-
+        public int min_scan { get; set; }
+        public int max_scan { get; set; }
         public Component neuCodeLight { get; set; }
         public Component neuCodeHeavy { get; set; }
         public double intensity_ratio { get; set; }
@@ -31,7 +31,8 @@ namespace ProteoformSuiteInternal
 
         public NeuCodePair(Component neuCodeLight, double light_intensity_sum_olcs, Component neuCodeHeavy, double heavy_intensity_sum_olcs, double mass_difference, HashSet<int> overlapping_charge_states, bool light_is_lower)
         {
-            this.scan_range = neuCodeLight.scan_range;
+            this.min_scan = neuCodeLight.min_scan;
+            this.max_scan = neuCodeLight.max_scan;
             this.rt_apex = neuCodeLight.rt_apex;
             this.input_file = neuCodeLight.input_file;
             this.intensity_sum = light_intensity_sum_olcs;

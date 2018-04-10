@@ -17,7 +17,6 @@ namespace ProteoformSuiteInternal
         public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; } = "";
-
         public PtmSet ptm_set
         {
             get
@@ -32,7 +31,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m).ToList());
             }
         }
 
@@ -283,6 +282,23 @@ namespace ProteoformSuiteInternal
             else if (!e.topdown_id)
             {
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
+            }
+
+            e.uniprot_mods = "";
+            foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList().Distinct().OrderBy(m => m))
+            {
+                //positions with mod
+                List<int> theo_ptms = theoretical_base.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Where(p => p.Key >= e.begin && p.Key <= e.end &&
+                    p.Value.Where(m => m as ModificationWithMass != null).Select(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m as ModificationWithMass, out UnlocalizedModification x) ? x.id : m.id).Contains(mod)).Select(m => m.Key).ToList();
+                if (theo_ptms.Count > 0)
+                {
+                    e.uniprot_mods += mod + " @ " + String.Join(", ", theo_ptms) + "; ";
+                }
+                if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Count(m => m == mod)
+                    > theo_ptms.Count)
+                {
+                    e.novel_mods = true;
+                }
             }
         }
 
