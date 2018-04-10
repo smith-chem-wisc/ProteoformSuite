@@ -290,6 +290,36 @@ namespace Test
             Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "unmodified"));
             Assert.True(pf1 == pf3.linked_proteoform_references.First() || pf2 == pf3.linked_proteoform_references.First());
 
+            //uniprot vs. novel mods 
+            Assert.AreEqual("oxidation", pf3.linked_proteoform_references.First().ptm_description);
+            Assert.AreEqual("oxidation", pf4.linked_proteoform_references.First().ptm_description);
+            Assert.AreEqual("oxidation", pf5.linked_proteoform_references.First().ptm_description);
+            Assert.AreEqual("oxidation", pf6.linked_proteoform_references.First().ptm_description);
+            Assert.AreEqual("oxidation", pf7.linked_proteoform_references.First().ptm_description);
+            Assert.AreEqual("oxidation", pf8.linked_proteoform_references.First().ptm_description);
+
+            Assert.AreEqual("oxidation", pf3.ptm_description);
+            Assert.AreEqual("oxidation", pf4.ptm_description);
+            Assert.AreEqual("oxidation", pf5.ptm_description);
+            Assert.AreEqual("oxidation", pf6.ptm_description);
+            Assert.AreEqual("oxidation", pf7.ptm_description);
+            Assert.AreEqual("oxidation", pf8.ptm_description);
+
+            Assert.AreEqual("", pf3.uniprot_mods);
+            Assert.AreEqual("", pf4.uniprot_mods);
+            Assert.AreEqual("", pf5.uniprot_mods);
+            Assert.AreEqual("oxidation @ 1; ", pf6.uniprot_mods);
+            Assert.AreEqual("oxidation @ 1; ", pf7.uniprot_mods);
+            Assert.AreEqual("oxidation @ 1; ", pf8.uniprot_mods);
+            Assert.IsTrue(pf3.novel_mods);
+            Assert.IsTrue(pf4.novel_mods);
+            Assert.IsTrue(pf5.novel_mods);
+            Assert.IsFalse(pf6.novel_mods);
+            Assert.IsFalse(pf7.novel_mods);
+            Assert.IsFalse(pf8.novel_mods);
+
+
+
             //test I don't get re-reassignments
             Assert.AreEqual(pf3, pf4.linked_proteoform_references.Last()); //test that the proteoform.theoretical_reference gets set to each successive PF base
             Assert.AreEqual((pf3.linked_proteoform_references.First() as TheoreticalProteoform).accession, (pf4.linked_proteoform_references.First() as TheoreticalProteoform).accession);
