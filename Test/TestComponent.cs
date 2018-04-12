@@ -25,8 +25,8 @@ namespace Test
             Assert.AreEqual(0.02d, createdComponent1.reported_delta_mass);
             Assert.AreEqual(88.8d, createdComponent1.relative_abundance);
             Assert.AreEqual(0.888, createdComponent1.fract_abundance);
-            Assert.AreEqual("10-15", createdComponent1.scan_range);
-            Assert.AreEqual("11.1-12.2", createdComponent1.rt_range);
+            Assert.AreEqual("10-15", createdComponent1.min_scan + "-" + createdComponent1.max_scan);
+            Assert.AreEqual("11.1-12.2", createdComponent1.min_rt + "-" + createdComponent1.max_rt);
             Assert.AreEqual(10.55d, createdComponent1.rt_apex);
             Assert.AreEqual(99.9d, createdComponent1.intensity_sum);
             Assert.AreEqual(true, createdComponent1.accepted);
@@ -52,8 +52,8 @@ namespace Test
             Assert.AreEqual(0.02d, createdComponent2.reported_delta_mass);
             Assert.AreEqual(88.8d, createdComponent2.relative_abundance);
             Assert.AreEqual(0.888, createdComponent2.fract_abundance);
-            Assert.AreEqual("10-15", createdComponent2.scan_range);
-            Assert.AreEqual("11.1-12.2", createdComponent2.rt_range);
+            Assert.AreEqual("10-15", createdComponent2.min_scan + "-" + createdComponent2.max_scan);
+            Assert.AreEqual("11.1-12.2", createdComponent2.min_rt + "-" + createdComponent2.max_rt);
             Assert.AreEqual(10.55d, createdComponent2.rt_apex);
             Assert.AreEqual(200d, createdComponent2.intensity_sum);
             Assert.AreEqual(true, createdComponent2.accepted);
@@ -228,6 +228,28 @@ namespace Test
         public void testToString()
         {
             Assert.AreEqual("10\t1", testChargeStateNoCorrection.ToString());
+        }
+
+        [Test]
+        public void badComponent()
+        {
+            List<string> cellStrings = new List<string>()
+            {
+                "1", "asdf", "asdf", "asdf", "asdf", "asdf", "asdf", "asdf", "a22-43s", "292d-d2d", "asdf"
+            };
+            Component c = new Component(cellStrings, new InputFile("filepath", Purpose.Identification));
+            Assert.AreEqual(0, c.reported_monoisotopic_mass);
+            Assert.AreEqual(0, c.intensity_reported);
+            Assert.AreEqual(0, c.num_charge_states);
+            Assert.AreEqual(0, c.num_detected_intervals);
+            Assert.AreEqual(0, c.reported_delta_mass);
+            Assert.AreEqual(0, c.relative_abundance);
+            Assert.AreEqual(0, c.fract_abundance);
+            Assert.AreEqual(0, c.min_scan);
+            Assert.AreEqual(0, c.max_scan);
+            Assert.AreEqual(0, c.min_rt);
+            Assert.AreEqual(0, c.max_rt);
+            Assert.AreEqual(0, c.rt_apex);
         }
     }
 }

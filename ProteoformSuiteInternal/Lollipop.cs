@@ -43,13 +43,13 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Proteoform Identification Results (.xlsx)",
-            "Proteoform Quantification Results (.xlsx)",
+            "Deconvolution Results for Identification (.xlsx)",
+            "Deconvolution Results for Quantification (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "Top-Down Results (Unlabeled) (.xlsx)",
-            "Raw Files (.raw, .mzml)",
-            "Uncalibrated Proteoform Identification Results (.xlsx)",
-            "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)",
+            "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
+            "Spectra Files (.raw, .mzML)",
+            "Uncalibrated Deconvolution Results (.xlsx)",
+            "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
         };
 
         public static readonly List<string>[] acceptable_extensions = new[]
@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
-            new List<string> {".raw", ".mzML"},
+            new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx" },
             new List<string> { ".xlsx" },
         };
@@ -69,7 +69,7 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
-            "Raw Files (*.raw, *.mzML) | *.raw;*.mzML",
+            "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
         };
@@ -80,7 +80,7 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
             new List<Purpose> { Purpose.TopDown },
-            new List<Purpose> { Purpose.RawFile },
+            new List<Purpose> { Purpose.SpectraFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> { Purpose.CalibrationTopDown },
         };
@@ -149,6 +149,7 @@ namespace ProteoformSuiteInternal
 
         public void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose, bool remove_missed_monos_and_harmonics)
         {
+            ComponentReader.components_with_errors.Clear();
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics);
@@ -167,7 +168,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
-                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
+                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.min_scan + "-" + c.max_scan == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
             }
         }
@@ -192,7 +193,7 @@ namespace ProteoformSuiteInternal
         {
             int successfully_deconvoluted_files = 0;
 
-            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
+            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile)) {
                     
                     Process proc = new Process();
                     ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -253,7 +254,7 @@ namespace ProteoformSuiteInternal
                     int numChargesRequired = 3;
                     string dir = Directory.GetCurrentDirectory();
                     Loaders.LoadElements(dir + @"\elements.dat");
-                    var rawFile = ThermoDynamicData.InitiateDynamicConnection(input);
+                    var SpectraFile = ThermoDynamicData.InitiateDynamicConnection(input);
                     Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
                     StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
                     string line;
@@ -282,7 +283,7 @@ namespace ProteoformSuiteInternal
                                 }
                                 if (ms1ft_likelihoods[featureID - 1] >= minlikelihood)
                                 {
-                                    massWithScan.retentionTime = rawFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
+                                    massWithScan.retentionTime = SpectraFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
                                     if (massWithScan.retentionTime >= minRT & massWithScan.retentionTime <= maxRT)
                                     {
                                         if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
@@ -326,14 +327,13 @@ namespace ProteoformSuiteInternal
                     {
                         File.Delete(Path.Combine(filelocation + ".pbf"));
                     }
-
                     if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
                     {
                         successfully_deconvoluted_files++;
                     }
                 using (StreamWriter writer = new StreamWriter(filelocation + "_parameters.txt", false))
                 {
-                    writer.WriteLine("Minimum Charge: " + mincharge + " Maximum Charge: " + maxcharge + " Minimum Retention Time: " + minRT + " Maximum Retention Time: " + maxRT);
+                    writer.WriteLine("Minimum Charge: " + mincharge + " Maximum Charge: " + maxcharge + " Minimum Retention Time: " + minRT + " Maximum Retention Time: " + maxRT + " Maximum Fit: " + maxfit + " Minimum Likelihood: " + minlikelihood);
                 }
             }
                 if (successfully_deconvoluted_files == 1)
@@ -349,88 +349,7 @@ namespace ProteoformSuiteInternal
                     return "No files deconvoluted. Ensure correct file locations and try again.";
                 }
         }
-
-
-        //public void convertxml(string filelocation)
-        //{
-        //    //StreamReader streamReader = new StreamReader(filelocation);
-        //    string[] contents = File.ReadAllLines(filelocation);
-        //    for(int i =1; i < contents.Length; i++)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine(contents[i]);
-        //        System.Diagnostics.Debug.WriteLine(contents.Length);
-        //    }
-        //}
-
-        //will add this back in when RM pushes commits to mzlib/next release -LVS 1-22-18
-        //public List<Component> deconvolute_file(InputFile raw_file)
-        //{
-        //    Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-        //    int id = 0;
-        //    List<Component> new_components = new List<Component>();
-        //    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-        //        ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
-        //        null;
-        //    if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
-        //    int min_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(min_RT);
-        //    int max_scan = myMsDataFile.GetClosestOneBasedSpectrumNumber(max_RT);
-        //    List<DeconvolutionFeatureWithMassesAndScans> deconvoluted_features = myMsDataFile.Deconvolute(min_scan, max_scan, min_assumed_cs, max_assumed_cs, deconvolution_tolerance_ppm, 5, aggregation_tolerance_ppm,
-        //       b => b.MsnOrder == 1).ToList();
-        //    Parallel.ForEach(deconvoluted_features, feature =>
-        //    {
-        //        var max_intensity_envelope = feature.groups.SelectMany(g => g.isotopicEnvelopes).OrderByDescending(i => i.isotopicEnvelope.peaks.Max(p => p.intensity)).First();
-        //        Component component = new Component();
-        //        //make charge state
-        //        List<int> charges = feature.groups.SelectMany(g => g.AllCharges).Distinct().OrderBy(c => c).ToList();
-
-        //        int highest_consecutive_charges = 1;
-        //        int consecutive = 1;
-        //        for (int i = 1; i < charges.Count; i++)
-        //        {
-        //            if ((Math.Abs(charges[i - 1] - charges[i]) == 1)) consecutive++;
-        //            else
-        //            {
-        //                if (consecutive > highest_consecutive_charges) highest_consecutive_charges = consecutive;
-        //                consecutive = 1;
-        //            }
-        //        }
-        //        if (consecutive > highest_consecutive_charges) highest_consecutive_charges = consecutive;
-
-        //        if (highest_consecutive_charges >= min_num_cs_deconvolution_component)
-        //        {
-        //            foreach (int charge in charges)
-        //            {
-        //                List<string> charge_row = new List<string>();
-        //                charge_row.Add(charge.ToString());
-        //                charge_row.Add((feature.TotalNormalizedIntensity / charges.Count).ToString());
-        //                charge_row.Add((feature.Mass.ToMz(Convert.ToInt32(charge)).ToString()));
-        //                charge_row.Add(feature.Mass.ToString());
-        //                component.add_charge_state(charge_row);
-        //            }
-        //            component.input_file = raw_file;
-        //            component.id = raw_file.UniqueId.ToString() + "_" + id;
-        //            id++;
-        //            component.reported_delta_mass = feature.Mass;
-        //            component.intensity_reported = feature.TotalNormalizedIntensity;
-
-        //            component.num_detected_intervals = feature.MaxScanIndex - feature.MinScanIndex + 1;
-        //            component.reported_delta_mass = 0;
-        //            component.relative_abundance = 0;
-        //            component.scan_range = feature.MinScanIndex + "-" + feature.MaxScanIndex;
-        //            component.rt_range = feature.MinElutionTime + "-" + feature.MaxElutionTime;
-        //            component.rt_apex = feature.MostIntenseEnvelopeElutionTime;
-        //            component.accepted = true;
-        //            component.calculate_properties();
-        //            lock (new_components) new_components.Add(component);
-
-        //        }
-        //    });
-        //    raw_file.reader.unprocessed_components += new_components.Count;
-        //    new_components = raw_file.reader.remove_monoisotopic_duplicates_harmonics_from_same_scan(new_components);
-        //    raw_file.reader.scan_ranges = new HashSet<string>(new_components.Select(c => c.scan_range)).ToList();
-        //    return new_components;
-        //}
-
+ 
         #endregion DECONVOLUTION
 
         #region NEUCODE PAIRS Public Fields
@@ -1339,7 +1258,7 @@ namespace ProteoformSuiteInternal
 
         public void get_td_hit_chargestates()
         {
-            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile))
+            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
@@ -1354,10 +1273,17 @@ namespace ProteoformSuiteInternal
                         if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum <= myMsDataFile.NumSpectra)
                         {
                             hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge
-                            hit.mz = hit.reported_mass.ToMz(hit.charge);
+                            if(hit.charge > 0)
+                            {
+                                hit.mz = hit.reported_mass.ToMz(hit.charge);
+                            }
+                            else
+                            {
+                                hit.score = -100;
+                            }
                         }
                         while (myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
-                        hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
+                        hit.ms1_scan = myMsDataFile.GetOneBasedScan(scanNum);
                         hit.technical_replicate = raw_file.technical_replicate;
                         hit.biological_replicate = raw_file.biological_replicate;
                         hit.fraction = raw_file.fraction;
@@ -1369,13 +1295,13 @@ namespace ProteoformSuiteInternal
 
         public string calibrate_files()
         {
-            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
+            if (input_files.Where(f => f.purpose == Purpose.SpectraFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
                 return "Label condition, fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
-            if (input_files.Where(f => f.purpose == Purpose.RawFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.RawFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
+            if (input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
-            if (td_hits_calibration.Any(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
-                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.charge == 0 || h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
+            if (td_hits_calibration.Any(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
+                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
             foreach (string condition in input_files.Select(f => f.lt_condition).Distinct())
             {
                 foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())
@@ -1384,8 +1310,13 @@ namespace ProteoformSuiteInternal
                     {
                         Calibration calibration = new Calibration();
                         calibration_components.Clear();
+                        ComponentReader.components_with_errors.Clear();
                         process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && (Sweet.lollipop.neucode_labeled || f.biological_replicate == biological_replicate) && f.fraction == fraction && f.lt_condition == condition).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
-                        foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
+                        if(ComponentReader.components_with_errors.Count > 0)
+                        {
+                            return "Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors);
+                        }
+                        foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.SpectraFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
                             if (!Sweet.lollipop.calibrate_td_files && td_hits_calibration.Any(h => h.filename == raw_file.filename)) continue;
 
@@ -1438,7 +1369,7 @@ namespace ProteoformSuiteInternal
 
             if (calibrate_td_files)
             {
-                //get topdown shifts if this rawfile is the same name as the topdown hit's file
+                //get topdown shifts if this SpectraFile is the same name as the topdown hit's file
                 foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
                 {
                     Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);

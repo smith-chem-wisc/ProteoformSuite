@@ -47,8 +47,8 @@ namespace Test
             Assert.AreEqual(Math.Round(2127.5113, 4), Math.Round(c1.reported_delta_mass, 4));
             Assert.AreEqual(Math.Round(54.97795307, 8), Math.Round(c1.relative_abundance, 8));
             Assert.AreEqual(Math.Round(1.141297566, 8), Math.Round(c1.fract_abundance, 8));
-            Assert.AreEqual("413-415", c1.scan_range);
-            Assert.AreEqual("56.250-56.510", c1.rt_range);
+            Assert.AreEqual("413-415", c1.min_scan + "-" + c1.max_scan);
+            Assert.AreEqual("56.25-56.51", c1.min_rt + "-" + c1.max_rt);
             Assert.AreEqual(Math.Round(56.3809775, 7), Math.Round(c1.rt_apex, 7));
             Assert.AreEqual(8981.69, Math.Round(c1.charge_states.OrderBy(s => s.charge_count).First().reported_mass, 2));
 
@@ -90,6 +90,31 @@ namespace Test
             Assert.AreEqual(0, noisy.reader.missed_mono_merges);
             Assert.AreEqual(0, noisy.reader.harmonic_merges);
 
+        }
+
+
+        [Test]
+        public void testBadValuesComponentFile()
+        {
+            Sweet.lollipop = new Lollipop();
+            InputFile badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues1.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Sweet.lollipop.input_files.Add(badValues);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
+
+            Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(0, badValues.reader.final_components.Count());
+            Assert.AreEqual(1, ComponentReader.components_with_errors.Count);
+            Assert.AreEqual("badValues1 component 1", ComponentReader.components_with_errors.First());
+
+            Sweet.lollipop = new Lollipop();
+            badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "badValues2.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Sweet.lollipop.input_files.Add(badValues);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
+
+            Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(0, badValues.reader.final_components.Count());
+            Assert.AreEqual(1, ComponentReader.components_with_errors.Count);
+            Assert.AreEqual("badValues2 component 2", ComponentReader.components_with_errors.First());
         }
 
     }

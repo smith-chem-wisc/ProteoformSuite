@@ -26,8 +26,10 @@ namespace ProteoformSuiteInternal
         public double reported_delta_mass { get; set; } // the difference between the mass of the compound and the highest intensity component in the window
         public double relative_abundance { get; set; }
         public double fract_abundance { get; set; }
-        public string scan_range { get; set; }
-        public string rt_range { get; set; }
+        public int min_scan { get; set; }
+        public int max_scan { get; set; }
+        public double min_rt { get; set; }
+        public double max_rt { get; set; }
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public List<Component> incorporated_missed_monoisotopics = new List<Component>();
@@ -112,21 +114,30 @@ namespace ProteoformSuiteInternal
 
         public Component(List<string> cellStrings, InputFile input_file) // this is used when we read stored data from previous computation.
         {
-            this.id = Convert.ToInt32(cellStrings[0]).ToString();
             this.input_file = input_file;
-            this.id = input_file.UniqueId.ToString() + "_" + Convert.ToInt32(cellStrings[0]);
-            this.reported_monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
-            this.weighted_monoisotopic_mass = Convert.ToDouble(cellStrings[1]); // this will get immediately replaced and updated as charge states are added.
-            this.intensity_reported = Convert.ToDouble(cellStrings[2]);
-            this.num_charge_states = (Convert.ToInt32(cellStrings[3]));
-            this.num_detected_intervals = Convert.ToInt32(cellStrings[4]);
-            this.reported_delta_mass = Convert.ToDouble(cellStrings[5]);
-            this.relative_abundance = Convert.ToDouble(cellStrings[6]);
-            this.fract_abundance = Convert.ToDouble(cellStrings[7]);
-            this.scan_range = cellStrings[8];
-            this.rt_range = cellStrings[9];
-            this.rt_apex = Convert.ToDouble(cellStrings[10]);
-            this.intensity_sum = Convert.ToDouble(cellStrings[2]); // this needs to be fixed.
+            this.id = input_file.UniqueId.ToString() + "_" + cellStrings[0];
+            this.reported_monoisotopic_mass = Double.TryParse(cellStrings[1], out double d) ? d : 0;
+            this.weighted_monoisotopic_mass = reported_monoisotopic_mass ; // this will get immediately replaced and updated as charge states are added.
+            this.intensity_reported = Double.TryParse(cellStrings[2], out d) ? d : 0;
+            this.num_charge_states = Int32.TryParse(cellStrings[3], out int i) ? i : 0;
+            this.num_detected_intervals = Int32.TryParse(cellStrings[4], out i) ? i : 0;
+            this.reported_delta_mass = Double.TryParse(cellStrings[5], out d) ? d : 0;
+            this.relative_abundance = Double.TryParse(cellStrings[6], out d) ? d : 0;
+            this.fract_abundance = Double.TryParse(cellStrings[7], out d) ? d : 0;
+            string[] scan_range = cellStrings[8].Split('-');
+            string[] rt_range = cellStrings[9].Split('-');
+            if(scan_range.Length == 2)
+            {
+                this.min_scan = Int32.TryParse(scan_range[0], out i) ? i : 0;
+                this.max_scan = Int32.TryParse(scan_range[1], out i) ? i : 0;
+            }
+            if(rt_range.Length == 2)
+            {
+                this.min_rt = Double.TryParse(rt_range[0], out d) ? d : 0;
+                this.max_rt = Double.TryParse(rt_range[1], out d) ? d : 0;
+            }
+            this.rt_apex = Double.TryParse(cellStrings[10], out d) ? d : 0;
+            this.intensity_sum = intensity_reported;
             this.accepted = true;
             this.charge_states = new List<ChargeState>();
         }

@@ -109,12 +109,23 @@ namespace ProteoformSuiteGUI
             neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
         }
 
+        public void enable_quantificationToolStripMenuItem(bool setting)
+        {
+            quantificationToolStripMenuItem.Enabled = setting;
+        }
+
+        public void enable_topDownToolStripMenuItem(bool setting)
+        {
+            topdownResultsToolStripMenuItem.Enabled = setting;
+        }
+
         #endregion RESULTS TOOL STRIP Public Method
 
         #region RESULTS TOOL STRIP Private Methods
 
         private void LoadResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            loadResults.InitializeParameterSet();
             showForm(loadResults);
         }
 

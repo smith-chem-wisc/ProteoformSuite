@@ -118,19 +118,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public bool Quantitative
-        {
-            get
-            {
-                return file.quantitative;
-            }
-            set
-            {
-                Sweet.change_file(file, file.quantitative, nameof(file.quantitative), file.quantitative.ToString(), value.ToString());
-                file.quantitative = value;
-            }
-        }
-
         public Labeling Labeling
         {
             get
@@ -203,7 +190,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(complete_path)) { return "File Path"; }
             if (property_name == nameof(biological_replicate)) { return "Biological Replicate"; }
             if (property_name == nameof(TechnicalReplicate)) { return "Technical Replicate"; }
-            if (property_name == nameof(lt_condition)) { return (Sweet.lollipop.neucode_labeled && !dgv_purposes.Contains(Purpose.CalibrationIdentification) && !dgv_purposes.Contains(Purpose.RawFile)) ? "NeuCode Light Condition" : "Condition"; }
+            if (property_name == nameof(lt_condition)) { return (Sweet.lollipop.neucode_labeled && !dgv_purposes.Contains(Purpose.CalibrationIdentification) && !dgv_purposes.Contains(Purpose.SpectraFile)) ? "NeuCode Light Condition" : "Condition"; }
             if (property_name == nameof(hv_condition)) { return "NeuCode Heavy Condition"; }
             if (property_name == nameof(ContaminantDB)) { return "Contaminant Database"; }
             return null;
@@ -211,14 +198,13 @@ namespace ProteoformSuiteGUI
 
         private static bool visible(string property_name, bool current, IEnumerable<Purpose> dgv_purposes)
         {
-            if (property_name == nameof(Labeling)) { return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
-            if (property_name == nameof(biological_replicate)) { return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
-            if (property_name == nameof(Fraction)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
-            if (property_name == nameof(TechnicalReplicate)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
-            if (property_name == nameof(lt_condition)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile); }
+            if (property_name == nameof(Labeling)) { return false; }
+            if (property_name == nameof(biological_replicate)) { return dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.SpectraFile); }
+            if (property_name == nameof(Fraction)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.SpectraFile); }
+            if (property_name == nameof(TechnicalReplicate)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.SpectraFile); }
+            if (property_name == nameof(lt_condition)) { return dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.SpectraFile); }
             if (property_name == nameof(hv_condition)) { return Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification); }
             if (property_name == nameof(ContaminantDB)) { return dgv_purposes.Contains(Purpose.ProteinDatabase); }
-            if (property_name == nameof(Quantitative)) { return dgv_purposes.Contains(Purpose.RawFile); }
             return current;
         }
 

@@ -42,21 +42,16 @@ namespace ProteoformSuiteGUI
             (MdiParent as ProteoformSweet).quantification.InitializeConditionsParameters();
             (MdiParent as ProteoformSweet).aggregatedProteoforms.InitializeParameterSet();
 
-            if (cb_deconvolute.Checked)
+            Parallel.Invoke
+            (
+                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
+                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
+            );
+            if (ComponentReader.components_with_errors.Count > 0)
             {
-                Parallel.Invoke
-                (
-                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => !f.quantitative).ToList(), Sweet.lollipop.raw_experimental_components, Purpose.RawFile, true),
-                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.quantitative).ToList(), Sweet.lollipop.raw_quantification_components, Purpose.RawFile, true)
-                );
-            }
-            else
-            {
-                Parallel.Invoke
-                (
-                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
-                    () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
-                );
+                MessageBox.Show("Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors));
+                ClearListsTablesFigures(true);
+                return;
             }
 
             FillTablesAndCharts();
@@ -64,8 +59,7 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0 
-                || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.RawFile).Where(f => f.quantitative).Count() > 0;
+            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
             nUD_min_RT.Value = (decimal)Sweet.lollipop.min_RT;
             nUD_max_RT.Value = (decimal)Sweet.lollipop.max_RT;

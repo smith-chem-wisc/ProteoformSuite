@@ -407,9 +407,12 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Aggregated Observation ID", typeof(string));
             results.Columns.Add("SGD ID", typeof(string));
             results.Columns.Add("Gene Name", typeof(string));
+            results.Columns.Add("GeneID", typeof(string));
             results.Columns.Add("Accessions", typeof(string));
             results.Columns.Add("PTM Type", typeof(string));
             results.Columns.Add("Begin and End", typeof(string));
+            results.Columns.Add("UniProt-Annotated Modifications");
+            results.Columns.Add("Potentially Novel Modifications");
             results.Columns.Add("Mass Error", typeof(double));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
@@ -438,11 +441,14 @@ namespace ProteoformSuiteInternal
                     e.accession,
                     e.linked_proteoform_references.Last().gene_name.ordered_locus,
                     e.linked_proteoform_references.Last().gene_name.primary,
+                    String.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()),
                     String.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()),
                     e.ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
                         String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),
                     e.begin + " to " + e.end,
+                    e.uniprot_mods,
+                    e.novel_mods,
                     e.mass_error,
                     e.modified_mass,
                     e.agg_rt,
