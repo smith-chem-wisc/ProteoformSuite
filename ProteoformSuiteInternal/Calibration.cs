@@ -127,12 +127,14 @@ namespace ProteoformSuiteInternal
                 Component matching_component = null;
                 if (identification.filename != raw_file.filename) //if calibrating across files find component with matching mass and retention time
                 {
+                    //NOTE: only looking at components from same raw file... looking for components corresponding to td hits from any files w/ same br, fraction, condition however. 
                     //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes same br, tr, fraction, condition (same file!)
                     //if neucode labled, look for the light component mass (loaded in...)
                     List<Component> potential_matches = Sweet.lollipop.calibration_components.
                         Where(c => c.input_file.lt_condition == raw_file.lt_condition
-                        && (Sweet.lollipop.neucode_labeled || c.input_file.biological_replicate == raw_file.biological_replicate)
-                        && c.input_file.fraction == raw_file.fraction).ToList();
+                        && c.input_file.biological_replicate == raw_file.biological_replicate
+                        && c.input_file.fraction == raw_file.fraction
+                        && c.input_file.technical_replicate == raw_file.technical_replicate).ToList();
                     if (potential_matches.Count > 0)
                     {
                         matching_component = potential_matches.Where(c =>
@@ -158,10 +160,6 @@ namespace ProteoformSuiteInternal
                         rt = myMsDataFile.GetOneBasedScan(scanNumber + 1).RetentionTime;
                     }
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
-                }
-                else if (identification.technical_replicate != raw_file.technical_replicate)
-                {
-                    continue;
                 }
 
                 var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
@@ -324,13 +322,13 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private RegressionForestModel GetRandomForestModel(List<(double[] xValues, double yValue)> myInputs, int randomSeed = 42)
+        private RegressionForestModel GetRandomForestModel(List<(double[] xValues, double yValue)> myInputs)
         {
             // create a machine learner
             var learner = new RegressionRandomForestLearner();
             var metric = new MeanSquaredErrorRegressionMetric();
 
-            var splitter = new RandomTrainingTestIndexSplitter<double>(trainingPercentage: 0.70, seed: randomSeed);
+            var splitter = new RandomTrainingTestIndexSplitter<double>(trainingPercentage: 0.70);
 
             // put x values into a matrix and y values into a 1D array
             var myXValueMatrix = new F64Matrix(myInputs.Count, myInputs.First().xValues.Length);
@@ -359,7 +357,7 @@ namespace ProteoformSuiteInternal
                 new ParameterBounds(min: 0.7, max: 1.5, transform: Transform.Linear)
             };
 
-            var validationSplit = new RandomTrainingTestIndexSplitter<double>(trainingPercentage: 0.70, seed: randomSeed)
+            var validationSplit = new RandomTrainingTestIndexSplitter<double>(trainingPercentage: 0.70)
                 .SplitSet(myXValueMatrix, myYValues);
 
             // define minimization metric
@@ -373,7 +371,6 @@ namespace ProteoformSuiteInternal
                     featuresPrSplit: (int)p[3],
                     minimumInformationGain: p[4],
                     subSampleRatio: p[5],
-                    seed: randomSeed,
                     runParallel: false);
 
                 var candidateModel = candidateLearner.Learn(validationSplit.TrainingSet.Observations,
@@ -401,7 +398,6 @@ namespace ProteoformSuiteInternal
                     featuresPrSplit: (int)best[3],
                     minimumInformationGain: best[4],
                     subSampleRatio: best[5],
-                    seed: randomSeed,
                     runParallel: true);
 
             // learn final model with optimized parameters

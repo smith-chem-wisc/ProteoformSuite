@@ -63,12 +63,12 @@ namespace ProteoformSuiteGUI
             get { return t.correct_id; }
         }
 
-        public string theoretical_accession
+        public string PS_accession
         {
             get { return t.linked_proteoform_references.First().accession.Split('_')[0]; }
         }
 
-        public string theoretical_ptm_description
+        public string PS_ptm_description
         {
             get { return t.ptm_description; }
         }
@@ -173,8 +173,8 @@ namespace ProteoformSuiteGUI
             if (name == nameof(retentionTime)) { return "Retention Time"; }
             if (name == nameof(theoretical_mass)) { return "Theoretical Mass"; }
             if (name == nameof(correct_id)) { return "Correct ID"; }
-            if (name == nameof(theoretical_accession)) { return "Theoretical Accession"; }
-            if (name == nameof(theoretical_ptm_description)) { return "Theoretical PTM Description"; }
+            if (name == nameof(PS_accession)) { return "Proteoform Suite Accession"; }
+            if (name == nameof(PS_ptm_description)) { return "Proteoform Suite PTM Description"; }
             if (name == nameof(theoretical_begin)) { return "Theoretical Begin"; }
             if (name == nameof(theoretical_end)) { return "Theoretical End"; }
             if (name == nameof(best_c_score)) { return "Best Hit C-Score"; }
@@ -191,9 +191,9 @@ namespace ProteoformSuiteGUI
         {
             if (!identified_topdown)
             {
-                if (property_name == nameof(theoretical_accession)) { return false; }
+                if (property_name == nameof(PS_accession)) { return false; }
                 if (property_name == nameof(correct_id)) { return false; }
-                if (property_name == nameof(theoretical_ptm_description)) { return false; }
+                if (property_name == nameof(PS_ptm_description)) { return false; }
                 if (property_name == nameof(theoretical_begin)) { return false; }
                 if (property_name == nameof(theoretical_end)) { return false; }
                 if (property_name == nameof(family_id)) { return false; }
