@@ -329,7 +329,7 @@ namespace ProteoformSuiteInternal
                             accession + "_P" + ptm_set_counter.ToString(),
                             prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
                             seq,
-                            new ProteinWithGoTerms[] { prot },
+                            (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
                             unmodified_mass,
                             lysine_count,
                             ptm_set,
@@ -377,8 +377,6 @@ namespace ProteoformSuiteInternal
             {
                 if (!new_theoreticals.Any(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)))
                 {
-                    List<ProteinWithGoTerms> proteins = new List<ProteinWithGoTerms>() { prot };
-                    if (new_theoreticals.Count > 0) proteins.AddRange(new_theoreticals.First().ExpandedProteinList);
                     //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
                     PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
                     TheoreticalProteoform t =
@@ -386,7 +384,7 @@ namespace ProteoformSuiteInternal
                         accession + "_P" + ptm_set_counter.ToString(),
                         prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
                         seq,
-                        proteins.Distinct().ToArray(),
+                        (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
                         unmodified_mass,
                         lysine_count,
                         ptm_set,
