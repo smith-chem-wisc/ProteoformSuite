@@ -22,7 +22,6 @@ namespace ProteoformSuiteInternal
         //Modifications
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-        public List<ModificationWithMass> modsFolderMods = new List<ModificationWithMass>();
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
         public Dictionary<ModificationWithMass, UnlocalizedModification> unlocalized_lookup = new Dictionary<ModificationWithMass, UnlocalizedModification>();
 
@@ -32,6 +31,10 @@ namespace ProteoformSuiteInternal
 
         //Settings
         public bool limit_triples_and_greater = true;
+
+        //Constants
+        private double ptmset_max_number_of_a_kind = 3;
+
 
         public Dictionary<char, double> aaIsotopeMassList;
 
@@ -72,7 +75,6 @@ namespace ProteoformSuiteInternal
                 if (filename.EndsWith("variable.txt"))
                     variableModifications = new_mods;
                 all_known_modifications.AddRange(new_mods);
-                modsFolderMods.AddRange(new_mods);
             }
 
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
@@ -86,7 +88,7 @@ namespace ProteoformSuiteInternal
 
             //this is for ptmsets --> used in RELATIONS
             all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, all_mods_with_mass, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2).ToList();
-            for (int i = 2; i < Math.Max(2, Sweet.lollipop.max_ptms) + 1; i++) // the method above doesn't make 2 or more of a kind, so we make it here
+            for (int i = 2; i < Math.Max(ptmset_max_number_of_a_kind, Sweet.lollipop.max_ptms) + 1; i++) // the method above doesn't make 2 or more of a kind, so we make it here
             {
                 all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2)));
             }

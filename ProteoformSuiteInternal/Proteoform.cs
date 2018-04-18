@@ -161,7 +161,6 @@ namespace ProteoformSuiteInternal
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
 
                 int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m.modification, out UnlocalizedModification x) ? x.ptm_count : 1) - 1); // penalize additional PTMs
-
                 foreach (ModificationWithMass m in mods_in_set)
                 {
                     int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue(m.monoisotopicMass, out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
@@ -182,19 +181,14 @@ namespace ProteoformSuiteInternal
                     bool could_be_n_term_degradation = m.modificationType == "Missing" && motif_matches_n_terminus;
                     bool could_be_c_term_degradation = m.modificationType == "Missing" && motif_matches_c_terminus;
 
-                    //if selected, going to only allow mods in Mods folder (type "Common"), Missing, Missed Monoisotopic, or Unmodified
-                    //all going to be ranked the same (tie breaker is mass difference between mod set and observed delta-mass)
+                    //if selected, going to only allow mods in Mods folder (type "Common"), Missing, Missed Monoisotopic, known mods for that protein, or Unmodified
                     if (Sweet.lollipop.only_assign_common_or_known_mods && final_assignment)
                     {
-                        if (m.monoisotopicMass == 0 || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) || m.modificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.modificationType == "Deconvolution Error")
+                        if (!(m.monoisotopicMass == 0 || m.modificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.modificationType == "Deconvolution Error" || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m)))
                         {
-                            rank_sum = 1;
+                            rank_sum = Int32.MaxValue;
+                            break;
                         }
-                        else
-                        {
-                            rank_sum += Int32.MaxValue;
-                        }
-                        continue;
                     }
 
                     // In order of likelihood:
@@ -220,7 +214,9 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
-                        rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ?
+                        rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m)  ||
+                            known_mods.Select(mod => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod, out UnlocalizedModification um) ? um.id : mod.id).Contains(Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification um2) ? um2.id : m.id) 
+                                ?
                             mod_rank :
                             mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                     }
@@ -285,7 +281,7 @@ namespace ProteoformSuiteInternal
                 }
                 e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
             }
-            //if already been assigned -- check if gene name != this gene name ==> ambiguous and same length path
+            //if already been assigned -- check if gene name != this gene name ==> ambiguous
             else if (!e.topdown_id && (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
             {
                 e.ambiguous = true;

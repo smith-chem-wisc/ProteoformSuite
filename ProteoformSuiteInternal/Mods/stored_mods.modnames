@@ -377,9 +377,9 @@ Methyl on Q	Methyl	1	False
 Methyl on N	Methyl	1	False
 Methyl on S	Methyl	1	False
 Methyl on D	Methy	1	False
-Phospho on S	Phospho on S	1	False
-Phospho on T	Phospho on T	1	False
-Phospho on Y	Phospho on Y	1	False
+Phospho on S	Phospho	1	False
+Phospho on T	Phospho	1	False
+Phospho on Y	Phospho	1	False
 Phospho, Phospho, Phospho on S	Phospho, Phospho, Phospho	3	False
 Phospho, Phospho, Phospho on T	Phospho, Phospho, Phospho	3	False
 Phospho, Phospho, Phospho on Y	Phospho, Phospho, Phospho	3	False
@@ -407,4 +407,4 @@ Missing Serine (S)	Missing Serine (S)	1	False
 Missing Alanine (A)	Missing Alanine (A)	1	False
 Missing Glycine (G)	Missing Glycine (G)	1	False
 Oxidation of M	Ox	1	False
-Unmodified	Unmodified	1	False
+Unmodified	Unmodified	0	False
