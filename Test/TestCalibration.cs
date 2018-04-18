@@ -129,6 +129,7 @@ namespace Test
             Sweet.lollipop.calibrate_raw_files = false; //shouldn't cali raw files!
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.neucode_labeled = false;
+
             int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.SpectraFile)).First());
             int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
             int cali_td_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationTopDown)).First());
@@ -204,8 +205,9 @@ namespace Test
             foreach (ChargeState cs in calibrated_components.SelectMany(c => c.charge_states))
             {
               Assert.True(Sweet.lollipop.file_mz_correction.Values.Contains(Math.Round(cs.mz_centroid, 5)));
-              Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity));
             }
+            //sometimes have a cs that doesn't change - want to make sure not ALL of them didn't...
+            Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(cs => calibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity)));
         }
 
         [Test]
@@ -298,8 +300,9 @@ namespace Test
             foreach (ChargeState cs in calibrated_components.SelectMany(c => c.charge_states))
             {
                 Assert.True(Sweet.lollipop.file_mz_correction.Values.Contains(Math.Round(cs.mz_centroid, 5)));
-                Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity));
             }
+            //sometimes have a cs that doesn't change - want to make sure not ALL of them didn't...
+            Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(cs => calibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity)));
         }
 
         [Test]

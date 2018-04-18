@@ -234,7 +234,7 @@ namespace ProteoformSuiteGUI
             {
                 if (selected_family.experimental_proteoforms.Count > 0)
                 {
-                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)));
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Where(e => !e.topdown_id).Select(e => new DisplayExperimentalProteoform(e)));
                     DisplayExperimentalProteoform.FormatAggregatesTable(dgv_proteoform_family_members);
                 }
                 else
