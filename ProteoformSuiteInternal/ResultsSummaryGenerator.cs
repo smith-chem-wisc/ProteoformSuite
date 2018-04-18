@@ -485,13 +485,15 @@ namespace ProteoformSuiteInternal
         {
             DataTable results = new DataTable();
             results.Columns.Add("PFR Accession", typeof(string));
-            results.Columns.Add("Theoretical Accession", typeof(string));
+            results.Columns.Add("Proteoform Suite Accession", typeof(string));
             results.Columns.Add("Top-Down Full Accession", typeof(string));
             results.Columns.Add("Top-Down Accession", typeof(string));
-            results.Columns.Add("Theoretical Description", typeof(string));
-            results.Columns.Add("Theoretical Begin and End", typeof(string));
+            results.Columns.Add("Proteoform Suite GeneID", typeof(string));
+            results.Columns.Add("Top-Down GeneID", typeof(string));
+            results.Columns.Add("Proteoform Suite Description", typeof(string));
+            results.Columns.Add("Proteoform Suite Begin and End", typeof(string));
             results.Columns.Add("Top-Down Begin and End", typeof(string));
-            results.Columns.Add("Theoretical PTM Type", typeof(string));
+            results.Columns.Add("Proteoform Suite PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type", typeof(string));
             results.Columns.Add("Top-Down PTM Type Unlocalized", typeof(string));
             results.Columns.Add("Proteoform Suite Mass Error", typeof(string));
@@ -513,6 +515,8 @@ namespace ProteoformSuiteInternal
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).accession,
                     td.accession,
                     td.accession.Split('_')[0],
+                    td.linked_proteoform_references == null ? "N/A" : String.Join("; ", (td.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()),
+                    td.geneID,
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).description,
                     td.linked_proteoform_references == null ? "N/A" : td.begin + " to " + td.end,
                     td.topdown_begin + " to " + td.topdown_end,

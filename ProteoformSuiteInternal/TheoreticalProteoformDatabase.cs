@@ -22,6 +22,7 @@ namespace ProteoformSuiteInternal
         //Modifications
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
+        public List<ModificationWithMass> modsFolderMods = new List<ModificationWithMass>();
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
         public Dictionary<ModificationWithMass, UnlocalizedModification> unlocalized_lookup = new Dictionary<ModificationWithMass, UnlocalizedModification>();
 
@@ -71,6 +72,7 @@ namespace ProteoformSuiteInternal
                 if (filename.EndsWith("variable.txt"))
                     variableModifications = new_mods;
                 all_known_modifications.AddRange(new_mods);
+                modsFolderMods.AddRange(new_mods);
             }
 
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
@@ -354,7 +356,8 @@ namespace ProteoformSuiteInternal
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
                 if (candidate_theoreticals.Count > 0)
                 {
-                    topdown.gene_name = new GeneName(candidate_theoreticals.First().GeneNames);
+                    topdown.gene_name = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
+                    topdown.geneID = String.Join("; ", candidate_theoreticals.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
                         int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);

@@ -97,7 +97,7 @@ namespace ProteoformSuiteInternal
                         null); //Experimental without theoretical reference
 
                 List<PtmSet> possible_additions = r.peak.possiblePeakAssignments.Where(p => Math.Abs(p.mass - deltaM) <= 1).ToList(); // EE relations have PtmSets around both positive and negative deltaM, so remove the ones around the opposite of the deltaM of interest
-                PtmSet best_addition = generate_possible_added_ptmsets(possible_additions, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1)
+                PtmSet best_addition = generate_possible_added_ptmsets(possible_additions, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, 1, true)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
@@ -151,7 +151,7 @@ namespace ProteoformSuiteInternal
         }
 
         public List<PtmSet> generate_possible_added_ptmsets(List<PtmSet> possible_peak_assignments, double deltaM, double mass_tolerance, List<ModificationWithMass> all_mods_with_mass,
-            TheoreticalProteoform theoretical_base, int additional_ptm_penalty)
+            TheoreticalProteoform theoretical_base, int additional_ptm_penalty, bool final_assignment)
         {
             List<ModificationWithMass> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
@@ -166,15 +166,9 @@ namespace ProteoformSuiteInternal
                 {
                     int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue(m.monoisotopicMass, out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
 
-                    if (m.monoisotopicMass == 0)
-                    {
-                        rank_sum += mod_rank;
-                        continue;
-                    }
-
                     bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.ToString() == "M" && theoretical_base.begin == 2 && this.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
-                    bool motif_matches_n_terminus = begin >= 1 && begin - 1 < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[begin - 1].ToString();
-                    bool motif_matches_c_terminus = end >= 1 && end - 1 < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[end - 1].ToString();
+                    bool motif_matches_n_terminus = this.begin - theoretical_base.begin  >= 0 && this.begin - theoretical_base.begin < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[this.begin - theoretical_base.begin].ToString();
+                    bool motif_matches_c_terminus = this.end - this.begin >= 0 && this.end - this.begin < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[this.end - this.begin].ToString();
 
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
@@ -187,11 +181,33 @@ namespace ProteoformSuiteInternal
 
                     bool could_be_n_term_degradation = m.modificationType == "Missing" && motif_matches_n_terminus;
                     bool could_be_c_term_degradation = m.modificationType == "Missing" && motif_matches_c_terminus;
-                    rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
+
+                    //if selected, going to only allow mods in Mods folder (type "Common"), Missing, Missed Monoisotopic, or Unmodified
+                    //all going to be ranked the same (tie breaker is mass difference between mod set and observed delta-mass)
+                    if (Sweet.lollipop.only_assign_common_or_known_mods && final_assignment)
+                    {
+                        if (m.monoisotopicMass == 0 || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) || m.modificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.modificationType == "Deconvolution Error")
+                        {
+                            rank_sum = 1;
+                        }
+                        else
+                        {
+                            rank_sum += Int32.MaxValue;
+                        }
+                        continue;
+                    }
 
                     // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, other degradations and methionine cleavage are weighted mid-level
                     // 2. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
+                    if (m.monoisotopicMass == 0)
+                    {
+                        rank_sum += mod_rank;
+                        continue;
+                    }
+
+                    rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
+
                     if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                     {
                         rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
