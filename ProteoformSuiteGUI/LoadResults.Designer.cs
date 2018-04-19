@@ -39,8 +39,6 @@
             this.calib_stand_splitContainer = new System.Windows.Forms.SplitContainer();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
-            this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
-            this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
@@ -98,7 +96,6 @@
             this.calib_stand_splitContainer.Panel1.SuspendLayout();
             this.calib_stand_splitContainer.Panel2.SuspendLayout();
             this.calib_stand_splitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
             this.param_splitcontainer.Panel1.SuspendLayout();
             this.param_splitcontainer.Panel2.SuspendLayout();
@@ -250,8 +247,6 @@
             // 
             // calib_stand_splitContainer.Panel2
             // 
-            this.calib_stand_splitContainer.Panel2.Controls.Add(this.nud_randomSeed);
-            this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_useRandomSeed);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_td_files);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_raw_files);
             this.calib_stand_splitContainer.Size = new System.Drawing.Size(483, 98);
@@ -283,44 +278,6 @@
             this.rb_unlabeled.Text = "Unlabeled";
             this.rb_unlabeled.UseVisualStyleBackColor = true;
             this.rb_unlabeled.CheckedChanged += new System.EventHandler(this.rb_unlabeled_CheckedChanged);
-            // 
-            // nud_randomSeed
-            // 
-            this.nud_randomSeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_randomSeed.Location = new System.Drawing.Point(128, 2);
-            this.nud_randomSeed.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Name = "nud_randomSeed";
-            this.nud_randomSeed.Size = new System.Drawing.Size(54, 20);
-            this.nud_randomSeed.TabIndex = 59;
-            this.nud_randomSeed.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_randomSeed.Visible = false;
-            this.nud_randomSeed.ValueChanged += new System.EventHandler(this.nud_randomSeed_ValueChanged);
-            // 
-            // cb_useRandomSeed
-            // 
-            this.cb_useRandomSeed.AutoSize = true;
-            this.cb_useRandomSeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_useRandomSeed.Location = new System.Drawing.Point(3, 4);
-            this.cb_useRandomSeed.Name = "cb_useRandomSeed";
-            this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
-            this.cb_useRandomSeed.TabIndex = 58;
-            this.cb_useRandomSeed.Text = "Use Random Seed:";
-            this.cb_useRandomSeed.UseVisualStyleBackColor = true;
-            this.cb_useRandomSeed.Visible = false;
-            this.cb_useRandomSeed.Click += new System.EventHandler(this.cb_useRandomSeed_CheckedChanged);
             // 
             // cb_calibrate_td_files
             // 
@@ -860,7 +817,6 @@
             this.calib_stand_splitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).EndInit();
             this.calib_stand_splitContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_randomSeed)).EndInit();
             this.param_splitcontainer.Panel1.ResumeLayout(false);
             this.param_splitcontainer.Panel1.PerformLayout();
             this.param_splitcontainer.Panel2.ResumeLayout(false);
@@ -944,8 +900,6 @@
         private System.Windows.Forms.Button bt_deconvolute;
         private System.Windows.Forms.Button bt_calibrate;
         private System.Windows.Forms.SplitContainer calib_stand_splitContainer;
-        private System.Windows.Forms.NumericUpDown nud_randomSeed;
-        private System.Windows.Forms.CheckBox cb_useRandomSeed;
         private System.Windows.Forms.CheckBox cb_calibrate_raw_files;
         private System.Windows.Forms.GroupBox fullrun_groupbox;
         private System.Windows.Forms.SplitContainer fullrun_splitContainer;

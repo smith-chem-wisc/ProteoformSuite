@@ -37,8 +37,6 @@ namespace ProteoformSuiteGUI
             //tb_resultsFolder.Text = Sweet.lollipop.results_folder;
             rb_neucode.Checked = Sweet.lollipop.neucode_labeled;
             rb_unlabeled.Checked = !rb_neucode.Checked;
-            nud_randomSeed.Value = Sweet.lollipop.calibration_random_seed;
-            cb_useRandomSeed.Checked = Sweet.lollipop.calibration_use_random_seed;
             cb_calibrate_td_files.Checked = Sweet.lollipop.calibrate_td_files;
             cb_calibrate_raw_files.Checked = Sweet.lollipop.calibrate_raw_files;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
@@ -162,10 +160,8 @@ namespace ProteoformSuiteGUI
 
 
                 bt_calibrate.Visible = false;
-                cb_useRandomSeed.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                nud_randomSeed.Visible = false;
                 bt_deconvolute.Visible = false;
                 bt_stepthru.Visible = true;
                 bt_fullrun.Visible = true;
@@ -191,10 +187,8 @@ namespace ProteoformSuiteGUI
             {
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
                 bt_calibrate.Visible = true;
-                cb_useRandomSeed.Visible = true;
                 cb_calibrate_td_files.Visible = true;
                 cb_calibrate_raw_files.Visible = true;
-                nud_randomSeed.Visible = true;
                 bt_deconvolute.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
@@ -229,10 +223,8 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.Enabled = false;
 
                 bt_calibrate.Visible = false;
-                cb_useRandomSeed.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                nud_randomSeed.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
                 bt_calibrate.Visible = false;
@@ -610,16 +602,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Cell Validation Methods
-
-        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.calibration_random_seed = (int)nud_randomSeed.Value;
-        }
-
-        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.calibration_use_random_seed = cb_useRandomSeed.Checked;
-        }
 
         private void cb_calibrate_raw_files_CheckedChanged(object sender, EventArgs e)
         {
