@@ -193,37 +193,37 @@ namespace ProteoformSuiteInternal
             int successfully_deconvoluted_files = 0;
 
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.RawFile)) {
-                    
-                    Process proc = new Process();
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    string input = f.complete_path;
-                    string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
-                    string promexlocation = directory + @"\ProMex";
-                    List<int> ms1ft_featureIDs = new List<int>();
-                    List<double> ms1ft_likelihoods = new List<double>();
+
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                string input = f.complete_path;
+                string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
+                string promexlocation = directory + @"\ProMex";
+                List<int> ms1ft_featureIDs = new List<int>();
+                List<double> ms1ft_likelihoods = new List<double>();
 
                 if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
-                    {
-                        startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
-                    }
-                    else
-                    {
-                        return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
-                    }
+                {
+                    startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                }
+                else
+                {
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                }
 
-                    startInfo.UseShellExecute = false;
-                    startInfo.RedirectStandardInput = true;
-                    startInfo.RedirectStandardOutput = false;
-                    startInfo.CreateNoWindow = true;
-                    proc.StartInfo = startInfo;
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = false;
+                startInfo.CreateNoWindow = true;
+                proc.StartInfo = startInfo;
 
-                    proc.Start();
+                proc.Start();
 
-                    proc.StandardInput.WriteLine("cd " + promexlocation);
+                proc.StandardInput.WriteLine("cd " + promexlocation);
 
-                    proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
-                    proc.StandardInput.Close();
-                    proc.WaitForExit();
+                proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
+                proc.StandardInput.Close();
+                proc.WaitForExit();
                 proc.Close();
 
                 if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
@@ -318,37 +318,61 @@ namespace ProteoformSuiteInternal
                     }
                     workbook.SaveAs(filelocation + "_deconv.xlsx");
                 }
-                    if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
-                    {
-                        File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
-                    }
-                    if (File.Exists(Path.Combine(filelocation + ".pbf")))
-                    {
-                        File.Delete(Path.Combine(filelocation + ".pbf"));
-                    }
+                if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
+                {
+                    File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
+                }
+                //if (File.Exists(Path.Combine(filelocation + ".pbf")))
+                //{
+                //    File.Delete(Path.Combine(filelocation + ".pbf"));
+                //}
 
-                    if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
-                    {
-                        successfully_deconvoluted_files++;
-                    }
+                if (File.Exists(Path.Combine(filelocation + "_deconv.xlsx")))
+                {
+                    successfully_deconvoluted_files++;
+                }
                 using (StreamWriter writer = new StreamWriter(filelocation + "_parameters.txt", false))
                 {
                     writer.WriteLine("Minimum Charge: " + mincharge + " Maximum Charge: " + maxcharge + " Minimum Retention Time: " + minRT + " Maximum Retention Time: " + maxRT);
                 }
             }
-                if (successfully_deconvoluted_files == 1)
-                {
-                    return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";
-                }
-                else if (successfully_deconvoluted_files > 1)
-                {
-                    return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw files.";
-                }
-                else
-                {
-                    return "No files deconvoluted. Ensure correct file locations and try again.";
-                }
+            if (successfully_deconvoluted_files == 1)
+            {
+                return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";
+            }
+            else if (successfully_deconvoluted_files > 1)
+            {
+                return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw files.";
+            }
+            else
+            {
+                return "No files deconvoluted. Ensure correct file locations and try again.";
+            }
         }
+
+        public static string[] searchmode = new string[]
+        {
+            "Multiple Internal Cleavages",
+            "Single Internal Cleavage",
+            "No Internal Cleavage"
+        };
+
+        public static string[] tagsearch = new string[]
+        {
+            "Skip",
+            "Include"
+        };
+
+        public static string[] activationmethods = new string[]
+        {
+            "CID",
+            "ETD",
+            "HCD",
+            "ECD",
+            "PQD",
+            "UVPD",
+            "Unknown"
+        };
 
 
         //public void convertxml(string filelocation)
@@ -522,7 +546,7 @@ namespace ProteoformSuiteInternal
 
         #region MSPathFinderT
 
-        public string MSPathFinderT(string directory)
+        public string MSPathFinderT(string directory, string outputlocation, int searchmode, int tagsearch, double precursortolerance, double fragmentiontolerance, int activationmethod)
         {
             int successfully_analyzed_files = 0;
 
@@ -558,18 +582,123 @@ namespace ProteoformSuiteInternal
 
                 proc.StandardInput.WriteLine("cd " + mspathlocation);
 
-                proc.StandardInput.WriteLine("MSPathFinderT.exe " + "-s " + input + " " + "-d " + databaselocation);
+                if (outputlocation != null)
+                {
+                    proc.StandardInput.WriteLine("MSPathFinderT.exe" + " -s " + input + " -d " + databaselocation + " -o " + outputlocation + " -m " + searchmode + " -tagsearch " + tagsearch + " -t " + precursortolerance + " -f " + fragmentiontolerance + " -act " + activationmethod);
+                }
+                else
+                {
+                    proc.StandardInput.WriteLine("MSPathFinderT.exe" + " -s " + input + " -d " + databaselocation + " -m " + searchmode + " -tagsearch " + tagsearch + " -t " + precursortolerance + " -f " + fragmentiontolerance + " -act " + activationmethod);
+                }
+
                 proc.StandardInput.Close();
                 proc.WaitForExit();
                 proc.Close();
-
-                successfully_analyzed_files++;
+                if (File.Exists(filelocation + ".ms1ft"))
+                {
+                    successfully_analyzed_files++;
+                }
             }
 
-            return "Successfully analyzed " + successfully_analyzed_files + " file(s).";
+            if (successfully_analyzed_files >= 1)
+            {
+                return "Successfully analyzed " + successfully_analyzed_files + " file(s).";
+            }
+            else
+            {
+                return "No files could be analzyed.";
+            }
         }
 
         #endregion MSPathFinderT
+
+        #region TOPPIC
+
+        private static IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
+
+        public static string Toppic(string directory, int maxcharge)
+        {
+            foreach (InputFile f in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile))
+            {
+                string toppiclocation = directory + @"\Toppic";
+                string databaselocation = "";
+                string input = f.complete_path;
+                string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
+                foreach (InputFile database in Sweet.lollipop.input_files.Where(database => database.purpose == Purpose.ProteinDatabase))
+                {
+                    databaselocation = database.complete_path;
+                }
+
+                //convert to .mzML
+                string elementsdir = AppDomain.CurrentDomain.BaseDirectory;
+                Loaders.LoadElements(elementsdir + @"\elements.dat");
+                myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
+                    ThermoStaticData.LoadAllStaticData(f.complete_path) :
+                    null;
+                MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, f.directory + "\\" + f.filename + ".mzML", false);
+                string mzmlfilelocation = filelocation + ".mzml";
+
+                //convert to .msalign
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+
+                if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                {
+                    startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                }
+                else
+                {
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                }
+
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = false;
+                startInfo.CreateNoWindow = true;
+                proc.StartInfo = startInfo;
+
+                proc.Start();
+
+                proc.StandardInput.WriteLine("cd " + toppiclocation);
+
+                proc.StandardInput.WriteLine("topfd.exe " + mzmlfilelocation + " -c " + maxcharge);
+                proc.StandardInput.Close();
+                proc.WaitForExit();
+                proc.Close();
+                string ms2alignlocation = filelocation + "_ms2.msalign";
+
+                //run top-down analysis
+                Process proc2 = new Process();
+                ProcessStartInfo startInfo2 = new ProcessStartInfo();
+
+                if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                {
+                    startInfo2.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                }
+                else
+                {
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                }
+
+                startInfo2.UseShellExecute = false;
+                startInfo2.RedirectStandardInput = true;
+                startInfo2.RedirectStandardOutput = false;
+                startInfo2.CreateNoWindow = true;
+                proc2.StartInfo = startInfo2;
+
+                proc2.Start();
+
+                proc2.StandardInput.WriteLine("cd " + toppiclocation);
+                Debug.WriteLine("toppic.exe " + databaselocation + " " + ms2alignlocation);
+                proc2.StandardInput.WriteLine("toppic.exe " + databaselocation + " " + ms2alignlocation);
+                proc2.StandardInput.Close();
+                proc2.WaitForExit();
+                proc2.Close();
+            }
+            return "Successfully analyzed top-down file(s).";
+        }
+
+        #endregion TOPPIC
 
         #region TOPDOWN
 

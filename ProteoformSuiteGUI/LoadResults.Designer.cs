@@ -32,10 +32,22 @@
             this.base_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.topbar_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.box_loadoptions = new System.Windows.Forms.GroupBox();
+            this.rb_topdown = new System.Windows.Forms.RadioButton();
             this.rb_deconvolution = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.box_parameters = new System.Windows.Forms.GroupBox();
+            this.panel_topdownparams = new System.Windows.Forms.Panel();
+            this.label_fragmentiontolerance = new System.Windows.Forms.Label();
+            this.label_precursortolerance = new System.Windows.Forms.Label();
+            this.nud_fragmentiontolerance = new System.Windows.Forms.NumericUpDown();
+            this.nud_precursortolerance = new System.Windows.Forms.NumericUpDown();
+            this.label_activationmethod = new System.Windows.Forms.Label();
+            this.label_tagsearch = new System.Windows.Forms.Label();
+            this.label_searchmode = new System.Windows.Forms.Label();
+            this.cmb_activationmethod = new System.Windows.Forms.ComboBox();
+            this.cmb_tagsearch = new System.Windows.Forms.ComboBox();
+            this.cmb_searchmode = new System.Windows.Forms.ComboBox();
             this.calib_stand_splitContainer = new System.Windows.Forms.SplitContainer();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
@@ -56,16 +68,17 @@
             this.label_maxcharge = new System.Windows.Forms.Label();
             this.nud_mincharge = new System.Windows.Forms.NumericUpDown();
             this.nud_maxcharge = new System.Windows.Forms.NumericUpDown();
-            this.fullrun_groupbox = new System.Windows.Forms.GroupBox();
+            this.groupbox_output = new System.Windows.Forms.GroupBox();
             this.fullrun_splitContainer = new System.Windows.Forms.SplitContainer();
             this.tb_resultsFolder = new System.Windows.Forms.TextBox();
             this.btn_browseSummarySaveFolder = new System.Windows.Forms.Button();
             this.box_start = new System.Windows.Forms.GroupBox();
-            this.panel_step = new System.Windows.Forms.Panel();
-            this.bt_stepthru = new System.Windows.Forms.Button();
             this.panel_clearresults = new System.Windows.Forms.Panel();
             this.bt_clearResults = new System.Windows.Forms.Button();
             this.panel_deconv_calib = new System.Windows.Forms.Panel();
+            this.panel_step = new System.Windows.Forms.Panel();
+            this.bt_stepthru = new System.Windows.Forms.Button();
+            this.bt_topdown = new System.Windows.Forms.Button();
             this.bt_deconvolute = new System.Windows.Forms.Button();
             this.bt_calibrate = new System.Windows.Forms.Button();
             this.panel_fullrun = new System.Windows.Forms.Panel();
@@ -84,8 +97,7 @@
             this.panel_clearbtn = new System.Windows.Forms.Panel();
             this.bt_clearFiles1 = new System.Windows.Forms.Button();
             this.cmb_loadTable1 = new System.Windows.Forms.ComboBox();
-            this.rb_topdown = new System.Windows.Forms.RadioButton();
-            this.bt_topdown = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.base_splitcontainer)).BeginInit();
             this.base_splitcontainer.Panel1.SuspendLayout();
             this.base_splitcontainer.Panel2.SuspendLayout();
@@ -96,6 +108,9 @@
             this.topbar_splitcontainer.SuspendLayout();
             this.box_loadoptions.SuspendLayout();
             this.box_parameters.SuspendLayout();
+            this.panel_topdownparams.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fragmentiontolerance)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_precursortolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).BeginInit();
             this.calib_stand_splitContainer.Panel1.SuspendLayout();
             this.calib_stand_splitContainer.Panel2.SuspendLayout();
@@ -111,15 +126,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).BeginInit();
-            this.fullrun_groupbox.SuspendLayout();
+            this.groupbox_output.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fullrun_splitContainer)).BeginInit();
             this.fullrun_splitContainer.Panel1.SuspendLayout();
             this.fullrun_splitContainer.Panel2.SuspendLayout();
             this.fullrun_splitContainer.SuspendLayout();
             this.box_start.SuspendLayout();
-            this.panel_step.SuspendLayout();
             this.panel_clearresults.SuspendLayout();
             this.panel_deconv_calib.SuspendLayout();
+            this.panel_step.SuspendLayout();
             this.panel_fullrun.SuspendLayout();
             this.box_dgv.SuspendLayout();
             this.panel_dgv.SuspendLayout();
@@ -188,6 +203,19 @@
             this.box_loadoptions.TabStop = false;
             this.box_loadoptions.Text = "1. Choose Analysis";
             // 
+            // rb_topdown
+            // 
+            this.rb_topdown.AutoSize = true;
+            this.rb_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_topdown.Location = new System.Drawing.Point(18, 76);
+            this.rb_topdown.Name = "rb_topdown";
+            this.rb_topdown.Size = new System.Drawing.Size(75, 17);
+            this.rb_topdown.TabIndex = 59;
+            this.rb_topdown.TabStop = true;
+            this.rb_topdown.Text = "Top Down";
+            this.rb_topdown.UseVisualStyleBackColor = true;
+            this.rb_topdown.CheckedChanged += new System.EventHandler(this.rb_topdown_CheckedChanged);
+            // 
             // rb_deconvolution
             // 
             this.rb_deconvolution.AutoSize = true;
@@ -229,6 +257,7 @@
             // 
             // box_parameters
             // 
+            this.box_parameters.Controls.Add(this.panel_topdownparams);
             this.box_parameters.Controls.Add(this.calib_stand_splitContainer);
             this.box_parameters.Controls.Add(this.param_splitcontainer);
             this.box_parameters.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -239,6 +268,126 @@
             this.box_parameters.TabIndex = 48;
             this.box_parameters.TabStop = false;
             this.box_parameters.Text = "2. Set Parameters";
+            // 
+            // panel_topdownparams
+            // 
+            this.panel_topdownparams.Controls.Add(this.label_fragmentiontolerance);
+            this.panel_topdownparams.Controls.Add(this.label_precursortolerance);
+            this.panel_topdownparams.Controls.Add(this.nud_fragmentiontolerance);
+            this.panel_topdownparams.Controls.Add(this.nud_precursortolerance);
+            this.panel_topdownparams.Controls.Add(this.label_activationmethod);
+            this.panel_topdownparams.Controls.Add(this.label_tagsearch);
+            this.panel_topdownparams.Controls.Add(this.label_searchmode);
+            this.panel_topdownparams.Controls.Add(this.cmb_activationmethod);
+            this.panel_topdownparams.Controls.Add(this.cmb_tagsearch);
+            this.panel_topdownparams.Controls.Add(this.cmb_searchmode);
+            this.panel_topdownparams.Location = new System.Drawing.Point(3, 16);
+            this.panel_topdownparams.Name = "panel_topdownparams";
+            this.panel_topdownparams.Size = new System.Drawing.Size(650, 97);
+            this.panel_topdownparams.TabIndex = 58;
+            // 
+            // label_fragmentiontolerance
+            // 
+            this.label_fragmentiontolerance.AutoSize = true;
+            this.label_fragmentiontolerance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_fragmentiontolerance.Location = new System.Drawing.Point(375, 64);
+            this.label_fragmentiontolerance.Name = "label_fragmentiontolerance";
+            this.label_fragmentiontolerance.Size = new System.Drawing.Size(120, 13);
+            this.label_fragmentiontolerance.TabIndex = 9;
+            this.label_fragmentiontolerance.Text = "Fragment Ion Tolerance";
+            // 
+            // label_precursortolerance
+            // 
+            this.label_precursortolerance.AutoSize = true;
+            this.label_precursortolerance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_precursortolerance.Location = new System.Drawing.Point(375, 11);
+            this.label_precursortolerance.Name = "label_precursortolerance";
+            this.label_precursortolerance.Size = new System.Drawing.Size(132, 13);
+            this.label_precursortolerance.TabIndex = 8;
+            this.label_precursortolerance.Text = "Precursor Tolerance (ppm)";
+            // 
+            // nud_fragmentiontolerance
+            // 
+            this.nud_fragmentiontolerance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_fragmentiontolerance.Location = new System.Drawing.Point(321, 60);
+            this.nud_fragmentiontolerance.Name = "nud_fragmentiontolerance";
+            this.nud_fragmentiontolerance.Size = new System.Drawing.Size(48, 20);
+            this.nud_fragmentiontolerance.TabIndex = 7;
+            this.nud_fragmentiontolerance.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // nud_precursortolerance
+            // 
+            this.nud_precursortolerance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_precursortolerance.Location = new System.Drawing.Point(321, 8);
+            this.nud_precursortolerance.Name = "nud_precursortolerance";
+            this.nud_precursortolerance.Size = new System.Drawing.Size(48, 20);
+            this.nud_precursortolerance.TabIndex = 6;
+            this.nud_precursortolerance.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // label_activationmethod
+            // 
+            this.label_activationmethod.AutoSize = true;
+            this.label_activationmethod.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_activationmethod.Location = new System.Drawing.Point(224, 62);
+            this.label_activationmethod.Name = "label_activationmethod";
+            this.label_activationmethod.Size = new System.Drawing.Size(93, 13);
+            this.label_activationmethod.TabIndex = 5;
+            this.label_activationmethod.Text = "Activation Method";
+            // 
+            // label_tagsearch
+            // 
+            this.label_tagsearch.AutoSize = true;
+            this.label_tagsearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_tagsearch.Location = new System.Drawing.Point(224, 35);
+            this.label_tagsearch.Name = "label_tagsearch";
+            this.label_tagsearch.Size = new System.Drawing.Size(63, 13);
+            this.label_tagsearch.TabIndex = 4;
+            this.label_tagsearch.Text = "Tag Search";
+            // 
+            // label_searchmode
+            // 
+            this.label_searchmode.AutoSize = true;
+            this.label_searchmode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_searchmode.Location = new System.Drawing.Point(224, 8);
+            this.label_searchmode.Name = "label_searchmode";
+            this.label_searchmode.Size = new System.Drawing.Size(71, 13);
+            this.label_searchmode.TabIndex = 3;
+            this.label_searchmode.Text = "Search Mode";
+            // 
+            // cmb_activationmethod
+            // 
+            this.cmb_activationmethod.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_activationmethod.FormattingEnabled = true;
+            this.cmb_activationmethod.Location = new System.Drawing.Point(13, 59);
+            this.cmb_activationmethod.Name = "cmb_activationmethod";
+            this.cmb_activationmethod.Size = new System.Drawing.Size(204, 21);
+            this.cmb_activationmethod.TabIndex = 2;
+            // 
+            // cmb_tagsearch
+            // 
+            this.cmb_tagsearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_tagsearch.FormattingEnabled = true;
+            this.cmb_tagsearch.Location = new System.Drawing.Point(13, 32);
+            this.cmb_tagsearch.Name = "cmb_tagsearch";
+            this.cmb_tagsearch.Size = new System.Drawing.Size(204, 21);
+            this.cmb_tagsearch.TabIndex = 1;
+            // 
+            // cmb_searchmode
+            // 
+            this.cmb_searchmode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_searchmode.FormattingEnabled = true;
+            this.cmb_searchmode.Location = new System.Drawing.Point(13, 3);
+            this.cmb_searchmode.Name = "cmb_searchmode";
+            this.cmb_searchmode.Size = new System.Drawing.Size(204, 21);
+            this.cmb_searchmode.TabIndex = 0;
             // 
             // calib_stand_splitContainer
             // 
@@ -374,7 +523,7 @@
             // 
             // param_splitcontainer.Panel2
             // 
-            this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
+            this.param_splitcontainer.Panel2.Controls.Add(this.groupbox_output);
             this.param_splitcontainer.Size = new System.Drawing.Size(1245, 97);
             this.param_splitcontainer.SplitterDistance = 648;
             this.param_splitcontainer.TabIndex = 1;
@@ -407,15 +556,30 @@
             this.nud_fit.Name = "nud_fit";
             this.nud_fit.Size = new System.Drawing.Size(49, 20);
             this.nud_fit.TabIndex = 75;
+            this.nud_fit.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // nud_likelihood
             // 
             this.nud_likelihood.DecimalPlaces = 2;
             this.nud_likelihood.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_likelihood.Location = new System.Drawing.Point(354, 46);
+            this.nud_likelihood.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.nud_likelihood.Name = "nud_likelihood";
             this.nud_likelihood.Size = new System.Drawing.Size(49, 20);
             this.nud_likelihood.TabIndex = 74;
+            this.nud_likelihood.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             // 
             // label_minRT
             // 
@@ -526,17 +690,17 @@
             0,
             0});
             // 
-            // fullrun_groupbox
+            // groupbox_output
             // 
-            this.fullrun_groupbox.Controls.Add(this.fullrun_splitContainer);
-            this.fullrun_groupbox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.fullrun_groupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fullrun_groupbox.Location = new System.Drawing.Point(4, 0);
-            this.fullrun_groupbox.Name = "fullrun_groupbox";
-            this.fullrun_groupbox.Size = new System.Drawing.Size(589, 97);
-            this.fullrun_groupbox.TabIndex = 62;
-            this.fullrun_groupbox.TabStop = false;
-            this.fullrun_groupbox.Text = "Full Run Save Options";
+            this.groupbox_output.Controls.Add(this.fullrun_splitContainer);
+            this.groupbox_output.Dock = System.Windows.Forms.DockStyle.Right;
+            this.groupbox_output.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupbox_output.Location = new System.Drawing.Point(4, 0);
+            this.groupbox_output.Name = "groupbox_output";
+            this.groupbox_output.Size = new System.Drawing.Size(589, 97);
+            this.groupbox_output.TabIndex = 62;
+            this.groupbox_output.TabStop = false;
+            this.groupbox_output.Text = "Output Folder";
             // 
             // fullrun_splitContainer
             // 
@@ -589,27 +753,6 @@
             this.box_start.TabStop = false;
             this.box_start.Text = "4. Start Analysis";
             // 
-            // panel_step
-            // 
-            this.panel_step.Controls.Add(this.bt_stepthru);
-            this.panel_step.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel_step.Location = new System.Drawing.Point(0, 0);
-            this.panel_step.Name = "panel_step";
-            this.panel_step.Size = new System.Drawing.Size(200, 88);
-            this.panel_step.TabIndex = 1;
-            // 
-            // bt_stepthru
-            // 
-            this.bt_stepthru.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bt_stepthru.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_stepthru.Location = new System.Drawing.Point(0, 0);
-            this.bt_stepthru.Name = "bt_stepthru";
-            this.bt_stepthru.Size = new System.Drawing.Size(200, 88);
-            this.bt_stepthru.TabIndex = 62;
-            this.bt_stepthru.Text = "Step Through Processing";
-            this.bt_stepthru.UseVisualStyleBackColor = true;
-            this.bt_stepthru.Click += new System.EventHandler(this.bt_stepthru_Click);
-            // 
             // panel_clearresults
             // 
             this.panel_clearresults.Controls.Add(this.bt_clearResults);
@@ -640,6 +783,39 @@
             this.panel_deconv_calib.Name = "panel_deconv_calib";
             this.panel_deconv_calib.Size = new System.Drawing.Size(200, 88);
             this.panel_deconv_calib.TabIndex = 0;
+            // 
+            // panel_step
+            // 
+            this.panel_step.Controls.Add(this.bt_stepthru);
+            this.panel_step.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel_step.Location = new System.Drawing.Point(0, 0);
+            this.panel_step.Name = "panel_step";
+            this.panel_step.Size = new System.Drawing.Size(200, 88);
+            this.panel_step.TabIndex = 1;
+            // 
+            // bt_stepthru
+            // 
+            this.bt_stepthru.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bt_stepthru.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_stepthru.Location = new System.Drawing.Point(0, 0);
+            this.bt_stepthru.Name = "bt_stepthru";
+            this.bt_stepthru.Size = new System.Drawing.Size(200, 88);
+            this.bt_stepthru.TabIndex = 62;
+            this.bt_stepthru.Text = "Step Through Processing";
+            this.bt_stepthru.UseVisualStyleBackColor = true;
+            this.bt_stepthru.Click += new System.EventHandler(this.bt_stepthru_Click);
+            // 
+            // bt_topdown
+            // 
+            this.bt_topdown.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bt_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_topdown.Location = new System.Drawing.Point(0, 0);
+            this.bt_topdown.Name = "bt_topdown";
+            this.bt_topdown.Size = new System.Drawing.Size(200, 88);
+            this.bt_topdown.TabIndex = 41;
+            this.bt_topdown.Text = "Top Down Analysis";
+            this.bt_topdown.UseVisualStyleBackColor = true;
+            this.bt_topdown.Click += new System.EventHandler(this.bt_topdown_Click);
             // 
             // bt_deconvolute
             // 
@@ -843,30 +1019,14 @@
             this.cmb_loadTable1.TabIndex = 42;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             // 
-            // rb_topdown
+            // label1
             // 
-            this.rb_topdown.AutoSize = true;
-            this.rb_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_topdown.Location = new System.Drawing.Point(18, 76);
-            this.rb_topdown.Name = "rb_topdown";
-            this.rb_topdown.Size = new System.Drawing.Size(75, 17);
-            this.rb_topdown.TabIndex = 59;
-            this.rb_topdown.TabStop = true;
-            this.rb_topdown.Text = "Top Down";
-            this.rb_topdown.UseVisualStyleBackColor = true;
-            this.rb_topdown.CheckedChanged += new System.EventHandler(this.rb_topdown_CheckedChanged);
-            // 
-            // bt_topdown
-            // 
-            this.bt_topdown.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bt_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_topdown.Location = new System.Drawing.Point(0, 0);
-            this.bt_topdown.Name = "bt_topdown";
-            this.bt_topdown.Size = new System.Drawing.Size(200, 88);
-            this.bt_topdown.TabIndex = 41;
-            this.bt_topdown.Text = "Top Down Analysis";
-            this.bt_topdown.UseVisualStyleBackColor = true;
-            this.bt_topdown.Click += new System.EventHandler(this.bt_topdown_Click);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "label1";
             // 
             // LoadResults
             // 
@@ -874,6 +1034,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1397, 863);
             this.ControlBox = false;
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.base_splitcontainer);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoadResults";
@@ -889,6 +1050,10 @@
             this.box_loadoptions.ResumeLayout(false);
             this.box_loadoptions.PerformLayout();
             this.box_parameters.ResumeLayout(false);
+            this.panel_topdownparams.ResumeLayout(false);
+            this.panel_topdownparams.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_fragmentiontolerance)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_precursortolerance)).EndInit();
             this.calib_stand_splitContainer.Panel1.ResumeLayout(false);
             this.calib_stand_splitContainer.Panel1.PerformLayout();
             this.calib_stand_splitContainer.Panel2.ResumeLayout(false);
@@ -907,16 +1072,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).EndInit();
-            this.fullrun_groupbox.ResumeLayout(false);
+            this.groupbox_output.ResumeLayout(false);
             this.fullrun_splitContainer.Panel1.ResumeLayout(false);
             this.fullrun_splitContainer.Panel1.PerformLayout();
             this.fullrun_splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fullrun_splitContainer)).EndInit();
             this.fullrun_splitContainer.ResumeLayout(false);
             this.box_start.ResumeLayout(false);
-            this.panel_step.ResumeLayout(false);
             this.panel_clearresults.ResumeLayout(false);
             this.panel_deconv_calib.ResumeLayout(false);
+            this.panel_step.ResumeLayout(false);
             this.panel_fullrun.ResumeLayout(false);
             this.box_dgv.ResumeLayout(false);
             this.panel_dgv.ResumeLayout(false);
@@ -930,6 +1095,7 @@
             this.panel1.PerformLayout();
             this.panel_clearbtn.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -982,7 +1148,7 @@
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
         private System.Windows.Forms.CheckBox cb_calibrate_raw_files;
-        private System.Windows.Forms.GroupBox fullrun_groupbox;
+        private System.Windows.Forms.GroupBox groupbox_output;
         private System.Windows.Forms.SplitContainer fullrun_splitContainer;
         private System.Windows.Forms.TextBox tb_resultsFolder;
         private System.Windows.Forms.Button btn_browseSummarySaveFolder;
@@ -992,5 +1158,17 @@
         private System.Windows.Forms.Label label_fit;
         private System.Windows.Forms.RadioButton rb_topdown;
         private System.Windows.Forms.Button bt_topdown;
+        private System.Windows.Forms.Panel panel_topdownparams;
+        private System.Windows.Forms.NumericUpDown nud_fragmentiontolerance;
+        private System.Windows.Forms.NumericUpDown nud_precursortolerance;
+        private System.Windows.Forms.Label label_activationmethod;
+        private System.Windows.Forms.Label label_tagsearch;
+        private System.Windows.Forms.Label label_searchmode;
+        private System.Windows.Forms.ComboBox cmb_activationmethod;
+        private System.Windows.Forms.ComboBox cmb_tagsearch;
+        private System.Windows.Forms.ComboBox cmb_searchmode;
+        private System.Windows.Forms.Label label_fragmentiontolerance;
+        private System.Windows.Forms.Label label_precursortolerance;
+        private System.Windows.Forms.Label label1;
     }
 }

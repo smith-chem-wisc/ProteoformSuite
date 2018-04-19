@@ -153,6 +153,9 @@ namespace ProteoformSuiteGUI
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
+            cmb_searchmode.Items.Clear();
+            cmb_tagsearch.Items.Clear();
+            cmb_activationmethod.Items.Clear();
 
             if (rb_standardOptions.Checked)
             {
@@ -183,6 +186,7 @@ namespace ProteoformSuiteGUI
                 bt_topdown.Visible = false;
                 panel_deconv_calib.Visible = true;
                 panel_step.Visible = true;
+                panel_topdownparams.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
                 nud_maxRT.Visible = false;
@@ -198,7 +202,7 @@ namespace ProteoformSuiteGUI
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
-                fullrun_groupbox.Visible = true;
+                groupbox_output.Visible = true;
             }
 
             else if (rb_chemicalCalibration.Checked)
@@ -216,6 +220,7 @@ namespace ProteoformSuiteGUI
                 bt_topdown.Visible = false;
                 panel_deconv_calib.Visible = true;
                 panel_step.Visible = false;
+                panel_topdownparams.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
                 nud_maxRT.Visible = false;
@@ -231,7 +236,7 @@ namespace ProteoformSuiteGUI
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
-                fullrun_groupbox.Visible = false;
+                groupbox_output.Visible = false;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -255,6 +260,7 @@ namespace ProteoformSuiteGUI
                 bt_topdown.Visible = false;
                 panel_deconv_calib.Visible = true;
                 panel_step.Visible = false;
+                panel_topdownparams.Visible = false;
                 nud_maxcharge.Visible = true;
                 nud_mincharge.Visible = true;
                 nud_maxRT.Visible = true;
@@ -270,7 +276,7 @@ namespace ProteoformSuiteGUI
                 rb_neucode.Visible = false;
                 rb_unlabeled.Visible = false;
                 calib_stand_splitContainer.Visible = false;
-                fullrun_groupbox.Visible = false;
+                groupbox_output.Visible = false;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -281,6 +287,12 @@ namespace ProteoformSuiteGUI
             {
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[2]);
+                for (int i = 0; i < 3; i++) cmb_searchmode.Items.Add(Lollipop.searchmode[i]);
+                cmb_searchmode.SelectedIndex = 1;
+                for (int i = 0; i < 2; i++) cmb_tagsearch.Items.Add(Lollipop.tagsearch[i]);
+                cmb_tagsearch.SelectedIndex = 1;
+                for (int i = 0; i < 7; i++) cmb_activationmethod.Items.Add(Lollipop.activationmethods[i]);
+                cmb_activationmethod.SelectedIndex = 2;
 
                 bt_calibrate.Visible = false;
                 cb_useRandomSeed.Visible = false;
@@ -294,22 +306,23 @@ namespace ProteoformSuiteGUI
                 bt_topdown.Visible = true;
                 panel_deconv_calib.Visible = true;
                 panel_step.Visible = false;
-                nud_maxcharge.Visible = true;
-                nud_mincharge.Visible = true;
-                nud_maxRT.Visible = true;
-                nud_minRT.Visible = true;
+                panel_topdownparams.Visible = true;
+                nud_maxcharge.Visible = false;
+                nud_mincharge.Visible = false;
+                nud_maxRT.Visible = false;
+                nud_minRT.Visible = false;
                 nud_likelihood.Visible = false;
                 nud_fit.Visible = false;
-                label_maxcharge.Visible = true;
-                label_mincharge.Visible = true;
-                label_maxRT.Visible = true;
-                label_minRT.Visible = true;
+                label_maxcharge.Visible = false;
+                label_mincharge.Visible = false;
+                label_maxRT.Visible = false;
+                label_minRT.Visible = false;
                 label_likelihood.Visible = false;
                 label_fit.Visible = false;
                 rb_neucode.Visible = false;
                 rb_unlabeled.Visible = false;
                 calib_stand_splitContainer.Visible = false;
-                fullrun_groupbox.Visible = false;
+                groupbox_output.Visible = true;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -537,7 +550,11 @@ namespace ProteoformSuiteGUI
             {
                 MessageBox.Show("Please enter raw files to analyze."); return;
             }
-            string topdown_results = Sweet.lollipop.MSPathFinderT(Environment.CurrentDirectory);
+            if(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.ProteinDatabase).Count() == 0)
+            {
+                MessageBox.Show("Please enter a .fasta protein database file.");
+            }
+            string topdown_results = Sweet.lollipop.MSPathFinderT(Environment.CurrentDirectory, Sweet.lollipop.results_folder, cmb_searchmode.SelectedIndex, cmb_tagsearch.SelectedIndex, Convert.ToDouble(nud_precursortolerance.Value), Convert.ToDouble(nud_fragmentiontolerance.Value), cmb_activationmethod.SelectedIndex);
             MessageBox.Show(topdown_results);
         }
 
