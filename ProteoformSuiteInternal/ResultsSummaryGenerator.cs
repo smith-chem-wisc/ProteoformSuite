@@ -491,6 +491,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Proteoform Suite GeneID", typeof(string));
             results.Columns.Add("Top-Down GeneID", typeof(string));
             results.Columns.Add("Proteoform Suite Description", typeof(string));
+            results.Columns.Add("Top-Down Description", typeof(string));
             results.Columns.Add("Proteoform Suite Begin and End", typeof(string));
             results.Columns.Add("Top-Down Begin and End", typeof(string));
             results.Columns.Add("Proteoform Suite PTM Type", typeof(string));
@@ -518,6 +519,7 @@ namespace ProteoformSuiteInternal
                     td.linked_proteoform_references == null ? "N/A" : String.Join("; ", (td.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()),
                     td.geneID,
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).description,
+                    td.name,
                     td.linked_proteoform_references == null ? "N/A" : td.begin + " to " + td.end,
                     td.topdown_begin + " to " + td.topdown_end,
                     td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", td.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m)),

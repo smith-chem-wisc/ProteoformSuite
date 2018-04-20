@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
             if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ThenBy(x => x.BaseSequence).ToArray(); // Take on harder problems first to use parallelization more effectively
             process_entries(expanded_proteins, variableModifications);
-            process_decoys(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms);
+            process_decoys(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.OrderBy(x => x.modified_mass).ThenBy(x => x.ptm_description).ThenBy(x => x.sequence).ThenBy(x => x.name).ToArray());
 
             Parallel.ForEach(new ProteoformCommunity[] { Sweet.lollipop.target_proteoform_community }.Concat(Sweet.lollipop.decoy_proteoform_communities.Values), community =>
             {
@@ -523,15 +523,13 @@ namespace ProteoformSuiteInternal
             {
                 List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
                 StringBuilder sb = new StringBuilder(5000000); // this set-aside is autoincremented to larger values when necessary.
-                foreach (TheoreticalProteoform proteoform in entries)
+                foreach (TheoreticalProteoform proteoform in entries) // Take on harder problems first to use parallelization more effectively
                 {
                     sb.Append(proteoform.sequence);
                 }
                 string giantProtein = sb.ToString();
-                TheoreticalProteoform[] shuffled_proteoforms = new TheoreticalProteoform[entries.Length];
-                Array.Copy(entries, shuffled_proteoforms, entries.Length);
                 Random decoy_rng = Sweet.lollipop.useRandomSeed_decoys ? new Random(decoyNumber + Sweet.lollipop.randomSeed_decoys) : new Random(); // each decoy database needs to have a new random number generator
-                decoy_rng.Shuffle(shuffled_proteoforms); //randomize order of protein array
+                var shuffled_proteoforms = entries.OrderBy(item => decoy_rng.Next()).ToList();
                 int prevLength = 0;
                 foreach (var p in shuffled_proteoforms)
                 {

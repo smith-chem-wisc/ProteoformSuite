@@ -280,6 +280,24 @@ namespace ProteoformSuiteInternal
                     e.ptm_set.ptm_combination.Remove(ptm);
                 }
                 e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
+
+
+                e.uniprot_mods = "";
+                foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList().Distinct().OrderBy(m => m))
+                {
+                    //positions with mod
+                    List<int> theo_ptms = theoretical_base.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Where(p => p.Key >= e.begin && p.Key <= e.end &&
+                        p.Value.Where(m => m as ModificationWithMass != null).Select(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m as ModificationWithMass, out UnlocalizedModification x) ? x.id : m.id).Contains(mod)).Select(m => m.Key).ToList();
+                    if (theo_ptms.Count > 0)
+                    {
+                        e.uniprot_mods += mod + " @ " + String.Join(", ", theo_ptms) + "; ";
+                    }
+                    if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Count(m => m == mod)
+                        > theo_ptms.Count)
+                    {
+                        e.novel_mods = true;
+                    }
+                }
             }
             //if already been assigned -- check if gene name != this gene name ==> ambiguous
             else if (!e.topdown_id && (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
@@ -294,23 +312,6 @@ namespace ProteoformSuiteInternal
             else if (!e.topdown_id)
             {
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
-            }
-
-            e.uniprot_mods = "";
-            foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList().Distinct().OrderBy(m => m))
-            {
-                //positions with mod
-                List<int> theo_ptms = theoretical_base.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Where(p => p.Key >= e.begin && p.Key <= e.end &&
-                    p.Value.Where(m => m as ModificationWithMass != null).Select(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m as ModificationWithMass, out UnlocalizedModification x) ? x.id : m.id).Contains(mod)).Select(m => m.Key).ToList();
-                if (theo_ptms.Count > 0)
-                {
-                    e.uniprot_mods += mod + " @ " + String.Join(", ", theo_ptms) + "; ";
-                }
-                if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Count(m => m == mod)
-                    > theo_ptms.Count)
-                {
-                    e.novel_mods = true;
-                }
             }
         }
 
