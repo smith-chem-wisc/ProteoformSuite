@@ -32,6 +32,10 @@ namespace ProteoformSuiteInternal
         //Settings
         public bool limit_triples_and_greater = true;
 
+        //Constants
+        private double ptmset_max_number_of_a_kind = 3;
+
+
         public Dictionary<char, double> aaIsotopeMassList;
 
         #endregion Public Fields
@@ -84,7 +88,7 @@ namespace ProteoformSuiteInternal
 
             //this is for ptmsets --> used in RELATIONS
             all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, all_mods_with_mass, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2).ToList();
-            for (int i = 2; i < Math.Max(2, Sweet.lollipop.max_ptms) + 1; i++) // the method above doesn't make 2 or more of a kind, so we make it here
+            for (int i = 2; i <= Math.Max(ptmset_max_number_of_a_kind, Sweet.lollipop.max_ptms); i++) // the method above doesn't make 2 or more of a kind, so we make it here
             {
                 all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2)));
             }
@@ -104,7 +108,7 @@ namespace ProteoformSuiteInternal
             if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ThenBy(x => x.BaseSequence).ToArray(); // Take on harder problems first to use parallelization more effectively
             process_entries(expanded_proteins, variableModifications);
-            process_decoys(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms);
+            process_decoys(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.OrderBy(x => x.modified_mass).ThenBy(x => x.ptm_description).ThenBy(x => x.sequence).ThenBy(x => x.name).ToArray());
 
             Parallel.ForEach(new ProteoformCommunity[] { Sweet.lollipop.target_proteoform_community }.Concat(Sweet.lollipop.decoy_proteoform_communities.Values), community =>
             {
@@ -354,7 +358,8 @@ namespace ProteoformSuiteInternal
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
                 if (candidate_theoreticals.Count > 0)
                 {
-                    topdown.gene_name = new GeneName(candidate_theoreticals.First().GeneNames);
+                    topdown.gene_name = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
+                    topdown.geneID = String.Join("; ", candidate_theoreticals.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
                         int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
@@ -518,15 +523,13 @@ namespace ProteoformSuiteInternal
             {
                 List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
                 StringBuilder sb = new StringBuilder(5000000); // this set-aside is autoincremented to larger values when necessary.
-                foreach (TheoreticalProteoform proteoform in entries)
+                foreach (TheoreticalProteoform proteoform in entries) // Take on harder problems first to use parallelization more effectively
                 {
                     sb.Append(proteoform.sequence);
                 }
                 string giantProtein = sb.ToString();
-                TheoreticalProteoform[] shuffled_proteoforms = new TheoreticalProteoform[entries.Length];
-                Array.Copy(entries, shuffled_proteoforms, entries.Length);
                 Random decoy_rng = Sweet.lollipop.useRandomSeed_decoys ? new Random(decoyNumber + Sweet.lollipop.randomSeed_decoys) : new Random(); // each decoy database needs to have a new random number generator
-                decoy_rng.Shuffle(shuffled_proteoforms); //randomize order of protein array
+                var shuffled_proteoforms = entries.OrderBy(item => decoy_rng.Next()).ToList();
                 int prevLength = 0;
                 foreach (var p in shuffled_proteoforms)
                 {
