@@ -3,42 +3,35 @@ ID   Water Adduct
 TG   Any
 PP   Anywhere.
 MM   18.010565
-MT   Unlocalized
+MT   Common
 CF   H2O
 //
 ID   Water loss
 TG   Any
 PP   Anywhere.
 MM   -18.010565
-MT   Unlocalized
+MT   Common
 CF   H-2 O-1
 //
 ID   Oxidation
 TG   Any
 PP   Anywhere.
 MM   15.994915
-MT   Unlocalized
+MT   Common
 CF   O1
 //
 ID   Acetyl
 TG   K
 PP   Anywhere.
 MM   42.010565
-MT   Unlocalized
+MT   Common
 CF   H2 C2 O1
-//
-ID   Carbamidomethyl of C
-TG   C
-PP   Anywhere.
-MM   57.021464
-MT   Unlocalized
-CF   H3 C2 N1 O1
 //
 ID   Methyl
 TG   E or V or H or R or K or Q or N or S or D
 PP   Anywhere.
 MM   14.015650
-MT   Unlocalized
+MT   Common
 CF   H2 C
 //
 ID   Phospho
@@ -46,15 +39,8 @@ TG   S or T or Y
 PP   Anywhere.
 MM   79.966331
 NL   0 or 97.976896
-MT   Unlocalized
+MT   Common
 CF   H1 O3 P1
-//
-ID   Phospho, Phospho, Phospho
-TG   S or T or Y
-PP   Anywhere.
-MM   239.898993
-MT   Unlocalized
-CF   H3 O9 P3
 //
 ID   Missed Monoisotopic (-1)
 TG   Any

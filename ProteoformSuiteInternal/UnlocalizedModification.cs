@@ -26,7 +26,7 @@ namespace ProteoformSuiteInternal
             ptm_count = 1;
             require_proteoform_without_mod = false;
 
-            if (m.modificationType == "Unlocalized")
+            if (m.modificationType == "Common")
                 ptm_rank = Sweet.lollipop.mod_rank_first_quartile / 2;
             else if (m.modificationType == "Deconvolution Error")
                 ptm_rank = Sweet.lollipop.mod_rank_first_quartile;
