@@ -455,30 +455,55 @@ namespace ProteoformSuiteInternal
             string old_absolute_path = file.complete_path;
             string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
-            //create copy of excel file
-            byte[] byteArray = File.ReadAllBytes(old_absolute_path);
-            using (MemoryStream stream = new MemoryStream())
+            if (file.extension == ".xlsx")
             {
-                stream.Write(byteArray, 0, (int)byteArray.Length);
-                File.WriteAllBytes(new_absolute_path, stream.ToArray());
-            }
-            var workbook = new XLWorkbook(new_absolute_path);
-            var worksheet = workbook.Worksheets.Worksheet(1);
-            Parallel.ForEach(worksheet.Rows(), row =>
-            {
-                if (row.Cell(1).Value.ToString().Length == 0)
+                //create copy of excel file
+                byte[] byteArray = File.ReadAllBytes(old_absolute_path);
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                    stream.Write(byteArray, 0, (int)byteArray.Length);
+                    File.WriteAllBytes(new_absolute_path, stream.ToArray());
+                }
+                var workbook = new XLWorkbook(new_absolute_path);
+                var worksheet = workbook.Worksheets.Worksheet(1);
+                Parallel.ForEach(worksheet.Rows(), row =>
+                {
+                    if (row.Cell(1).Value.ToString().Length == 0)
+                    {
+                        if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                        {
+                            double value;
+                            //CHECK WITH CHARGE NORMALIZED INTENSITY!! 
+                            if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                            {
+                                row.Cell(4).SetValue(value);
+                            }
+                        }
+                    }
+                });
+                workbook.Save();
+            }
+            else if (file.extension == ".csv")
+            {
+                string[] old = File.ReadAllLines(old_absolute_path);
+                List<string> new_file = new List<string>();
+                new_file.Add(old[0]);
+                for(int i = 1; i < old.Length; i++)
+                {
+                    string[] row = old[i].Split(',');
+                    if (old.Length == 9 && Double.TryParse(row[2], out double intensity) && Double.TryParse(row[3], out double mz) && Int32.TryParse(row[1], out int charge))
                     {
                         double value;
-                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mz, 2)), out value))
                         {
-                            row.Cell(4).SetValue(value);
+                            row[3] = mz.ToString();
+                            row[5] = mz.ToMass(charge).ToString();
+                            new_file.Add(String.Join(",", row));
                         }
                     }
                 }
-            });
-            workbook.Save();
+                File.WriteAllLines(new_absolute_path, new_file);
+            }
         }
     }
 }

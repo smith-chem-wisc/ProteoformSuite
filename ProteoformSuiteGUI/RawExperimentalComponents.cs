@@ -61,6 +61,8 @@ namespace ProteoformSuiteGUI
         {
             rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
+            nUD_max_fit.Value = (decimal)Sweet.lollipop.max_fit;
+            nUD_min_liklihood_ratio.Value = (decimal)Sweet.lollipop.min_likelihood_ratio;
             FillTablesAndCharts();
         }
 
@@ -166,6 +168,17 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.raw_component_mass_tolerance = Convert.ToDouble(nUD_mass_tolerance.Value);
         }
 
+        private void nUD_min_liklihood_ratio_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_likelihood_ratio = Convert.ToDouble(nUD_min_liklihood_ratio.Value);
+        }
+
+        private void nUD_max_fit_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_fit = Convert.ToDouble(nUD_max_fit.Value);
+        }
+
         #endregion Private Methods
+
     }
 }

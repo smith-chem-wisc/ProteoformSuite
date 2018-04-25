@@ -20,11 +20,6 @@ namespace Test
             Assert.AreEqual(componentInputFile1.UniqueId + "_2", createdComponent1.id);
             Assert.AreEqual(1000.001d, createdComponent1.reported_monoisotopic_mass);
             Assert.AreEqual(99.9d, createdComponent1.intensity_reported);
-            Assert.AreEqual(5, createdComponent1.num_charge_states);
-            Assert.AreEqual(6, createdComponent1.num_detected_intervals);
-            Assert.AreEqual(0.02d, createdComponent1.reported_delta_mass);
-            Assert.AreEqual(88.8d, createdComponent1.relative_abundance);
-            Assert.AreEqual(0.888, createdComponent1.fract_abundance);
             Assert.AreEqual("10-15", createdComponent1.min_scan + "-" + createdComponent1.max_scan);
             Assert.AreEqual("11.1-12.2", createdComponent1.min_rt + "-" + createdComponent1.max_rt);
             Assert.AreEqual(10.55d, createdComponent1.rt_apex);
@@ -47,11 +42,7 @@ namespace Test
             Assert.AreEqual(989.9d, createdComponent2.reported_monoisotopic_mass);
             Assert.AreEqual(99.9d, createdComponent2.intensity_reported);
             Assert.AreEqual(200d, createdComponent2.intensity_sum);
-            Assert.AreEqual(1, createdComponent2.num_charge_states);
-            Assert.AreEqual(6, createdComponent2.num_detected_intervals);
-            Assert.AreEqual(0.02d, createdComponent2.reported_delta_mass);
-            Assert.AreEqual(88.8d, createdComponent2.relative_abundance);
-            Assert.AreEqual(0.888, createdComponent2.fract_abundance);
+            Assert.AreEqual(1, createdComponent2.charge_states.Count);
             Assert.AreEqual("10-15", createdComponent2.min_scan + "-" + createdComponent2.max_scan);
             Assert.AreEqual("11.1-12.2", createdComponent2.min_rt + "-" + createdComponent2.max_rt);
             Assert.AreEqual(10.55d, createdComponent2.rt_apex);
@@ -81,7 +72,7 @@ namespace Test
             Assert.AreEqual(989.9d, createdComponent3.reported_monoisotopic_mass);
             Assert.AreEqual(99.9d, createdComponent3.intensity_reported);
             Assert.AreEqual(700d, createdComponent3.intensity_sum);
-            Assert.AreEqual(2, createdComponent3.num_charge_states);
+            Assert.AreEqual(2, createdComponent3.charge_states.Count);
             Assert.AreEqual(true, createdComponent3.accepted);
             Assert.AreEqual(2, createdComponent3.charge_states.Count());
         }
@@ -106,7 +97,7 @@ namespace Test
 
             Assert.AreEqual(1000d, createdComponent3.intensity_sum);
             Assert.AreEqual(Math.Round(989.92723551500012d, 5),Math.Round(createdComponent3.weighted_monoisotopic_mass,5));
-            Assert.AreEqual(2, createdComponent3.num_charge_states);
+            Assert.AreEqual(2, createdComponent3.charge_states.Count);
             Assert.AreEqual(true, createdComponent3.accepted);
             Assert.AreEqual(2, createdComponent3.charge_states.Count());
         }
@@ -131,7 +122,7 @@ namespace Test
 
             Assert.AreEqual(1000d, createdComponent3.intensity_sum);
             Assert.AreEqual(Math.Round(989.92723551500012d, 5), Math.Round(createdComponent3.weighted_monoisotopic_mass, 5));
-            Assert.AreEqual(2, createdComponent3.num_charge_states);
+            Assert.AreEqual(2, createdComponent3.charge_states.Count);
             Assert.AreEqual(true, createdComponent3.accepted);
             Assert.AreEqual(2, createdComponent3.charge_states.Count());
         }
@@ -154,7 +145,7 @@ namespace Test
 
             Assert.AreEqual(700d, createdComponent3.intensity_sum);
             Assert.AreEqual(Math.Round(989.92723551500012d, 5), Math.Round(createdComponent3.weighted_monoisotopic_mass, 5));
-            Assert.AreEqual(2, createdComponent3.num_charge_states);
+            Assert.AreEqual(2, createdComponent3.charge_states.Count);
             Assert.AreEqual(true, createdComponent3.accepted);
             Assert.AreEqual(2, createdComponent3.charge_states.Count());
         }
@@ -165,10 +156,7 @@ namespace Test
             ChargeState chargeState1 = new ChargeState(10, 1, 100);
             testComponent1.charge_states.Add(chargeState1);
             testComponent1.calculate_properties();
-            Assert.AreEqual(1, testComponent1.num_charge_states);
-            Assert.That(() => testComponent1.num_charge_states = 2, Throws.TypeOf<ArgumentException>()
-                    .With.Property("Message")
-                    .EqualTo("Charge state data exists that can't be overwritten with input"));
+            Assert.AreEqual(1, testComponent1.charge_states.Count);
             Assert.That(() => testComponent1.intensity_sum = 2d, Throws.TypeOf<ArgumentException>()
                     .With.Property("Message")
                     .EqualTo("Charge state data exists that can't be overwritten with intensity input"));
@@ -240,11 +228,7 @@ namespace Test
             Component c = new Component(cellStrings, new InputFile("filepath", Purpose.Identification));
             Assert.AreEqual(0, c.reported_monoisotopic_mass);
             Assert.AreEqual(0, c.intensity_reported);
-            Assert.AreEqual(0, c.num_charge_states);
-            Assert.AreEqual(0, c.num_detected_intervals);
-            Assert.AreEqual(0, c.reported_delta_mass);
-            Assert.AreEqual(0, c.relative_abundance);
-            Assert.AreEqual(0, c.fract_abundance);
+            Assert.AreEqual(0, c.charge_states.Count);
             Assert.AreEqual(0, c.min_scan);
             Assert.AreEqual(0, c.max_scan);
             Assert.AreEqual(0, c.min_rt);

@@ -42,6 +42,10 @@ namespace ProteoformSuiteGUI
             this.dgv_rawComponents = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nUD_max_fit = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.nUD_min_liklihood_ratio = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.nUD_mass_tolerance = new System.Windows.Forms.NumericUpDown();
             this.rtb_raw_components_counts = new System.Windows.Forms.RichTextBox();
@@ -65,6 +69,8 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_max_fit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_liklihood_ratio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
             this.SuspendLayout();
@@ -211,6 +217,10 @@ namespace ProteoformSuiteGUI
             // 
             // splitContainer4.Panel1
             // 
+            this.splitContainer4.Panel1.Controls.Add(this.label3);
+            this.splitContainer4.Panel1.Controls.Add(this.nUD_max_fit);
+            this.splitContainer4.Panel1.Controls.Add(this.label2);
+            this.splitContainer4.Panel1.Controls.Add(this.nUD_min_liklihood_ratio);
             this.splitContainer4.Panel1.Controls.Add(this.label1);
             this.splitContainer4.Panel1.Controls.Add(this.nUD_mass_tolerance);
             // 
@@ -220,6 +230,46 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Size = new System.Drawing.Size(381, 402);
             this.splitContainer4.SplitterDistance = 369;
             this.splitContainer4.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(136, 60);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Max Fit";
+            // 
+            // nUD_max_fit
+            // 
+            this.nUD_max_fit.DecimalPlaces = 2;
+            this.nUD_max_fit.Location = new System.Drawing.Point(10, 56);
+            this.nUD_max_fit.Name = "nUD_max_fit";
+            this.nUD_max_fit.Size = new System.Drawing.Size(120, 20);
+            this.nUD_max_fit.TabIndex = 4;
+            this.nUD_max_fit.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            65536});
+            this.nUD_max_fit.ValueChanged += new System.EventHandler(this.nUD_max_fit_ValueChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(136, 34);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(106, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Min. Likelihood Ratio";
+            // 
+            // nUD_min_liklihood_ratio
+            // 
+            this.nUD_min_liklihood_ratio.Location = new System.Drawing.Point(10, 30);
+            this.nUD_min_liklihood_ratio.Name = "nUD_min_liklihood_ratio";
+            this.nUD_min_liklihood_ratio.Size = new System.Drawing.Size(120, 20);
+            this.nUD_min_liklihood_ratio.TabIndex = 2;
+            this.nUD_min_liklihood_ratio.ValueChanged += new System.EventHandler(this.nUD_min_liklihood_ratio_ValueChanged);
             // 
             // label1
             // 
@@ -292,6 +342,8 @@ namespace ProteoformSuiteGUI
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_max_fit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_liklihood_ratio)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
             this.ResumeLayout(false);
@@ -314,5 +366,9 @@ namespace ProteoformSuiteGUI
         private Label label1;
         private NumericUpDown nUD_mass_tolerance;
         private RichTextBox rtb_raw_components_counts;
+        private Label label3;
+        private NumericUpDown nUD_max_fit;
+        private Label label2;
+        private NumericUpDown nUD_min_liklihood_ratio;
     }
 }

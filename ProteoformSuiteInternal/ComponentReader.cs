@@ -1,6 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System;
+using Chemistry;
+using System.Collections.Generic;
+using System.IO;
+using Proteomics;
+using System.Linq;
+using System;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -70,7 +77,7 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
-                        new_component.add_charge_state(cellStrings);
+                        new_component.charge_states.Add(new ChargeState(cellStrings));
                     }
                 }
             }
@@ -89,9 +96,99 @@ namespace ProteoformSuiteInternal
             return final_components;
         }
 
+        public List<Component> read_components_from_csv(InputFile file, bool remove_missed_monos_and_harmonics)
+        {
+            this.raw_components_in_file.Clear();
+            Dictionary<int, List<string[]>> components_by_feature_ID = new Dictionary<int, List<string[]>>();
+            string[] lines = System.IO.File.ReadAllLines(file.complete_path);
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string[] row = lines[i].Split(',');
+                if (row.Length == 9)
+                {
+                    if (Double.TryParse(row[7], out double likelihood_ratio) && likelihood_ratio >= Sweet.lollipop.min_likelihood_ratio
+                        && Double.TryParse(row[4], out double fit) && fit <= Sweet.lollipop.max_fit)
+                    {
+                        if (Int32.TryParse(row[6], out int feature_ID))
+                        {
+                            if (components_by_feature_ID.ContainsKey(feature_ID))
+                            {
+                                components_by_feature_ID[feature_ID].Add(row);
+                            }
+                            else
+                            {
+                                components_by_feature_ID.Add(feature_ID, new List<string[]>() { row });
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            foreach (var feature in components_by_feature_ID)
+            {
+                List<string> cellStrings = new List<string>();
+                cellStrings.Add(feature.Key.ToString()); //id
+                cellStrings.Add(feature.Value.First()[5].ToString()); //monoisotopic mass
+                cellStrings.Add("0"); //intensity
+                cellStrings.Add(""); //num charges 
+                cellStrings.Add("0"); //num detected intervals
+                cellStrings.Add("0"); //reported delta mass
+                cellStrings.Add("0"); //relative abundance
+                cellStrings.Add("0"); //fractional abundance
+
+                List<int> scans = feature.Value.Select(f => Int32.TryParse(f[0], out int s) ? s : 0).Where(scan => scan != 0).ToList();
+                cellStrings.Add(scans.Count > 0 ? scans.Min().ToString() + "-" + scans.Max().ToString() : "0-0"); //scanrange
+                List<double> times = feature.Value.Select(f => Double.TryParse(f[8], out double s) ? s : 0).Where(rt => rt != 0).ToList();
+                cellStrings.Add(times.Count > 0 ? times.Min().ToString() + "-" + times.Max().ToString() : "0-0"); //rt range
+                cellStrings.Add(feature.Value.OrderByDescending(v => Double.TryParse(v[2], out double intensity) ? intensity : 0).First()[8]); //rt apex
+
+                Component c = new Component(cellStrings, file);
+
+                foreach (string charge in feature.Value.Select(v => v[1]).Distinct())
+                {
+                    int charge_count = Int32.TryParse(charge, out int i) ? i : -1;
+                    double intensity_sum = 0;
+                    double max_intensity = 0;
+                    string mass = "";
+                    foreach (string[] cs in feature.Value.Where(v => v[1] == charge))
+                    {
+                        //NEED TO MULTIPLY BY CHARGE STATE --> PROMEX CHARGE STATE NORMALIZES, THERMO DOESN'T. WILL DIVIDE AGAIN IN CONSTRUCTOR.
+                        intensity_sum += Double.TryParse(cs[2], out double d) ? d : 0; //charge state normalized
+                        if (d > max_intensity)
+                        {
+                            max_intensity = d;
+                            mass = cs[5];
+                        }
+                    }
+                    //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!! 
+                    c.charge_states.Add(new ChargeState(new List<string>() { charge, (intensity_sum * charge_count).ToString(), (c.reported_monoisotopic_mass.ToMz(charge_count)).ToString(), mass }));
+                }
+
+                c.calculate_properties();
+
+                if (acceptable_component(c))
+                {
+                    add_component(c);
+                }
+                else
+                {
+                    Clear();
+                    return new List<Component>();
+                }
+            }
+
+
+
+            unprocessed_components += raw_components_in_file.Count;
+            final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
+            scan_ranges = new HashSet<string>(final_components.Select(c => c.min_scan + "-" + c.max_scan)).ToList();
+            return final_components;
+        }
+
         public bool acceptable_component(Component c)
         {
-            if (c.min_rt == 0 || c.max_rt == 0 || c.max_scan == 0 || c.min_scan == 0 || c.num_charge_states == 0 || c.rt_apex == 0)
+            if (c.min_rt <= 0 || c.max_rt <= 0 || c.max_scan <= 0 || c.min_scan <= 0 || c.charge_states.Count <= 0 || c.rt_apex <= 0)
             {
                 lock (components_with_errors) components_with_errors.Add(c.input_file.filename + " component " + c.id.Split('_')[1]);
                 return false;

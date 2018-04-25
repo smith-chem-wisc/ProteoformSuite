@@ -16,17 +16,16 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             // Make sure it hits else statements at end
-            Assert.AreEqual("No files deconvoluted. Ensure correct file locations and try again.", Sweet.lollipop.promex_deconvolute(60, 1, 100, 0, 100, -10, TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual("No files deconvoluted. Ensure correct file locations and try again.", Sweet.lollipop.promex_deconvolute(60, 1, 100, -10, TestContext.CurrentContext.TestDirectory));
 
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
             // Make sure no initial problems with running deconvolution
-            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 100, 0, 100, -10, TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 100, -10, TestContext.CurrentContext.TestDirectory));
             // Ensure the deconvolution output a file
             string filepath = Path.Combine(Path.GetDirectoryName(Sweet.lollipop.input_files[0].complete_path), Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path));
             Assert.IsTrue(File.Exists(filepath + "_deconv.xlsx"));
             Assert.IsTrue(File.Exists(filepath + "_ms1ft.csv"));
             Assert.IsTrue(File.Exists(filepath + ".ms1ft"));
-            Assert.IsTrue(File.Exists(filepath + "_parameters.txt"));
             Assert.IsFalse(File.Exists(filepath + "_ms1ft.png"));
             Assert.IsFalse(File.Exists(filepath + ".pbf"));
 
@@ -43,7 +42,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
-            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 46, 45, 0.1, 70, TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.promex_deconvolute(60, 1, 46, 45, TestContext.CurrentContext.TestDirectory));
 
             string filepath = Path.Combine(Path.GetDirectoryName(Sweet.lollipop.input_files[0].complete_path), Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path));
 

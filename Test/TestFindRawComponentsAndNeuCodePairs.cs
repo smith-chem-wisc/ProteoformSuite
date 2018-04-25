@@ -43,10 +43,7 @@ namespace Test
             Assert.AreEqual(Math.Round(8982.7258, 4), Math.Round(c1.reported_monoisotopic_mass, 4));
             Assert.AreEqual(Math.Round(2868299.6, 1), Math.Round(c1.intensity_sum, 1)); //charge state normalized
             Assert.AreEqual(Math.Round(2836046.31, 2), Math.Round(NeuCodePair.calculate_sum_intensity_olcs(c1.charge_states, overlapping_charge_states), 2));
-            Assert.AreEqual(9, c1.num_charge_states);
-            Assert.AreEqual(Math.Round(2127.5113, 4), Math.Round(c1.reported_delta_mass, 4));
-            Assert.AreEqual(Math.Round(54.97795307, 8), Math.Round(c1.relative_abundance, 8));
-            Assert.AreEqual(Math.Round(1.141297566, 8), Math.Round(c1.fract_abundance, 8));
+            Assert.AreEqual(9, c1.charge_states.Count);
             Assert.AreEqual("413-415", c1.min_scan + "-" + c1.max_scan);
             Assert.AreEqual("56.25-56.51", c1.min_rt + "-" + c1.max_rt);
             Assert.AreEqual(Math.Round(56.3809775, 7), Math.Round(c1.rt_apex, 7));
