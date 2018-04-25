@@ -256,8 +256,7 @@ namespace ProteoformSuiteInternal
                 {
                     Loaders.LoadElements(Directory.GetCurrentDirectory() + @"\elements.dat");
                     IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
-                      ThermoDynamicData.InitiateDynamicConnection(f.complete_path) :
-                       // ThermoStaticData.LoadAllStaticData(f.complete_path) :
+                        ThermoStaticData.LoadAllStaticData(f.complete_path) :
                        null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(f.complete_path);
                     string[] lines = File.ReadAllLines(filelocation + "_ms1ft.csv");
