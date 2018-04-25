@@ -355,11 +355,17 @@
             // 
             // nud_fit
             // 
+            this.nud_fit.DecimalPlaces = 2;
             this.nud_fit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_fit.Location = new System.Drawing.Point(240, 46);
             this.nud_fit.Name = "nud_fit";
             this.nud_fit.Size = new System.Drawing.Size(49, 20);
             this.nud_fit.TabIndex = 75;
+            this.nud_fit.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // nud_likelihood
             // 
@@ -401,6 +407,11 @@
             // 
             this.nud_maxRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nud_maxRT.Location = new System.Drawing.Point(120, 46);
+            this.nud_maxRT.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
             this.nud_maxRT.Name = "nud_maxRT";
             this.nud_maxRT.Size = new System.Drawing.Size(49, 20);
             this.nud_maxRT.TabIndex = 70;

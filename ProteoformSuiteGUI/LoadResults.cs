@@ -42,6 +42,8 @@ namespace ProteoformSuiteGUI
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            nud_likelihood.Value = 0;
+            nud_fit.Value = 100;
         }
 
         public List<DataTable> SetTables()
@@ -499,7 +501,7 @@ namespace ProteoformSuiteGUI
             {
                 MessageBox.Show("Please enter raw files to deconvolute."); return;
             }
-            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxRT.Value), Convert.ToInt32(nud_minRT.Value), 100, -10, Environment.CurrentDirectory);
+            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxRT.Value), Convert.ToInt32(nud_minRT.Value), Convert.ToDouble(nud_fit.Value), Convert.ToDouble(nud_likelihood.Value), Environment.CurrentDirectory);
             MessageBox.Show(deconv_results);
         }
 

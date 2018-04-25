@@ -192,40 +192,49 @@ namespace ProteoformSuiteInternal
         public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, double maxfit, double minlikelihood, string directory)
         {
             int successfully_deconvoluted_files = 0;
-
+            string dir = Directory.GetCurrentDirectory();
+            Loaders.LoadElements(dir + @"\elements.dat");
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
-                    
-                    Process proc = new Process();
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    string input = f.complete_path;
-                    string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
-                    string promexlocation = directory + @"\ProMex";
-                    List<int> ms1ft_featureIDs = new List<int>();
-                    List<double> ms1ft_likelihoods = new List<double>();
+
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                string input = f.complete_path;
+                string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
+                //IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
+                //   ThermoStaticData.LoadAllStaticData(f.complete_path) :
+                //   null;
+                //if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(f.complete_path);
+                //var summedFile = new SummedMsDataFile(myMsDataFile, 6, 5);
+                //filelocation = f.directory + "\\" + f.filename + "_summed";
+                //MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(summedFile, summedFileName, false);
+
+                string promexlocation = directory + @"\ProMex";
+
+                Dictionary<int, double> ms1ft_likelihood = new Dictionary<int, double>(); //key is feature id
 
                 if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
-                    {
-                        startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
-                    }
-                    else
-                    {
-                        return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
-                    }
+                {
+                    startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                }
+                else
+                {
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                }
 
-                    startInfo.UseShellExecute = false;
-                    startInfo.RedirectStandardInput = true;
-                    startInfo.RedirectStandardOutput = false;
-                    startInfo.CreateNoWindow = true;
-                    proc.StartInfo = startInfo;
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = false;
+                startInfo.CreateNoWindow = true;
+                proc.StartInfo = startInfo;
 
-                    proc.Start();
+                proc.Start();
 
-                    proc.StandardInput.WriteLine("cd " + promexlocation);
+                proc.StandardInput.WriteLine("cd " + promexlocation);
 
-                    proc.StandardInput.WriteLine("ProMex.exe -i " + input + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
-                    proc.StandardInput.Close();
-                    proc.WaitForExit();
+                proc.StandardInput.WriteLine("ProMex.exe -i " + f.complete_path + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
+                proc.StandardInput.Close();
+                proc.WaitForExit();
                 proc.Close();
 
                 if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
@@ -243,8 +252,7 @@ namespace ProteoformSuiteInternal
                         {
                             int featureID = int.Parse(fields[0]);
                             double likelihood = double.Parse(fields[16]);
-                            ms1ft_featureIDs.Add(featureID);
-                            ms1ft_likelihoods.Add(likelihood);
+                            ms1ft_likelihood.Add(featureID, likelihood);
                         }
                     }
                 }
@@ -253,9 +261,12 @@ namespace ProteoformSuiteInternal
                 {
                     double minMass = 0;
                     int numChargesRequired = 3;
-                    string dir = Directory.GetCurrentDirectory();
-                    Loaders.LoadElements(dir + @"\elements.dat");
-                    var SpectraFile = ThermoDynamicData.InitiateDynamicConnection(input);
+                    string asdf = Directory.GetCurrentDirectory();
+                    Loaders.LoadElements(asdf + @"\elements.dat");
+                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
+                       ThermoStaticData.LoadAllStaticData(f.complete_path) :
+                       null;
+                    if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(f.complete_path);
                     Dictionary<int, Feature> featureIdToFeature = new Dictionary<int, Feature>();
                     StreamReader reader = new StreamReader(filelocation + "_ms1ft.csv");
                     string line;
@@ -266,36 +277,27 @@ namespace ProteoformSuiteInternal
                         line = reader.ReadLine();
                         if (linenum != 1)
                         {
-                            int featureID = 0;
-
                             var massWithScan = new Envelope(line);
 
                             if (massWithScan.fit <= maxfit)
                             {
-                                for (int i = 0; i <= ms1ft_featureIDs.Capacity; i++)
+                                if (ms1ft_likelihood.ContainsKey(massWithScan.FeatureID) && ms1ft_likelihood[massWithScan.FeatureID] >= minlikelihood)
                                 {
-                                    //Debug.WriteLine(massWithScan.FeatureID);
-                                    //Debug.WriteLine(ms1ft_featureIDs[i]);
-                                    if (massWithScan.FeatureID == ms1ft_featureIDs[i])
+                                    var x = myMsDataFile.GetOneBasedScan(massWithScan.scan_num);
+                                    if (x != null)
                                     {
-                                        featureID = ms1ft_featureIDs[i];
-                                        break;
-                                    }
-                                }
-                                if (ms1ft_likelihoods[featureID - 1] >= minlikelihood)
-                                {
-                                    massWithScan.retentionTime = SpectraFile.GetOneBasedScan(massWithScan.scan_num).RetentionTime;
-                                    if (massWithScan.retentionTime >= minRT & massWithScan.retentionTime <= maxRT)
-                                    {
-                                        if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
-                                            featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
-                                        else
-                                            featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
+                                        massWithScan.retentionTime = x.RetentionTime;
+                                        if (massWithScan.retentionTime >= minRT & massWithScan.retentionTime <= maxRT)
+                                        {
+                                            if (featureIdToFeature.ContainsKey(massWithScan.FeatureID))
+                                                featureIdToFeature[massWithScan.FeatureID].AddEnvelope(massWithScan);
+                                            else
+                                                featureIdToFeature.Add(massWithScan.FeatureID, new Feature(massWithScan));
+                                        }
                                     }
                                 }
                             }
                         }
-
                         linenum++;
                     }
 
