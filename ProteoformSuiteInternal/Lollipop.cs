@@ -192,7 +192,7 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public string promex_deconvolute(int maxcharge, int mincharge, int maxRT, int minRT, string directory)
+        public string promex_deconvolute(int maxcharge, int mincharge, double maxRT, double minRT, string directory)
         {
             int successfully_deconvoluted_files = 0;
             string dir = Directory.GetCurrentDirectory();
