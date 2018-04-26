@@ -2,12 +2,6 @@
 using System.Linq;
 using System;
 using Chemistry;
-using System.Collections.Generic;
-using System.IO;
-using Proteomics;
-using System.Linq;
-using System;
-using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
