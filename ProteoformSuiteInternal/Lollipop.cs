@@ -948,7 +948,7 @@ namespace ProteoformSuiteInternal
         public static bool gene_centric_families = false;
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
-
+        public bool only_assign_common_or_known_mods = true;
         public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",

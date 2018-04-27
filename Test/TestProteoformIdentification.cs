@@ -14,10 +14,11 @@ namespace Test
         [Test]
         public void assign_missing_aa_identity()
         {
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 886.45, 0); // sequence with all serines
             t.sequence = "AAAAAAAAAAAS";
-            t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") } );
+            t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 886.46, 0, true);
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 799.43, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 87.03);
@@ -48,8 +49,8 @@ namespace Test
             t = ConstructorsForTesting.make_a_theoretical("", 886.45, 0); // sequence with all serines
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
             t.sequence = "SAAAAAAAAAAA";
-             e = ConstructorsForTesting.ExperimentalProteoform("", 886.47, 0, true);
-             e2 = ConstructorsForTesting.ExperimentalProteoform("", 799.44, 0, true);
+            e = ConstructorsForTesting.ExperimentalProteoform("", 886.47, 0, true);
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 799.44, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 87.03);
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
@@ -73,11 +74,11 @@ namespace Test
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
             t.sequence = "SAAAAAAAAAA";
             t.begin = 2;
-             e = ConstructorsForTesting.ExperimentalProteoform("", 815.41, 0, true);
-             e2 = ConstructorsForTesting.ExperimentalProteoform("", 946.45, 0, true);
+            e = ConstructorsForTesting.ExperimentalProteoform("", 815.41, 0, true);
+            e2 = ConstructorsForTesting.ExperimentalProteoform("", 946.45, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 113);
             ModificationMotif.TryGetMotif("M", out motif);
-             set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("M retention", "AminoAcid", motif, TerminusLocalization.Any, 113)) });
+            set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("M retention", "AminoAcid", motif, TerminusLocalization.Any, 113)) });
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
@@ -102,6 +103,8 @@ namespace Test
         [Test]
         public void loss_of_ptm_set()
         {
+            Sweet.lollipop = new Lollipop();
+
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
 
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
@@ -184,6 +187,8 @@ namespace Test
         [Test]
         public void unmodified_identification()
         {
+            Sweet.lollipop = new Lollipop();
+
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
 
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
@@ -197,7 +202,7 @@ namespace Test
                 new Ptm(0, new ModificationWithMass("acetyl loss", "", motif, TerminusLocalization.Any, -42.01)),
             });
 
-            PtmSet set_unmodified = new PtmSet(new List<Ptm>{ new Ptm() });
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
 
             // Proteoforms start without any modifications in the PtmSet
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
@@ -219,9 +224,11 @@ namespace Test
         [Test]
         public void adduct_experimental()
         {
+            Sweet.lollipop = new Lollipop();
+
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, !Sweet.lollipop.neucode_labeled, Sweet.lollipop.neucode_labeled, false).AA_Masses;
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
-            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("Sulfate Adduct", "", motif, TerminusLocalization.Any, 97.97)) });
+            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new ModificationWithMass("Sulfate Adduct", "Common", motif, TerminusLocalization.Any, 97.97)) });
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
@@ -264,7 +271,7 @@ namespace Test
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet acetyl = new PtmSet(new List<Ptm>
             {
-                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.011))
+                new Ptm(0, new ModificationWithMass("acetyl", "Common", motif, TerminusLocalization.Any, 42.011))
             });
 
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
@@ -274,14 +281,6 @@ namespace Test
             {
                 { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
             };
-
-
-            acetyl = new PtmSet(new List<Ptm>
-            {
-                new Ptm(0, new ModificationWithMass("acetyl", "", motif, TerminusLocalization.Any, 42.011))
-            });
-
-             set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
 
             // Proteoforms start without any modifications in the PtmSet
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
@@ -305,6 +304,103 @@ namespace Test
             Assert.IsTrue(e2.ambiguous); //dont have same path length, still ambiguous
             Assert.IsFalse(e1.ambiguous);
             Assert.IsTrue(e3.ambiguous);
+        }
+
+        [Test]
+        public void only_common_and_known_mods()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+            Sweet.lollipop.only_assign_common_or_known_mods = true;
+            Lollipop.preferred_gene_label = "primary";
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("T1", 100000, 0); // sequence with all serines
+            t1.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene1", "gene1") });
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", 10000, 0, true);
+            ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
+            PtmSet acetyl = new PtmSet(new List<Ptm>
+            {
+                new Ptm(0, new ModificationWithMass("acetyl", "Common", motif, TerminusLocalization.Any, 42.011))
+            });
+
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+
+
+            //unmodified = OK
+            ConstructorsForTesting.make_relation(e1, t1, ProteoformComparison.ExperimentalTheoretical, 0);
+            e1.linked_proteoform_references = null;
+            e1.relationships.First().Accepted = true;
+            e1.relationships.First().peak = new DeltaMassPeak(e1.relationships.First(), new HashSet<ProteoformRelation> { e1.relationships.First() });
+            ProteoformFamily fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            fam.identify_experimentals();
+            Assert.IsNotNull(e1.linked_proteoform_references);
+
+            //acetylated OK if common
+            t1.modified_mass = 1000;
+            e1.modified_mass = 1042;
+            e1.linked_proteoform_references = null;
+            e1.relationships.Clear();
+            t1.relationships.Clear();
+            ConstructorsForTesting.make_relation(e1, t1, ProteoformComparison.ExperimentalTheoretical, 42.01);
+            e1.relationships.First().Accepted = true;
+            e1.relationships.First().peak = new DeltaMassPeak(e1.relationships.First(), new HashSet<ProteoformRelation> { e1.relationships.First() });
+            Assert.AreEqual(1, e1.relationships.First().peak.possiblePeakAssignments.Count);
+            fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            fam.identify_experimentals();
+            Assert.IsNotNull(e1.linked_proteoform_references);
+
+            //acetylated not ok if Uniprot ptm type...
+            e1.linked_proteoform_references = null;
+            acetyl = new PtmSet(new List<Ptm>
+            {
+                new Ptm(0, new ModificationWithMass("acetyl", "UniProt", motif, TerminusLocalization.Any, 42.011))
+            });
+
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+            e1.linked_proteoform_references = null;
+            e1.relationships.Clear();
+            t1.relationships.Clear();
+            ConstructorsForTesting.make_relation(e1, t1, ProteoformComparison.ExperimentalTheoretical, 42.01);
+            e1.relationships.First().Accepted = true;
+            e1.relationships.First().peak = new DeltaMassPeak(e1.relationships.First(), new HashSet<ProteoformRelation> { e1.relationships.First() });
+            Assert.AreEqual(1, e1.relationships.First().peak.possiblePeakAssignments.Count);
+            fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            fam.identify_experimentals();
+            Assert.IsNull(e1.linked_proteoform_references);
+
+            //acetylated ok if theo has in ptmset...
+            e1.linked_proteoform_references = null;
+            e1.relationships.Clear();
+            t1.relationships.Clear();
+            t1.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Add(new KeyValuePair<int, List<Modification>>(22, new List<Modification>() { acetyl.ptm_combination.First().modification }));
+            ConstructorsForTesting.make_relation(e1, t1, ProteoformComparison.ExperimentalTheoretical, 42.01);
+            e1.relationships.First().Accepted = true;
+            e1.relationships.First().peak = new DeltaMassPeak(e1.relationships.First(), new HashSet<ProteoformRelation> { e1.relationships.First() });
+            Assert.AreEqual(1, e1.relationships.First().peak.possiblePeakAssignments.Count);
+            fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            fam.identify_experimentals();
+            Assert.IsNotNull(e1.linked_proteoform_references);
+
         }
     }
 }

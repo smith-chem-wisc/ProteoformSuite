@@ -51,7 +51,8 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return proteoform.linked_proteoform_references != null ? proteoform.linked_proteoform_references.First().accession.Split('_')[0] : "";
+                return proteoform as TopDownProteoform != null ? proteoform.accession.Split('_')[0] :
+                    proteoform.linked_proteoform_references != null ? proteoform.linked_proteoform_references.First().accession.Split('_')[0] : "";
             }
         }
 
