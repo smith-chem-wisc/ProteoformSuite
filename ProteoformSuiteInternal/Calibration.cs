@@ -483,22 +483,23 @@ namespace ProteoformSuiteInternal
                 });
                 workbook.Save();
             }
-            else if (file.extension == ".csv")
+            else if (file.extension == ".tsv")
             {
                 string[] old = File.ReadAllLines(old_absolute_path);
                 List<string> new_file = new List<string>();
                 new_file.Add(old[0]);
                 for(int i = 1; i < old.Length; i++)
                 {
-                    string[] row = old[i].Split(',');
-                    if (old.Length == 9 && Double.TryParse(row[2], out double intensity) && Double.TryParse(row[3], out double mz) && Int32.TryParse(row[1], out int charge))
+                    string[] row = old[i].Split('\t');
+                    if (row.Length == 19 && Double.TryParse(row[5], out double mass) && Double.TryParse(row[9], out double intensity))
                     {
                         double value;
-                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mz, 2)), out value))
+                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
-                            row[3] = mz.ToString();
-                            row[5] = mz.ToMass(charge).ToString();
-                            new_file.Add(String.Join(",", row));
+                            //do intensity weighted new monoisotopic mass for each feature
+                            //just rewrite, don't bother with dictionary, etc......
+                            row[5] = value.ToString();
+                            new_file.Add(String.Join("\t", row));
                         }
                     }
                 }

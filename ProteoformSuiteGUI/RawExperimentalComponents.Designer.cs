@@ -266,6 +266,11 @@ namespace ProteoformSuiteGUI
             // nUD_min_liklihood_ratio
             // 
             this.nUD_min_liklihood_ratio.Location = new System.Drawing.Point(10, 30);
+            this.nUD_min_liklihood_ratio.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.nUD_min_liklihood_ratio.Name = "nUD_min_liklihood_ratio";
             this.nUD_min_liklihood_ratio.Size = new System.Drawing.Size(120, 20);
             this.nUD_min_liklihood_ratio.TabIndex = 2;

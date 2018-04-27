@@ -44,8 +44,6 @@
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.label_minRT = new System.Windows.Forms.Label();
             this.label_maxRT = new System.Windows.Forms.Label();
-            this.nud_minRT = new System.Windows.Forms.NumericUpDown();
-            this.nud_maxRT = new System.Windows.Forms.NumericUpDown();
             this.label_mincharge = new System.Windows.Forms.Label();
             this.label_maxcharge = new System.Windows.Forms.Label();
             this.nud_mincharge = new System.Windows.Forms.NumericUpDown();
@@ -96,8 +94,6 @@
             this.param_splitcontainer.Panel1.SuspendLayout();
             this.param_splitcontainer.Panel2.SuspendLayout();
             this.param_splitcontainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).BeginInit();
             this.fullrun_groupbox.SuspendLayout();
@@ -250,13 +246,11 @@
             // rb_neucode
             // 
             this.rb_neucode.AutoSize = true;
-            this.rb_neucode.Checked = true;
             this.rb_neucode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rb_neucode.Location = new System.Drawing.Point(13, 4);
             this.rb_neucode.Name = "rb_neucode";
             this.rb_neucode.Size = new System.Drawing.Size(111, 17);
             this.rb_neucode.TabIndex = 56;
-            this.rb_neucode.TabStop = true;
             this.rb_neucode.Text = "NeuCode Labeled";
             this.rb_neucode.UseVisualStyleBackColor = true;
             this.rb_neucode.CheckedChanged += new System.EventHandler(this.rb_neucode_CheckedChanged);
@@ -264,11 +258,13 @@
             // rb_unlabeled
             // 
             this.rb_unlabeled.AutoSize = true;
+            this.rb_unlabeled.Checked = true;
             this.rb_unlabeled.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rb_unlabeled.Location = new System.Drawing.Point(13, 30);
             this.rb_unlabeled.Name = "rb_unlabeled";
             this.rb_unlabeled.Size = new System.Drawing.Size(73, 17);
             this.rb_unlabeled.TabIndex = 57;
+            this.rb_unlabeled.TabStop = true;
             this.rb_unlabeled.Text = "Unlabeled";
             this.rb_unlabeled.UseVisualStyleBackColor = true;
             this.rb_unlabeled.CheckedChanged += new System.EventHandler(this.rb_unlabeled_CheckedChanged);
@@ -309,8 +305,6 @@
             // 
             this.param_splitcontainer.Panel1.Controls.Add(this.label_minRT);
             this.param_splitcontainer.Panel1.Controls.Add(this.label_maxRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_minRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_maxRT);
             this.param_splitcontainer.Panel1.Controls.Add(this.label_mincharge);
             this.param_splitcontainer.Panel1.Controls.Add(this.label_maxcharge);
             this.param_splitcontainer.Panel1.Controls.Add(this.nud_mincharge);
@@ -322,52 +316,6 @@
             this.param_splitcontainer.Size = new System.Drawing.Size(1245, 98);
             this.param_splitcontainer.SplitterDistance = 648;
             this.param_splitcontainer.TabIndex = 1;
-            // 
-            // label_minRT
-            // 
-            this.label_minRT.AutoSize = true;
-            this.label_minRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_minRT.Location = new System.Drawing.Point(51, 48);
-            this.label_minRT.Name = "label_minRT";
-            this.label_minRT.Size = new System.Drawing.Size(42, 13);
-            this.label_minRT.TabIndex = 73;
-            this.label_minRT.Text = "Min RT";
-            // 
-            // label_maxRT
-            // 
-            this.label_maxRT.AutoSize = true;
-            this.label_maxRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_maxRT.Location = new System.Drawing.Point(172, 49);
-            this.label_maxRT.Name = "label_maxRT";
-            this.label_maxRT.Size = new System.Drawing.Size(45, 13);
-            this.label_maxRT.TabIndex = 72;
-            this.label_maxRT.Text = "Max RT";
-            // 
-            // nud_minRT
-            // 
-            this.nud_minRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_minRT.Location = new System.Drawing.Point(0, 45);
-            this.nud_minRT.Name = "nud_minRT";
-            this.nud_minRT.Size = new System.Drawing.Size(49, 20);
-            this.nud_minRT.TabIndex = 71;
-            // 
-            // nud_maxRT
-            // 
-            this.nud_maxRT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_maxRT.Location = new System.Drawing.Point(120, 46);
-            this.nud_maxRT.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.nud_maxRT.Name = "nud_maxRT";
-            this.nud_maxRT.Size = new System.Drawing.Size(49, 20);
-            this.nud_maxRT.TabIndex = 70;
-            this.nud_maxRT.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
             // 
             // label_mincharge
             // 
@@ -781,8 +729,6 @@
             this.param_splitcontainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
             this.param_splitcontainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_minRT)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_maxRT)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).EndInit();
             this.fullrun_groupbox.ResumeLayout(false);
@@ -829,8 +775,6 @@
         private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.Label label_minRT;
         private System.Windows.Forms.Label label_maxRT;
-        private System.Windows.Forms.NumericUpDown nud_minRT;
-        private System.Windows.Forms.NumericUpDown nud_maxRT;
         private System.Windows.Forms.Label label_mincharge;
         private System.Windows.Forms.Label label_maxcharge;
         private System.Windows.Forms.NumericUpDown nud_mincharge;

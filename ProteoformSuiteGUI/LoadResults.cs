@@ -170,8 +170,6 @@ namespace ProteoformSuiteGUI
                 panel_step.Visible = true;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_maxRT.Visible = false;
-                nud_minRT.Visible = false;
                 label_maxcharge.Visible = false;
                 label_mincharge.Visible = false;
                 label_maxRT.Visible = false;
@@ -197,8 +195,6 @@ namespace ProteoformSuiteGUI
                 panel_step.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_maxRT.Visible = false;
-                nud_minRT.Visible = false;
                 label_maxcharge.Visible = false;
                 label_mincharge.Visible = false;
                 label_maxRT.Visible = false;
@@ -233,8 +229,6 @@ namespace ProteoformSuiteGUI
                 panel_step.Visible = false;
                 nud_maxcharge.Visible = true;
                 nud_mincharge.Visible = true;
-                nud_maxRT.Visible = true;
-                nud_minRT.Visible = true;
                 label_maxcharge.Visible = true;
                 label_mincharge.Visible = true;
                 label_maxRT.Visible = true;
@@ -499,7 +493,7 @@ namespace ProteoformSuiteGUI
             {
                 MessageBox.Show("Please enter raw files to deconvolute."); return;
             }
-            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToInt32(nud_maxRT.Value), Convert.ToInt32(nud_minRT.Value), Environment.CurrentDirectory);
+            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Environment.CurrentDirectory);
             MessageBox.Show(deconv_results);
         }
 

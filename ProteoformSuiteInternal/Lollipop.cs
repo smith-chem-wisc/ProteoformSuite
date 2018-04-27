@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
 using System.Diagnostics;
-using ClosedXML.Excel;
 
 
 namespace ProteoformSuiteInternal
@@ -43,35 +42,35 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Deconvolution Results for Identification (.xlsx, .csv)",
-            "Deconvolution Results for Quantification (.xlsx)",
+            "Deconvolution Results for Identification (.xlsx, .tsv)",
+            "Deconvolution Results for Quantification (.xlsx, .tsv)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
             "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
             "Spectra Files (.raw, .mzML)",
-            "Uncalibrated Deconvolution Results (.xlsx)",
+            "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
         };
 
         public static readonly List<string>[] acceptable_extensions = new[]
         {
+            new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx", ".csv" },
-            new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
-            new List<string> { ".xlsx" },
+            new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx" },
         };
 
         public static readonly string[] file_filters = new[]
         {
-            "Excel Files (*.xlsx, *.csv) | *.xlsx;*.csv",
-            "Excel Files (*.xlsx) | *.xlsx",
+            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
+            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
-            "Excel Files (*.xlsx) | *.xlsx",
-            "Excel Files (*.xlsx) | *.xlsx",
+            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
+            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
         };
 
         public static readonly List<Purpose>[] file_types = new[]
@@ -140,7 +139,7 @@ namespace ProteoformSuiteInternal
 
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
-        public bool neucode_labeled = true;
+        public bool neucode_labeled = false;
         public double raw_component_mass_tolerance = 10;
         public double min_likelihood_ratio = 0;
         public double max_fit = 0.2;
@@ -155,7 +154,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
                 List<Component> someComponents = file.extension == ".xlsx" ? file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics) 
-                        : file.reader.read_components_from_csv(file, remove_missed_monos_and_harmonics);
+                        : file.reader.read_components_from_tsv(file, remove_missed_monos_and_harmonics);
                 lock (destination) destination.AddRange(someComponents);
             });
 
@@ -180,19 +179,14 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION Public Fields
 
-        public double min_RT = 40;
-        public double max_RT = 90;
-        public double aggregation_tolerance_ppm = 5;
-        public double deconvolution_tolerance_ppm = 5;
         public int min_assumed_cs = 5;
         public int max_assumed_cs = 50;
-        public int min_num_cs_deconvolution_component = 3; //min number of CS for decon feature to become a component
 
         #endregion DECONVOLUTION Public Fields
 
         #region DECONVOLUTION
 
-        public string promex_deconvolute(int maxcharge, int mincharge, double maxRT, double minRT, string directory)
+        public string promex_deconvolute(int maxcharge, int mincharge, string directory)
         {
             int successfully_deconvoluted_files = 0;
             string dir = Directory.GetCurrentDirectory();
@@ -202,6 +196,22 @@ namespace ProteoformSuiteInternal
                 Process proc = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 string filelocation = Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path));
+                if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
+                {
+                    File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
+                }
+                if (File.Exists(Path.Combine(filelocation + ".pbf")))
+                {
+                    File.Delete(Path.Combine(filelocation + ".pbf"));
+                }
+                if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
+                {
+                    File.Delete(Path.Combine(filelocation + ".ms1ft"));
+                }
+                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
+                {
+                    File.Delete(Path.Combine(filelocation + "_ms1ft.csv"));
+                }
 
                 string promexlocation = directory + @"\ProMex";
 
@@ -229,58 +239,51 @@ namespace ProteoformSuiteInternal
                 proc.WaitForExit();
                 proc.Close();
 
-                Dictionary<int, double> ms1ft_likelihood = new Dictionary<int, double>(); //key is feature id
-                if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
-                {
-                    StreamReader reader = File.OpenText(Path.Combine(filelocation + ".ms1ft"));
-                    string line;
-                    string ignore = "FeatureID";
-
-                    while (reader.Peek() > 0)
-                    {
-                        line = reader.ReadLine();
-                        // 16 total fields
-                        string[] fields = line.Split('\t');
-                        if (fields[0] != ignore)
-                        {
-                            int featureID = int.Parse(fields[0]);
-                            double likelihood = double.Parse(fields[16]);
-                            ms1ft_likelihood.Add(featureID, likelihood);
-                        }
-                    }
-                    reader.Close();
-                    File.Delete(Path.Combine(filelocation + ".ms1ft"));
-                }
-
+                Dictionary<int, List<string[]>> csv_feature_info = new Dictionary<int, List<string[]>>(); //key is feature id, value is row from .ms1ft file
                 if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
                 {
-                    Loaders.LoadElements(Directory.GetCurrentDirectory() + @"\elements.dat");
-                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
-                        ThermoStaticData.LoadAllStaticData(f.complete_path) :
-                       null;
-                    if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(f.complete_path);
-                    string[] lines = File.ReadAllLines(filelocation + "_ms1ft.csv");
-                    List<string> new_lines = new List<string>();
-                    new_lines.Add(lines[0] + ",Likelihood Ratio,Retention Time");
+                    string[] lines = File.ReadAllLines(Path.Combine(filelocation + "_ms1ft.csv"));
                     for (int i = 1; i < lines.Length; i++)
                     {
-                        string[] cs = lines[i].Split(',');
-                        if (cs.Length < 7)
+                        string[] fields = lines[i].Split(',');
+                        if (fields.Length >= 7 && Int32.TryParse(fields[6], out int featureID))
                         {
-                            continue;
-                        }
-                        bool ok1 = Int32.TryParse(cs[0], out int scan_num);
-                        bool ok2 = Int32.TryParse(cs[6], out int feature_ID);
-                        if (ok1 && ok2 && ms1ft_likelihood.TryGetValue(feature_ID, out double likelihood_ratio))
-                        {
-                            var x = myMsDataFile.GetOneBasedScan(scan_num);
-                            if (x != null && x.RetentionTime >= minRT && x.RetentionTime <= maxRT)
+                            if(csv_feature_info.TryGetValue(featureID, out List<string[]> value))
                             {
-                                new_lines.Add(lines[i] + "," + likelihood_ratio + "," + x.RetentionTime);
+                                value.Add(fields);
+                            }
+                            else
+                            {
+                                csv_feature_info.Add(featureID, new List<string[]>() { fields });
                             }
                         }
                     }
-                    File.WriteAllLines(filelocation + "_ms1ft.csv", new_lines);
+                    File.Delete(Path.Combine(filelocation + "_ms1ft.csv"));
+                }
+
+                if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
+                {
+                    string[] lines = File.ReadAllLines(filelocation + ".ms1ft");
+                    List<string> new_lines = new List<string>();
+                    new_lines.Add(lines[0] + "\tCharges\tBest Fit");
+                    for (int i = 1; i < lines.Length; i++)
+                    {
+                        string[] cs = lines[i].Split('\t');
+                        if (cs.Length < 17)
+                        {
+                            continue;
+                        }
+                        if (Int32.TryParse(cs[6], out int feature_ID) && csv_feature_info.TryGetValue(feature_ID, out List<string[]> fields) && fields.Count > 0)
+                        {
+                            //get charges
+                            List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();
+
+                            //likelihood ratio
+                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + fields.First()[4]);
+                        }
+                    }
+                    File.WriteAllLines(filelocation + ".tsv", new_lines);
+                    File.Delete(Path.Combine(filelocation + ".ms1ft"));
                     successfully_deconvoluted_files++;
                 }
                 if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
@@ -1249,6 +1252,8 @@ namespace ProteoformSuiteInternal
 
         public string calibrate_files()
         {
+            Sweet.lollipop.min_likelihood_ratio = -100;
+            Sweet.lollipop.max_fit = 100;
             if (input_files.Where(f => f.purpose == Purpose.SpectraFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
                 return "Label condition, fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
             if (input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
@@ -1308,14 +1313,29 @@ namespace ProteoformSuiteInternal
             //calibrate components with same topdown file, biological replicate, fraction, and technical replicate
             Parallel.ForEach(calibration_components.Where(c => c.input_file.lt_condition == raw_file.lt_condition && c.input_file.biological_replicate == raw_file.biological_replicate && c.input_file.fraction == raw_file.fraction && c.input_file.technical_replicate == raw_file.technical_replicate), c =>
             {
-                foreach (ChargeState cs in c.charge_states)
+                if (c.input_file.extension == ".xlsx")
                 {
-                    var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2));
+                    foreach (ChargeState cs in c.charge_states)
+                    {
+                        Tuple<string, double, double> key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2));
+                        lock (file_mz_correction)
+                        {
+                            if (!file_mz_correction.ContainsKey(key))
+                            {
+                                file_mz_correction.Add(key, Math.Round(cs.mz_centroid, 5));
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(c.intensity_sum, 0), Math.Round(c.reported_monoisotopic_mass, 2));
+                    var best_cs = c.charge_states.OrderByDescending(cs => cs.intensity).First();
                     lock (file_mz_correction)
                     {
                         if (!file_mz_correction.ContainsKey(key))
                         {
-                            file_mz_correction.Add(key, Math.Round(cs.mz_centroid, 5));
+                            file_mz_correction.Add(key, Math.Round(best_cs.mz_centroid.ToMass(best_cs.charge_count) , 5));
                         }
                     }
                 }

@@ -497,10 +497,10 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Begin and End", typeof(string));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
-            List<string> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + "_" + x.biological_replicate + "_" + x.fraction + "_" + x.technical_replicate).Distinct().ToList();
+            List<string> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + "|" + x.biological_replicate + "|" + x.fraction + "|" + x.technical_replicate).Distinct().ToList();
             foreach (string f in files)
             {
-                string[] file_info = f.Split('_');
+                string[] file_info = f.Split('|');
                 string column_name = "Condition " + file_info[0] + ", Biorep " + file_info[1] + ", Fraction " + file_info[2] + ", Techrep " + file_info[3];
                 results.Columns.Add(column_name, typeof(double));
             }
@@ -541,7 +541,7 @@ namespace ProteoformSuiteInternal
                 array[8] = e.agg_rt;
                 for (int f = 0; f < files.Count; f++)
                 {
-                    string[] file_info = files[f].Split('_');
+                    string[] file_info = files[f].Split('|');
                     array[9 + f] = e.matching_experimental == null ? double.NaN : e.matching_experimental.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
                 }
                 results.Rows.Add(array);
