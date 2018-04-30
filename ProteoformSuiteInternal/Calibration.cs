@@ -430,7 +430,7 @@ namespace ProteoformSuiteInternal
                 if (row.RowNumber() != 1)
                 {
                     double corrected_mass;
-                    if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble()), out corrected_mass))
+                    if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0], row.Cell(19).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
                     {
                         row.Cell(17).SetValue(corrected_mass);
                     }
@@ -474,7 +474,7 @@ namespace ProteoformSuiteInternal
                         {
                             double value;
                             //CHECK WITH CHARGE NORMALIZED INTENSITY!! 
-                            if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                            if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
                             {
                                 row.Cell(4).SetValue(value);
                             }
@@ -491,10 +491,10 @@ namespace ProteoformSuiteInternal
                 for(int i = 1; i < old.Length; i++)
                 {
                     string[] row = old[i].Split('\t');
-                    if (row.Length == 19 && Double.TryParse(row[5], out double mass) && Double.TryParse(row[9], out double intensity))
+                    if (row.Length == 20 && Double.TryParse(row[5], out double mass) && Double.TryParse(row[9], out double intensity))
                     {
                         double value;
-                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
+                        if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
                             //do intensity weighted new monoisotopic mass for each feature
                             //just rewrite, don't bother with dictionary, etc......

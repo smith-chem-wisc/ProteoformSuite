@@ -98,17 +98,24 @@ namespace ProteoformSuiteInternal
             for (int i = 1; i < lines.Length; i++)
             {
                 string[] row = lines[i].Split('\t');
-                if (row.Length == 19)
+                if (row.Length == 20)
                 {
                     if (Double.TryParse(row[16], out double likelihood_ratio) && likelihood_ratio >= Sweet.lollipop.min_likelihood_ratio
-                        && Double.TryParse(row[18], out double fit) && fit <= Sweet.lollipop.max_fit)
+                        && Double.TryParse(row[19], out double fit) && fit <= Sweet.lollipop.max_fit)
                     {
-                        List<string> asdf = row[17].Split(',').ToList();
+                        List<string> charge_column = row[17].Split(',').ToList();
+                        List<string> intensity_column = row[18].Split(',').ToList();
+                        if (charge_column.Count != intensity_column.Count) continue;
                         List<int> charges = new List<int>();
-                        foreach (var cs in asdf)
+                        List<double> intensities = new List<double>();
+                        for(int a = 0; a < charge_column.Count; a++)
                         {
-                            int asdfg = Int32.TryParse(cs, out int ok) ? ok : 0;
-                            if (asdfg > 0) charges.Add(ok);
+                            int asdfg = Int32.TryParse(charge_column[a], out int ok) ? ok : 0;
+                            if (asdfg > 0)
+                            {
+                                charges.Add(ok);
+                                intensities.Add(Double.TryParse(intensity_column[a], out double intensity) ? intensity : 0);
+                            }
                         }
                         if (charges.Count < 1) continue;
                         List<string> cellStrings = new List<string>();
@@ -127,10 +134,11 @@ namespace ProteoformSuiteInternal
 
                         Component c = new Component(cellStrings, file);
 
-                        foreach (int charge in charges)
+                        for(int a = 0; a < charges.Count; a++)
                         {
                             //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!! 
-                            c.charge_states.Add(new ChargeState(new List<string>() { charge.ToString(), (c.intensity_reported / charges.Count * charge).ToString(), (c.reported_monoisotopic_mass.ToMz(charge)).ToString(), c.reported_monoisotopic_mass.ToString() }));
+                            //multiply by charge for intensity because constructor divides (thermo is not charge state normalized!)
+                            c.charge_states.Add(new ChargeState(new List<string>() { charges[a].ToString(), (intensities[a] * charges[a]).ToString(), (c.reported_monoisotopic_mass.ToMz(charges[a])).ToString(), c.reported_monoisotopic_mass.ToString() }));
                         }
 
                         c.calculate_properties();

@@ -265,7 +265,7 @@ namespace ProteoformSuiteInternal
                 {
                     string[] lines = File.ReadAllLines(filelocation + ".ms1ft");
                     List<string> new_lines = new List<string>();
-                    new_lines.Add(lines[0] + "\tCharges\tBest Fit");
+                    new_lines.Add(lines[0] + "\tCharges\tCharge Intensities\tBest Fit");
                     for (int i = 1; i < lines.Length; i++)
                     {
                         string[] cs = lines[i].Split('\t');
@@ -275,11 +275,10 @@ namespace ProteoformSuiteInternal
                         }
                         if (Int32.TryParse(cs[6], out int feature_ID) && csv_feature_info.TryGetValue(feature_ID, out List<string[]> fields) && fields.Count > 0)
                         {
-                            //get charges
+                            //get charges, intensities for each charge, and fit
                             List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();
-
-                            //likelihood ratio
-                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + fields.First()[4]);
+                            List<double> intensities = charges.Select(c => fields.Where(a => a[1] == c.ToString()).Sum(fields2 => Double.TryParse(fields2[2], out double intensity) ? intensity : 0)).ToList();
+                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + String.Join(",", intensities) + "\t" +  fields.First()[4]);
                         }
                     }
                     File.WriteAllLines(filelocation + ".tsv", new_lines);
@@ -1194,8 +1193,8 @@ namespace ProteoformSuiteInternal
         #region CALIBRATION
 
         public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
-        public Dictionary<Tuple<string, double, double>, double> file_mz_correction = new Dictionary<Tuple<string, double, double>, double>(); //key is file, intensity, reported mz, value is corrected mz.
-        public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
+        public Dictionary<Tuple<string, double, double>, double> component_correction = new Dictionary<Tuple<string, double, double>, double>(); //key is file, intensity, reported mz, value is corrected mz.
+        public Dictionary<Tuple<string, double, double>, double> td_hit_correction = new Dictionary<Tuple<string, double, double>, double>(); //key is filename, hit ms2 retention time, hit reported mass, value is corrected mass
         public List<Component> calibration_components = new List<Component>();
         public List<string> filenames_did_not_calibrate = new List<string>();
         public bool calibrate_raw_files = false;
@@ -1204,7 +1203,7 @@ namespace ProteoformSuiteInternal
         public void read_in_calibration_td_hits()
         {
             td_hits_calibration.Clear();
-            file_mz_correction.Clear();
+            component_correction.Clear();
             td_hit_correction.Clear();
             calibration_components.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
@@ -1300,7 +1299,7 @@ namespace ProteoformSuiteInternal
             if (calibrate_td_files)
             {
                 foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown &&
-                td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
+                td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, double, double>(h.filename, h.ms2_retention_time, h.reported_mass)))))
                 {
                     Calibration.calibrate_td_hits_file(file);
                 }
@@ -1318,24 +1317,24 @@ namespace ProteoformSuiteInternal
                     foreach (ChargeState cs in c.charge_states)
                     {
                         Tuple<string, double, double> key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2));
-                        lock (file_mz_correction)
+                        lock (component_correction)
                         {
-                            if (!file_mz_correction.ContainsKey(key))
+                            if (!component_correction.ContainsKey(key))
                             {
-                                file_mz_correction.Add(key, Math.Round(cs.mz_centroid, 5));
+                                component_correction.Add(key, Math.Round(cs.mz_centroid, 5));
                             }
                         }
                     }
                 }
                 else
                 {
-                    var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(c.intensity_sum, 0), Math.Round(c.reported_monoisotopic_mass, 2));
+                    var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(c.intensity_reported, 0), Math.Round(c.reported_monoisotopic_mass, 2));
                     var best_cs = c.charge_states.OrderByDescending(cs => cs.intensity).First();
-                    lock (file_mz_correction)
+                    lock (component_correction)
                     {
-                        if (!file_mz_correction.ContainsKey(key))
+                        if (!component_correction.ContainsKey(key))
                         {
-                            file_mz_correction.Add(key, Math.Round(best_cs.mz_centroid.ToMass(best_cs.charge_count) , 5));
+                            component_correction.Add(key, Math.Round(best_cs.mz_centroid.ToMass(best_cs.charge_count), 5));
                         }
                     }
                 }
@@ -1346,7 +1345,7 @@ namespace ProteoformSuiteInternal
                 //get topdown shifts if this SpectraFile is the same name as the topdown hit's file
                 foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
                 {
-                    Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
+                    Tuple<string, double, double> key = new Tuple<string, double, double>(hit.filename, hit.ms2_retention_time, hit.reported_mass);
                     if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, Math.Round(hit.mz.ToMass(hit.charge), 8));
                 }
             }
