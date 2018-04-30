@@ -49,16 +49,16 @@ namespace Test
             Assert.IsFalse(File.Exists(filepath + ".pbf"));
             Assert.IsTrue(File.Exists(filepath + ".tsv"));
             // Check contents of file to ensure number of components match
-            Sweet.lollipop.input_files.Clear();
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.min_likelihood_ratio = -100000;
             Sweet.lollipop.max_fit = 10000;
             Sweet.lollipop.enter_input_files(new string[] { filepath + ".tsv" }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             List<Component> deconv_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
-            Assert.AreEqual(204, deconv_components.Count());
-            Assert.AreEqual(2248.2764, Math.Round(deconv_components.Where(c => c.id == "2_1").First().reported_monoisotopic_mass), 4);
-            Assert.AreEqual(2248.2764, Math.Round(deconv_components.Where(c => c.id == "2_1").First().weighted_monoisotopic_mass), 4);
-            Assert.AreEqual(51985.25, Math.Round(deconv_components.Where(c => c.id == "2_1").First().intensity_sum), 2);
+            Assert.AreEqual(204, deconv_components.Count);
+            Assert.AreEqual(2248.2764, Math.Round(deconv_components.OrderBy(c => c.id).First().reported_monoisotopic_mass), 4);
+            Assert.AreEqual(2248.2764, Math.Round(deconv_components.OrderBy(c => c.id).First().weighted_monoisotopic_mass), 4);
+            Assert.AreEqual(51985.25, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_sum), 2);
 
 
             Sweet.lollipop.min_likelihood_ratio = 20;
