@@ -134,6 +134,7 @@ namespace Test
         public void assign_quant_components_large_tolerance_split_range()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.mass_tolerance = 10; //ppm
             Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-3, 3 * 2 + 1).ToList();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 20000, 2, true); // tolerance is 0.2 Da

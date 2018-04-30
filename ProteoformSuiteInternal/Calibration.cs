@@ -430,7 +430,7 @@ namespace ProteoformSuiteInternal
                 if (row.RowNumber() != 1)
                 {
                     double corrected_mass;
-                    if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble()), out corrected_mass))
+                    if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0], row.Cell(19).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
                     {
                         row.Cell(17).SetValue(corrected_mass);
                     }
@@ -455,30 +455,56 @@ namespace ProteoformSuiteInternal
             string old_absolute_path = file.complete_path;
             string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
-            //create copy of excel file
-            byte[] byteArray = File.ReadAllBytes(old_absolute_path);
-            using (MemoryStream stream = new MemoryStream())
+            if (file.extension == ".xlsx")
             {
-                stream.Write(byteArray, 0, (int)byteArray.Length);
-                File.WriteAllBytes(new_absolute_path, stream.ToArray());
-            }
-            var workbook = new XLWorkbook(new_absolute_path);
-            var worksheet = workbook.Worksheets.Worksheet(1);
-            Parallel.ForEach(worksheet.Rows(), row =>
-            {
-                if (row.Cell(1).Value.ToString().Length == 0)
+                //create copy of excel file
+                byte[] byteArray = File.ReadAllBytes(old_absolute_path);
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                    stream.Write(byteArray, 0, (int)byteArray.Length);
+                    File.WriteAllBytes(new_absolute_path, stream.ToArray());
+                }
+                var workbook = new XLWorkbook(new_absolute_path);
+                var worksheet = workbook.Worksheets.Worksheet(1);
+                Parallel.ForEach(worksheet.Rows(), row =>
+                {
+                    if (row.Cell(1).Value.ToString().Length == 0)
+                    {
+                        if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                        {
+                            double value;
+                            //CHECK WITH CHARGE NORMALIZED INTENSITY!! 
+                            if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                            {
+                                row.Cell(4).SetValue(value);
+                            }
+                        }
+                    }
+                });
+                workbook.Save();
+            }
+            else if (file.extension == ".tsv")
+            {
+                string[] old = File.ReadAllLines(old_absolute_path);
+                List<string> new_file = new List<string>();
+                new_file.Add(old[0]);
+                for(int i = 1; i < old.Length; i++)
+                {
+                    string[] row = old[i].Split('\t');
+                    if (row.Length == 20 && Double.TryParse(row[5], out double mass) && Double.TryParse(row[9], out double intensity))
                     {
                         double value;
-                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                        if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
-                            row.Cell(4).SetValue(value);
+                            //do intensity weighted new monoisotopic mass for each feature
+                            //just rewrite, don't bother with dictionary, etc......
+                            row[5] = value.ToString();
+                            new_file.Add(String.Join("\t", row));
                         }
                     }
                 }
-            });
-            workbook.Save();
+                File.WriteAllLines(new_absolute_path, new_file);
+            }
         }
     }
 }

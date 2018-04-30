@@ -26,6 +26,10 @@ namespace ProteoformSuiteInternal
             {
                 writer.Write(datatable_tostring(experimental_results_dataframe(analysis)));
             }
+            using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "experimental_intensities_by_file_" + timestamp + ".tsv")))
+            {
+                writer.Write(datatable_tostring(experimental_intensities_dataframe()));
+            }
             if (Sweet.lollipop.topdown_proteoforms.Count > 0)
             {
                 using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "topdown_results_" + timestamp + ".tsv")))
@@ -479,6 +483,83 @@ namespace ProteoformSuiteInternal
                 result_string.AppendLine(String.Join("\t", row.ItemArray));
             }
             return results;
+        }
+
+        public static DataTable experimental_intensities_dataframe()
+        {
+            DataTable results = new DataTable();
+            results.Columns.Add("Proteoform Suite ID", typeof(string));
+            results.Columns.Add("Proteoform Description", typeof(string));
+            results.Columns.Add("Gene Name", typeof(string));
+            results.Columns.Add("GeneID", typeof(string));
+            results.Columns.Add("Accessions", typeof(string));
+            results.Columns.Add("PTM Type", typeof(string));
+            results.Columns.Add("Begin and End", typeof(string));
+            results.Columns.Add("Proteoform Mass");
+            results.Columns.Add("Retention Time", typeof(double));
+            List<string> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + "|" + x.biological_replicate + "|" + x.fraction + "|" + x.technical_replicate).Distinct().ToList();
+            foreach (string f in files)
+            {
+                string[] file_info = f.Split('|');
+                string column_name = "Condition " + file_info[0] + ", Biorep " + file_info[1] + ", Fraction " + file_info[2] + ", Techrep " + file_info[3];
+                results.Columns.Add(column_name, typeof(double));
+            }
+
+
+            //intact_mass_ids
+            foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(p => !p.topdown_id))
+            {
+                object[] array = new object[9 + files.Count];
+                array[0] = e.accession;
+                array[1] = e.linked_proteoform_references == null ? "N/A" : (e.linked_proteoform_references.First() as TheoreticalProteoform).name;
+                array[2] = e.linked_proteoform_references == null ? "N/A" : e.linked_proteoform_references.Last().gene_name.primary;
+                array[3] = e.linked_proteoform_references == null ? "N/A" : String.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
+                array[4] = e.linked_proteoform_references == null ? "N/A" : String.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct());
+                array[5] = e.linked_proteoform_references == null ? "N/A" : e.ptm_description;
+                array[6] = e.linked_proteoform_references == null ? "N/A" : e.begin + " to " + e.end;
+                array[7] = e.agg_mass;
+                array[8] = e.agg_rt;
+                for(int f = 0; f < files.Count; f++)
+                {
+                    string[] file_info = files[f].Split('_');
+                    array[9 + f] = e.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
+                }
+                results.Rows.Add(array);
+            }
+
+            foreach (TopDownProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(p => p.topdown_id))
+            {
+                object[] array = new object[9 + files.Count];
+                array[0] = e.accession;
+                array[1] = e.name;
+                array[2] = e.gene_name != null ? e.gene_name.primary : "";
+                array[3] = e.geneID;
+                array[4] = e.accession.Split('_')[0];
+                array[5] = e.topdown_ptm_description;
+                array[6] = e.topdown_begin + " to " + e.topdown_end;
+                array[7] = e.agg_mass;
+                array[8] = e.agg_rt;
+                for (int f = 0; f < files.Count; f++)
+                {
+                    string[] file_info = files[f].Split('|');
+                    array[9 + f] = e.matching_experimental == null ? double.NaN : e.matching_experimental.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
+                }
+                results.Rows.Add(array);
+            }
+
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(String.Join("\t", row.ItemArray));
+            }
+            return results;
+
         }
 
         public static DataTable topdown_results_dataframe()

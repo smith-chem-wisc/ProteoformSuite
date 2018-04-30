@@ -61,13 +61,8 @@ namespace ProteoformSuiteGUI
         {
             rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
-            nUD_min_RT.Value = (decimal)Sweet.lollipop.min_RT;
-            nUD_max_RT.Value = (decimal)Sweet.lollipop.max_RT;
-            nUD_agg_tolerance.Value = (decimal)Sweet.lollipop.aggregation_tolerance_ppm;
-            nUD_decon_tolerance.Value = (decimal)Sweet.lollipop.deconvolution_tolerance_ppm;
-            nUD_max_cs.Value = Sweet.lollipop.max_assumed_cs;
-            nUD_min_num_CS.Value = Sweet.lollipop.min_num_cs_deconvolution_component;
-            nUD_min_cs.Value = Sweet.lollipop.min_assumed_cs;
+            nUD_max_fit.Value = (decimal)Sweet.lollipop.max_fit;
+            nUD_min_liklihood_ratio.Value = (decimal)Sweet.lollipop.min_likelihood_ratio;
             FillTablesAndCharts();
         }
 
@@ -168,64 +163,22 @@ namespace ProteoformSuiteGUI
             Cursor = Cursors.Default;
         }
 
-        #endregion Private Methods
-
         private void nUD_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.raw_component_mass_tolerance = Convert.ToDouble(nUD_mass_tolerance.Value);
         }
 
-        private void nUD_min_RT_ValueChanged(object sender, EventArgs e)
+        private void nUD_min_liklihood_ratio_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.min_RT = Convert.ToDouble(nUD_min_RT.Value);
+            Sweet.lollipop.min_likelihood_ratio = Convert.ToDouble(nUD_min_liklihood_ratio.Value);
         }
 
-        private void nUD_max_RT_ValueChanged(object sender, EventArgs e)
+        private void nUD_max_fit_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.max_RT = Convert.ToDouble(nUD_max_RT.Value);
+            Sweet.lollipop.max_fit = Convert.ToDouble(nUD_max_fit.Value);
         }
 
-        private void nUD_agg_tolerance_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.aggregation_tolerance_ppm = Convert.ToDouble(nUD_agg_tolerance.Value);
-        }
+        #endregion Private Methods
 
-        private void nUD_decon_tolerance_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.deconvolution_tolerance_ppm = Convert.ToDouble(nUD_decon_tolerance.Value);
-        }
-
-        private void nUD_max_cs_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.max_assumed_cs = Convert.ToInt32(nUD_max_cs.Value);
-        }
-
-        private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_num_cs_deconvolution_component = Convert.ToInt32(nUD_min_num_CS.Value);
-        }
-
-        private void cb_deconvolute_CheckedChanged(object sender, EventArgs e)
-        {
-            nUD_min_RT.Visible = cb_deconvolute.Checked;
-            nUD_max_RT.Visible = cb_deconvolute.Checked;
-            nUD_agg_tolerance.Visible = cb_deconvolute.Checked;
-            nUD_decon_tolerance.Visible = cb_deconvolute.Checked;
-            nUD_max_cs.Visible = cb_deconvolute.Checked;
-            nUD_min_num_CS.Visible = cb_deconvolute.Checked;
-            nUD_min_cs.Visible = cb_deconvolute.Checked;
-            label2.Visible = cb_deconvolute.Checked;
-            label3.Visible = cb_deconvolute.Checked;
-            label4.Visible = cb_deconvolute.Checked;
-            label5.Visible = cb_deconvolute.Checked;
-            label6.Visible = cb_deconvolute.Checked;
-            label8.Visible = cb_deconvolute.Checked;
-            label10.Visible = cb_deconvolute.Checked;
-        }
-
-        private void nUD_min_cs_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_assumed_cs = Convert.ToInt32(nUD_min_cs.Value);
-        }
     }
 }
