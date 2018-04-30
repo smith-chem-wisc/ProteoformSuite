@@ -277,9 +277,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <Content Include="Promex\ProMex.exe.config">
+    <None Include="Promex\ProMex.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mods\amino_acids.txt">
