@@ -32,11 +32,34 @@
             this.base_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.topbar_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.box_loadoptions = new System.Windows.Forms.GroupBox();
-            this.rb_topdown = new System.Windows.Forms.RadioButton();
+            this.rb_topdown_toppic = new System.Windows.Forms.RadioButton();
+            this.rb_topdown_mspath = new System.Windows.Forms.RadioButton();
             this.rb_deconvolution = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.box_parameters = new System.Windows.Forms.GroupBox();
+            this.panel_toppicparams = new System.Windows.Forms.Panel();
+            this.cb_carbamidomethylation = new System.Windows.Forms.CheckBox();
+            this.label_masstolerance = new System.Windows.Forms.Label();
+            this.cmb_errortolerance = new System.Windows.Forms.ComboBox();
+            this.label_maxnumberofshifts = new System.Windows.Forms.Label();
+            this.label_maxshift = new System.Windows.Forms.Label();
+            this.nud_maxnumberofshifts = new System.Windows.Forms.NumericUpDown();
+            this.nud_maxshift = new System.Windows.Forms.NumericUpDown();
+            this.label_toppicactivationmethod = new System.Windows.Forms.Label();
+            this.cmb_toppicactivationmethod = new System.Windows.Forms.ComboBox();
+            this.label_toppictopdown = new System.Windows.Forms.Label();
+            this.label_precursorwindow = new System.Windows.Forms.Label();
+            this.label_snratio = new System.Windows.Forms.Label();
+            this.label_mzerror = new System.Windows.Forms.Label();
+            this.label_toppicmaxmass = new System.Windows.Forms.Label();
+            this.label_toppicmaxcharge = new System.Windows.Forms.Label();
+            this.nud_toppicmaxmass = new System.Windows.Forms.NumericUpDown();
+            this.nud_mzerror = new System.Windows.Forms.NumericUpDown();
+            this.nud_snratio = new System.Windows.Forms.NumericUpDown();
+            this.nud_precursorwindow = new System.Windows.Forms.NumericUpDown();
+            this.nud_toppicmaxcharge = new System.Windows.Forms.NumericUpDown();
+            this.label_toppicdeconv = new System.Windows.Forms.Label();
             this.panel_topdownparams = new System.Windows.Forms.Panel();
             this.label_fragmentiontolerance = new System.Windows.Forms.Label();
             this.label_precursortolerance = new System.Windows.Forms.Label();
@@ -97,7 +120,6 @@
             this.panel_clearbtn = new System.Windows.Forms.Panel();
             this.bt_clearFiles1 = new System.Windows.Forms.Button();
             this.cmb_loadTable1 = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.base_splitcontainer)).BeginInit();
             this.base_splitcontainer.Panel1.SuspendLayout();
             this.base_splitcontainer.Panel2.SuspendLayout();
@@ -108,6 +130,14 @@
             this.topbar_splitcontainer.SuspendLayout();
             this.box_loadoptions.SuspendLayout();
             this.box_parameters.SuspendLayout();
+            this.panel_toppicparams.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxnumberofshifts)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxshift)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_toppicmaxmass)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_mzerror)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_snratio)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_precursorwindow)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_toppicmaxcharge)).BeginInit();
             this.panel_topdownparams.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_fragmentiontolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_precursortolerance)).BeginInit();
@@ -190,7 +220,8 @@
             // 
             // box_loadoptions
             // 
-            this.box_loadoptions.Controls.Add(this.rb_topdown);
+            this.box_loadoptions.Controls.Add(this.rb_topdown_toppic);
+            this.box_loadoptions.Controls.Add(this.rb_topdown_mspath);
             this.box_loadoptions.Controls.Add(this.rb_deconvolution);
             this.box_loadoptions.Controls.Add(this.rb_standardOptions);
             this.box_loadoptions.Controls.Add(this.rb_chemicalCalibration);
@@ -203,18 +234,31 @@
             this.box_loadoptions.TabStop = false;
             this.box_loadoptions.Text = "1. Choose Analysis";
             // 
-            // rb_topdown
+            // rb_topdown_toppic
             // 
-            this.rb_topdown.AutoSize = true;
-            this.rb_topdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_topdown.Location = new System.Drawing.Point(18, 76);
-            this.rb_topdown.Name = "rb_topdown";
-            this.rb_topdown.Size = new System.Drawing.Size(75, 17);
-            this.rb_topdown.TabIndex = 59;
-            this.rb_topdown.TabStop = true;
-            this.rb_topdown.Text = "Top Down";
-            this.rb_topdown.UseVisualStyleBackColor = true;
-            this.rb_topdown.CheckedChanged += new System.EventHandler(this.rb_topdown_CheckedChanged);
+            this.rb_topdown_toppic.AutoSize = true;
+            this.rb_topdown_toppic.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_topdown_toppic.Location = new System.Drawing.Point(18, 93);
+            this.rb_topdown_toppic.Name = "rb_topdown_toppic";
+            this.rb_topdown_toppic.Size = new System.Drawing.Size(117, 17);
+            this.rb_topdown_toppic.TabIndex = 60;
+            this.rb_topdown_toppic.TabStop = true;
+            this.rb_topdown_toppic.Text = "Top Down (Toppic)";
+            this.rb_topdown_toppic.UseVisualStyleBackColor = true;
+            this.rb_topdown_toppic.CheckedChanged += new System.EventHandler(this.rb_topdown_toppic_CheckedChanged);
+            // 
+            // rb_topdown_mspath
+            // 
+            this.rb_topdown_mspath.AutoSize = true;
+            this.rb_topdown_mspath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_topdown_mspath.Location = new System.Drawing.Point(18, 76);
+            this.rb_topdown_mspath.Name = "rb_topdown_mspath";
+            this.rb_topdown_mspath.Size = new System.Drawing.Size(122, 17);
+            this.rb_topdown_mspath.TabIndex = 59;
+            this.rb_topdown_mspath.TabStop = true;
+            this.rb_topdown_mspath.Text = "Top Down (MSPath)";
+            this.rb_topdown_mspath.UseVisualStyleBackColor = true;
+            this.rb_topdown_mspath.CheckedChanged += new System.EventHandler(this.rb_topdown_CheckedChanged);
             // 
             // rb_deconvolution
             // 
@@ -257,6 +301,7 @@
             // 
             // box_parameters
             // 
+            this.box_parameters.Controls.Add(this.panel_toppicparams);
             this.box_parameters.Controls.Add(this.panel_topdownparams);
             this.box_parameters.Controls.Add(this.calib_stand_splitContainer);
             this.box_parameters.Controls.Add(this.param_splitcontainer);
@@ -268,6 +313,279 @@
             this.box_parameters.TabIndex = 48;
             this.box_parameters.TabStop = false;
             this.box_parameters.Text = "2. Set Parameters";
+            // 
+            // panel_toppicparams
+            // 
+            this.panel_toppicparams.Controls.Add(this.cb_carbamidomethylation);
+            this.panel_toppicparams.Controls.Add(this.label_masstolerance);
+            this.panel_toppicparams.Controls.Add(this.cmb_errortolerance);
+            this.panel_toppicparams.Controls.Add(this.label_maxnumberofshifts);
+            this.panel_toppicparams.Controls.Add(this.label_maxshift);
+            this.panel_toppicparams.Controls.Add(this.nud_maxnumberofshifts);
+            this.panel_toppicparams.Controls.Add(this.nud_maxshift);
+            this.panel_toppicparams.Controls.Add(this.label_toppicactivationmethod);
+            this.panel_toppicparams.Controls.Add(this.cmb_toppicactivationmethod);
+            this.panel_toppicparams.Controls.Add(this.label_toppictopdown);
+            this.panel_toppicparams.Controls.Add(this.label_precursorwindow);
+            this.panel_toppicparams.Controls.Add(this.label_snratio);
+            this.panel_toppicparams.Controls.Add(this.label_mzerror);
+            this.panel_toppicparams.Controls.Add(this.label_toppicmaxmass);
+            this.panel_toppicparams.Controls.Add(this.label_toppicmaxcharge);
+            this.panel_toppicparams.Controls.Add(this.nud_toppicmaxmass);
+            this.panel_toppicparams.Controls.Add(this.nud_mzerror);
+            this.panel_toppicparams.Controls.Add(this.nud_snratio);
+            this.panel_toppicparams.Controls.Add(this.nud_precursorwindow);
+            this.panel_toppicparams.Controls.Add(this.nud_toppicmaxcharge);
+            this.panel_toppicparams.Controls.Add(this.label_toppicdeconv);
+            this.panel_toppicparams.Location = new System.Drawing.Point(2, 16);
+            this.panel_toppicparams.Name = "panel_toppicparams";
+            this.panel_toppicparams.Size = new System.Drawing.Size(1246, 97);
+            this.panel_toppicparams.TabIndex = 41;
+            // 
+            // cb_carbamidomethylation
+            // 
+            this.cb_carbamidomethylation.AutoSize = true;
+            this.cb_carbamidomethylation.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_carbamidomethylation.Location = new System.Drawing.Point(297, 49);
+            this.cb_carbamidomethylation.Name = "cb_carbamidomethylation";
+            this.cb_carbamidomethylation.Size = new System.Drawing.Size(129, 17);
+            this.cb_carbamidomethylation.TabIndex = 23;
+            this.cb_carbamidomethylation.Text = "Carbamidomethylation";
+            this.cb_carbamidomethylation.UseVisualStyleBackColor = true;
+            // 
+            // label_masstolerance
+            // 
+            this.label_masstolerance.AutoSize = true;
+            this.label_masstolerance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_masstolerance.Location = new System.Drawing.Point(783, 18);
+            this.label_masstolerance.Name = "label_masstolerance";
+            this.label_masstolerance.Size = new System.Drawing.Size(112, 13);
+            this.label_masstolerance.TabIndex = 22;
+            this.label_masstolerance.Text = "Mass Tolerance (ppm)";
+            // 
+            // cmb_errortolerance
+            // 
+            this.cmb_errortolerance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_errortolerance.FormattingEnabled = true;
+            this.cmb_errortolerance.Location = new System.Drawing.Point(721, 14);
+            this.cmb_errortolerance.Name = "cmb_errortolerance";
+            this.cmb_errortolerance.Size = new System.Drawing.Size(56, 21);
+            this.cmb_errortolerance.TabIndex = 21;
+            // 
+            // label_maxnumberofshifts
+            // 
+            this.label_maxnumberofshifts.AutoSize = true;
+            this.label_maxnumberofshifts.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_maxnumberofshifts.Location = new System.Drawing.Point(611, 44);
+            this.label_maxnumberofshifts.Name = "label_maxnumberofshifts";
+            this.label_maxnumberofshifts.Size = new System.Drawing.Size(108, 13);
+            this.label_maxnumberofshifts.TabIndex = 20;
+            this.label_maxnumberofshifts.Text = "Max Number of Shifts";
+            // 
+            // label_maxshift
+            // 
+            this.label_maxshift.AutoSize = true;
+            this.label_maxshift.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_maxshift.Location = new System.Drawing.Point(611, 19);
+            this.label_maxshift.Name = "label_maxshift";
+            this.label_maxshift.Size = new System.Drawing.Size(79, 13);
+            this.label_maxshift.TabIndex = 19;
+            this.label_maxshift.Text = "Max Mass Shift";
+            // 
+            // nud_maxnumberofshifts
+            // 
+            this.nud_maxnumberofshifts.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_maxnumberofshifts.Location = new System.Drawing.Point(550, 39);
+            this.nud_maxnumberofshifts.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nud_maxnumberofshifts.Name = "nud_maxnumberofshifts";
+            this.nud_maxnumberofshifts.Size = new System.Drawing.Size(56, 20);
+            this.nud_maxnumberofshifts.TabIndex = 18;
+            this.nud_maxnumberofshifts.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // nud_maxshift
+            // 
+            this.nud_maxshift.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_maxshift.Location = new System.Drawing.Point(550, 16);
+            this.nud_maxshift.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.nud_maxshift.Name = "nud_maxshift";
+            this.nud_maxshift.Size = new System.Drawing.Size(56, 20);
+            this.nud_maxshift.TabIndex = 17;
+            this.nud_maxshift.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            // 
+            // label_toppicactivationmethod
+            // 
+            this.label_toppicactivationmethod.AutoSize = true;
+            this.label_toppicactivationmethod.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_toppicactivationmethod.Location = new System.Drawing.Point(424, 23);
+            this.label_toppicactivationmethod.Name = "label_toppicactivationmethod";
+            this.label_toppicactivationmethod.Size = new System.Drawing.Size(113, 13);
+            this.label_toppicactivationmethod.TabIndex = 13;
+            this.label_toppicactivationmethod.Text = "Fragmentation Method";
+            // 
+            // cmb_toppicactivationmethod
+            // 
+            this.cmb_toppicactivationmethod.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_toppicactivationmethod.FormattingEnabled = true;
+            this.cmb_toppicactivationmethod.Location = new System.Drawing.Point(297, 20);
+            this.cmb_toppicactivationmethod.Name = "cmb_toppicactivationmethod";
+            this.cmb_toppicactivationmethod.Size = new System.Drawing.Size(121, 21);
+            this.cmb_toppicactivationmethod.TabIndex = 12;
+            // 
+            // label_toppictopdown
+            // 
+            this.label_toppictopdown.AutoSize = true;
+            this.label_toppictopdown.Location = new System.Drawing.Point(294, 1);
+            this.label_toppictopdown.Name = "label_toppictopdown";
+            this.label_toppictopdown.Size = new System.Drawing.Size(132, 13);
+            this.label_toppictopdown.TabIndex = 11;
+            this.label_toppictopdown.Text = "Top Down Parameters";
+            // 
+            // label_precursorwindow
+            // 
+            this.label_precursorwindow.AutoSize = true;
+            this.label_precursorwindow.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_precursorwindow.Location = new System.Drawing.Point(199, 48);
+            this.label_precursorwindow.Name = "label_precursorwindow";
+            this.label_precursorwindow.Size = new System.Drawing.Size(94, 13);
+            this.label_precursorwindow.TabIndex = 10;
+            this.label_precursorwindow.Text = "Precursor Window";
+            // 
+            // label_snratio
+            // 
+            this.label_snratio.AutoSize = true;
+            this.label_snratio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_snratio.Location = new System.Drawing.Point(199, 24);
+            this.label_snratio.Name = "label_snratio";
+            this.label_snratio.Size = new System.Drawing.Size(96, 13);
+            this.label_snratio.TabIndex = 9;
+            this.label_snratio.Text = "Signal/Noise Ratio";
+            // 
+            // label_mzerror
+            // 
+            this.label_mzerror.AutoSize = true;
+            this.label_mzerror.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_mzerror.Location = new System.Drawing.Point(67, 73);
+            this.label_mzerror.Name = "label_mzerror";
+            this.label_mzerror.Size = new System.Drawing.Size(53, 13);
+            this.label_mzerror.TabIndex = 8;
+            this.label_mzerror.Text = "M/Z Error";
+            // 
+            // label_toppicmaxmass
+            // 
+            this.label_toppicmaxmass.AutoSize = true;
+            this.label_toppicmaxmass.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_toppicmaxmass.Location = new System.Drawing.Point(67, 48);
+            this.label_toppicmaxmass.Name = "label_toppicmaxmass";
+            this.label_toppicmaxmass.Size = new System.Drawing.Size(55, 13);
+            this.label_toppicmaxmass.TabIndex = 7;
+            this.label_toppicmaxmass.Text = "Max Mass";
+            // 
+            // label_toppicmaxcharge
+            // 
+            this.label_toppicmaxcharge.AutoSize = true;
+            this.label_toppicmaxcharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_toppicmaxcharge.Location = new System.Drawing.Point(67, 22);
+            this.label_toppicmaxcharge.Name = "label_toppicmaxcharge";
+            this.label_toppicmaxcharge.Size = new System.Drawing.Size(64, 13);
+            this.label_toppicmaxcharge.TabIndex = 6;
+            this.label_toppicmaxcharge.Text = "Max Charge";
+            // 
+            // nud_toppicmaxmass
+            // 
+            this.nud_toppicmaxmass.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_toppicmaxmass.Location = new System.Drawing.Point(4, 45);
+            this.nud_toppicmaxmass.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nud_toppicmaxmass.Name = "nud_toppicmaxmass";
+            this.nud_toppicmaxmass.Size = new System.Drawing.Size(57, 20);
+            this.nud_toppicmaxmass.TabIndex = 5;
+            this.nud_toppicmaxmass.Value = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            // 
+            // nud_mzerror
+            // 
+            this.nud_mzerror.DecimalPlaces = 2;
+            this.nud_mzerror.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_mzerror.Location = new System.Drawing.Point(4, 71);
+            this.nud_mzerror.Name = "nud_mzerror";
+            this.nud_mzerror.Size = new System.Drawing.Size(57, 20);
+            this.nud_mzerror.TabIndex = 4;
+            this.nud_mzerror.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            131072});
+            // 
+            // nud_snratio
+            // 
+            this.nud_snratio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_snratio.Location = new System.Drawing.Point(136, 20);
+            this.nud_snratio.Name = "nud_snratio";
+            this.nud_snratio.Size = new System.Drawing.Size(57, 20);
+            this.nud_snratio.TabIndex = 3;
+            this.nud_snratio.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // nud_precursorwindow
+            // 
+            this.nud_precursorwindow.DecimalPlaces = 2;
+            this.nud_precursorwindow.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_precursorwindow.Location = new System.Drawing.Point(136, 45);
+            this.nud_precursorwindow.Name = "nud_precursorwindow";
+            this.nud_precursorwindow.Size = new System.Drawing.Size(57, 20);
+            this.nud_precursorwindow.TabIndex = 2;
+            this.nud_precursorwindow.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            65536});
+            // 
+            // nud_toppicmaxcharge
+            // 
+            this.nud_toppicmaxcharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_toppicmaxcharge.Location = new System.Drawing.Point(4, 19);
+            this.nud_toppicmaxcharge.Name = "nud_toppicmaxcharge";
+            this.nud_toppicmaxcharge.Size = new System.Drawing.Size(57, 20);
+            this.nud_toppicmaxcharge.TabIndex = 1;
+            this.nud_toppicmaxcharge.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // label_toppicdeconv
+            // 
+            this.label_toppicdeconv.AutoSize = true;
+            this.label_toppicdeconv.Location = new System.Drawing.Point(-2, 1);
+            this.label_toppicdeconv.Name = "label_toppicdeconv";
+            this.label_toppicdeconv.Size = new System.Drawing.Size(156, 13);
+            this.label_toppicdeconv.TabIndex = 0;
+            this.label_toppicdeconv.Text = "Deconvolution Parameters";
             // 
             // panel_topdownparams
             // 
@@ -1019,22 +1337,12 @@
             this.cmb_loadTable1.TabIndex = 42;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "label1";
-            // 
             // LoadResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1397, 863);
             this.ControlBox = false;
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.base_splitcontainer);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoadResults";
@@ -1050,6 +1358,15 @@
             this.box_loadoptions.ResumeLayout(false);
             this.box_loadoptions.PerformLayout();
             this.box_parameters.ResumeLayout(false);
+            this.panel_toppicparams.ResumeLayout(false);
+            this.panel_toppicparams.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxnumberofshifts)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxshift)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_toppicmaxmass)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_mzerror)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_snratio)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_precursorwindow)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_toppicmaxcharge)).EndInit();
             this.panel_topdownparams.ResumeLayout(false);
             this.panel_topdownparams.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_fragmentiontolerance)).EndInit();
@@ -1095,7 +1412,6 @@
             this.panel1.PerformLayout();
             this.panel_clearbtn.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -1156,7 +1472,7 @@
         private System.Windows.Forms.NumericUpDown nud_likelihood;
         private System.Windows.Forms.Label label_likelihood;
         private System.Windows.Forms.Label label_fit;
-        private System.Windows.Forms.RadioButton rb_topdown;
+        private System.Windows.Forms.RadioButton rb_topdown_mspath;
         private System.Windows.Forms.Button bt_topdown;
         private System.Windows.Forms.Panel panel_topdownparams;
         private System.Windows.Forms.NumericUpDown nud_fragmentiontolerance;
@@ -1169,6 +1485,28 @@
         private System.Windows.Forms.ComboBox cmb_searchmode;
         private System.Windows.Forms.Label label_fragmentiontolerance;
         private System.Windows.Forms.Label label_precursortolerance;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RadioButton rb_topdown_toppic;
+        private System.Windows.Forms.Panel panel_toppicparams;
+        private System.Windows.Forms.Label label_toppicdeconv;
+        private System.Windows.Forms.Label label_precursorwindow;
+        private System.Windows.Forms.Label label_snratio;
+        private System.Windows.Forms.Label label_mzerror;
+        private System.Windows.Forms.Label label_toppicmaxmass;
+        private System.Windows.Forms.Label label_toppicmaxcharge;
+        private System.Windows.Forms.NumericUpDown nud_toppicmaxmass;
+        private System.Windows.Forms.NumericUpDown nud_mzerror;
+        private System.Windows.Forms.NumericUpDown nud_snratio;
+        private System.Windows.Forms.NumericUpDown nud_precursorwindow;
+        private System.Windows.Forms.NumericUpDown nud_toppicmaxcharge;
+        private System.Windows.Forms.Label label_toppictopdown;
+        private System.Windows.Forms.Label label_toppicactivationmethod;
+        private System.Windows.Forms.ComboBox cmb_toppicactivationmethod;
+        private System.Windows.Forms.Label label_masstolerance;
+        private System.Windows.Forms.ComboBox cmb_errortolerance;
+        private System.Windows.Forms.Label label_maxnumberofshifts;
+        private System.Windows.Forms.Label label_maxshift;
+        private System.Windows.Forms.NumericUpDown nud_maxnumberofshifts;
+        private System.Windows.Forms.NumericUpDown nud_maxshift;
+        private System.Windows.Forms.CheckBox cb_carbamidomethylation;
     }
 }

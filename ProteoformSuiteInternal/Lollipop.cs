@@ -616,56 +616,82 @@ namespace ProteoformSuiteInternal
 
         private static IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
 
-        public static string Toppic(string directory, int maxcharge)
+        public string Toppic(string directory, int maxcharge, int maxmass, double mzerror, double snratio, double precursorwindow, int activationmethod, bool carbamidomethylation, int masserrortolerance, int maxshift, int maxnumberofshifts)
         {
+            int filesanalyzed = 0;
             foreach (InputFile f in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile))
             {
                 string toppiclocation = directory + @"\Toppic";
                 string databaselocation = "";
+                string mzmlfilelocation = "";
                 string input = f.complete_path;
+                string basedirectory = AppDomain.CurrentDomain.BaseDirectory;
                 string filelocation = Path.Combine(Path.GetDirectoryName(input), Path.GetFileNameWithoutExtension(input));
                 foreach (InputFile database in Sweet.lollipop.input_files.Where(database => database.purpose == Purpose.ProteinDatabase))
                 {
                     databaselocation = database.complete_path;
                 }
 
+                string fixedmodfile = basedirectory + @"\fixed_mods.txt";
+                if (carbamidomethylation == true)
+                {
+                    fixedmodfile = "C57";
+                }
+                
+                string fragmentation = "FILE";
+                if (activationmethod == 0) { fragmentation = "CID"; }
+                else if (activationmethod == 1) { fragmentation = "HCD"; }
+                else if (activationmethod == 2) { fragmentation = "ETD"; }
+                else if (activationmethod == 3) { fragmentation = "UVPD"; }
+                else if (activationmethod == 4) { fragmentation = "FILE"; }
+
+                int masstolerance = 15;
+                if (masserrortolerance == 0) { masstolerance = 5; }
+                else if (masserrortolerance == 1) { masstolerance = 10; }
+                else if (masserrortolerance == 2) { masstolerance = 15; }
+
                 //convert to .mzML
-                string elementsdir = AppDomain.CurrentDomain.BaseDirectory;
-                Loaders.LoadElements(elementsdir + @"\elements.dat");
-                myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
-                    ThermoStaticData.LoadAllStaticData(f.complete_path) :
-                    null;
-                MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, f.directory + "\\" + f.filename + ".mzML", false);
-                string mzmlfilelocation = filelocation + ".mzml";
+                if (input.Contains(".raw"))
+                {
+                    Loaders.LoadElements(basedirectory + @"\elements.dat");
+                    myMsDataFile = Path.GetExtension(f.complete_path) == ".raw" ?
+                        ThermoStaticData.LoadAllStaticData(f.complete_path) :
+                        null;
+                    MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, f.directory + "\\" + f.filename + ".mzML", false);
+                }
+                mzmlfilelocation = filelocation + ".mzml";
 
                 //convert to .msalign
-                Process proc = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-
-                if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                if (!File.Exists(filelocation + "_ms1.msalign"))
                 {
-                    startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                    Process proc = new Process();
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+
+                    if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                    {
+                        startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                    }
+                    else
+                    {
+                        return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                    }
+
+                    startInfo.UseShellExecute = false;
+                    startInfo.RedirectStandardInput = true;
+                    startInfo.RedirectStandardOutput = false;
+                    startInfo.CreateNoWindow = true;
+                    proc.StartInfo = startInfo;
+
+                    proc.Start();
+
+                    proc.StandardInput.WriteLine("cd " + toppiclocation);
+
+                    proc.StandardInput.WriteLine("topfd.exe " + mzmlfilelocation + " -c " + maxcharge + " -m " + maxmass + " -e " + mzerror + " -s " + snratio + " -w " + precursorwindow);
+                    proc.StandardInput.Close();
+                    proc.WaitForExit();
+                    proc.Close();
                 }
-                else
-                {
-                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
-                }
-
-                startInfo.UseShellExecute = false;
-                startInfo.RedirectStandardInput = true;
-                startInfo.RedirectStandardOutput = false;
-                startInfo.CreateNoWindow = true;
-                proc.StartInfo = startInfo;
-
-                proc.Start();
-
-                proc.StandardInput.WriteLine("cd " + toppiclocation);
-
-                proc.StandardInput.WriteLine("topfd.exe " + mzmlfilelocation + " -c " + maxcharge);
-                proc.StandardInput.Close();
-                proc.WaitForExit();
-                proc.Close();
-                string ms2alignlocation = filelocation + "_ms2.msalign";
+                string ms1alignlocation = filelocation + "_ms1.msalign";
 
                 //run top-down analysis
                 Process proc2 = new Process();
@@ -689,14 +715,49 @@ namespace ProteoformSuiteInternal
                 proc2.Start();
 
                 proc2.StandardInput.WriteLine("cd " + toppiclocation);
-                Debug.WriteLine("toppic.exe " + databaselocation + " " + ms2alignlocation);
-                proc2.StandardInput.WriteLine("toppic.exe " + databaselocation + " " + ms2alignlocation);
+                proc2.StandardInput.WriteLine("toppic.exe " + databaselocation + " " + ms1alignlocation + " -a " + fragmentation + " -f " + fixedmodfile + " -d " + "-e " + masstolerance + " -m " + maxshift + " -p " + maxnumberofshifts + " -i " + basedirectory + @"\common_mods.txt" + " -s 0 ");
+                //Debug.WriteLine("toppic.exe " + databaselocation + " " + ms1alignlocation + " -a " + fragmentation + " -f " + fixedmodfile + " -d " + " -e " + masstolerance + " -m " + maxshift + " -p " + maxnumberofshifts + " -i " + basedirectory + @"\common_mods.txt" + "-s 0 ");
                 proc2.StandardInput.Close();
                 proc2.WaitForExit();
                 proc2.Close();
+                filesanalyzed++;
             }
-            return "Successfully analyzed top-down file(s).";
+
+            if(filesanalyzed == 1)
+            {
+                filesanalyzed = 0;
+                return "Successfully analyzed top-down file.";
+            }
+
+            else if(filesanalyzed > 1)
+            {
+                filesanalyzed = 0;
+                return "Successfully analyzed " + filesanalyzed + " top-down files.";
+            }
+
+            else
+            {
+                filesanalyzed = 0;
+                return "No files analyzed. Ensure correct files have been added.";
+            }
+
         }
+
+        public static string[] toppicactivationmethods = new string[]
+        {
+            "CID",
+            "HCD",
+            "ETD",
+            "UVPD",
+            "FILE"
+        };
+
+        public static string[] errortolerance = new string[]
+        {
+            "5",
+            "10",
+            "15"
+        };
 
         #endregion TOPPIC
 
