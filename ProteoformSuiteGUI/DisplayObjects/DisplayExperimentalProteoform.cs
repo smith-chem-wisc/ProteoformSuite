@@ -216,7 +216,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.topdown_id ? "" :
-                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2)));
+                 String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2)));
             }
         }
 
@@ -225,7 +225,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.topdown_id ? "" :
-                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => cs.charge_count));
+                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => cs.charge_count));
             }
         }
 
