@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, string>, double> conditionBiorep_stdevLog2I { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to impute bft-intensities
         public Dictionary<Tuple<string, string>, double> conditionBiorepIntensitySums { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to normalize columns
         public double benjiHoch_fdr { get; set; } = 0.05;
-        public double minFoldChange { get; set; } = 2.0;
+        public double minFoldChange { get; set; } = 1.0;
         public List<ProteinWithGoTerms> inducedOrRepressedProteins { get; set; } = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
         public GoAnalysis GoAnalysis { get; set; } = new GoAnalysis();
         public QuantitativeDistributions QuantitativeDistributions { get; set; }

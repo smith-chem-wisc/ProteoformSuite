@@ -1238,6 +1238,7 @@ namespace Test
         public void full_quant_test() // see proteoform_quantification_minimal_test.xlsx in the Examples folder for a full excel workup on this example
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = true;
             string[] table = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, @"full_quant_test_table.txt"));
             List<Tuple<string, string>> condition_bioreps = new List<Tuple<string, string>>();
             List<ExperimentalProteoform> prots = new List<ExperimentalProteoform>();

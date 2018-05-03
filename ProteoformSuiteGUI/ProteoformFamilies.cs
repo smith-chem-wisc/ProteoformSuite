@@ -72,6 +72,9 @@ namespace ProteoformSuiteGUI
 
             cb_count_adducts_as_id.Checked = Sweet.lollipop.count_adducts_as_identifications;
 
+            cb_only_assign_common_known_mods.Checked = Sweet.lollipop.only_assign_common_or_known_mods;
+
+
             initialize_every_time();
         }
 
@@ -234,7 +237,7 @@ namespace ProteoformSuiteGUI
             {
                 if (selected_family.experimental_proteoforms.Count > 0)
                 {
-                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)));
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Where(e => !e.topdown_id).Select(e => new DisplayExperimentalProteoform(e)));
                     DisplayExperimentalProteoform.FormatAggregatesTable(dgv_proteoform_family_members);
                 }
                 else
@@ -380,5 +383,10 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Methods
+
+        private void cb_only_assign_common_known_mods_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.only_assign_common_or_known_mods = cb_only_assign_common_known_mods.Checked;
+        }
     }
 }

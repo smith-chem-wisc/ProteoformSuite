@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -21,6 +23,8 @@ namespace ProteoformSuiteInternal
         public int missed_mono_merges;
         public int harmonic_merges;
 
+        public static List<string> components_with_errors = new List<string>(); //show warning with line number
+
         #endregion Public Fields
 
         #region Public Method
@@ -40,11 +44,19 @@ namespace ProteoformSuiteInternal
                     continue; //skip component header
                 }
                 List<string> cellStrings = cells[i];
-                if (cellStrings.Count > 7) //component row
+                if (cellStrings.Count > 10) //component row
                 {
                     if (i > 1)
                     {
-                        add_component(new_component); // here we're adding the previously read component
+                        if (acceptable_component(new_component))
+                        {
+                            add_component(new_component); // here we're adding the previously read component
+                        }
+                        else
+                        {
+                            Clear();
+                            return new List<Component>();
+                        }
                     }
                     new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                     charge_row_index = 0;
@@ -59,15 +71,113 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
-                        new_component.add_charge_state(cellStrings);
+                        new_component.charge_states.Add(new ChargeState(cellStrings));
                     }
                 }
             }
-            if(new_component.charge_states != null && new_component.charge_states.Count > 0) add_component(new_component); //don't add if empty component
+            if (acceptable_component(new_component))
+            {
+                add_component(new_component);
+            }
+            else
+            {
+                Clear();
+                return new List<Component>();
+            }
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
-            scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range)).ToList();
+            scan_ranges = new HashSet<string>(final_components.Select(c => c.min_scan + "-" + c.max_scan)).ToList();
             return final_components;
+        }
+
+        public List<Component> read_components_from_tsv(InputFile file, bool remove_missed_monos_and_harmonics)
+        {
+            this.raw_components_in_file.Clear();
+            Dictionary<int, List<string[]>> components_by_feature_ID = new Dictionary<int, List<string[]>>();
+            string[] lines = System.IO.File.ReadAllLines(file.complete_path);
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string[] row = lines[i].Split('\t');
+                if (row.Length == 20)
+                {
+                    if (Double.TryParse(row[16], out double likelihood_ratio) && likelihood_ratio >= Sweet.lollipop.min_likelihood_ratio
+                        && Double.TryParse(row[19], out double fit) && fit <= Sweet.lollipop.max_fit)
+                    {
+                        List<string> charge_column = row[17].Split(',').ToList();
+                        List<string> intensity_column = row[18].Split(',').ToList();
+                        if (charge_column.Count != intensity_column.Count) continue;
+                        List<int> charges = new List<int>();
+                        List<double> intensities = new List<double>();
+                        for(int a = 0; a < charge_column.Count; a++)
+                        {
+                            int asdfg = Int32.TryParse(charge_column[a], out int ok) ? ok : 0;
+                            if (asdfg > 0)
+                            {
+                                charges.Add(ok);
+                                intensities.Add(Double.TryParse(intensity_column[a], out double intensity) ? intensity : 0);
+                            }
+                        }
+                        if (charges.Count < 1) continue;
+                        List<string> cellStrings = new List<string>();
+                        cellStrings.Add(row[0]); //id
+                        cellStrings.Add(row[5]); //monoisotopic mass
+                        cellStrings.Add(row[9]); //intensity
+                        cellStrings.Add(charges.Count().ToString()); //num charges 
+                        cellStrings.Add("0"); //num detected intervals
+                        cellStrings.Add("0"); //reported delta mass
+                        cellStrings.Add("0"); //relative abundance
+                        cellStrings.Add("0"); //fractional abundance
+
+                        cellStrings.Add(row[1] + "-" + row[2]); //scanrange
+                        cellStrings.Add(row[12] + "-" + row[13]); //rt range
+                        cellStrings.Add(row[10]);
+
+                        Component c = new Component(cellStrings, file);
+
+                        for(int a = 0; a < charges.Count; a++)
+                        {
+                            //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!! 
+                            //multiply by charge for intensity because constructor divides (thermo is not charge state normalized!)
+                            c.charge_states.Add(new ChargeState(new List<string>() { charges[a].ToString(), (intensities[a] * charges[a]).ToString(), (c.reported_monoisotopic_mass.ToMz(charges[a])).ToString(), c.reported_monoisotopic_mass.ToString() }));
+                        }
+
+                        c.calculate_properties();
+
+                        if (acceptable_component(c))
+                        {
+                            add_component(c);
+                        }
+                        else
+                        {
+                            Clear();
+                            return new List<Component>();
+                        }
+                    }
+                }
+            }
+
+            unprocessed_components += raw_components_in_file.Count;
+            final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
+            scan_ranges = new HashSet<string>(final_components.Select(c => c.min_scan + "-" + c.max_scan)).ToList();
+            return final_components;
+        }
+
+        public bool acceptable_component(Component c)
+        {
+            if (c.min_rt <= 0 || c.max_rt <= 0 || c.max_scan <= 0 || c.min_scan <= 0 || c.charge_states.Count <= 0 || c.rt_apex <= 0)
+            {
+                lock (components_with_errors) components_with_errors.Add(c.input_file.filename + " component " + c.id.Split('_')[1]);
+                return false;
+            }
+            foreach (ChargeState cs in c.charge_states)
+            {
+                if (cs.calculated_mass <= 0 || cs.mz_centroid <= 0 || cs.intensity <= 0 || cs.charge_count <= 0 )
+                {
+                    lock (components_with_errors) components_with_errors.Add(c.input_file.filename + " component " + c.id.Split('_')[1]);
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void Clear()
@@ -91,13 +201,13 @@ namespace ProteoformSuiteInternal
 
         public List<Component> remove_monoisotopic_duplicates_harmonics_from_same_scan(List<Component> raw_components)
         {
-            List<string> scans = raw_components.Select(c => c.scan_range).Distinct().ToList();
+            List<string> scans = raw_components.Select(c => c.min_scan + "-" + c.max_scan).Distinct().ToList();
             HashSet<Component> removeThese = new HashSet<Component>();
             List<NeuCodePair> ncPairsInScan = new List<NeuCodePair>();
 
             foreach (string scan in scans)
             {
-                List<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderByDescending(i => i.intensity_sum).ToList();
+                List<Component> scanComps = raw_components.Where(c => c.min_scan + "-" + c.max_scan == scan).OrderByDescending(i => i.intensity_sum).ToList();
                 foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component. components are sorted by mass. in one scan, there should only be one missed mono per
                 {
                     if (removeThese.Contains(sc))

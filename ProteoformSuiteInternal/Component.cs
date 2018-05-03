@@ -11,7 +11,6 @@ namespace ProteoformSuiteInternal
         #region Private Fields
 
         private double _manual_mass_shift;
-        private int _num_charge_states;
         private double _intensity_sum;
         private double _weighted_monoisotopic_mass;
 
@@ -23,16 +22,18 @@ namespace ProteoformSuiteInternal
         public string id { get; set; } // deconvolution 4.0 assigns a component id. This is made unique by appending the inputFile id.
         public double reported_monoisotopic_mass { get; set; }  //from deconvolution 4.0
         public double intensity_reported { get; set; } //from deconvolution 4.0
-        public double reported_delta_mass { get; set; } // the difference between the mass of the compound and the highest intensity component in the window
-        public double relative_abundance { get; set; }
-        public double fract_abundance { get; set; }
-        public string scan_range { get; set; }
-        public string rt_range { get; set; }
+        private double reported_delta_mass { get; set; } // the difference between the mass of the compound and the highest intensity component in the window
+        private double relative_abundance { get; set; }
+        private double fract_abundance { get; set; }
+        public int min_scan { get; set; }
+        public int max_scan { get; set; }
+        public double min_rt { get; set; }
+        public double max_rt { get; set; }
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public List<Component> incorporated_missed_monoisotopics = new List<Component>();
         public bool calculating_properties { get; set; } = false;
-        public int num_detected_intervals { get; set; }
+        private int num_detected_intervals { get; set; }
         public bool accepted { get; set; }
 
         /// <summary>
@@ -45,25 +46,6 @@ namespace ProteoformSuiteInternal
             {
                 _manual_mass_shift = value;
                 calculate_properties();
-            }
-        }
-
-        public int num_charge_states
-        {
-            get
-            {
-                return _num_charge_states;
-            }
-            set
-            {
-                if (!calculating_properties && charge_states.Count > 0)
-                {
-                    throw new ArgumentException("Charge state data exists that can't be overwritten with input");
-                }
-                else
-                {
-                    _num_charge_states = value;
-                }
             }
         }
 
@@ -112,21 +94,29 @@ namespace ProteoformSuiteInternal
 
         public Component(List<string> cellStrings, InputFile input_file) // this is used when we read stored data from previous computation.
         {
-            this.id = Convert.ToInt32(cellStrings[0]).ToString();
             this.input_file = input_file;
-            this.id = input_file.UniqueId.ToString() + "_" + Convert.ToInt32(cellStrings[0]);
-            this.reported_monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
-            this.weighted_monoisotopic_mass = Convert.ToDouble(cellStrings[1]); // this will get immediately replaced and updated as charge states are added.
-            this.intensity_reported = Convert.ToDouble(cellStrings[2]);
-            this.num_charge_states = (Convert.ToInt32(cellStrings[3]));
-            this.num_detected_intervals = Convert.ToInt32(cellStrings[4]);
-            this.reported_delta_mass = Convert.ToDouble(cellStrings[5]);
-            this.relative_abundance = Convert.ToDouble(cellStrings[6]);
-            this.fract_abundance = Convert.ToDouble(cellStrings[7]);
-            this.scan_range = cellStrings[8];
-            this.rt_range = cellStrings[9];
-            this.rt_apex = Convert.ToDouble(cellStrings[10]);
-            this.intensity_sum = Convert.ToDouble(cellStrings[2]); // this needs to be fixed.
+            this.id = input_file.UniqueId.ToString() + "_" + cellStrings[0];
+            this.reported_monoisotopic_mass = Double.TryParse(cellStrings[1], out double d) ? d : 0;
+            this.weighted_monoisotopic_mass = reported_monoisotopic_mass ; // this will get immediately replaced and updated as charge states are added.
+            this.intensity_reported = Double.TryParse(cellStrings[2], out d) ? d : 0;
+            this.num_detected_intervals = Int32.TryParse(cellStrings[4], out int i) ? i : 0;
+            this.reported_delta_mass = Double.TryParse(cellStrings[5], out d) ? d : 0;
+            this.relative_abundance = Double.TryParse(cellStrings[6], out d) ? d : 0;
+            this.fract_abundance = Double.TryParse(cellStrings[7], out d) ? d : 0;
+            string[] scan_range = cellStrings[8].Split('-');
+            string[] rt_range = cellStrings[9].Split('-');
+            if(scan_range.Length == 2)
+            {
+                this.min_scan = Int32.TryParse(scan_range[0], out i) ? i : 0;
+                this.max_scan = Int32.TryParse(scan_range[1], out i) ? i : 0;
+            }
+            if(rt_range.Length == 2)
+            {
+                this.min_rt = Double.TryParse(rt_range[0], out d) ? d : 0;
+                this.max_rt = Double.TryParse(rt_range[1], out d) ? d : 0;
+            }
+            this.rt_apex = Double.TryParse(cellStrings[10], out d) ? d : 0;
+            this.intensity_sum = intensity_reported;
             this.accepted = true;
             this.charge_states = new List<ChargeState>();
         }
@@ -135,11 +125,6 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void add_charge_state(List<string> charge_row)
-        {
-            charge_states.Add(new ChargeState(charge_row));
-        }
-
         public void calculate_properties()
         {
             if (charge_states.Count > 0)
@@ -147,7 +132,6 @@ namespace ProteoformSuiteInternal
                 calculating_properties = true;
                 intensity_sum = charge_states.Sum(cs => cs.intensity);
                 weighted_monoisotopic_mass = charge_states.Sum(charge_state => charge_state.intensity / intensity_sum * charge_state.calculated_mass) + manual_mass_shift;
-                num_charge_states = charge_states.Count;
                 calculating_properties = false;
             }
         }

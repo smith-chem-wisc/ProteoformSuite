@@ -36,7 +36,7 @@ namespace ProteoformSuiteInternal
         public string topdown_ptm_description { get; set; }
         public ExperimentalProteoform matching_experimental { get; set; } //corresponding experimental
         public bool correct_id { get; set; } //true if the ID given by ProteoformSuite matches ID from topdown
-
+        public string geneID { get; set; }
 
 
         public TopDownProteoform(string accession, List<TopDownHit> hits) : base(accession, null, true)

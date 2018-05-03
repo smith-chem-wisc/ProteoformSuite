@@ -67,6 +67,7 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
+            this.cb_only_assign_common_known_mods = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -329,6 +330,7 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
+            this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
             this.splitContainer3.Panel2.Controls.Add(this.cb_count_adducts_as_id);
@@ -534,6 +536,17 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
+            // cb_only_assign_common_known_mods
+            // 
+            this.cb_only_assign_common_known_mods.Checked = true;
+            this.cb_only_assign_common_known_mods.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_only_assign_common_known_mods.Location = new System.Drawing.Point(301, 46);
+            this.cb_only_assign_common_known_mods.Name = "cb_only_assign_common_known_mods";
+            this.cb_only_assign_common_known_mods.Size = new System.Drawing.Size(272, 24);
+            this.cb_only_assign_common_known_mods.TabIndex = 64;
+            this.cb_only_assign_common_known_mods.Text = "Only Assign Common/Known Mods";
+            this.cb_only_assign_common_known_mods.CheckedChanged += new System.EventHandler(this.cb_only_assign_common_known_mods_CheckedChanged);
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -607,5 +620,6 @@
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
+        private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
     }
 }

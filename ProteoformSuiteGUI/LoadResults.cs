@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -36,11 +37,11 @@ namespace ProteoformSuiteGUI
             //tb_resultsFolder.Text = Sweet.lollipop.results_folder;
             rb_neucode.Checked = Sweet.lollipop.neucode_labeled;
             rb_unlabeled.Checked = !rb_neucode.Checked;
-            nud_randomSeed.Value = Sweet.lollipop.calibration_random_seed;
-            cb_useRandomSeed.Checked = Sweet.lollipop.calibration_use_random_seed;
             cb_calibrate_td_files.Checked = Sweet.lollipop.calibrate_td_files;
             cb_calibrate_raw_files.Checked = Sweet.lollipop.calibrate_raw_files;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
+            ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+            ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
         }
 
         public List<DataTable> SetTables()
@@ -166,15 +167,7 @@ namespace ProteoformSuiteGUI
 
             if (rb_standardOptions.Checked)
             {
-                cmb_loadTable1.Items.Add(Lollipop.file_lists[0]);
-
-                //if unlabeled add quant
-                //   if (Sweet.lollipop.neucode_labeled)
-                {
-                    cmb_loadTable1.Items.Add(Lollipop.file_lists[1]);
-                }
-
-                for (int i = 2; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
 
                 cmb_loadTable1.SelectedIndex = 0;
 
@@ -182,10 +175,8 @@ namespace ProteoformSuiteGUI
 
 
                 bt_calibrate.Visible = false;
-                cb_useRandomSeed.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                nud_randomSeed.Visible = false;
                 bt_deconvolute.Visible = false;
                 bt_stepthru.Visible = true;
                 bt_fullrun.Visible = true;
@@ -197,30 +188,21 @@ namespace ProteoformSuiteGUI
                 panel_toppicparams.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_maxRT.Visible = false;
-                nud_minRT.Visible = false;
-                nud_likelihood.Visible = false;
-                nud_fit.Visible = false;
                 label_maxcharge.Visible = false;
                 label_mincharge.Visible = false;
                 label_maxRT.Visible = false;
                 label_minRT.Visible = false;
-                label_likelihood.Visible = false;
-                label_fit.Visible = false;
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
-                groupbox_output.Visible = true;
             }
 
             else if (rb_chemicalCalibration.Checked)
             {
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
                 bt_calibrate.Visible = true;
-                cb_useRandomSeed.Visible = true;
                 cb_calibrate_td_files.Visible = true;
                 cb_calibrate_raw_files.Visible = true;
-                nud_randomSeed.Visible = true;
                 bt_deconvolute.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
@@ -232,16 +214,10 @@ namespace ProteoformSuiteGUI
                 panel_toppicparams.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_maxRT.Visible = false;
-                nud_minRT.Visible = false;
-                nud_likelihood.Visible = false;
-                nud_fit.Visible = false;
                 label_maxcharge.Visible = false;
                 label_mincharge.Visible = false;
                 label_maxRT.Visible = false;
                 label_minRT.Visible = false;
-                label_likelihood.Visible = false;
-                label_fit.Visible = false;
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
@@ -258,10 +234,8 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
 
                 bt_calibrate.Visible = false;
-                cb_useRandomSeed.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                nud_randomSeed.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
                 bt_calibrate.Visible = false;
@@ -273,16 +247,10 @@ namespace ProteoformSuiteGUI
                 panel_toppicparams.Visible = false;
                 nud_maxcharge.Visible = true;
                 nud_mincharge.Visible = true;
-                nud_maxRT.Visible = true;
-                nud_minRT.Visible = true;
-                nud_likelihood.Visible = true;
-                nud_fit.Visible = true;
                 label_maxcharge.Visible = true;
                 label_mincharge.Visible = true;
                 label_maxRT.Visible = true;
                 label_minRT.Visible = true;
-                label_likelihood.Visible = true;
-                label_fit.Visible = true;
                 rb_neucode.Visible = false;
                 rb_unlabeled.Visible = false;
                 calib_stand_splitContainer.Visible = false;
@@ -305,10 +273,8 @@ namespace ProteoformSuiteGUI
                 cmb_activationmethod.SelectedIndex = 2;
 
                 bt_calibrate.Visible = false;
-                cb_useRandomSeed.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                nud_randomSeed.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
                 bt_calibrate.Visible = false;
@@ -320,16 +286,10 @@ namespace ProteoformSuiteGUI
                 panel_toppicparams.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_maxRT.Visible = false;
-                nud_minRT.Visible = false;
-                nud_likelihood.Visible = false;
-                nud_fit.Visible = false;
                 label_maxcharge.Visible = false;
                 label_mincharge.Visible = false;
                 label_maxRT.Visible = false;
                 label_minRT.Visible = false;
-                label_likelihood.Visible = false;
-                label_fit.Visible = false;
                 rb_neucode.Visible = false;
                 rb_unlabeled.Visible = false;
                 calib_stand_splitContainer.Visible = false;
@@ -350,10 +310,8 @@ namespace ProteoformSuiteGUI
                 cmb_errortolerance.SelectedIndex = 2;
 
                 bt_calibrate.Visible = false;
-                cb_useRandomSeed.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                nud_randomSeed.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
                 bt_calibrate.Visible = false;
@@ -365,16 +323,10 @@ namespace ProteoformSuiteGUI
                 panel_toppicparams.Visible = true;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
-                nud_maxRT.Visible = false;
-                nud_minRT.Visible = false;
-                nud_likelihood.Visible = false;
-                nud_fit.Visible = false;
                 label_maxcharge.Visible = false;
                 label_mincharge.Visible = false;
                 label_maxRT.Visible = false;
                 label_minRT.Visible = false;
-                label_likelihood.Visible = false;
-                label_fit.Visible = false;
                 rb_neucode.Visible = false;
                 rb_unlabeled.Visible = false;
                 calib_stand_splitContainer.Visible = false;
@@ -443,6 +395,12 @@ namespace ProteoformSuiteGUI
             {
                 dgv.Refresh();
             }
+
+            if (MdiParent != null) //doesn't work first time
+            {
+                ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+                ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            }
         }
 
         private void reload_dgvs()
@@ -501,11 +459,44 @@ namespace ProteoformSuiteGUI
                 if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
                 refresh_dgvs();
+                if (openFileDialog.FileNames.Any(f => Path.GetExtension(f) == ".raw")) ValidateThermoMsFileReaderVersion();
             }
 
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
+
+        private const string AssumedThermoMsFileReaderDllPath = @"C:\Program Files\Thermo\MSFileReader";
+        private const string DesiredFileIoVersion = "3.0";
+        private const string DesiredFregistryVersion = "3.0";
+        private const string DesiredXRawFileVersion = "3.0.29.0";
+
+        public static void ValidateThermoMsFileReaderVersion()
+        {
+            string fileIoAssumedPath = Path.Combine(AssumedThermoMsFileReaderDllPath, "Fileio_x64.dll");
+            string fregistryAssumedPath = Path.Combine(AssumedThermoMsFileReaderDllPath, "fregistry_x64.dll");
+            string xRawFileAssumedPath = Path.Combine(AssumedThermoMsFileReaderDllPath, "XRawfile2_x64.dll");
+
+            if (File.Exists(fileIoAssumedPath) && File.Exists(fregistryAssumedPath) && File.Exists(xRawFileAssumedPath))
+            {
+                string fileIoVersion = FileVersionInfo.GetVersionInfo(fileIoAssumedPath).FileVersion;
+                string fregistryVersion = FileVersionInfo.GetVersionInfo(fregistryAssumedPath).FileVersion;
+                string xRawFileVersion = FileVersionInfo.GetVersionInfo(xRawFileAssumedPath).FileVersion;
+
+                if (fileIoVersion.Equals(DesiredFileIoVersion) && fregistryVersion.Equals(DesiredFregistryVersion) && xRawFileVersion.Equals(DesiredXRawFileVersion))
+                {
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("Warning!Thermo MSFileReader is not version 3.0 SP2; a crash may result from searching this .raw file.");
+                    return;
+                }
+            }
+            MessageBox.Show("Warning! Cannot find Thermo MSFileReader (v3.0 SP2 is preferred); a crash may result from searching this .raw file");
+        }
+    
+
 
         #endregion ADD BUTTONS Private Methods
 
@@ -577,10 +568,10 @@ namespace ProteoformSuiteGUI
 
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
-            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
-            {
-                MessageBox.Show("Please enter raw files to calibrate."); return;
-            }
+            //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
+            //{
+            //    MessageBox.Show("Please enter raw files to calibrate."); return;
+            //}
             if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
             {
                 MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
@@ -592,17 +583,19 @@ namespace ProteoformSuiteGUI
 
         private void bt_deconvolute_Click(object sender, EventArgs e)
         {
-            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
                 MessageBox.Show("Please enter raw files to deconvolute."); return;
             }
-            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Convert.ToDouble(nud_maxRT.Value), Convert.ToDouble(nud_minRT.Value), Convert.ToDouble(nud_fit.Value), Convert.ToDouble(nud_likelihood.Value), Environment.CurrentDirectory);
+
+            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Environment.CurrentDirectory);
+
             MessageBox.Show(deconv_results);
         }
 
         private void bt_topdown_Click(object sender, EventArgs e)
         {
-            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
                 MessageBox.Show("Please enter raw files to analyze."); return;
             }
@@ -613,7 +606,7 @@ namespace ProteoformSuiteGUI
                 {
                     MessageBox.Show("Please enter a .fasta protein database file.");
                 }
-                string deconv_results = Sweet.lollipop.promex_deconvolute(60, 1, 100, 0, 100, -100, Environment.CurrentDirectory);
+                string deconv_results = Sweet.lollipop.promex_deconvolute(60, 1, Environment.CurrentDirectory);
                 string topdown_results = Sweet.lollipop.MSPathFinderT(Environment.CurrentDirectory, Sweet.lollipop.results_folder, cmb_searchmode.SelectedIndex, cmb_tagsearch.SelectedIndex, Convert.ToDouble(nud_precursortolerance.Value), Convert.ToDouble(nud_fragmentiontolerance.Value), cmb_activationmethod.SelectedIndex);
                 MessageBox.Show(topdown_results);
             }
@@ -728,16 +721,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Cell Validation Methods
-
-        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.calibration_random_seed = (int)nud_randomSeed.Value;
-        }
-
-        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.calibration_use_random_seed = cb_useRandomSeed.Checked;
-        }
 
         private void cb_calibrate_raw_files_CheckedChanged(object sender, EventArgs e)
         {

@@ -1,7 +1,6 @@
 # Proteoform Suite
 Software for constructing, quantifying, and visualizing proteoform families.
 [![Build status](https://ci.appveyor.com/api/projects/status/0r09noqpa7j3687h/branch/master?svg=true)](https://ci.appveyor.com/project/smith-chem-wisc/proteoformsuite/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/smith-chem-wisc/proteoform-suite/badge.svg?branch=master)](https://coveralls.io/github/smith-chem-wisc/proteoform-suite?branch=master)
 [![codecov](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite/branch/master/graph/badge.svg)](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/932cdbf7f3694271bb03abb5dbba036c)](https://www.codacy.com/app/acesnik/ProteoformSuite?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=smith-chem-wisc/ProteoformSuite&amp;utm_campaign=Badge_Grade)
 
