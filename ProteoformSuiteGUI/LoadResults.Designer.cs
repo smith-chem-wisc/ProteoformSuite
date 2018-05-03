@@ -787,6 +787,20 @@
             this.param_splitcontainer.SplitterDistance = 648;
             this.param_splitcontainer.TabIndex = 1;
             // 
+            // label_minRT
+            // 
+            this.label_minRT.Location = new System.Drawing.Point(0, 0);
+            this.label_minRT.Name = "label_minRT";
+            this.label_minRT.Size = new System.Drawing.Size(100, 23);
+            this.label_minRT.TabIndex = 0;
+            // 
+            // label_maxRT
+            // 
+            this.label_maxRT.Location = new System.Drawing.Point(0, 0);
+            this.label_maxRT.Name = "label_maxRT";
+            this.label_maxRT.Size = new System.Drawing.Size(100, 23);
+            this.label_maxRT.TabIndex = 1;
+            // 
             // label_mincharge
             // 
             this.label_mincharge.AutoSize = true;
