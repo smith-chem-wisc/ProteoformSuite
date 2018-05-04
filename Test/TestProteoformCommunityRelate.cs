@@ -441,6 +441,7 @@ namespace Test
         public void TestProteoformCommunityRelate_ED()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.decoy_databases = 1;
             // In empty comminity, relate ed is empty
             Assert.AreEqual(0, Sweet.lollipop.ed_relations.Count);

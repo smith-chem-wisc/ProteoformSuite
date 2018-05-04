@@ -36,3 +36,22 @@ DR   RESID; AA0161.
 DR   RESID; AA0162.
 DR   RESID; AA0158.
 //
+ID   Formyl
+TG   Any
+PP   Anywhere.
+MM   27.994915
+MT   Common
+CF   C1 O1
+DR   RESID; AA0021.
+DR   PSI-MOD; MOD:00482.
+//
+ID   Succinyl
+TG   Any
+PP   Anywhere.
+CF   C4 H4 O3
+MT   Common
+MM   100.016044
+MA   100.07
+DR   RESID; AA0130.
+DR   PSI-MOD; MOD:00139.
+//

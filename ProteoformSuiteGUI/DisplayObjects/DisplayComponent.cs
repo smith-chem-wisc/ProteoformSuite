@@ -104,26 +104,6 @@ namespace ProteoformSuiteGUI
             get { return c.intensity_reported; }
         }
 
-        public double relative_abundance
-        {
-            get { return c.relative_abundance; }
-        }
-
-        public double fract_abundance
-        {
-            get { return c.fract_abundance; }
-        }
-
-        public double reported_delta_mass
-        {
-            get { return c.reported_delta_mass; }
-        }
-
-        public int num_detected_intervals
-        {
-            get { return c.num_detected_intervals; }
-        }
-
         #endregion Public Properties
 
         #region Public Methods
@@ -175,22 +155,15 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(manual_mass_shift)) return "Manual Mass Shift";
             if (property_name == nameof(reported_monoisotopic_mass)) return "Reported Monoisotopic Mass";
             if (property_name == nameof(intensity_reported)) return "Reported Intensity";
-            if (property_name == nameof(num_detected_intervals)) return "Reported No. Detected Intervals";
-            if (property_name == nameof(reported_delta_mass)) return "Reported Delta Mass";
-            if (property_name == nameof(relative_abundance)) return "Reported Relative Abundance";
             if (property_name == nameof(charge_states)) return "Charge States";
-            if (property_name == nameof(fract_abundance)) return "Reported Fractional Abundance";
             return null;
         }
 
         private static string number_format(string property_name)
         {
             if (property_name == nameof(reported_monoisotopic_mass)) { return "0.0000"; }
-            if (property_name == nameof(reported_delta_mass)) { return "0.0000"; }
             if (property_name == nameof(weighted_monoisotopic_mass)) { return "0.0000"; }
             if (property_name == nameof(rt_apex)) { return "0.00"; }
-            if (property_name == nameof(relative_abundance)) { return "0.0000"; }
-            if (property_name == nameof(fract_abundance)) { return "0.0000"; }
             if (property_name == nameof(intensity_sum)) { return "0.0000"; }
             if (property_name == nameof(intensity_reported)) { return "0.0000"; }
             if (property_name == nameof(manual_mass_shift)) { return "0.0000"; }
