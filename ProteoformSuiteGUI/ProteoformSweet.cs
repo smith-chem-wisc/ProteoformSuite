@@ -53,6 +53,7 @@ namespace ProteoformSuiteGUI
             InitializeForms();
             WindowState = FormWindowState.Maximized;
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            loadResults.InitializeParameterSet();
             showForm(loadResults);
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
