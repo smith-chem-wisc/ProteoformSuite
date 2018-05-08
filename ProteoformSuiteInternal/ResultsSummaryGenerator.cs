@@ -201,7 +201,7 @@ namespace ProteoformSuiteInternal
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
             report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += unidentified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Unidentified Families" + Environment.NewLine;
-            report += Sweet.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine;
+            report += Sweet.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1 && f.experimental_proteoforms.Count(e => e.topdown_id) == 0).ToString() + "\tOrphaned Experimental Proteoforms (Intact-mass proteoforms not joined with another proteoform)" + Environment.NewLine;
             report += Environment.NewLine;
 
             int raw_components_in_fams = identified_families.Concat(ambiguous_families).Concat(unidentified_families).Sum(f => f.experimental_proteoforms.Sum(e => e.lt_verification_components.Count + e.hv_verification_components.Count));
