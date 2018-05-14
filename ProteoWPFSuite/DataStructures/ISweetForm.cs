@@ -1,16 +1,10 @@
-﻿using System.Windows.Forms;
-using System.Data;
+﻿using System.Data;
 using System.Collections.Generic;
 
-namespace ProteoformSuiteGUI
+namespace ProteoformSuiteWPF
 {
-    /// <summary>
-    /// Each form in this program should perform several processes consistently.
-    /// Namely, a button click ensures the user wants to start processing (no processing is performed upon form load)
-    /// </summary>
     public interface ISweetForm
     {
-
         bool ReadyToRunTheGamut();
 
         /// <summary>
@@ -29,6 +23,5 @@ namespace ProteoformSuiteGUI
 
         List<DataTable> DataTables { get; }
         List<DataTable> SetTables();
-
     }
 }
