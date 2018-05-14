@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
@@ -16,41 +15,6 @@ namespace ProteoformSuiteGUI
         #endregion Private Field
 
         #region Public Methods
-
-        public void ExportToExcel(List<DataGridView> dgvs, string sheet_prefix)
-        {
-            if (dgvs == null)
-                return;
-
-            List<DataTable> datatables = new List<DataTable>();
-            foreach (DataGridView dgv in dgvs)
-            {
-                if (dgv.DataSource == null || dgv.Columns.Count == 0 || dgv.Rows.Count == 0)
-                    continue;
-
-                DataTable dt = new DataTable(dgv.Name);
-
-                foreach (DataGridViewColumn col in dgv.Columns)
-                {
-                    if (col.Visible)
-                        dt.Columns.Add(col.HeaderText);
-                }
-
-                foreach (DataGridViewRow row in dgv.Rows)
-                {
-                    DataRow new_row = dt.NewRow();
-                    int column_index = 0;
-                    foreach (DataGridViewCell cell in row.Cells)
-                    {
-                        if (dgv.Columns[cell.ColumnIndex].Visible)
-                            new_row[column_index++] = cell.Value == null || cell.Value.ToString() == "NaN" ? "" : cell.Value;
-                    }
-                    dt.Rows.Add(new_row);
-                }
-            }
-
-            ExportToExcel(datatables, sheet_prefix);
-        }
 
         public void ExportToExcel(List<DataTable> datatables, string sheet_prefix)
         {
@@ -88,18 +52,18 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public void BuildHyperlinkSheet(List<Tuple<ISweetForm, List<DataTable>>> sheets)
+        public void BuildHyperlinkSheet(List<Tuple<string, List<DataTable>>> sheetNameAndTables)
         {
             var ws = workbook.Worksheets.Add("Contents");
             int row = 1;
-            foreach (Tuple<ISweetForm, List<DataTable>> x in sheets)
+            foreach (Tuple<string, List<DataTable>> x in sheetNameAndTables)
             {
                 if (x.Item2 == null) continue;
                 foreach (DataTable dt in x.Item2)
                 {
                     ws.Cell(row, 1).Value = "Table S" + row.ToString();
-                    ws.Cell(row, 2).Value = sheet_name((x.Item1 as Form).Name, dt.TableName);
-                    ws.Cell(row++, 2).Hyperlink = new XLHyperlink("'" + sheet_name((x.Item1 as Form).Name, dt.TableName) + "'!A1");
+                    ws.Cell(row, 2).Value = sheet_name(x.Item1, dt.TableName);
+                    ws.Cell(row++, 2).Hyperlink = new XLHyperlink("'" + sheet_name(x.Item1, dt.TableName) + "'!A1");
                 }
             }
         }

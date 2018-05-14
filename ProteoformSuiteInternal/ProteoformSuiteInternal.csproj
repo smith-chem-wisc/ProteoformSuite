@@ -213,6 +213,7 @@
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
     <Compile Include="BottomUpReader.cs" />
+    <Compile Include="ExcelWriter.cs" />
     <Compile Include="IAggregatable.cs" />
     <Compile Include="StatisticalAnalysis\GoAnalysis.cs" />
     <Compile Include="Intensities\BiorepIntensity.cs" />
