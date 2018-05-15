@@ -10,24 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ProteoformWPFSuite
+namespace ProteoWPFSuite
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for loadResults.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class loadResults : Window
     {
-        public MainWindow()
+        public loadResults()
         {
             InitializeComponent();
         }
 
-        private void ProteoformSweet_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

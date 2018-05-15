@@ -78,9 +78,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataStructures\ISweetForm.cs" />
+    <Compile Include="loadResults.xaml.cs">
+      <DependentUpon>loadResults.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ProteoformSweet.xaml.cs">
       <DependentUpon>ProteoformSweet.xaml</DependentUpon>
     </Compile>
+    <Page Include="loadResults.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
