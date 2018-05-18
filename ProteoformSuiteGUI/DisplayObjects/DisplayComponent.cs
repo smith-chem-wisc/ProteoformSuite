@@ -104,6 +104,16 @@ namespace ProteoformSuiteGUI
             get { return c.intensity_reported; }
         }
 
+        public double fit_score
+        {
+            get { return c.fit_score; }
+        }
+
+        public double likelihood_ratio
+        {
+            get { return c.likelihood_ratio; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -156,6 +166,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(reported_monoisotopic_mass)) return "Reported Monoisotopic Mass";
             if (property_name == nameof(intensity_reported)) return "Reported Intensity";
             if (property_name == nameof(charge_states)) return "Charge States";
+            if (property_name == nameof(likelihood_ratio)) return "Likelihood Ratio";
+            if (property_name == nameof(fit_score)) return "Fit Score";
             return null;
         }
 
@@ -167,6 +179,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(intensity_sum)) { return "0.0000"; }
             if (property_name == nameof(intensity_reported)) { return "0.0000"; }
             if (property_name == nameof(manual_mass_shift)) { return "0.0000"; }
+            if (property_name == nameof(fit_score)) { return  "0.0000"; }
             return null;
         }
 

@@ -58,11 +58,6 @@ namespace ProteoformSuiteGUI
             get { return e.accepted; }
         }
 
-        public bool mass_shifted
-        {
-            get { return e.mass_shifted; }
-        }
-
         public int observation_count
         {
             get { return e.aggregated.Count; }
@@ -272,7 +267,6 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(heavy_observation_count)) return "Heavy Quantitative Component Count";
             if (property_name == nameof(light_observation_count)) return "Light Quantitative Component Count";
             if (property_name == nameof(lysine_count)) return "Lysine Count";
-            if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
             if (property_name == nameof(ptm_description)) return "PTM Description";
             if (property_name == nameof(gene_name)) return "Gene Name";
             if (property_name == nameof(theoretical_accession)) return "Theoretical Accession";
