@@ -260,7 +260,6 @@
       <DependentUpon>IdentifiedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="ISweetForm.cs" />
-    <Compile Include="ExcelWriter.cs" />
     <Compile Include="DisplayUtility.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
