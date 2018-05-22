@@ -69,70 +69,136 @@ namespace ProteoWPFSuite
             else if ((bool)rb_chemicalCalibration.IsChecked)
             {
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                bt_calibrate.Visible = true;
-                cb_calibrate_td_files.Visible = true;
-                cb_calibrate_raw_files.Visible = true;
-                bt_deconvolute.Visible = false;
-                bt_stepthru.Visible = false;
-                bt_fullrun.Visible = false;
-                bt_calibrate.Visible = true;
-                panel_deconv_calib.Visible = true;
-                panel_step.Visible = false;
-                nud_maxcharge.Visible = false;
-                nud_mincharge.Visible = false;
-                label_maxcharge.Visible = false;
-                label_mincharge.Visible = false;
-                label_maxRT.Visible = false;
-                label_minRT.Visible = false;
-                rb_neucode.Visible = true;
-                rb_unlabeled.Visible = true;
-                calib_stand_splitContainer.Visible = true;
-                fullrun_groupbox.Visible = false;
+                bt_calibrate.Visibility = Visibility.Visible;
+                cb_calibrate_td_files.Visibility = Visibility.Visible;
+                cb_calibrate_raw_files.Visibility = Visibility.Visible;
+                bt_deconvolute.Visibility = Visibility.Collapsed;
+                bt_stepthru.Visibility = Visibility.Collapsed;
+                bt_fullrun.Visibility = Visibility.Collapsed;
+                bt_calibrate.Visibility = Visibility.Visible;
+                panel_deconv_calib.Visibility = Visibility.Visible;
+                panel_step.Visibility = Visibility.Collapsed;
+                nud_maxcharge.Visibility = Visibility.Collapsed;
+                nud_mincharge.Visibility = Visibility.Collapsed;
+                label_maxcharge.Visibility = Visibility.Collapsed;
+                label_mincharge.Visibility = Visibility.Collapsed;
+                label_maxRT.Visibility = Visibility.Collapsed;
+                label_minRT.Visibility = Visibility.Collapsed;
+                rb_neucode.Visibility = Visibility.Visible;
+                rb_unlabeled.Visibility = Visibility.Visible;
+                calib_stand_splitContainer.Visibility = Visibility.Visible;
+                fullrun_groupbox.Visibility = Visibility.Collapsed;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
-                cmb_loadTable1.Enabled = true;
+                cmb_loadTable1.IsEnabled = true;
             }
 
-            else if (rb_deconvolution.Checked)
+            else if ((bool)rb_deconvolution.IsChecked)
             {
 
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
 
                 cmb_loadTable1.SelectedIndex = 0;
 
-                cmb_loadTable1.Enabled = false;
+                cmb_loadTable1.IsEnabled = false;
 
-                bt_calibrate.Visible = false;
-                cb_calibrate_raw_files.Visible = false;
-                cb_calibrate_td_files.Visible = false;
-                bt_stepthru.Visible = false;
-                bt_fullrun.Visible = false;
-                bt_calibrate.Visible = false;
-                bt_deconvolute.Visible = true;
-                panel_deconv_calib.Visible = true;
-                panel_step.Visible = false;
-                nud_maxcharge.Visible = true;
-                nud_mincharge.Visible = true;
-                label_maxcharge.Visible = true;
-                label_mincharge.Visible = true;
-                label_maxRT.Visible = true;
-                label_minRT.Visible = true;
-                rb_neucode.Visible = false;
-                rb_unlabeled.Visible = false;
-                calib_stand_splitContainer.Visible = false;
-                fullrun_groupbox.Visible = false;
+                bt_calibrate.Visibility = Visibility.Collapsed;
+                cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
+                cb_calibrate_td_files.Visibility = Visibility.Collapsed;
+                bt_stepthru.Visibility = Visibility.Collapsed;
+                bt_fullrun.Visibility = Visibility.Collapsed;
+                bt_calibrate.Visibility = Visibility.Collapsed;
+                bt_deconvolute.Visibility = Visibility.Visible;
+                panel_deconv_calib.Visibility = Visibility.Visible;
+                panel_step.Visibility = Visibility.Collapsed;
+                nud_maxcharge.Visibility = Visibility.Visible;
+                nud_mincharge.Visibility = Visibility.Visible;
+                label_maxcharge.Visibility = Visibility.Visible;
+                label_mincharge.Visibility = Visibility.Visible;
+                label_maxRT.Visibility = Visibility.Visible;
+                label_minRT.Visibility = Visibility.Visible;
+                rb_neucode.Visibility = Visibility.Collapsed;
+                rb_unlabeled.Visibility = Visibility.Collapsed;
+                calib_stand_splitContainer.Visibility = Visibility.Collapsed;
+                fullrun_groupbox.Visibility = Visibility.Collapsed;
 
                 cmb_loadTable1.SelectedIndex = 0;
 
-                cmb_loadTable1.Enabled = false;
+                cmb_loadTable1.IsEnabled = false;
             }
 
-            lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
+            lb_filter1.Content = cmb_loadTable1.SelectedItem.ToString();
 
-            reload_dgvs();
-            refresh_dgvs();
+            //reload_dgvs();
+            //refresh_dgvs();
         }
         #endregion GENERAL TABLE OPTIONS Private Methods
+
+        #region DGV DRAG AND DROP Private Methods
+        /*
+        private void dgv_deconResults_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
+        }
+
+        private void dgv_quantResults_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
+        }
+
+        private void dgv_calibrationResults_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
+        }
+
+        private void dgv_deconResults_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void dgv_calibrationResults_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void dgv_quantResults_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
+        {
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
+
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
+            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
+            refresh_dgvs();
+            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
+        }
+
+        private void refresh_dgvs()
+        {
+            foreach (DataGridView dgv in new List<DataGridView> { dgv_loadFiles1 })
+            {
+                dgv.Refresh();
+            }
+
+            if (MdiParent != null) //doesn't work first time
+            {
+                ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+                ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            }
+        }
+
+        private void reload_dgvs()
+        {
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]);
+        }*/
+
+        #endregion DGV DRAG AND DROP Private Methods
     }
 }
