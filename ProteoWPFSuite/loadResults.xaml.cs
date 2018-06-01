@@ -1,23 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ProteoformSuiteInternal;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Reflection;
-using System.IO;
-using Xceed.Wpf.Toolkit;
+using System.Collections.Generic;
+
 namespace ProteoWPFSuite
 {
     /// <summary>
@@ -25,6 +12,7 @@ namespace ProteoWPFSuite
     /// </summary>
     public partial class LoadResults : Window
     {
+        
         public LoadResults()
         {
             InitializeComponent();
@@ -191,13 +179,13 @@ namespace ProteoWPFSuite
                 ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
                 ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
             }
-        }
+        }*/
 
         private void reload_dgvs()
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]);
-        }*/
+            DisplayHelper.DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]).Select(f => new DisplayInputFile(f)));
+            DisplayHelper.DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]);
+        }
 
         #endregion DGV DRAG AND DROP Private Methods
     }

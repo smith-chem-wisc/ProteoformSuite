@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Collections.Generic;
 
-namespace ProteoformWPFSuite
+namespace ProteoWPFSuite
 {
     public interface ISweetForm
     {
