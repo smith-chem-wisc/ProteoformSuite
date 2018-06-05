@@ -4,19 +4,33 @@ using System.Windows;
 using ProteoformSuiteInternal;
 using System.Data;
 using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace ProteoWPFSuite
 {
     /// <summary>
     /// Interaction logic for loadResults.xaml
     /// </summary>
-    public partial class LoadResults : Window
+    public partial class LoadResults : UserControl, ITabbedMDI
     {
-        
-        public LoadResults()
+        #region Interface Area
+        public string UniqueTabName { get; set; }
+        public event delClosed BeingClosed;
+        public void OnClosing(ITabbedMDI sender) { 
+            if (BeingClosed != null)
+                {
+                    BeingClosed(this, new EventArgs());
+                }
+        }
+        #endregion Interface Area
+    public LoadResults()
         {
             InitializeComponent();
         }
+
+        #region Public Property
+        
+        #endregion
 
         #region GENERAL TABLE OPTIONS Private Methods
         private void populate_file_lists()

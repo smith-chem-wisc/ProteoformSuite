@@ -15,7 +15,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
-using ProteoformSuiteGUI;
+
+/*
+ * - MDI Form replaced by user control
+ * - MDI Parent replaced by the getparentwindow (private)
+     */
 namespace ProteoWPFSuite
 {
     /// <summary>
@@ -23,6 +27,10 @@ namespace ProteoWPFSuite
     /// </summary>
     public partial class ProteoformSweet : UserControl, IParentMDI
     {
+
+        #region Public Fields
+        
+        #region MDI Iterface
         public HashSet<String> MDIChildren
         {
             get;
@@ -33,16 +41,46 @@ namespace ProteoWPFSuite
             MDIChildren.Remove(sender.UniqueTabName);
 
         }
-        #region Public Fields
+        #endregion
+
+        public LoadResults loadResults = new LoadResults();
+        //public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+
         public List<ISweetForm> forms = new List<ISweetForm>();
 
         #endregion
 
         #region Private Fields
-        ITabbedMDI current_Tab;
+        ISweetForm current_Tab;
         SaveFileDialog saveExcelDialog;
         #endregion
-        
+
+        #region Private Methods
+        /// <summary>
+        /// Used for locating parent window; as a equicalent for midParent
+        /// </summary>
+        /// <param name="child">the control needing to find its parent</param>
+        /// <returns>the parent winow if any; or null if there isn't any</returns>
+        private static Window getParentWindow(DependencyObject child)
+        {
+
+            if (child == null) return null;
+
+            DependencyObject parent = VisualTreeHelper.GetParent(child);
+
+            while( (parent != null) && ((parent as Window) == null))
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+
+            if (parent == null) return null;
+            else
+            {
+                return (Window)parent;
+            }
+        }
+        #endregion
+
         public ProteoformSweet()
         {
             InitializeComponent();
@@ -51,7 +89,7 @@ namespace ProteoWPFSuite
         
         private void ExportTables_Click(object sender, RoutedEventArgs e)
         {
-            List<DataTable> data_tables = current_form.SetTables();
+            List<DataTable> data_tables = current_Tab.SetTables();
 
             if (data_tables == null)
             {
@@ -59,8 +97,8 @@ namespace ProteoWPFSuite
                 return;
             }
             ProteoformSuiteGUI.ExcelWriter writer = new ProteoformSuiteGUI.ExcelWriter();
-            writer.ExportToExcel(data_tables, (current_form as Window).Name);
-            SaveExcelFile(writer, (current_form as Window).Name +"_table.xlsx");
+            writer.ExportToExcel(data_tables, (current_Tab as UserControl).Name);
+            SaveExcelFile(writer, (current_Tab as UserControl).Name +"_table.xlsx");
         }
 
         /**
@@ -74,7 +112,7 @@ namespace ProteoWPFSuite
             writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<string, List<DataTable>>((sweet as Window).Name, sweet.DataTables)).ToList());
             Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as Window).Name));
             if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
-            SaveExcelFile(writer, (current_Tab as TabItem).Parent. + "_table.xlsx"); //get window / tabcontrol
+            SaveExcelFile(writer, getParentWindow(current_Tab as UserControl).Name + "_table.xlsx"); //get the window hosting tabcontrol, which hosts usercontrol
         }
         private void SaveExcelFile(ExcelWriter writer, string filename)
         {

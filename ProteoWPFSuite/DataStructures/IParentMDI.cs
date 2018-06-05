@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProteoWPFSuite
 {
-    interface IParentMDI
+    public interface IParentMDI
     {
         HashSet<String> MDIChildren { get;set; }
         void CloseEvent(ITabbedMDI sender, EventArgs e);

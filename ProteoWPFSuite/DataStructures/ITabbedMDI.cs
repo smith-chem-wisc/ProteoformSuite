@@ -19,11 +19,12 @@ namespace ProteoWPFSuite
         /// by parent MDI form. when this event will be fired from child control
         /// parent will close the form
         /// </summary>
-        event delClosed OnClosing;
+        event delClosed BeingClosing;
         /// <summary>
         /// This is unique name for the control. This will be used in dictonary object
         /// to keep track of the opened user control in parent form.
         /// </summary>
         string UniqueTabName { get; }
+        void OnClosing(ITabbedMDI sender);
     }
 }
