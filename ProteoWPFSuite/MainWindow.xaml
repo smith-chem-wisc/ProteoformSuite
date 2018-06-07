@@ -9,6 +9,6 @@
         mc:Ignorable="d"
         Title="Proteoform Suite" Height="450" Width="800" Icon="Image/lollipop.ico">
     
-        <menu:ProteoformSweet Loaded="ProteoformSweet_Loaded"/>
+        <menu:ProteoformSweet x:Name="MDIParentControl" Loaded="ProteoformSweet_Loaded"/>
     
 </Window>

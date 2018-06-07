@@ -2,19 +2,12 @@
 using System.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
+using ProteoformSuiteGUI;
 
 /*
  * - MDI Form replaced by user control
@@ -56,29 +49,7 @@ namespace ProteoWPFSuite
         #endregion
 
         #region Private Methods
-        /// <summary>
-        /// Used for locating parent window; as a equicalent for midParent
-        /// </summary>
-        /// <param name="child">the control needing to find its parent</param>
-        /// <returns>the parent winow if any; or null if there isn't any</returns>
-        private static Window getParentWindow(DependencyObject child)
-        {
-
-            if (child == null) return null;
-
-            DependencyObject parent = VisualTreeHelper.GetParent(child);
-
-            while( (parent != null) && ((parent as Window) == null))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-
-            if (parent == null) return null;
-            else
-            {
-                return (Window)parent;
-            }
-        }
+        
         #endregion
 
         public ProteoformSweet()
@@ -112,7 +83,7 @@ namespace ProteoWPFSuite
             writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<string, List<DataTable>>((sweet as Window).Name, sweet.DataTables)).ToList());
             Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as Window).Name));
             if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
-            SaveExcelFile(writer, getParentWindow(current_Tab as UserControl).Name + "_table.xlsx"); //get the window hosting tabcontrol, which hosts usercontrol
+            SaveExcelFile(writer, MDIHelpers.getParentWindow(current_Tab as UserControl).Name + "_table.xlsx"); //get the window hosting tabcontrol, which hosts usercontrol
         }
         private void SaveExcelFile(ExcelWriter writer, string filename)
         {

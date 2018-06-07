@@ -89,7 +89,7 @@
 
                 <ComboBox Name="cmb_loadTable1" Grid.Column="0" Grid.Row="0" Margin="2 10 2 25"></ComboBox>
                 <WindowsFormsHost Margin="2 10 2 10"  Grid.Row="1" Grid.ColumnSpan="2" Background="#FFE4E4E4">
-                    <winform:DataGridView Name="dgv_loadFiles">
+                    <winform:DataGridView Name="dgv_loadFiles1">
 
                     </winform:DataGridView>
                 </WindowsFormsHost>

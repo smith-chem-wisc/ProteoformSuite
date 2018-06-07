@@ -15,16 +15,15 @@ namespace ProteoWPFSuite
     public interface ITabbedMDI
     {
         /// <summary>
-        /// This event will be fired from user control and will be listened
-        /// by parent MDI form. when this event will be fired from child control
-        /// parent will close the form
+        /// When the MDI child is closed, parent will be informed and remove the mdi child from dictionary.
         /// </summary>
-        event delClosed BeingClosing;
-        /// <summary>
-        /// This is unique name for the control. This will be used in dictonary object
-        /// to keep track of the opened user control in parent form.
-        /// </summary>
+        event delClosed BeingClosed;
+        
         string UniqueTabName { get; }
+
+        /// <summary>
+        /// even raiser that help raise the cloing event
+        /// </summary>
         void OnClosing(ITabbedMDI sender);
     }
 }
