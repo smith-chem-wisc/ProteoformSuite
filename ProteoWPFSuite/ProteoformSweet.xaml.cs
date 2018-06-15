@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
-using ProteoformSuiteGUI;
 
 /*
  * - MDI Form replaced by user control
@@ -23,7 +22,7 @@ namespace ProteoWPFSuite
 
         #region Public Fields
         
-        #region MDI Iterface
+        //MDI Iterface
         public HashSet<String> MDIChildren
         {
             get;
@@ -34,28 +33,88 @@ namespace ProteoWPFSuite
             MDIChildren.Remove(sender.UniqueTabName);
 
         }
-        #endregion
-
+        //original
         public LoadResults loadResults = new LoadResults();
-        //public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
-
+        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+        public NeuCodePairs neuCodePairs = new NeuCodePairs();
+        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
+        public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
+        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
+        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
+        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        public Quantification quantification = new Quantification();
+        public TopDown topDown = new TopDown();
+        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms();
+        public ResultsSummary resultsSummary = new ResultsSummary();
         public List<ISweetForm> forms = new List<ISweetForm>();
-
         #endregion
 
         #region Private Fields
+        System.Windows.Forms.FolderBrowserDialog resultsFolderOpen = new System.Windows.Forms.FolderBrowserDialog();
+        OpenFileDialog methodFileOpen = new OpenFileDialog();
+        SaveFileDialog methodFileSave = new SaveFileDialog();
+        OpenFileDialog openResults = new OpenFileDialog();
+        SaveFileDialog saveResults = new SaveFileDialog();
         ISweetForm current_Tab;
         SaveFileDialog saveExcelDialog;
         #endregion
 
-        #region Private Methods
-        
-        #endregion
+        #region Public Constructor
 
         public ProteoformSweet()
         {
             InitializeComponent();
+            InitializeForms();
+            WindowState = FormWindowState.Maximized;
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            loadResults.InitializeParameterSet();
+            showForm(loadResults);
+            methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
+            methodFileSave.DefaultExt = ".xml";
+            methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
+            saveExcelDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+            saveExcelDialog.DefaultExt = ".xlsx";
+            openResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
+            saveResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
+            saveResults.DefaultExt = ".sweet";
+            loadResults.Focus();
+            Form.ActiveForm.Show();
+            LoadResults.ActiveForm.Show();
+
         }
+
+        #endregion Public Constructor
+
+        #region Private Setup Methods
+        private void initializeForms()
+        {
+            forms = new List<ISweetForm>
+            {
+                loadResults,
+                theoreticalDatabase,
+
+            };
+        }
+        #endregion
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
         private void ExportTables_Click(object sender, RoutedEventArgs e)
@@ -76,7 +135,7 @@ namespace ProteoWPFSuite
          * MDI Missing in WPF; Used Tabbed MDI instead; See README.md
          **/
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+        { 
             ExcelWriter writer = new ExcelWriter();
             if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
             Parallel.ForEach(forms, form => form.SetTables());

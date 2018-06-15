@@ -1,0 +1,115 @@
+﻿<UserControl x:Name="RawExperimentalComponent" x:Class="ProteoWPFSuite.RawExperimentalComponents"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProteoWPFSuite"
+        mc:Ignorable="d"
+        xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        Height="692" Width="1141">
+    <Grid x:Name="splitContainer1">
+        <!--GridSplitter: Splitting affects either side-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="3" />
+            <RowDefinition Height="4.5*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" x:Name="param_splitcontainer">
+            
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3" />
+                    <ColumnDefinition Width="2.5*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <WindowsFormsHost>
+                            <winform:DataGridView x:Name="dgv_fileList">
+                                
+                            </winform:DataGridView>
+                        </WindowsFormsHost>
+                    </Grid>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Margin="5 5 5 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Header="Components Displayed">
+                        <Grid>
+                            <RadioButton x:Name="rb_displayIdentificationComponents"></RadioButton>
+                            <RadioButton x:Name="rb_displayQuantificationComponents"></RadioButton>
+                        </Grid>
+                    </GroupBox>
+                    <Button x:Name="bt_recalculate" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5 5 5 5">
+                        <TextBlock TextAlignment="Center" TextWrapping="Wrap" FontSize="14" >Read Raw Components and Collapse Deconvolution Artifacts</TextBlock>
+                    </Button>
+                </Grid>
+            </Grid>
+                <GridSplitter Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+            <Grid Grid.Column="2">
+                <WindowsFormsHost>
+                    <winform:DataGridView x:Name="dgv_rawComponents">
+
+                    </winform:DataGridView>
+                </WindowsFormsHost>
+            </Grid>
+        </Grid>
+        
+        <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+
+        <Grid Grid.Row="2" x:Name="splitContainer3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3" />
+                <ColumnDefinition Width="2.5*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" x:Name="splitContainer4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4*" />
+                    <RowDefinition Height="3" />
+                    <RowDefinition Height=".5*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height=".5*"/>
+                        <RowDefinition Height=".5*"/>
+                        <RowDefinition Height=".5*"/>
+                        <RowDefinition Height="3*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="6*"/>
+                    </Grid.ColumnDefinitions>
+                    <wpfTool:IntegerUpDown x:Name="nUD_mass_tolerance" Grid.Column="0" Grid.Row="0" Margin="5 5 5 5" Maximum="100" Minimum="0" DefaultValue="0" DisplayDefaultValueOnEmptyText="True"/>
+                    <Label Grid.Column="1" Grid.Row="0" Margin="5 5 5 5">Mass Tolerance for Merging Artifacts (ppm)</Label>
+                    <wpfTool:IntegerUpDown x:Name="nUD_min_liklihood_ratio" Grid.Column="0" Grid.Row="1" Margin="5 5 5 5" Maximum="100" Minimum="-100" DefaultValue="0" DisplayDefaultValueOnEmptyText="True" UpdateValueOnEnterKey="True"/>
+                    <Label Grid.Column="1" Grid.Row="1" Margin="5 5 5 5">Min. Likelihood Ratio</Label>
+              
+                    <wpfTool:DecimalUpDown x:Name="nUD_max_fit" Grid.Column="0" Grid.Row="2" Margin="5 5 5 5" Minimum="0" Maximum="100" Increment="1" DefaultValue="0.20" Value="0.20" DisplayDefaultValueOnEmptyText="True" UpdateValueOnEnterKey="True"></wpfTool:DecimalUpDown>
+                    <Label Grid.Column="1" Grid.Row="2" Margin="5 5 5 5">
+                        Max Fit
+                    </Label>
+
+
+                </Grid>
+                <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+                <Grid Grid.Row="2">
+                    <TextBox x:Name="rtb_raw_components_counts" Margin="5 5 10 10"></TextBox>
+                </Grid>
+            </Grid>
+            <GridSplitter Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+            <Grid Grid.Column="2">
+                <WindowsFormsHost>
+                    <winform:DataGridView x:Name="dgv_chargeStates">
+                        
+                    </winform:DataGridView>
+                </WindowsFormsHost>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

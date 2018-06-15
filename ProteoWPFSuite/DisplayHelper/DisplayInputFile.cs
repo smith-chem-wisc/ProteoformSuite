@@ -2,7 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using ProteoformSuiteInternal;
-using System.Windows.Forms;
+using System.Data;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+/// <summary>
+/// Replaced winform features with wpf
+/// </summary>
+/// <problem>
+/// - active form replaced by usercontrol, might be wrong
+/// </problem>
 namespace ProteoWPFSuite
 {
     public class DisplayInputFile : DisplayObject
@@ -41,7 +51,8 @@ namespace ProteoWPFSuite
             {
                 Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate, value);
                 file.biological_replicate = value != null ? value : "";
-                ((ProteoformSweet)(LoadResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true); //fix later; display in control
+                ProteoformSweet activeControl=GetActiveProteo();
+                ///activeControl.rawExperimentalComponents.ClearListsTablesFigures(true); 
             }
         }
 
@@ -69,7 +80,8 @@ namespace ProteoWPFSuite
             {
                 Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction, value);
                 file.fraction = value != null ? value : "";
-                ((ProteoWPFSuite.ProteoformSweet)(LoadResults.acti)).rawExperimentalComponents.ClearListsTablesFigures(true);
+                ProteoformSweet activeControl = GetActiveProteo();
+                ///activeControl.rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -83,7 +95,8 @@ namespace ProteoWPFSuite
             {
                 Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate, value);
                 file.technical_replicate = value != null ? value : "";
-                ((ProteoformSweet)(LoadResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
+                ProteoformSweet activeControl = GetActiveProteo();
+                ///activeControl.rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -97,7 +110,8 @@ namespace ProteoWPFSuite
             {
                 Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition, value);
                 file.lt_condition = value != null ? value : "";
-                ((ProteoformSweet)(LoadResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
+                ProteoformSweet activeControl = GetActiveProteo();
+                ///activeControl.rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -111,7 +125,8 @@ namespace ProteoWPFSuite
             {
                 Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition, value);
                 file.hv_condition = value != null ? value : "";
-                ((ProteoformSweet)(LoadResults.ActiveForm)).rawExperimentalComponents.ClearListsTablesFigures(true);
+                ProteoformSweet activeControl = GetActiveProteo();
+                ///activeControl.rawExperimentalComponents.ClearListsTablesFigures(true);
             }
         }
 
@@ -149,13 +164,13 @@ namespace ProteoWPFSuite
 
         #region Public Methods
 
-        public static void FormatInputFileTable(DataGridView dgv, IEnumerable<Purpose> dgv_purposes)
+        public static void FormatInputFileTable(System.Windows.Forms.DataGridView dgv, IEnumerable<Purpose> dgv_purposes)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.AllowUserToAddRows = false;
 
-            foreach (DataGridViewColumn c in dgv.Columns)
+            foreach (System.Windows.Forms.DataGridViewColumn c in dgv.Columns)
             {
                 string h = header(c.Name, dgv_purposes);
                 c.HeaderText = h != null ? h : c.HeaderText;
@@ -180,6 +195,20 @@ namespace ProteoWPFSuite
         #endregion Public Methods
 
         #region Private Methods
+        private ProteoformSweet  GetActiveProteo()
+        {
+            Window window = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
+
+            foreach (DependencyObject o in LogicalTreeHelper.GetChildren(window))
+            {
+
+                if (o is ProteoformSweet)
+                {
+                    return (ProteoformSweet)o;
+                }
+            }
+            return null;
+        }
 
         private static string header(string property_name, IEnumerable<Purpose> dgv_purposes)
         {

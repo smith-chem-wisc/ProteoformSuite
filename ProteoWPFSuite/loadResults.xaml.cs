@@ -6,14 +6,20 @@ using System.Data;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Reflection;
+using System.IO;
+using Microsoft.Win32;
+using System.Diagnostics;
+
 /// <Problems>
 /// - Should convert window to proteoform sweet?
 /// - Currently keeping main window but not sure if still keeping it in the future
+/// - Split Container not addressed (What is this for? What should be used instead?)
 /// </Problems>
 /// <remarks>
 /// - Dragevents are using forms version in order to be consistent with datagridview
 /// - Comments with three slashes are for future implementation
 /// - Controls are default to be WPF except for data Grid view
+/// - WPF window close takes care of all dispose things
 /// </remarks>
 /// <TODO>
 /// - Implement ProteoFormSweat
@@ -53,7 +59,7 @@ namespace ProteoWPFSuite
 
         #region Public Methods
         public void InitializeParameterSet()
-        {
+        {   
             //tb_resultsFolder.Text = Sweet.lollipop.results_folder;
             rb_neucode.IsChecked = Sweet.lollipop.neucode_labeled;
             rb_unlabeled.IsChecked = !rb_neucode.IsChecked;
@@ -371,8 +377,8 @@ namespace ProteoWPFSuite
             openFileDialog.Filter = Lollipop.file_filters[selected_index];
             openFileDialog.Multiselect = true;
 
-            DialogResult dr = openFileDialog.ShowDialog();
-            if (dr == DialogResult.OK)
+            bool dr = (bool)openFileDialog.ShowDialog();
+            if (dr)
             {
                 if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
@@ -418,5 +424,163 @@ namespace ProteoWPFSuite
 
         #endregion ADD BUTTONS Private Methods
 
+        #region CLEAR BUTTONS Private Methods
+        private void btn_clearFiles1_Click(object sender, EventArgs e)
+        {
+            clear_files(cmb_loadTable1, dgv_loadFiles1);
+        }
+
+        private void clear_files(ComboBox cmb, System.Windows.Forms.DataGridView dgv)
+        {
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
+            List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).ToList();
+            Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
+            Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
+            refresh_dgvs();
+            DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
+        }
+        #endregion CLEAR BUTTONS Private Methods
+
+        #region FULL RUN & STEP THROUGH Private Methods
+
+        private void btn_fullRun_Click(object sender, EventArgs e)
+        {
+            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
+            ///Stopwatch successful_run = parMDI.full_run();
+            ///if (successful_run != null) MessageBox.Show("Successfully ran method in "
+            ///    + String.Format("{0:00}:{1:00}:{2:00}.{3:00}", successful_run.Elapsed.Hours, successful_run.Elapsed.Minutes, successful_run.Elapsed.Seconds, successful_run.Elapsed.Milliseconds / 10)
+            ///    + ". Feel free to explore using the Results menu.", "Full Run");
+            ///else MessageBox.Show("Method did not successfully run.", "Full Run");
+        }
+        private void bt_clearResults_Click(object sender, EventArgs e)
+        {
+            Sweet.lollipop = new Lollipop();
+            ClearListsTablesFigures(true);
+        }
+
+        private void bt_stepthru_Click(object sender, EventArgs e)
+        {
+            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
+            ///parMDI.resultsToolStripMenuItem.ShowDropDown();
+            MessageBox.Show("Use the Results menu to step through processing results.\n\n" +
+                "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+        }
+
+        System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+        private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.DialogResult dr = folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string temp_folder_path = folderBrowser.SelectedPath;
+                tb_resultsFolder.Text = temp_folder_path;
+                Sweet.lollipop.results_folder = temp_folder_path;
+            }
+        }
+
+        #endregion FULL RUN & STEP THROUGH Private Methods
+
+        #region FILTERS Private Methods
+        private void tb_filter1_TextChanged(object sender, EventArgs e)
+        {
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text);
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
+        }
+        #endregion FILTERS Private Methods
+
+        #region CHANGED TABLE SELECTION Private Methods
+
+        private void bt_calibrate_Click(object sender, EventArgs e)
+        {
+            //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
+            //{
+            //    MessageBox.Show("Please enter raw files to calibrate."); return;
+            //}
+            if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+            {
+                MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
+                return;
+            }
+            Sweet.lollipop.read_in_calibration_td_hits();
+            MessageBox.Show(Sweet.lollipop.calibrate_files());
+        }
+
+        private void bt_deconvolute_Click(object sender, EventArgs e)
+        {
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
+            {
+                MessageBox.Show("Please enter raw files to deconvolute."); return;
+            }
+            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Environment.CurrentDirectory);
+            MessageBox.Show(deconv_results);
+        }
+
+        #endregion CHANGED TABLE SELECTION Private Methods
+
+        #region CHANGE ALL CELLS private methods
+
+        private void dgv_loadFiles1_CellMouseClick(object sender, System.Windows.Forms.DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                change_all_selected_cells(dgv_loadFiles1);
+        }
+
+        
+
+        private void change_all_selected_cells(System.Windows.Forms.DataGridView dgv)
+        {
+            InputBox testdialog = new InputBox();
+            if (testdialog.ShowDialog() == true)
+            {
+                foreach (System.Windows.Forms.DataGridViewTextBoxCell cell in dgv.SelectedCells.OfType<System.Windows.Forms.DataGridViewTextBoxCell>())
+                {
+                    cell.Value = testdialog.tb.Text;
+                }
+            }
+            testdialog.Close();
+        }
+
+        #endregion
+
+        #region Cell Validation Methods
+
+        private void dgv_loadFiles1_CellValidating(object sender, System.Windows.Forms.DataGridViewCellValidatingEventArgs e)
+        {
+            validate(dgv_loadFiles1, e);
+        }
+
+        private void validate(System.Windows.Forms.DataGridView dgv, System.Windows.Forms.DataGridViewCellValidatingEventArgs e)
+        {
+            if (dgv.Rows[e.RowIndex].IsNewRow)
+                return;
+            if (e.FormattedValue.ToString() == "" && dgv.IsCurrentCellInEditMode)
+            {
+                e.Cancel = true;
+                MessageBox.Show("Please enter text for each label.");
+            }
+            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 1))
+            {
+                e.Cancel = true;
+                MessageBox.Show("Please use positive integers for biological replicate labels.");
+            }
+        }
+
+        #endregion Cell Validation Methods
+
+        private void cb_calibrate_raw_files_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.calibrate_raw_files = (bool)cb_calibrate_raw_files.IsChecked;
+        }
+
+        private void cb_calibrate_td_files_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.calibrate_td_files = (bool)cb_calibrate_td_files.IsChecked;
+        }
+        /*private void topbar_splitcontainer_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+
+        }*/
     }
 }
