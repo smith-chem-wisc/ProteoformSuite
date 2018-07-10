@@ -29,7 +29,7 @@ namespace ProteoWPFSuite
             tb.Focusable = true;
             tb.Focus();
         }
-        void tb_enter(object sender, EventArgs e)
+        void tb_enter(object sender, KeyEventArgs e)
         {
             this.okay.IsDefault = true;
         }
@@ -43,5 +43,6 @@ namespace ProteoWPFSuite
             this.DialogResult = false;
             this.Close();
         }
+        
     }
 }

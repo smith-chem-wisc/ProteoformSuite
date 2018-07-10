@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:ProteoformSuiteWPF"
         
         xmlns:menu="clr-namespace:ProteoWPFSuite"
-        mc:Ignorable="d"
-        Title="Proteoform Suite" Height="450" Width="800" Icon="Image/lollipop.ico">
+        mc:Ignorable="d" Height="848.189" Width="1509.935"
+        Title="Proteoform Suite" MinHeight="848.189" MinWidth="1509.935" Icon="Image/lollipop.ico">
+
+    <menu:ProteoformSweet x:Name="MDIParentControl" Loaded="ProteoformSweet_Loaded"/>
     
-        <menu:ProteoformSweet x:Name="MDIParentControl" Loaded="ProteoformSweet_Loaded"/>
-    
+
 </Window>

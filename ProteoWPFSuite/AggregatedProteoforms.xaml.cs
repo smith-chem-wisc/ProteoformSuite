@@ -17,11 +17,11 @@ using System.Windows.Shapes;
 namespace ProteoWPFSuite
 {
     /// <summary>
-    /// Interaction logic for NeuCodePairs.xaml
+    /// Interaction logic for AggregatedProteoforms.xaml
     /// </summary>
-    public partial class NeuCodePairs : UserControl, ISweetForm
+    public partial class AggregatedProteoforms : UserControl,ISweetForm
     {
-        public NeuCodePairs()
+        public AggregatedProteoforms()
         {
             InitializeComponent();
         }
@@ -56,11 +56,6 @@ namespace ProteoWPFSuite
         public List<DataTable> SetTables()
         {
             throw new NotImplementedException();
-        }
-
-        private void ct_LysineCount_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-
         }
     }
 }

@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
         <Label x:Name="lb" Content="Replace with:" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0"/>
         <Border BorderBrush="Black" BorderThickness="1,1,1,1" HorizontalAlignment="Stretch" Grid.Row="1" Margin="1 0 1 0">
-            <TextBox x:Name="tb" Background="#FFE6E4E4" KeyDown=""/>
+            <TextBox x:Name="tb" Background="#FFE6E4E4" KeyDown="tb_enter"/>
         </Border>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

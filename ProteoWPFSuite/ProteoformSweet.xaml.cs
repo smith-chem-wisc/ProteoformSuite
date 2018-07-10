@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
-
+using ProteoformSuiteInternal;
 /*
  * - MDI Form replaced by user control
  * - MDI Parent replaced by the getparentwindow (private)
@@ -63,7 +63,7 @@ namespace ProteoWPFSuite
 
         public ProteoformSweet()
         {
-            InitializeComponent();
+            InitializeComponent();/*
             InitializeForms();
             WindowState = FormWindowState.Maximized;
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -79,7 +79,7 @@ namespace ProteoWPFSuite
             saveResults.DefaultExt = ".sweet";
             loadResults.Focus();
             Form.ActiveForm.Show();
-            LoadResults.ActiveForm.Show();
+            LoadResults.ActiveForm.Show();*/
 
         }
 
@@ -135,8 +135,8 @@ namespace ProteoWPFSuite
          * MDI Missing in WPF; Used Tabbed MDI instead; See README.md
          **/
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
-        { 
-            ExcelWriter writer = new ExcelWriter();
+        {
+            ProteoformSuiteGUI.ExcelWriter writer = new ProteoformSuiteGUI.ExcelWriter();
             if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
             Parallel.ForEach(forms, form => form.SetTables());
             writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<string, List<DataTable>>((sweet as Window).Name, sweet.DataTables)).ToList());
@@ -144,7 +144,7 @@ namespace ProteoWPFSuite
             if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
             SaveExcelFile(writer, MDIHelpers.getParentWindow(current_Tab as UserControl).Name + "_table.xlsx"); //get the window hosting tabcontrol, which hosts usercontrol
         }
-        private void SaveExcelFile(ExcelWriter writer, string filename)
+        private void SaveExcelFile(ProteoformSuiteGUI.ExcelWriter writer, string filename)
         {
             saveExcelDialog.FileName = filename;
             

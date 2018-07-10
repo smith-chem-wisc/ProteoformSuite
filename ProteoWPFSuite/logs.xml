@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<TODO>
+  <item Finished="True">LoadResults</item>
+  <item Finished="True">Finish TopDown</item>
+  <item Finished="True">RawExperimentalComponents</item>
+  <item Finished="False">Finish NeoCodePairs</item>
+  
+  <item>TheoreticalDatabase</item>
+  <item>AggregatedProteoforms</item>
+  <item>ExperimentTheoreticalComparison</item>
+  <item>ExperimentExperimentComparison</item>
+  <item>ProteoformFamilies</item>
+  <item>Quantification</item>
+  <item>IdentifiedProteoforms</item>
+  <item>ResultsSummary</item>
+  <item>Proteoform</item>
+<IMPORTANT>
+  <CheckEvents>
+    <!--Check the events of alll Built Forms and put the finished forms here-->
+    <finished>TopDowm</finished>
+  </CheckEvents>
+</IMPORTANT>
+</TODO>
+
