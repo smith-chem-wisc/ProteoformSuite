@@ -1,0 +1,8 @@
+﻿Variable modifications
+ID   Oxidation of M
+TG   M
+PP   Anywhere.
+MM   15.994915
+MT   Common Variable
+CF   O1
+//
