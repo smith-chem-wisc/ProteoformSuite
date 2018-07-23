@@ -19,7 +19,7 @@ namespace ProteoWPFSuite
         public TopDown()
         {
             InitializeComponent();
-            this.parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
+            //this.parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
         }
 
         public void InitializeParameterSet()

@@ -67,7 +67,6 @@
             this.menuStrip1.Size = new System.Drawing.Size(882, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
-            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // fileToolStripMenuItem
             // 
@@ -83,28 +82,28 @@
             // exportTablesToolStripMenuItem
             // 
             this.exportTablesToolStripMenuItem.Name = "exportTablesToolStripMenuItem";
-            this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exportTablesToolStripMenuItem.Text = "Export Table";
             this.exportTablesToolStripMenuItem.Click += new System.EventHandler(this.exportTablesToolStripMenuItem_Click);
             // 
             // exportAllTablesToolStripMenuItem
             // 
             this.exportAllTablesToolStripMenuItem.Name = "exportAllTablesToolStripMenuItem";
-            this.exportAllTablesToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.exportAllTablesToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exportAllTablesToolStripMenuItem.Text = "Export All Tables";
             this.exportAllTablesToolStripMenuItem.Click += new System.EventHandler(this.exportAllTablesToolStripMenuItem_Click);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.printToolStripMenuItem.Text = "Print";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -128,9 +127,9 @@
             this.resultsToolStripMenuItem.Text = "Results";
             this.resultsToolStripMenuItem.Click += new System.EventHandler(this.resultsToolStripMenuItem_Click);
             // 
-            // loadResultsToolStripMenuItem
+            // LoadResultsToolStripMenuItem
             // 
-            this.loadResultsToolStripMenuItem.Name = "loadResultsToolStripMenuItem";
+            this.loadResultsToolStripMenuItem.Name = "LoadResultsToolStripMenuItem";
             this.loadResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.loadResultsToolStripMenuItem.Text = "Load Results";
             this.loadResultsToolStripMenuItem.Click += new System.EventHandler(this.LoadResultsToolStripMenuItem_Click);
@@ -224,14 +223,14 @@
             // saveMethodToolStripMenuItem1
             // 
             this.saveMethodToolStripMenuItem1.Name = "saveMethodToolStripMenuItem1";
-            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(145, 22);
+            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.saveMethodToolStripMenuItem1.Text = "Save Method";
             this.saveMethodToolStripMenuItem1.Click += new System.EventHandler(this.saveMethodToolStripMenuItem1_Click);
             // 
             // loadSettingsToolStripMenuItem
             // 
             this.loadSettingsToolStripMenuItem.Name = "loadSettingsToolStripMenuItem";
-            this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadSettingsToolStripMenuItem.Text = "Load Method";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
             // 

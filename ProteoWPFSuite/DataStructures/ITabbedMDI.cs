@@ -17,6 +17,7 @@ namespace ProteoWPFSuite
         /// <summary>
         /// When the MDI child is closed, parent will be informed and remove the mdi child from dictionary.
         /// </summary>
+        /*
         event delClosed BeingClosed;
         
         string UniqueTabName { get; }
@@ -24,6 +25,7 @@ namespace ProteoWPFSuite
         /// <summary>
         /// even raiser that help raise the cloing event
         /// </summary>
-        void OnClosing(ITabbedMDI sender);
+        void OnClosing(ITabbedMDI sender);*/
+        ProteoformSweet MDIParent { get; set; }
     }
 }

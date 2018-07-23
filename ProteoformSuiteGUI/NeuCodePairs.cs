@@ -278,5 +278,8 @@ namespace ProteoformSuiteGUI
 
         #endregion Tooltip Private Methods
 
+        private void ct_LysineCount_Click(object sender, EventArgs e)
+        {
+        }
     }
 }

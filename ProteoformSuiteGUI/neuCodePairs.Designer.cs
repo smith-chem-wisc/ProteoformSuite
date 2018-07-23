@@ -278,6 +278,7 @@
             // 
             chartArea1.Name = "ChartArea1";
             this.ct_LysineCount.ChartAreas.Add(chartArea1);
+            this.ct_LysineCount.Cursor = System.Windows.Forms.Cursors.No;
             this.ct_LysineCount.Dock = System.Windows.Forms.DockStyle.Fill;
             legend1.Enabled = false;
             legend1.Name = "Legend1";
@@ -293,6 +294,7 @@
             this.ct_LysineCount.Size = new System.Drawing.Size(737, 393);
             this.ct_LysineCount.TabIndex = 0;
             this.ct_LysineCount.Text = "chart1";
+            this.ct_LysineCount.Click += new System.EventHandler(this.ct_LysineCount_Click);
             this.ct_LysineCount.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_LysineCount_MouseClick);
             // 
             // splitContainer5

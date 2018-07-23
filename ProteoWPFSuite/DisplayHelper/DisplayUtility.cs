@@ -47,7 +47,7 @@ namespace ProteoWPFSuite
             if (p.HasValue && pos == p.Value) { return; }
 
             System.Windows.Forms.DataVisualization.Charting.HitTestResult[] results = new System.Windows.Forms.DataVisualization.Charting.HitTestResult[4];
-
+            
             try
             {
                 results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);

@@ -11,7 +11,7 @@
         <GroupBox HorizontalAlignment="Left" Height="116" VerticalAlignment="Top" Width="137" FontSize="12" Grid.Column="0" Grid.Row="0">
 
             <GroupBox.Header>
-                <TextBlock FontWeight="Bold">1. Choose Analysis</TextBlock>
+                <TextBlock FontWeight="Bold" Text="1. Choose Analysis" />
             </GroupBox.Header>
 
             <!--Missing checked even handlers!!!!!!!!!!!!!!!!!-->

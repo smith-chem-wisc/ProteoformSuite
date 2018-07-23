@@ -19,7 +19,7 @@
                 <MenuItem Header="Close" Click="closeToolStripMenuItem_Click"/>
             </MenuItem>
             <MenuItem Header="Results">
-                <MenuItem Header="Load Results" />
+                <MenuItem Header="Load Results" Click="MenuItem_Click"/>
                 <MenuItem Header="Theoretical Proteoform Database"/>
                 <MenuItem Header="Top-down Results"/>
                 <MenuItem Header="Raw Experimental Components"/>
@@ -31,6 +31,8 @@
                 <MenuItem Header="Identified Proteoforms"/>
                 <MenuItem Header="Quantification"/>
                 <MenuItem Header="Results Summary"/>
+                <MenuItem Header="test" Click="testWin"/>
+                
             </MenuItem>
             <MenuItem Header="Method">
                 <MenuItem Header="Save Method" />

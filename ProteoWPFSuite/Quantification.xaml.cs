@@ -25,7 +25,10 @@ namespace ProteoWPFSuite
         {
             InitializeComponent();
         }
+        public void InitializeConditionsParameters()
+        {
 
+        }
         public List<DataTable> DataTables => throw new NotImplementedException();
 
         public void ClearListsTablesFigures(bool clear_following_forms)

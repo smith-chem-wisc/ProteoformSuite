@@ -19,7 +19,7 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for TheoreticalDatabase.xaml
     /// </summary>
-    public partial class TheoreticalDatabase : UserControl,ISweetForm
+    public partial class TheoreticalDatabase : UserControl,ISweetForm,ITabbedMDI
     {
         public TheoreticalDatabase()
         {
@@ -27,6 +27,12 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables => throw new NotImplementedException();
+
+        public string UniqueTabName => throw new NotImplementedException();
+
+        public ProteoformSweet MDIParent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public event delClosed BeingClosed;
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {
@@ -39,6 +45,11 @@ namespace ProteoWPFSuite
         }
 
         public void InitializeParameterSet()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnClosing(ITabbedMDI sender)
         {
             throw new NotImplementedException();
         }

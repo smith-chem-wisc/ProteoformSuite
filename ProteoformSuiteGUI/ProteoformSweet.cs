@@ -50,7 +50,8 @@ namespace ProteoformSuiteGUI
         public ProteoformSweet()
         {
             InitializeComponent();
-            InitializeForms();
+            loadResults.Show();
+            /*InitializeForms();
             WindowState = FormWindowState.Maximized;
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             loadResults.InitializeParameterSet();
@@ -62,7 +63,7 @@ namespace ProteoformSuiteGUI
             saveExcelDialog.DefaultExt = ".xlsx";
             openResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
             saveResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
-            saveResults.DefaultExt = ".sweet";
+            saveResults.DefaultExt = ".sweet";*/
         }
 
         #endregion Public Constructor
@@ -205,7 +206,8 @@ namespace ProteoformSuiteGUI
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+            NeuCodePairs test = new NeuCodePairs();
+            test.Show();
         }
 
         #endregion FILE TOOL STRIP Private Methods
@@ -450,11 +452,6 @@ namespace ProteoformSuiteGUI
         #endregion Results Summary Methods
 
         private void resultsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
         }
