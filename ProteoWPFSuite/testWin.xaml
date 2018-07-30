@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         xmlns:mzl="clr-namespace:MassSpectrometry;assembly=MassSpectrometry"
-        Title="testWin" Height="450" Width="800" MinHeight="300" MinWidth="500">
+        Title="testWin" Height="450" Width="800" MinHeight="800" MinWidth="1200">
     <Window.Resources>
         <ObjectDataProvider x:Key="DissociationEnum" MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}">
@@ -17,6 +17,11 @@
         </ObjectDataProvider>
     </Window.Resources>
     <Grid>
-        <local:NeuCodePairs x:Name="test"></local:NeuCodePairs>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="9*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <local:TheoreticalDatabase x:Name="test"></local:TheoreticalDatabase>
+        <Button Content="change" Grid.Row="1" Click="testFunc"/>
     </Grid>
 </Window>

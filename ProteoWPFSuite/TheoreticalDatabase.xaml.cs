@@ -30,7 +30,7 @@ namespace ProteoWPFSuite
 
         public string UniqueTabName => throw new NotImplementedException();
 
-        public ProteoformSweet MDIParent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ProteoformSweet MDIParent { get; set; }
 
         public event delClosed BeingClosed;
 
@@ -67,6 +67,115 @@ namespace ProteoWPFSuite
         public List<DataTable> SetTables()
         {
             throw new NotImplementedException();
+        }
+
+        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void cmb_empty_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private void dgv_loadFiles_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
+        {
+
+        }
+
+        private void dgv_loadFiles_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
+        {
+
+        }
+
+        private void btn_addFiles_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_downloadUniProtPtmList_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_clearFiles_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_NaturalIsotopes_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_NeuCode_Lt_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_NeuCode_Hv_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ckbx_Carbam_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ckbx_OxidMeth_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nUD_NumDecoyDBs_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cb_useRandomSeed_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void nUD_MinPeptideLength_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cb_limitLargePtmSets_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void tb_modTypesToExclude_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void tb_modTypesToExclude_TextChanged(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

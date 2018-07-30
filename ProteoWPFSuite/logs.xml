@@ -4,11 +4,11 @@
   <IMPORTANTTODO>ParMDI and comments in loadresults</IMPORTANTTODO>
   <IMPORTANTTODO>ParMDI and comments in TOPDOWN</IMPORTANTTODO>
   <item Finished="True">LoadResults</item>
-  <item Finished="True">Finish TopDown</item>
-  <item Finished="True">RawExperimentalComponents</item>
-  <item Finished="False">Finish NeoCodePairs</item>
+  <item Finished="True">TopDown</item>
+  <item Finished="Half" Todo="Events">RawExperimentalComponents</item>
+  <item Finished="True">Finish NeoCodePairs</item>
   
-  <item>TheoreticalDatabase</item>
+  <item Finished="False">TheoreticalDatabase</item>
   <item>AggregatedProteoforms</item>
   <item>ExperimentTheoreticalComparison</item>
   <item>ExperimentExperimentComparison</item>
@@ -18,6 +18,10 @@
   <item>ResultsSummary</item>
   <item>Proteoform</item>
 <IMPORTANT>
+  <COMMENTS>
+    <TODO>ProteoFormSweet</TODO>
+    <TODO>LoadResults</TODO>
+  </COMMENTS>
   <CheckEvents>
     <!--Check the events of alll Built Forms and put the finished forms here-->
     <finished>TopDowm</finished>
