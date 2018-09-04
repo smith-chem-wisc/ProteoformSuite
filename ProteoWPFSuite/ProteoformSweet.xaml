@@ -13,23 +13,23 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Width="Auto" HorizontalContentAlignment="Left" VerticalAlignment="Stretch">
             <MenuItem Header="File">
-                <MenuItem Header="Export Table" Click="ExportTables_Click" />
-                <MenuItem Header="Export All Tables"/>
+                <MenuItem Header="Export Table"/>
+                <MenuItem Header="Export All Tables" Click="exportAllTablesToolStripMenuItem_Click"/>
                 <MenuItem Header="Print" Click="printToolStripMenuItem_Click"/>
                 <MenuItem Header="Close" Click="closeToolStripMenuItem_Click"/>
             </MenuItem>
             <MenuItem Header="Results">
-                <MenuItem Header="Load Results" Click="MenuItem_Click"/>
+                <MenuItem Header="Load Results" Click="LoadResultsToolStripMenuItem_Click"/>
                 <MenuItem Header="Theoretical Proteoform Database"/>
-                <MenuItem Header="Top-down Results"/>
+                <MenuItem x:Name="topdownResultsToolStripMenuItem" Header="Top-down Results"/>
                 <MenuItem Header="Raw Experimental Components"/>
-                <MenuItem Header="NeuCode Proteoform Pairs"/>
+                <MenuItem x:Name="neuCodeProteoformPairsToolStripMenuItem" Header="NeuCode Proteoform Pairs"/>
                 <MenuItem Header="Aggregated Proteoforms"/>
                 <MenuItem Header="Experiment-Theoretical Comparison"/>
                 <MenuItem Header="Experiment-Experimental Comparison"/>
                 <MenuItem Header="Proteoform Family Assignment"/>
                 <MenuItem Header="Identified Proteoforms"/>
-                <MenuItem Header="Quantification"/>
+                <MenuItem x:Name="quantificationToolStripMenuItem" Header="Quantification"/>
                 <MenuItem Header="Results Summary"/>
                 <MenuItem Header="test" Click="testWin"/>
                 

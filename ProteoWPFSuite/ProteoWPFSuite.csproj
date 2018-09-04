@@ -215,7 +215,9 @@
     <Compile Include="DisplayHelper\DisplayInputFile.cs" />
     <Compile Include="DisplayHelper\DisplayNeuCodePair.cs" />
     <Compile Include="DisplayHelper\DisplayObject.cs" />
+    <Compile Include="DisplayHelper\DisplayTheoreticalProteoform.cs" />
     <Compile Include="DisplayHelper\DisplayTopDownProteoform.cs" />
+    <Compile Include="DisplayHelper\DisplayUnlocalizedModifications.cs" />
     <Compile Include="DisplayHelper\DisplayUtility.cs" />
     <Compile Include="ExperimentExperimentComparison.xaml.cs">
       <DependentUpon>ExperimentExperimentComparison.xaml</DependentUpon>

@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using ProteoformSuiteInternal;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ProteoWPFSuite
 {
@@ -22,17 +19,26 @@ namespace ProteoWPFSuite
         public testWin()
         {
             InitializeComponent();
+            ProteoformSweet ctn = new ProteoformSweet();
+            Window wdo = new Window
+            {
+                Title = "Proteo Display",
+                Content = new ProteoformSweet(),
+                MinHeight = 450,
+                MinWidth = 800
+            };
+            wdo.Show();
+            
             
         }
 
         private void Dissoci_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
-
-        private void testFunc(object sender, RoutedEventArgs e)
+        
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Random rnd = new Random();
-            this.test.cmb_loadTable.Text = "test"+rnd.Next();
+
         }
     }
 }

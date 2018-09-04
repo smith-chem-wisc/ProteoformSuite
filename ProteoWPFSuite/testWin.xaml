@@ -16,12 +16,4 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="9*"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <local:TheoreticalDatabase x:Name="test"></local:TheoreticalDatabase>
-        <Button Content="change" Grid.Row="1" Click="testFunc"/>
-    </Grid>
 </Window>

@@ -25,7 +25,10 @@ namespace ProteoWPFSuite
         {
             InitializeComponent();
         }
-        public void InitializeConditionsParameters()
+        public void initialize_every_time()
+        { 
+        }
+            public void InitializeConditionsParameters()
         {
 
         }
