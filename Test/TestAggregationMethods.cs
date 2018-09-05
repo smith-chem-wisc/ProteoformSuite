@@ -165,7 +165,6 @@ namespace Test
             Assert.False(e.lt_quant_components.Any(c => e.hv_quant_components.Contains(c)));
         }
 
-
         [Test]
         public void full_agg()
         {
@@ -189,8 +188,8 @@ namespace Test
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
             Assert.AreEqual(0, Sweet.lollipop.remaining_quantification_components.Count);
-        }        
-        
+        }
+
         [Test]
         public void full_agg_without_validation()
         {
