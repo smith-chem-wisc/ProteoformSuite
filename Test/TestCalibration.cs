@@ -1,8 +1,10 @@
-﻿using NUnit.Framework;
+﻿using Chemistry;
+using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Proteomics;
 using System.Linq;
 using System;
 using Chemistry;
@@ -10,7 +12,7 @@ using Chemistry;
 namespace Test
 {
     [TestFixture]
-    class TestCalibration
+    internal class TestCalibration
     {
         [Test]
         public void get_file_descriptions()

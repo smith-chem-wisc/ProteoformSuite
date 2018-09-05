@@ -612,24 +612,5 @@ namespace ProteoformSuiteGUI
 
         }
 
-        private void tb_resultsFolder_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label_maxRT_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void param_splitcontainer_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label_maxcharge_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
