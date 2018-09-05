@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     public class TopDownReader
     {
-
         #region Private Fields
 
         private Dictionary<char, double> aaIsotopeMassList;
@@ -16,6 +15,7 @@ namespace ProteoformSuiteInternal
         #endregion Private Fields
 
         public List<string> topdown_ptms = new List<string>(); //PTMs not in theoretical database added to warning file.
+
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
         {
@@ -25,14 +25,14 @@ namespace ProteoformSuiteInternal
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);//This returns the entire sheet except for the header. Each row of cells is one List<string>
-            //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message. 
+            //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
             Parallel.ForEach(cells, cellStrings =>
             {
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 if (cellStrings.Count == 24)
-                { 
+                {
                     TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : ((cellStrings[15] == "Tight Absolute Mass") ? TopDownResultType.TightAbsoluteMass : TopDownResultType.Unknown);
-                    if (tdResultType != TopDownResultType.Unknown) //uknown result type! 
+                    if (tdResultType != TopDownResultType.Unknown) //uknown result type!
                     {
                         List<Ptm> ptm_list = new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
                                                               //N-term modifications

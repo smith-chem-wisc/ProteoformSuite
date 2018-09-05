@@ -1,5 +1,4 @@
 ﻿using Proteomics;
-using System;
 using System.Collections.Generic;
 
 namespace ProteoformSuiteInternal
@@ -13,8 +12,8 @@ namespace ProteoformSuiteInternal
         {
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("X", out motif);
-            modification = new Modification("Unmodified", null, "Unmodified", null, motif, 
-                _monoisotopicMass : 0, _databaseReference : new Dictionary<string, IList<string>>(), _keywords : new List<string>());
+            modification = new Modification("Unmodified", null, "Unmodified", null, motif,
+                _monoisotopicMass: 0, _databaseReference: new Dictionary<string, IList<string>>(), _keywords: new List<string>());
         }
 
         public Ptm(int position, Modification modification)

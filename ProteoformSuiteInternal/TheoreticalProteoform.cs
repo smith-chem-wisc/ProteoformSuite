@@ -8,7 +8,6 @@ namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoform : Proteoform
     {
-
         #region Public Properties
 
         public List<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
@@ -19,10 +18,13 @@ namespace ProteoformSuiteInternal
         public double unmodified_mass { get; set; }
         public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
-      //  public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
+
+        //  public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
         public bool contaminant { get; set; }
+
         public List<GoTerm> goTerms { get; private set; }
         public bool topdown_theoretical { get; set; }
+
         #endregion Public Properties
 
         #region Public Constructor
@@ -62,7 +64,7 @@ namespace ProteoformSuiteInternal
             }
             return proteoformMass + aaMasses.Sum();
         }
-        #endregion Public Method
 
+        #endregion Public Method
     }
 }

@@ -4,7 +4,6 @@ namespace ProteoformSuiteInternal
 {
     public class UnlocalizedModification
     {
-
         public double mass { get; set; }
         public string id { get; set; }
         public int ptm_count { get; set; }
@@ -27,6 +26,5 @@ namespace ProteoformSuiteInternal
             else
                 ptm_rank = Sweet.lollipop.modification_ranks[(double)m.MonoisotopicMass];
         }
-
     }
 }

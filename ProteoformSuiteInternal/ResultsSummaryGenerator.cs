@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
                 message += Environment.NewLine;
 
                 message += CytoscapeScript.write_cytoscape_script(tusher_analysis == null ? Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis) :
-                Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => tusher_analysis as TusherAnalysis1 != null ? pf.quant.TusherValues1.significant : pf.quant.TusherValues2.significant), 
+                Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => tusher_analysis as TusherAnalysis1 != null ? pf.quant.TusherValues1.significant : pf.quant.TusherValues2.significant),
                 tusher_analysis as TusherAnalysis != null ? tusher_analysis.GoAnalysis : Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis)
                 .Distinct().ToList(), Sweet.lollipop.target_proteoform_community.families,
                     directory, "SignificantChanges_", timestamp,
@@ -518,7 +518,7 @@ namespace ProteoformSuiteInternal
                 array[6] = e.linked_proteoform_references == null ? "N/A" : e.begin + " to " + e.end;
                 array[7] = e.agg_mass;
                 array[8] = e.agg_rt;
-                for(int f = 0; f < files.Count; f++)
+                for (int f = 0; f < files.Count; f++)
                 {
                     string[] file_info = files[f].Split('|');
                     array[9 + f] = e.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
@@ -558,7 +558,6 @@ namespace ProteoformSuiteInternal
                 result_string.AppendLine(String.Join("\t", row.ItemArray));
             }
             return results;
-
         }
 
         public static DataTable topdown_results_dataframe()

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace ProteoformSuiteInternal
 {
     public class PtmSet
     {
-
         #region Public Properties
 
         public double mass { get; private set; }
@@ -73,8 +72,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-
         #endregion Public Method
-
     }
 }

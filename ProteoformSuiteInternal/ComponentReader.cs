@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Chemistry;
 using System;
-using Chemistry;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                         if (charge_column.Count != intensity_column.Count) continue;
                         List<int> charges = new List<int>();
                         List<double> intensities = new List<double>();
-                        for(int a = 0; a < charge_column.Count; a++)
+                        for (int a = 0; a < charge_column.Count; a++)
                         {
                             int asdfg = Int32.TryParse(charge_column[a], out int ok) ? ok : 0;
                             if (asdfg > 0)
@@ -122,7 +122,7 @@ namespace ProteoformSuiteInternal
                         cellStrings.Add(row[0]); //id
                         cellStrings.Add(row[5]); //monoisotopic mass
                         cellStrings.Add(row[9]); //intensity
-                        cellStrings.Add(charges.Count().ToString()); //num charges 
+                        cellStrings.Add(charges.Count().ToString()); //num charges
                         cellStrings.Add("0"); //num detected intervals
                         cellStrings.Add("0"); //reported delta mass
                         cellStrings.Add("0"); //relative abundance
@@ -134,9 +134,9 @@ namespace ProteoformSuiteInternal
 
                         Component c = new Component(cellStrings, file);
 
-                        for(int a = 0; a < charges.Count; a++)
+                        for (int a = 0; a < charges.Count; a++)
                         {
-                            //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!! 
+                            //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!!
                             //multiply by charge for intensity because constructor divides (thermo is not charge state normalized!)
                             c.charge_states.Add(new ChargeState(new List<string>() { charges[a].ToString(), (intensities[a] * charges[a]).ToString(), (c.reported_monoisotopic_mass.ToMz(charges[a])).ToString(), c.reported_monoisotopic_mass.ToString() }));
                         }
@@ -171,7 +171,7 @@ namespace ProteoformSuiteInternal
             }
             foreach (ChargeState cs in c.charge_states)
             {
-                if (cs.calculated_mass <= 0 || cs.mz_centroid <= 0 || cs.intensity <= 0 || cs.charge_count <= 0 )
+                if (cs.calculated_mass <= 0 || cs.mz_centroid <= 0 || cs.intensity <= 0 || cs.charge_count <= 0)
                 {
                     lock (components_with_errors) components_with_errors.Add(c.input_file.filename + " component " + c.id.Split('_')[1]);
                     return false;

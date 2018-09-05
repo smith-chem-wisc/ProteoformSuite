@@ -11,22 +11,24 @@ namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoformDatabase
     {
-
         #region Public Fields
 
         //Protein
         public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
+
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
         public Dictionary<int, Dictionary<string, List<TheoreticalProteoform>>> theoreticals_by_accession = new Dictionary<int, Dictionary<string, List<TheoreticalProteoform>>>(); //key is decoy database, -100 for theoretical, key is accession, value is theoretical proteoforms w/ that accession
 
         //Modifications
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
+
         public List<Modification> variableModifications = new List<Modification>();
         public List<Modification> all_mods_with_mass = new List<Modification>();
         public Dictionary<Modification, UnlocalizedModification> unlocalized_lookup = new Dictionary<Modification, UnlocalizedModification>();
 
         //PtmSets
         public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
+
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
 
         //Settings
@@ -34,7 +36,6 @@ namespace ProteoformSuiteInternal
 
         //Constants
         private double ptmset_max_number_of_a_kind = 3;
-
 
         public Dictionary<char, double> aaIsotopeMassList;
 
@@ -119,7 +120,6 @@ namespace ProteoformSuiteInternal
                 add_theoreticals_to_accession_dictionary(community.theoretical_proteoforms, community.community_number);
             });
         }
-
 
         private void add_theoreticals_to_accession_dictionary(TheoreticalProteoform[] theoreticals, int community_number)
         {
@@ -262,7 +262,6 @@ namespace ProteoformSuiteInternal
             }
             return expanded_prots.ToArray();
         }
-
 
         public ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<ProteinWithGoTerms> proteins)
         {
@@ -556,6 +555,5 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Private Methods
-
     }
 }

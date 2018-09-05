@@ -6,13 +6,12 @@ using MassSpectrometry;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
-using System.Diagnostics;
-
 
 namespace ProteoformSuiteInternal
 {
@@ -153,7 +152,7 @@ namespace ProteoformSuiteInternal
             ComponentReader.components_with_errors.Clear();
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
-                List<Component> someComponents = file.extension == ".xlsx" ? file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics) 
+                List<Component> someComponents = file.extension == ".xlsx" ? file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics)
                         : file.reader.read_components_from_tsv(file, remove_missed_monos_and_harmonics);
                 lock (destination) destination.AddRange(someComponents);
             });
@@ -248,7 +247,7 @@ namespace ProteoformSuiteInternal
                         string[] fields = lines[i].Split(',');
                         if (fields.Length >= 7 && Int32.TryParse(fields[6], out int featureID))
                         {
-                            if(csv_feature_info.TryGetValue(featureID, out List<string[]> value))
+                            if (csv_feature_info.TryGetValue(featureID, out List<string[]> value))
                             {
                                 value.Add(fields);
                             }
@@ -278,7 +277,7 @@ namespace ProteoformSuiteInternal
                             //get charges, intensities for each charge, and fit
                             List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();
                             List<double> intensities = charges.Select(c => fields.Where(a => a[1] == c.ToString()).Sum(fields2 => Double.TryParse(fields2[2], out double intensity) ? intensity : 0)).ToList();
-                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + String.Join(",", intensities) + "\t" +  fields.First()[4]);
+                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + String.Join(",", intensities) + "\t" + fields.First()[4]);
                         }
                     }
                     File.WriteAllLines(filelocation + ".tsv", new_lines);
@@ -397,11 +396,7 @@ namespace ProteoformSuiteInternal
 
         #endregion NEUCODE PAIRS
 
-        #region MSPathFinder
 
-
-
-        #endregion
 
         #region TOPDOWN
 
@@ -906,6 +901,7 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
+
         public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",
@@ -1352,8 +1348,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion CALIBRATION
-
-
 
         #region RESULTS Public Field
 
