@@ -8,10 +8,8 @@ using System.Linq;
 namespace Test
 {
     [TestFixture]
-
     public class TestModification
     {
-
         [Test]
         public void TestPtmCombos1()
         {
@@ -51,7 +49,6 @@ namespace Test
             Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1, false).Count());
         }
 
-
         [Test]
         public void TestPtmCombos2()
         {
@@ -89,9 +86,7 @@ namespace Test
             Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count());
             Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count());
             Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1, false).Count());
-
         }
-
 
         [Test]
         public void TestPtmCombos3()
@@ -130,9 +125,7 @@ namespace Test
             Assert.AreEqual(1 + 2, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1, false).Count);
             Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count);
             Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count);
-
         }
-
 
         [Test]
         public void TestPtmCombos4()
@@ -201,7 +194,7 @@ namespace Test
             List<PtmSet> sets2 = PtmCombos.get_combinations(a2, 3, new Dictionary<double, int> { { 16, 1 }, { 42, 2 } }, 1, true);
             Assert.AreEqual(0, sets2.Count(s => s.ptm_combination.Count == 3));
         }
-        
+
         [Test]
         public void test_same_ptmset()
         {

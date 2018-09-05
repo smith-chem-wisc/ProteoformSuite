@@ -1,4 +1,4 @@
-﻿using NUnit.Framework; 
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,6 @@ namespace Test
     [TestFixture]
     class TestTopDown
     {
-        
         [Test]
         public void TestSimpleAggregation()
         {
@@ -71,7 +70,7 @@ namespace Test
                 t.ms2_retention_time = 50;
                 t.accession = "accession";
                 t.sequence = "sequence";
-                t.pscore = (double) 1 / (i + 1);
+                t.pscore = (double)1 / (i + 1);
                 t.ptm_list = new List<Ptm>();
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
@@ -175,8 +174,6 @@ namespace Test
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(4, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(10991.249, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-
-
         }
 
         [Test]
@@ -229,7 +226,7 @@ namespace Test
             c5.intensity_sum = 1e6;
             c5.charge_states = new List<ChargeState>() { new ChargeState(1, c5.intensity_sum, c5.weighted_monoisotopic_mass) };
             c5.id = 2.ToString();
-            List<IAggregatable> components = new List<IAggregatable>() { c1, c2, c3, c4, c5};
+            List<IAggregatable> components = new List<IAggregatable>() { c1, c2, c3, c4, c5 };
             Sweet.lollipop.raw_experimental_components = components.OfType<Component>().ToList();
 
             TopDownProteoform td1 = ConstructorsForTesting.TopDownProteoform("ACCESSION_1", 1000.0, 45);
@@ -280,14 +277,14 @@ namespace Test
 
             //accession 3 has higher score... gets td
             Sweet.lollipop.clear_td();
-             td3 = ConstructorsForTesting.TopDownProteoform("ACCESSION_3", 1000.0, 45);
+            td3 = ConstructorsForTesting.TopDownProteoform("ACCESSION_3", 1000.0, 45);
             TopDownHit h3 = new TopDownHit();
             h3.score = 100;
             td3.topdown_hits = new List<TopDownHit>() { h3 };
             TopDownHit h4 = new TopDownHit();
             h4.score = 1;
             TopDownProteoform td4 = ConstructorsForTesting.TopDownProteoform("ACCESSION_4", 1001.0, 45);
-            td4.topdown_hits = new List<TopDownHit>() { h4 }; 
+            td4.topdown_hits = new List<TopDownHit>() { h4 };
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform> { td4, td3 };
             Sweet.lollipop.topdown_proteoforms.OrderBy(p => p.modified_mass);
             Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, 0);
@@ -451,7 +448,6 @@ namespace Test
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_description == "Acetylation"));
             Assert.AreEqual(31, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.ExpandedProteinList.Any(e => e.topdown_protein)));
-
         }
     }
 }

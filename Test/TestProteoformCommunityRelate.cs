@@ -97,7 +97,6 @@ namespace Test
             pa2[2] = pf5;
             prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental, true, TestContext.CurrentContext.TestDirectory, false);
             Assert.AreEqual(0, prList.Count);
-
         }
 
         [Test]
@@ -436,7 +435,6 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
         }
 
-
         [Test]
         public void TestProteoformCommunityRelate_ED()
         {
@@ -447,11 +445,11 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.ed_relations.Count);
 
             //create a decoy proteoform community
-            Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());            
+            Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1);
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { pf2 };
             Sweet.lollipop.relate_ed();
-            // Have a single decoy community --> have single ed_relations 
+            // Have a single decoy community --> have single ed_relations
             Assert.AreEqual(1, Sweet.lollipop.ed_relations.Count);
             // But it's empty
             Assert.IsEmpty(Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"]);

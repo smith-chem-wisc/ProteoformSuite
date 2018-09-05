@@ -81,6 +81,5 @@ namespace Test
             Assert.True(destination[0].hv_condition == "Stress");
             Assert.True(destination[0].biological_replicate == "2");
         }
-
     }
 }

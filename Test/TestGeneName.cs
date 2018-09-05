@@ -38,7 +38,7 @@ namespace Test
             GeneName i = new GeneName(new List<Tuple<string, string>> { ordered_name2 });
             Tuple<string, string> gene_name2 = new Tuple<string, string>("primary", "ABCDE");
             GeneName j = new GeneName(new List<Tuple<string, string>> { gene_name2 });
-            List<GeneName> gene_names = new List<GeneName> { g,h,i,j };
+            List<GeneName> gene_names = new List<GeneName> { g, h, i, j };
 
             GeneName k = new GeneName(gene_names);
             Assert.AreEqual(gene_name.Item2, k.primary);

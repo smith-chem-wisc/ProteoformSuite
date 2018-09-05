@@ -61,7 +61,6 @@ namespace Test
             Assert.AreEqual(1.7301034510740836, neucode_pair.intensity_ratio);
         }
 
-
         [Test]
         public void testComponentReaderClear()
         {
@@ -86,9 +85,7 @@ namespace Test
             Assert.AreEqual(0, noisy.reader.unprocessed_components);
             Assert.AreEqual(0, noisy.reader.missed_mono_merges);
             Assert.AreEqual(0, noisy.reader.harmonic_merges);
-
         }
-
 
         [Test]
         public void testBadValuesComponentFile()
@@ -125,14 +122,12 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
 
             Sweet.lollipop = new Lollipop();
-             badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_bad2.tsv"), Labeling.Unlabeled, Purpose.Identification);
+            badValues = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_bad2.tsv"), Labeling.Unlabeled, Purpose.Identification);
             Sweet.lollipop.input_files.Add(badValues);
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
             Assert.AreEqual(0, Sweet.lollipop.raw_experimental_components.Count);
             Assert.AreEqual(0, badValues.reader.final_components.Count());
             Assert.AreEqual(1, ComponentReader.components_with_errors.Count);
-
         }
-
     }
 }
