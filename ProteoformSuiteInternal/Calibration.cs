@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
     public class Calibration
     {
         //CALIBRATION WITH TD HITS
-        private IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
+        private MsDataFile myMsDataFile;
 
         private List<TopDownHit> all_topdown_hits;
         private List<TopDownHit> high_scoring_topdown_hits;
@@ -102,9 +102,9 @@ namespace ProteoformSuiteInternal
                     cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime, Math.Log(scan.TotalIonCurrent), scan.InjectionTime.HasValue ? Math.Log(scan.InjectionTime.Value) : double.NaN });
                 }
             }
-            foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
+            foreach (var a in myMsDataFile.GetAllScansList().Where(s => s.MsnOrder == 1))
             {
-                Func<Spectra.IPeak, double> theFunc = x => x.X - bestCf.Predict(new double[] { x.X, a.RetentionTime, Math.Log(a.TotalIonCurrent), a.InjectionTime.HasValue ? Math.Log(a.InjectionTime.Value) : double.NaN });
+                Func<MzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime, Math.Log(a.TotalIonCurrent), a.InjectionTime.HasValue ? Math.Log(a.InjectionTime.Value) : double.NaN });
                 a.MassSpectrum.ReplaceXbyApplyingFunction(theFunc);
             }
         }
@@ -167,7 +167,7 @@ namespace ProteoformSuiteInternal
                 {
                     continue;
                 }
-                Proteomics.Peptide coolPeptide = new Proteomics.Peptide(SequenceWithChemicalFormulas);
+                Proteomics.AminoAcidPolymer.Peptide coolPeptide = new Proteomics.AminoAcidPolymer.Peptide(SequenceWithChemicalFormulas);
 
                 // Calculate isotopic distribution of the full peptide
 

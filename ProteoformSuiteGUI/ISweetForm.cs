@@ -10,6 +10,7 @@ namespace ProteoformSuiteGUI
     /// </summary>
     public interface ISweetForm
     {
+
         bool ReadyToRunTheGamut();
 
         /// <summary>
