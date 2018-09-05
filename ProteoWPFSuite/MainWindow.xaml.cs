@@ -12,8 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-namespace ProteoformSuiteWPF
+using ProteoformSuiteInternal;
+namespace ProteoWPFSuite
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,11 +23,14 @@ namespace ProteoformSuiteWPF
         public MainWindow()
         {
             InitializeComponent();
+            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            this.Activate();
         }
 
         private void ProteoformSweet_Loaded(object sender, RoutedEventArgs e)
         {
-
+            
         }
     }
+
 }

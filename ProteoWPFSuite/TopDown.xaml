@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="ProteoWPFSuite.TopDown"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             
+             mc:Ignorable="d" 
+             d:DesignHeight="780" d:DesignWidth="1037" Loaded="TopDown_Load">
+    <Grid x:Name="splitContainer3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="6*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <Button x:Name="bt_td_relations" Content="Aggregate Top-Down Proteoforms" Margin="15 15 15 15" Click="bt_td_relations_Click"/>
+            </StackPanel>
+            <Grid Grid.Column="1" Margin="0 0 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Padding="5,2,0,0">Min. C-Score</Label>
+                <Label Grid.Row="1" Grid.Column="0" Padding="5,2,0,0">Ret. Time Tolerance (min)</Label>
+                <CheckBox Click="cb_tight_abs_mass_CheckedChanged" x:Name="cb_tight_abs_mass" Grid.Row="2" Grid.Column="0" Padding="5,0,0,0" Margin="2,2,0,0" IsChecked="True" >TightAbsolute Mass</CheckBox>
+                <CheckBox Click="cb_biomarker_CheckedChanged" x:Name="cb_biomarker" Grid.Row="3" Grid.Column="0" Padding="5,0,0,0" Margin="2,2,0,0" IsChecked="True">Biomarker</CheckBox>
+
+                <wpfTool:DecimalUpDown x:Name="nUD_min_score_td"  DefaultValue="3.0" Grid.Row="0" Grid.Column="1" DisplayDefaultValueOnEmptyText="True" ValueChanged="nUD_min_score_td_ValueChanged" />
+                <wpfTool:DecimalUpDown x:Name="nUD_td_rt_tolerance" DefaultValue="5.00" Grid.Row="1" Grid.Column="1" DisplayDefaultValueOnEmptyText="True" ValueChanged="nUD_td_rt_tolerance_ValueChanged"/>
+            </Grid>
+            <Grid Grid.Column="2" Margin="5 0 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Top-Down Hits" Padding="2,2,0,0"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Unique PFRs" Padding="2,2,0,0"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Top-Down Proteoforms" Padding="2,2,0,0"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="Table Filter" Padding="2,2,0,0"/>
+
+                <TextBox x:Name="tb_td_hits" Grid.Column="1" Grid.Row="0" Margin="0,2,2,2"/>
+                <TextBox x:Name="tb_unique_PFRs" Grid.Column="1" Grid.Row="1" Margin="0,2,2,2"/>
+                <TextBox x:Name="tb_tdProteoforms" Grid.Column="1" Grid.Row="2" Margin="0,2,2,2"/>
+                <TextBox TextChanged="tb_tableFilter_TextChanged" x:Name="tb_tableFilter" Grid.Column="1" Grid.Row="3" Margin="0,2,2,2"/>
+            </Grid>
+        </Grid>
+        <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+        <Grid Grid.Row="2" x:Name="splitContainer1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <WindowsFormsHost Grid.Row="0">
+                    <winform:DataGridView x:Name="dgv_TD_proteoforms" CellContentClick="dgv_TD_proteoforms_CellContentClick">
+
+                    </winform:DataGridView>
+                </WindowsFormsHost>
+            </Grid>
+            <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+            <Grid Grid.Row="2">
+                <WindowsFormsHost Grid.Row="3" Margin="2 2 2 2">
+                    <winform:RichTextBox  x:Name="rtb_sequence"></winform:RichTextBox>
+                </WindowsFormsHost>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
