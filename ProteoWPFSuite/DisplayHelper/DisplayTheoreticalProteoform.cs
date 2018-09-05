@@ -56,7 +56,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return String.Join("; ", t.ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
+                return string.Join("; ", t.ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
             }
         }
 
@@ -117,7 +117,7 @@ namespace ProteoWPFSuite
 
         public string groupedAccessions
         {
-            get { return String.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
+            get { return string.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
         }
 
         public bool topdown_theoretical

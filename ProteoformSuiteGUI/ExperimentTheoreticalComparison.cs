@@ -12,7 +12,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class ExperimentTheoreticalComparison : Form, ISweetForm
     {
-
         #region Private Fields
 
         private RelationUtility relationUtility;
@@ -70,11 +69,11 @@ namespace ProteoformSuiteGUI
             DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, false);
             GraphETRelations();
             GraphETPeaks();
-            if(cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            if (cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
             else ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
             cb_discoveryHistogram.Checked = false;
-            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
+            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event
         }
 
         public List<DataTable> SetTables()
@@ -300,6 +299,7 @@ namespace ProteoformSuiteGUI
                 case "IncreaseMass":
                     peak.MassShifter = (int_mass_shifter + 1).ToString();
                     break;
+
                 case "DecreaseMass":
                     peak.MassShifter = (int_mass_shifter - 1).ToString();
                     break;
@@ -322,7 +322,7 @@ namespace ProteoformSuiteGUI
         private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
         {
             IEnumerable<object> selected_relations = tb_relationTableFilter.Text == "" ?
-                (cb_discoveryHistogram.Checked? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)))
+                (cb_discoveryHistogram.Checked ? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)))
                 : (ExtensionMethods.filter((cb_discoveryHistogram.Checked ? et_histogram_from_unmod.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p)) : Sweet.lollipop.et_relations.OfType<ProteoformRelation>().Select(p => new DisplayProteoformRelation(p))), tb_relationTableFilter.Text));
             DisplayUtility.FillDataGridView(dgv_ET_Relations, selected_relations);
             DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, cb_discoveryHistogram.Checked);
@@ -467,10 +467,11 @@ namespace ProteoformSuiteGUI
 
         #region Tooltip Private Methods
 
-        Point? ct_ET_Histogram_prevPosition = null;
-        Point? ct_ET_peakList_prevPosition = null;
-        ToolTip ct_ET_Histogram_tt = new ToolTip();
-        ToolTip ct_ET_peakList_tt = new ToolTip();
+        private Point? ct_ET_Histogram_prevPosition = null;
+        private Point? ct_ET_peakList_prevPosition = null;
+        private ToolTip ct_ET_Histogram_tt = new ToolTip();
+        private ToolTip ct_ET_peakList_tt = new ToolTip();
+
         private void ct_ET_Histogram_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)

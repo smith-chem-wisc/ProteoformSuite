@@ -155,7 +155,7 @@ namespace ProteoformSuiteInternal
 
             string selected_family_string = "Finished building selected famil";
             selected_family_string += families.Count == 1 ? "y :" : "ies :#";
-            selected_family_string += (families.Count <= 3) ? String.Join(", #", families.Select(f => f.family_id)) : String.Join(", #", families.Select(f => f.family_id).ToList().Take(3)) + ", etc.";
+            selected_family_string += (families.Count <= 3) ? string.Join(", #", families.Select(f => f.family_id)) : string.Join(", #", families.Select(f => f.family_id).ToList().Take(3)) + ", etc.";
             return selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.";
         }
 
@@ -165,7 +165,7 @@ namespace ProteoformSuiteInternal
             double sleep_factor = feature_count / 1000;
             string node_column_types = quantitative != null ? "s,s,d,s,i,d,d,boolean,s" : "s,s,d,s,i"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
             string edge_column_types = "s,s,s,s,s";
-            return String.Join(Environment.NewLine, new string[] {
+            return string.Join(Environment.NewLine, new string[] {
                 //Load Tables
                 "network import file file=\"" + edges_path + "\" firstRowAsColumnNames=true delimiters=\"\\t\" indexColumnSourceInteraction=\"1\" indexColumnTargetInteraction=\"3\" startLoadRow=\"0\" dataTypeList=\"" + edge_column_types + "\"",
                 "command sleep duration=" + (0.8 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
@@ -235,7 +235,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
                 string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + string.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
-                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.OriginalId != "Unmodified");
+                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.IdWithMotif != "Unmodified");
                 edge_table.Rows.Add
                 (
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
@@ -345,10 +345,10 @@ namespace ProteoformSuiteInternal
                         ep.agg_intensity == 0 ? mock_intensity : ep.agg_intensity.ToString();
 
                     //Names and size
-                    node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });
+                    node_rows += string.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });
 
                     //Set tooltip information
-                    string tooltip = String.Join("; ", new string[]
+                    string tooltip = string.Join("; ", new string[]
                     {
                         "Accession = " + p.accession.ToString(),
                         "Aggregated Mass = " + ep.agg_mass.ToString(),
@@ -362,7 +362,7 @@ namespace ProteoformSuiteInternal
                     if (quantitative != null && ep.quant.intensitySum > 0)
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
-                        String.Join("; ", new string[] {
+                        string.Join("; ", new string[] {
                             "Q-Value = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.roughSignificanceFDR.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.roughSignificanceFDR.ToString() : ""),
                             "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.logfold2change.ToString() : ep.quant.tusherlogFoldChange.ToString()),
                             "Significant = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.significant.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.significant.ToString() : quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.significant.ToString() : ""),
@@ -415,7 +415,7 @@ namespace ProteoformSuiteInternal
 
             foreach (DataRow row in table.Rows)
             {
-                result_string.AppendLine(String.Join("\t", row.ItemArray));
+                result_string.AppendLine(string.Join("\t", row.ItemArray));
             }
 
             return result_string.ToString();
@@ -432,7 +432,7 @@ namespace ProteoformSuiteInternal
                           + " " + e.begin + "to" + e.end + " " +
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
-                            String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                            string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
                 return name;
             }
             else if (p as TheoreticalProteoform != null)

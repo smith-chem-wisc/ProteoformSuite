@@ -1,5 +1,4 @@
 ﻿using Proteomics;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -36,13 +35,13 @@ namespace ProteoformSuiteInternal
             this.ExpandedProteinList = expanded_protein_list.ToList();
             this.accession = accession;
             this.description = description.Split('|').Length >= 3 ? description.Split('|')[2] : description;
-            this.name = String.Join(";", expanded_protein_list.Select(p => p.Name).Distinct());
-            this.fragment = String.Join(";", expanded_protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type).Distinct());
+            this.name = string.Join(";", expanded_protein_list.Select(p => p.Name).Distinct());
+            this.fragment = string.Join(";", expanded_protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type).Distinct());
             this.begin = (int)expanded_protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition;
             this.end = (int)expanded_protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
             this.sequence = sequence;
             this.goTerms = expanded_protein_list.SelectMany(p => p.GoTerms).Distinct().ToList();
-            goTerm_IDs = String.Join("; ", goTerms.Select(g => g.Id));
+            goTerm_IDs = string.Join("; ", goTerms.Select(g => g.Id));
             this.gene_name = new GeneName(expanded_protein_list.SelectMany(t => t.GeneNames).ToList());
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;

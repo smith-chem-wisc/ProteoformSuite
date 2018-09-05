@@ -360,11 +360,11 @@ namespace Test
             TopDownHit hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>();
-            Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0502")).FirstOrDefault();
+            Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0502")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(hit.sequence.Length, mod));
-            Modification mod2 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0170")).FirstOrDefault();
+            Modification mod2 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0170")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(3, mod2));
-            Modification mod3 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0433")).FirstOrDefault();
+            Modification mod3 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0433")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(1, mod3));
 
             string sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula();

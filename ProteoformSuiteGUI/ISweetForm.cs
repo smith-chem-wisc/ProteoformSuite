@@ -1,6 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Collections.Generic;
 
 namespace ProteoformSuiteGUI
 {
@@ -10,7 +9,6 @@ namespace ProteoformSuiteGUI
     /// </summary>
     public interface ISweetForm
     {
-
         bool ReadyToRunTheGamut();
 
         /// <summary>
@@ -28,7 +26,7 @@ namespace ProteoformSuiteGUI
         void FillTablesAndCharts();
 
         List<DataTable> DataTables { get; }
-        List<DataTable> SetTables();
 
+        List<DataTable> SetTables();
     }
 }

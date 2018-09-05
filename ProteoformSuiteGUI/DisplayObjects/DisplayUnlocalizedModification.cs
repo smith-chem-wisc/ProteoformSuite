@@ -30,7 +30,7 @@ namespace ProteoformSuiteGUI
 
         public string OriginalID
         {
-            get { return m.original_modification.OriginalId; }
+            get { return m.original_modification.IdWithMotif; }
         }
 
         public double Mass

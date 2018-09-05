@@ -23,11 +23,11 @@ namespace ProteoformSuiteInternal
         #region Public Property
 
         public int family_id { get; set; }
-        public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name).Distinct()); } }
-        public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
-        public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct()); } }
-        public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
-        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
+        public string name_list { get { return string.Join("; ", theoretical_proteoforms.Select(p => p.name).Distinct()); } }
+        public string accession_list { get { return string.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
+        public string gene_list { get { return string.Join("; ", gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct()); } }
+        public string experimentals_list { get { return string.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
+        public string agg_mass_list { get { return string.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
         public List<GeneName> gene_names { get; private set; }
@@ -125,7 +125,7 @@ namespace ProteoformSuiteInternal
                         l.linked_proteoform_references != null
                         && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                         && l.ptm_set.ptm_combination.Count < e.ptm_set.ptm_combination.Count
-                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId) != e.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId))
+                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.IdWithMotif == m.modification.IdWithMotif) != e.ptm_set.ptm_combination.Count(p => p.modification.IdWithMotif == m.modification.IdWithMotif))
                             .Count(p =>
                                 p.modification.ModificationType != "Deconvolution Error"
                                 && p.modification.OriginalId != "Sulfate Adduct"

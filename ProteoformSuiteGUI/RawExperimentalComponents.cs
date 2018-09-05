@@ -10,7 +10,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class RawExperimentalComponents : Form, ISweetForm
     {
-
         #region Public Constructor
 
         public RawExperimentalComponents()
@@ -49,7 +48,7 @@ namespace ProteoformSuiteGUI
             );
             if (ComponentReader.components_with_errors.Count > 0)
             {
-                MessageBox.Show("Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors));
+                MessageBox.Show("Error in Deconvolution Results File: " + string.Join(", ", ComponentReader.components_with_errors));
                 ClearListsTablesFigures(true);
                 return;
             }
@@ -139,7 +138,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-
         private void dgv_RawQuantComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -179,6 +177,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Methods
-
     }
 }

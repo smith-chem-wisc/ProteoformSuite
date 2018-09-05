@@ -119,7 +119,7 @@ namespace Test
             Sweet.unaccept_peak_action(pr2);
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
+            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
             Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, Sweet.lollipop.ee_peaks.Count);
             DeltaMassPeak peak = Sweet.lollipop.ee_peaks[0];
@@ -141,12 +141,12 @@ namespace Test
             //have a name other than setting or action
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Assert.IsTrue(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning1));
+            Assert.IsTrue(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning1));
             string[] edit = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"));
             edit[2] = "  <badname field_type=\"System.Boolean\" field_name=\"badfieldname\" field_value=\"True\" />";
 
             File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), edit);
-            Assert.IsFalse(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning2));
+            Assert.IsFalse(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning2));
 
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
@@ -161,7 +161,7 @@ namespace Test
             }
             string message;
             File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), new_edit);
-            Assert.IsTrue(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+            Assert.IsTrue(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
             Assert.AreEqual("Setting badfieldname has changed, and it was not changed to preset System.Boolean True in the current run\r\n", message);
 
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
@@ -175,7 +175,7 @@ namespace Test
                 new_edit[i] = edit[i + 1];
             }
             File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), new_edit);
-            Assert.IsTrue(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+            Assert.IsTrue(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
             Assert.AreEqual("The following parameters did not have a setting specified: neucode_labeled\r\n", message);
 
             Sweet.add_file_action(new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx"), Purpose.TopDown));
@@ -184,7 +184,7 @@ namespace Test
             edit = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"));
             edit[81] = "  <action action=\"badaction file filepath with purpose TopDown\" />";
             File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), edit);
-            Assert.IsFalse(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
+            Assert.IsFalse(Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out message));
         }
 
         #endregion Methods and Settings

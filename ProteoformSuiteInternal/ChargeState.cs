@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
 
         public override string ToString()
         {
-            return String.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
+            return string.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
         }
 
         #endregion Public Methods

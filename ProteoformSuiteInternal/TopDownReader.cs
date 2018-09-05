@@ -49,17 +49,17 @@ namespace ProteoformSuiteInternal
                                 }
                                 if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                                 {
-                                    ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.ValidModification && m.OriginalId == "N-terminal Acetyl").FirstOrDefault()));
+                                    ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.IdWithMotif == "N-terminal Acetyl").FirstOrDefault()));
                                 }
                                 else
                                 {
                                     string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                                     while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
-                                    Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                    Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     if (mod == null)
                                     {
                                         psimod = "MOD:" + psimod;
-                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     }
                                     if (mod != null) ptm_list.Add(new Ptm(position, mod));
                                     else
@@ -113,17 +113,17 @@ namespace ProteoformSuiteInternal
                                     while (resid.Length < 4) resid = "0" + resid;//short part should be the accession number, which is an integer
                                     resid = "AA" + resid;
                                     id = "RESID:" + resid;
-                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID") && m.DatabaseReference["RESID"].Contains(resid)).FirstOrDefault();
+                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID") && m.DatabaseReference["RESID"].Contains(resid)).FirstOrDefault();
                                 }
                                 else if (ptm.Split(':')[0] == "PSI-MOD")
                                 {
                                     string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                                     while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
-                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     if (mod == null)
                                     {
                                         psimod = "MOD:" + psimod;
-                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m != null && m.ValidModification && m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     }
                                     id = "PSI-MOD:" + psimod;
                                 }

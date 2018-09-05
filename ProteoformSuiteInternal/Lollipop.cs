@@ -129,7 +129,7 @@ namespace ProteoformSuiteInternal
         public static void enter_uniprot_ptmlist(string current_directory)
         {
             Loaders.LoadUniprot(Path.Combine(current_directory, "ptmlist.txt"), Loaders.GetFormalChargesDictionary(Loaders.LoadPsiMod(Path.Combine(current_directory, "PSI-MOD.obo2.xml"))));
-            Sweet.lollipop.enter_input_files(new[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
+            Sweet.lollipop.enter_input_files(new[] { Path.Combine(current_directory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
         }
 
         #endregion Input Files
@@ -277,7 +277,7 @@ namespace ProteoformSuiteInternal
                             //get charges, intensities for each charge, and fit
                             List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();
                             List<double> intensities = charges.Select(c => fields.Where(a => a[1] == c.ToString()).Sum(fields2 => Double.TryParse(fields2[2], out double intensity) ? intensity : 0)).ToList();
-                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + String.Join(",", intensities) + "\t" + fields.First()[4]);
+                            new_lines.Add(lines[i] + "\t" + string.Join(",", charges) + "\t" + string.Join(",", intensities) + "\t" + fields.First()[4]);
                         }
                     }
                     File.WriteAllLines(filelocation + ".tsv", new_lines);
@@ -395,8 +395,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion NEUCODE PAIRS
-
-
 
         #region TOPDOWN
 
@@ -1255,7 +1253,7 @@ namespace ProteoformSuiteInternal
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
             if (td_hits_calibration.Any(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
-                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
+                return "Error: need to input all raw files for top-down hits: " + string.Join(", ", td_hits_calibration.Where(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
             foreach (string condition in input_files.Select(f => f.lt_condition).Distinct())
             {
                 foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())
@@ -1268,7 +1266,7 @@ namespace ProteoformSuiteInternal
                         process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && (Sweet.lollipop.neucode_labeled || f.biological_replicate == biological_replicate) && f.fraction == fraction && f.lt_condition == condition).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                         if (ComponentReader.components_with_errors.Count > 0)
                         {
-                            return "Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors);
+                            return "Error in Deconvolution Results File: " + string.Join(", ", ComponentReader.components_with_errors);
                         }
                         foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.SpectraFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
@@ -1300,7 +1298,7 @@ namespace ProteoformSuiteInternal
                     Calibration.calibrate_td_hits_file(file);
                 }
             }
-            return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + String.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
+            return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + string.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
         }
 
         public void determine_shifts(InputFile raw_file)

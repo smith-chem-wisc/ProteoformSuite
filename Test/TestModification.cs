@@ -183,7 +183,7 @@ namespace Test
             };
             List<PtmSet> sets1 = PtmCombos.get_combinations(a1, 3, new Dictionary<double, int> { { 16, 1 }, { 42, 2 } }, 1, true);
             Assert.AreEqual(1, sets1.Count(s => s.ptm_combination.Count == 3));
-            Assert.True(sets1.Where(s => s.ptm_combination.Count == 3).First().ptm_combination.All(p => p.modification.OriginalId == "ox"));
+            Assert.True(sets1.Where(s => s.ptm_combination.Count == 3).First().ptm_combination.All(p => p.modification.IdWithMotif == "ox on X"));
 
             IDictionary<int, List<Modification>> a2 = new Dictionary<int, List<Modification>>
             {

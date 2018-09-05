@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).OrderBy(m => m).ToList());
+                        string.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).OrderBy(m => m).ToList());
             }
         }
 
@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                     bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
                     List<Modification> these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
                     List<Modification> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
-                    bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.OriginalId == m1.OriginalId) >= those_mods.Count(m2 => m2.OriginalId == m1.OriginalId)); //# of each mod in current set must be greater than or equal to # in set to remove.
+                    bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.IdWithMotif == m1.IdWithMotif) >= those_mods.Count(m2 => m2.IdWithMotif == m1.IdWithMotif)); //# of each mod in current set must be greater than or equal to # in set to remove.
                     bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                     {
@@ -154,7 +154,7 @@ namespace ProteoformSuiteInternal
         public List<PtmSet> generate_possible_added_ptmsets(List<PtmSet> possible_peak_assignments, double deltaM, double mass_tolerance, List<Modification> all_mods_with_mass,
             TheoreticalProteoform theoretical_base, int additional_ptm_penalty, bool final_assignment)
         {
-            List<Modification> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).Where(m => m.ValidModification).ToList();
+            List<Modification> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
 
             foreach (PtmSet set in possible_peak_assignments)
@@ -216,7 +216,7 @@ namespace ProteoformSuiteInternal
                     else
                     {
                         rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ||
-                            known_mods.Select(mod => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod, out UnlocalizedModification um) ? um.id : mod.OriginalId).Contains(Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification um2) ? um2.id : m.OriginalId)
+                            known_mods.Select(mod => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod, out UnlocalizedModification um) ? um.id : mod.IdWithMotif).Contains(Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification um2) ? um2.id : m.IdWithMotif)
                                 ?
                             mod_rank :
                             mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
@@ -287,15 +287,18 @@ namespace ProteoformSuiteInternal
                 e.uniprot_mods = "";
                 foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).ToList().Distinct().OrderBy(m => m))
                 {
-                    //positions with mod
-                    List<int> theo_ptms = theoretical_base.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Where(p => p.Key >= e.begin && p.Key <= e.end &&
-                        p.Value.Where(m => m as Modification != null).Select(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m as Modification, out UnlocalizedModification x) ? x.id : m.OriginalId).Contains(mod)).Select(m => m.Key).ToList();
+                    // positions with mod
+                    List<int> theo_ptms = theoretical_base.ExpandedProteinList.First()
+                        .OneBasedPossibleLocalizedModifications
+                        .Where(p => p.Key + theoretical_base.begin - 1 >= e.begin && p.Key + theoretical_base.begin - 1 <= e.end
+                            && p.Value.Select(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m as Modification, out UnlocalizedModification x) ? x.id : m.OriginalId).Contains(mod))
+                        .Select(m => m.Key).ToList();
                     if (theo_ptms.Count > 0)
                     {
                         e.uniprot_mods += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
                     }
-                    if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).Count(m => m == mod)
-                        > theo_ptms.Count)
+                    if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId)
+                        .Count(m => m == mod) > theo_ptms.Count)
                     {
                         e.novel_mods = true;
                     }

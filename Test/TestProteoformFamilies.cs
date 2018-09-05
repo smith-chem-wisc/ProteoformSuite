@@ -203,8 +203,8 @@ namespace Test
             Sweet.lollipop.et_accept_peaks_based_on_rank = false;
             Sweet.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
             Sweet.lollipop.mod_rank_sum_threshold = 2;
-            Sweet.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).Where(m => m.ValidModification).ToList(), Sweet.lollipop.modification_ranks, 1);
-            Sweet.lollipop.theoretical_database.all_mods_with_mass = Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).Where(m => m.ValidModification).ToList();
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).ToList(), Sweet.lollipop.modification_ranks, 1);
+            Sweet.lollipop.theoretical_database.all_mods_with_mass = Sweet.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).ToList();
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
 
             Sweet.lollipop.ee_max_mass_difference = 20;
@@ -342,10 +342,10 @@ namespace Test
             Assert.AreEqual(3, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).experimental_proteoforms.Count);
             Assert.AreEqual(2, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).theoretical_proteoforms.Count);
             Assert.AreEqual("" + "; " + "GENE", community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).gene_list); //both would give null preferred gene names, since that field isn't set up
-            Assert.True(String.Join("", community.families.Select(f => f.experimentals_list)).Contains("E1"));
-            Assert.True(String.Join("", community.families.Select(f => f.name_list)).Contains(p1_name));
-            Assert.True(String.Join("", community.families.Select(f => f.accession_list)).Contains(pf1_accession));
-            Assert.True(String.Join("", community.families.Select(f => f.agg_mass_list)).Contains(1234.56.ToString()));
+            Assert.True(string.Join("", community.families.Select(f => f.experimentals_list)).Contains("E1"));
+            Assert.True(string.Join("", community.families.Select(f => f.name_list)).Contains(p1_name));
+            Assert.True(string.Join("", community.families.Select(f => f.accession_list)).Contains(pf1_accession));
+            Assert.True(string.Join("", community.families.Select(f => f.agg_mass_list)).Contains(1234.56.ToString()));
 
             //Check that the list of proteoforms is the same in the relations as in the proteoform lists
             HashSet<Proteoform> relation_proteoforms = new HashSet<Proteoform>(community.families.SelectMany(f => f.relations).SelectMany(r => r.connected_proteoforms));

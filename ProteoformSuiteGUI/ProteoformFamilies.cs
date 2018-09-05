@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -73,7 +72,6 @@ namespace ProteoformSuiteGUI
             cb_count_adducts_as_id.Checked = Sweet.lollipop.count_adducts_as_identifications;
 
             cb_only_assign_common_known_mods.Checked = Sweet.lollipop.only_assign_common_or_known_mods;
-
 
             initialize_every_time();
         }

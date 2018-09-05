@@ -81,7 +81,7 @@ namespace ProteoformSuiteGUI
                     "Unknown" :
                     h.ptm_list.Count == 0 ?
                         "Unmodified" :
-                        string.Join("; ", h.ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).ToList());
+                        string.Join("; ", h.ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.IdWithMotif + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.IdWithMotif).ToList());
             }
         }
 

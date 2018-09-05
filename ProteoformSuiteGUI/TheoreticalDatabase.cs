@@ -12,7 +12,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class TheoreticalDatabase : Form, ISweetForm
     {
-
         #region Public Constructor
 
         public TheoreticalDatabase()
@@ -26,8 +25,8 @@ namespace ProteoformSuiteGUI
 
         #region Private Fields
 
-        OpenFileDialog openAccessionListDialog = new OpenFileDialog();
-        bool initial_load = true;
+        private OpenFileDialog openAccessionListDialog = new OpenFileDialog();
+        private bool initial_load = true;
 
         #endregion Private Fields
 
@@ -73,7 +72,9 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        private void cmb_empty_TextChanged(object sender, EventArgs e) { }
+        private void cmb_empty_TextChanged(object sender, EventArgs e)
+        {
+        }
 
         #endregion Private Methods
 
@@ -152,7 +153,7 @@ namespace ProteoformSuiteGUI
             ckbx_combineIdenticalSequences.Checked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.Checked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
 
-            tb_modTypesToExclude.Text = String.Join(",", Sweet.lollipop.mod_types_to_exclude);
+            tb_modTypesToExclude.Text = string.Join(",", Sweet.lollipop.mod_types_to_exclude);
 
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
@@ -173,7 +174,7 @@ namespace ProteoformSuiteGUI
             if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
         }
 
@@ -205,7 +206,7 @@ namespace ProteoformSuiteGUI
                 }
             }
         }
-        
+
         public void FillTablesAndCharts()
         {
             reload_database_list();
@@ -327,14 +328,15 @@ namespace ProteoformSuiteGUI
             List<TheoreticalProteoform> theoreticals_to_display = cmbx_DisplayWhichDB.SelectedItem.ToString() == "Target" ?
                  Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.ToList()
                  : Sweet.lollipop.decoy_proteoform_communities[cmbx_DisplayWhichDB.SelectedItem.ToString()].theoretical_proteoforms.ToList();
-            IEnumerable <object> selected_theoreticals = tb_tableFilter.Text == "" ?
+            IEnumerable<object> selected_theoreticals = tb_tableFilter.Text == "" ?
                 theoreticals_to_display :
                 ExtensionMethods.filter(theoreticals_to_display, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals.OfType<TheoreticalProteoform>().Select(t => new DisplayTheoreticalProteoform(t)));
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        Regex substituteWhitespace = new Regex(@"\s+");
+        private Regex substituteWhitespace = new Regex(@"\s+");
+
         private void tb_modTypesToExclude_TextChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');

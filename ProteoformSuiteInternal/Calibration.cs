@@ -497,7 +497,7 @@ namespace ProteoformSuiteInternal
                             //do intensity weighted new monoisotopic mass for each feature
                             //just rewrite, don't bother with dictionary, etc......
                             row[5] = value.ToString();
-                            new_file.Add(String.Join("\t", row));
+                            new_file.Add(string.Join("\t", row));
                         }
                     }
                 }

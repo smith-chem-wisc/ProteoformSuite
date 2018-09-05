@@ -1,20 +1,20 @@
 Intact Mass Modifications
 ID   Water Adduct
-TG   Any
+TG   X
 PP   Anywhere.
 MM   18.010565
 MT   Common
 CF   H2O
 //
 ID   Water loss
-TG   Any
+TG   X
 PP   Anywhere.
 MM   -18.010565
 MT   Common
 CF   H-2 O-1
 //
 ID   Oxidation
-TG   Any
+TG   X
 PP   Anywhere.
 MM   15.994915
 MT   Common
@@ -43,13 +43,13 @@ MT   Common
 CF   H1 O3 P1
 //
 ID   Missed Monoisotopic (-1)
-TG   Any
+TG   X
 PP   Anywhere.
 MM   -1.0023
 MT   Deconvolution Error
 //
 ID   Missed Monoisotopic (+1)
-TG   Any
+TG   X
 PP   Anywhere.
 MM   1.0023
 MT   Deconvolution Error

@@ -35,7 +35,7 @@ namespace Test
         public static TheoreticalProteoform make_a_theoretical(string a, ProteinWithGoTerms p, Dictionary<InputFile, Protein[]> dict)
         {
             ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationMotif.TryGetMotif("X", out motif);
             PtmSet set = new PtmSet(p.OneBasedPossibleLocalizedModifications.SelectMany(m => m.Value.SelectMany(mmm => new List<Ptm> { new Ptm(0, mmm) })).ToList());
             TheoreticalProteoform t = new TheoreticalProteoform(a, "", p.BaseSequence,  new List<ProteinWithGoTerms> { p }, 100, 0, set, true, true, dict);
             t.begin = 1;
@@ -46,7 +46,7 @@ namespace Test
         public static TheoreticalProteoform make_a_theoretical()
         {
             ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationMotif.TryGetMotif("X", out motif);
             string mod_title = "oxidation";
             Modification m = new Modification(mod_title, _modificationType: "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
@@ -57,7 +57,7 @@ namespace Test
         public static TheoreticalProteoform make_a_theoretical(string a, string d, double mass, ProteinWithGoTerms p, Dictionary<InputFile, Protein[]> dict)
         {
             ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationMotif.TryGetMotif("X", out motif);
             string mod_title = "oxidation";
             Modification m = new Modification(mod_title, _modificationType : "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
@@ -68,7 +68,7 @@ namespace Test
         public static TheoreticalProteoform make_a_theoretical(string a, string d, double mass, Dictionary<InputFile, Protein[]> dict)
         {
             ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationMotif.TryGetMotif("X", out motif);
             string mod_title = "oxidation";
             Modification m = new Modification(mod_title, _modificationType: "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
@@ -79,7 +79,7 @@ namespace Test
         public static TheoreticalProteoform make_a_theoretical(string a, double mass, int lysine_count)
         {
             ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationMotif.TryGetMotif("X", out motif);
             Modification unmodification = new Modification("Unmodified", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 0);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm() });
@@ -152,7 +152,7 @@ namespace Test
         public static Modification get_modWithMass(string id, double mass)
         {
             ModificationMotif motif;
-            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationMotif.TryGetMotif("X", out motif);
             Modification m = new Modification(id, _modificationType: "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : mass);
             return m;
         }
@@ -160,7 +160,7 @@ namespace Test
         public static Dictionary<string, List<Modification>> read_mods()
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
-            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).Where(m => m.ValidModification).ToList();
+            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             return Sweet.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }

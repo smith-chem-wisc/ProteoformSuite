@@ -91,7 +91,7 @@ namespace Test
         [Test]
         public void TestTopdownReader()
         {
-            //unlabeled
+            // unlabeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.carbamidomethylation = false;
@@ -102,8 +102,8 @@ namespace Test
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
             Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10894.157, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
@@ -113,7 +113,7 @@ namespace Test
             Assert.AreEqual(10894.157, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(10894.130, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
 
-            //neucode labeled
+            // neucode labeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.carbamidomethylation = false;
@@ -135,7 +135,7 @@ namespace Test
             Assert.AreEqual(10934.228, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(10934.201, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
 
-            //carbamidomethylated
+            // carbamidomethylated
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.carbamidomethylation = true;
@@ -155,7 +155,7 @@ namespace Test
             Assert.AreEqual(4, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(10951.178, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
 
-            //carbamidomethylated and neucode labeled
+            // carbamidomethylated and neucode labeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.carbamidomethylation = true;

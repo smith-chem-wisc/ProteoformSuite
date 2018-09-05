@@ -18,7 +18,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Lollipop.enter_uniprot_ptmlist(TestContext.CurrentContext.TestDirectory);
-            Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.PtmList);
+            Assert.IsTrue(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.PtmList));
             Sweet.lollipop = new Lollipop();
         }
 
@@ -53,7 +53,8 @@ namespace Test
         }
 
         [Test]
-        public void testTheoreticalDatabaseCreateWithPTMs()
+        [TestCase("uniprot_yeast_test_12entries.xml")]
+        public void testTheoreticalDatabaseCreateWithPTMs(string database)
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.methionine_oxidation = false;
@@ -68,7 +69,7 @@ namespace Test
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
             Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, database) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
 
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
@@ -295,12 +296,12 @@ namespace Test
         {
             TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
             tpd.ready_to_make_database(TestContext.CurrentContext.TestDirectory);
-            List<Modification> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "variable.txt")).Where(m => m.ValidModification).ToList();
+            List<Modification> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "variable.txt")).ToList();
             Sweet.lollipop.modification_ranks = mods.ToDictionary(m => (double)m.MonoisotopicMass, m => -1);
             tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods);
             tpd.load_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "stored_mods.modnames"));
             tpd.save_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
-            Assert.AreNotEqual(mods.First().OriginalId, tpd.unlocalized_lookup.Values.First().id);
+            Assert.AreNotEqual(mods.First().IdWithMotif, tpd.unlocalized_lookup.Values.First().id);
 
             //Test amending
             mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt")).OfType<Modification>());

@@ -1,7 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
-using System.Data;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +12,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class ExperimentExperimentComparison : Form, ISweetForm
     {
-
         #region Private Field
 
         private RelationUtility relationUtility;
@@ -69,7 +68,7 @@ namespace ProteoformSuiteGUI
         }
 
         public void ClearListsTablesFigures(bool clear_following)
-        {           
+        {
             //clear all save acceptance actions --> will re-add save actions from loaded actions if peak still exists
             Sweet.save_actions.RemoveAll(x => x.StartsWith("accept ExperimentalExperimental") || x.StartsWith("unaccept ExperimentalExperimental"));
 
@@ -112,7 +111,7 @@ namespace ProteoformSuiteGUI
             if (cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
             else ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
-            dgv_EE_Peaks.CurrentCellDirtyStateChanged += EE_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
+            dgv_EE_Peaks.CurrentCellDirtyStateChanged += EE_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event
         }
 
         public void InitializeParameterSet()
@@ -206,7 +205,6 @@ namespace ProteoformSuiteGUI
             DisplayDeltaMassPeak.FormatPeakListGridView(dgv_EE_Peaks, true);
         }
 
-
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_EE_Peaks.HitTest(e.X, e.Y).RowIndex;
@@ -255,7 +253,6 @@ namespace ProteoformSuiteGUI
             else cb_view_decoy_histogram.Enabled = false;
             cb_view_decoy_histogram.Checked = false;
         }
-
 
         private void cb_view_decoy_histogram_CheckedChanged(object sender, EventArgs e)
         {
@@ -337,11 +334,11 @@ namespace ProteoformSuiteGUI
 
         #region Tooltip Private Methods
 
-        Point? ct_EE_Histogram_prevPosition = null;
-        Point? ct_EE_peakList_prevPosition = null;
+        private Point? ct_EE_Histogram_prevPosition = null;
+        private Point? ct_EE_peakList_prevPosition = null;
 
-        ToolTip ct_EE_Histogram_tt = new ToolTip();
-        ToolTip ct_EE_peakList_tt = new ToolTip();
+        private ToolTip ct_EE_Histogram_tt = new ToolTip();
+        private ToolTip ct_EE_peakList_tt = new ToolTip();
 
         private void ct_EE_Histogram_MouseClick(object sender, MouseEventArgs e)
         {

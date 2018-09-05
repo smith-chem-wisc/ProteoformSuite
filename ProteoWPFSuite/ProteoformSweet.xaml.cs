@@ -263,7 +263,7 @@ namespace ProteoWPFSuite
 
         public bool open_method(string methodFilePath, string[] lines, bool add_files)
         {
-            bool method_file_success = Sweet.open_method(methodFilePath, String.Join(Environment.NewLine, lines), add_files, out string warning);
+            bool method_file_success = Sweet.open_method(methodFilePath, string.Join(Environment.NewLine, lines), add_files, out string warning);
             if (warning.Length > 0 && MessageBox.Show("WARNING" + Environment.NewLine + Environment.NewLine + warning, "Open Method", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
                 return false;
             foreach (ISweetForm form in forms) form.InitializeParameterSet();
@@ -374,21 +374,21 @@ namespace ProteoWPFSuite
             if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
-                warning_methods.Add(String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                warning_methods.Add(string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
             if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
             }
             if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
             }
             if (warning_methods.Count > 1)
             {
-                MessageBox.Show(String.Join("\n\n", warning_methods));
+                MessageBox.Show(string.Join("\n\n", warning_methods));
             }
             //Program ran successfully
             stopwatch.Stop();

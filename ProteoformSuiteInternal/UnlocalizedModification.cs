@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
         {
             original_modification = m;
             mass = (double)m.MonoisotopicMass;
-            id = m.OriginalId;
+            id = m.IdWithMotif;
             ptm_count = 1;
             require_proteoform_without_mod = false;
 
