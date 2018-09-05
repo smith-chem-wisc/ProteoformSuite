@@ -21,9 +21,9 @@ namespace ProteoformSuiteInternal
 
         //Modifications
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
-        public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-        public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
-        public Dictionary<ModificationWithMass, UnlocalizedModification> unlocalized_lookup = new Dictionary<ModificationWithMass, UnlocalizedModification>();
+        public List<Modification> variableModifications = new List<Modification>();
+        public List<Modification> all_mods_with_mass = new List<Modification>();
+        public Dictionary<Modification, UnlocalizedModification> unlocalized_lookup = new Dictionary<Modification, UnlocalizedModification>();
 
         //PtmSets
         public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
@@ -59,31 +59,34 @@ namespace ProteoformSuiteInternal
             var psiModDeserialized = Loaders.LoadPsiMod(Path.Combine(current_directory, "Mods", "PSI-MOD.obo.xml"));
             Dictionary<string, int> formalChargesDictionary = Loaders.GetFormalChargesDictionary(psiModDeserialized);
 
-            List<ModificationWithLocation> all_known_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path, formalChargesDictionary)).OfType<ModificationWithLocation>().ToList();
+            List<Modification> all_known_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList)
+                .SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path, formalChargesDictionary))
+                .Where(m => m.ValidModification)
+                .ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
                 lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, true, DecoyType.None, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out Dictionary<string, Modification> um).ToArray());
-                lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>().Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.modificationType)));
+                lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).Where(m => m.ValidModification && !Sweet.lollipop.mod_types_to_exclude.Contains(m.ModificationType)));
             });
 
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
             {
-                List<ModificationWithMass> new_mods = !filename.EndsWith("variable.txt") || Sweet.lollipop.methionine_oxidation ?
-                    PtmListLoader.ReadModsFromFile(filename, formalChargesDictionary).OfType<ModificationWithMass>().ToList() :
-                    new List<ModificationWithMass>(); // Empty variable modifications if not selected
+                List<Modification> new_mods = !filename.EndsWith("variable.txt") || Sweet.lollipop.methionine_oxidation ?
+                    PtmListLoader.ReadModsFromFile(filename, formalChargesDictionary).Where(m => m.ValidModification).ToList() :
+                    new List<Modification>(); // Empty variable modifications if not selected
                 if (filename.EndsWith("variable.txt"))
                     variableModifications = new_mods;
                 all_known_modifications.AddRange(new_mods);
             }
 
-            all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
+            all_known_modifications = new HashSet<Modification>(all_known_modifications).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
 
-            all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
+            all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).Concat(variableModifications).ToList();
             Sweet.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
-            unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<ModificationWithMass> { new Ptm().modification }));
+            unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<Modification> { new Ptm().modification }));
             load_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
 
             //this is for ptmsets --> used in RELATIONS
@@ -139,7 +142,7 @@ namespace ProteoformSuiteInternal
         public Dictionary<double, List<PtmSet>> make_ptmset_dictionary()
         {
             Dictionary<double, List<PtmSet>> possible_ptmsets = new Dictionary<double, List<PtmSet>>();
-            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)).ToList())
+            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.MonoisotopicMass == 0)).ToList())
             {
                 for (int i = 0; i < 10; i++)
                 {
@@ -151,25 +154,25 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
-        public Dictionary<string, List<Modification>> make_modification_dictionary(IEnumerable<ModificationWithLocation> all_modifications)
+        public Dictionary<string, List<Modification>> make_modification_dictionary(IEnumerable<Modification> all_modifications)
         {
             Dictionary<string, List<Modification>> mod_dict = new Dictionary<string, List<Modification>>();
             foreach (var nice in all_modifications)
             {
-                if (mod_dict.TryGetValue(nice.id, out List<Modification> val)) val.Add(nice);
-                else mod_dict.Add(nice.id, new List<Modification> { nice });
+                if (mod_dict.TryGetValue(nice.OriginalId, out List<Modification> val)) val.Add(nice);
+                else mod_dict.Add(nice.OriginalId, new List<Modification> { nice });
             }
             return mod_dict;
         }
 
-        public Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<ModificationWithMass> variable_modifications, IEnumerable<ModificationWithMass> all_mods_with_mass)
+        public Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<Modification> variable_modifications, IEnumerable<Modification> all_mods_with_mass)
         {
             Dictionary<double, int> mod_counts = new Dictionary<double, int>();
 
-            foreach (ModificationWithMass m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
+            foreach (Modification m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList())
             {
-                if (!mod_counts.TryGetValue(m.monoisotopicMass, out int b)) mod_counts.Add(m.monoisotopicMass, 1);
-                else mod_counts[m.monoisotopicMass]++;
+                if (!mod_counts.TryGetValue((double)m.MonoisotopicMass, out int b)) mod_counts.Add((double)m.MonoisotopicMass, 1);
+                else mod_counts[(double)m.MonoisotopicMass]++;
             }
             List<KeyValuePair<double, int>> ordered_mod_counts = mod_counts.OrderByDescending(kv => kv.Value).ToList();
 
@@ -188,10 +191,10 @@ namespace ProteoformSuiteInternal
             else mod_ranks[0] = 0;
 
             //Give variable mods a good score
-            foreach (ModificationWithMass m in variable_modifications)
+            foreach (Modification m in variable_modifications)
             {
-                if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int b)) mod_ranks.Add(m.monoisotopicMass, 2);
-                else mod_ranks[m.monoisotopicMass] = 2;
+                if (!mod_ranks.TryGetValue((double)m.MonoisotopicMass, out int b)) mod_ranks.Add((double)m.MonoisotopicMass, 2);
+                else mod_ranks[(double)m.MonoisotopicMass] = 2;
             }
 
             List<int> ranks = mod_ranks.Values.OrderBy(x => x).ToList();
@@ -201,10 +204,10 @@ namespace ProteoformSuiteInternal
             Sweet.lollipop.mod_rank_sum_threshold = ranks.Max();
 
             //Give the remaining mods the threshold value
-            foreach (ModificationWithMass m in all_mods_with_mass)
+            foreach (Modification m in all_mods_with_mass)
             {
-                if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int lkj))
-                    mod_ranks.Add(m.monoisotopicMass, Sweet.lollipop.mod_rank_sum_threshold);
+                if (!mod_ranks.TryGetValue((double)m.MonoisotopicMass, out int lkj))
+                    mod_ranks.Add((double)m.MonoisotopicMass, Sweet.lollipop.mod_rank_sum_threshold);
             }
 
             return mod_ranks;
@@ -296,7 +299,7 @@ namespace ProteoformSuiteInternal
                 || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0);
         }
 
-        public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<ModificationWithMass> variableModifications)
+        public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
             //Calculate the properties of this sequence
@@ -306,11 +309,11 @@ namespace ProteoformSuiteInternal
 
             //Figure out the possible ptm sets
             Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.ToDictionary(kv => kv.Key, kv => new List<Modification>(kv.Value));
-            foreach (ModificationWithMass m in variableModifications)
+            foreach (Modification m in variableModifications)
             {
                 for (int i = 1; i <= prot.BaseSequence.Length; i++)
                 {
-                    if (prot.BaseSequence[i - 1].ToString() == m.motif.ToString())
+                    if (prot.BaseSequence[i - 1].ToString() == m.Target.ToString())
                     {
                         if (!possibleLocalizedMods.TryGetValue(i, out List<Modification> a)) possibleLocalizedMods.Add(i, new List<Modification> { m });
                         else a.Add(m);
@@ -412,9 +415,9 @@ namespace ProteoformSuiteInternal
 
         #region Unlocalized Mods Public Methods
 
-        public Dictionary<ModificationWithMass, UnlocalizedModification> make_unlocalized_lookup(IEnumerable<ModificationWithMass> all_modifications)
+        public Dictionary<Modification, UnlocalizedModification> make_unlocalized_lookup(IEnumerable<Modification> all_modifications)
         {
-            Dictionary<ModificationWithMass, UnlocalizedModification> mod_dict = new Dictionary<ModificationWithMass, UnlocalizedModification>();
+            Dictionary<Modification, UnlocalizedModification> mod_dict = new Dictionary<Modification, UnlocalizedModification>();
             foreach (var nice in all_modifications)
             {
                 if (!mod_dict.TryGetValue(nice, out UnlocalizedModification val))
@@ -432,7 +435,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (var unloc in unlocalized_lookup)
                 {
-                    writer.WriteLine(unloc.Key.id + "\t" + unloc.Value.id + "\t" + unloc.Value.ptm_count.ToString() + "\t" + unloc.Value.require_proteoform_without_mod.ToString());
+                    writer.WriteLine(unloc.Key.OriginalId + "\t" + unloc.Value.id + "\t" + unloc.Value.ptm_count.ToString() + "\t" + unloc.Value.require_proteoform_without_mod.ToString());
                 }
             }
         }
@@ -458,7 +461,7 @@ namespace ProteoformSuiteInternal
 
             foreach (var mod_unlocalized in unlocalized_lookup)
             {
-                if (mod_info.TryGetValue(mod_unlocalized.Key.id, out string[] new_info))
+                if (mod_info.TryGetValue(mod_unlocalized.Key.OriginalId, out string[] new_info))
                 {
                     mod_unlocalized.Value.id = new_info[1];
                     mod_unlocalized.Value.ptm_count = Convert.ToInt32(new_info[2]);
@@ -488,18 +491,18 @@ namespace ProteoformSuiteInternal
 
             foreach (var mod_unlocalized in unlocalized_lookup)
             {
-                string[] new_info = new string[] { mod_unlocalized.Key.id, mod_unlocalized.Value.id, mod_unlocalized.Value.ptm_count.ToString(), mod_unlocalized.Value.require_proteoform_without_mod.ToString() };
-                if (mod_info.TryGetValue(mod_unlocalized.Key.id, out string[] x))
-                    mod_info[mod_unlocalized.Key.id] = new_info;
+                string[] new_info = new string[] { mod_unlocalized.Key.OriginalId, mod_unlocalized.Value.id, mod_unlocalized.Value.ptm_count.ToString(), mod_unlocalized.Value.require_proteoform_without_mod.ToString() };
+                if (mod_info.TryGetValue(mod_unlocalized.Key.OriginalId, out string[] x))
+                    mod_info[mod_unlocalized.Key.OriginalId] = new_info;
                 else
-                    mod_info.Add(mod_unlocalized.Key.id, new_info);
+                    mod_info.Add(mod_unlocalized.Key.OriginalId, new_info);
             }
 
             using (StreamWriter writer = new StreamWriter(filepath))
             {
                 foreach (var unloc in mod_info.Values.OrderBy(x => x[0]))
                 {
-                    writer.WriteLine(String.Join("\t", unloc));
+                    writer.WriteLine(string.Join("\t", unloc));
                 }
             }
         }
@@ -508,7 +511,7 @@ namespace ProteoformSuiteInternal
 
         #region Private Methods
 
-        private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
+        private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));

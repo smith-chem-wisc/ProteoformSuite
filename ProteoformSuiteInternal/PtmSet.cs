@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
         public PtmSet(List<Ptm> unique_ptm_combination)
         {
             ptm_combination = unique_ptm_combination;
-            mass = ptm_combination.Select(ptm => ptm.modification).Sum(m => m.monoisotopicMass);
+            mass = ptm_combination.Select(ptm => ptm.modification).Sum(m => (double)m.MonoisotopicMass);
         }
 
         public PtmSet(List<Ptm> unique_ptm_combination, Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)
@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
 
         public void compute_ptm_rank_sum(Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)
         {
-            ptm_rank_sum = ptm_combination.Sum(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks.TryGetValue(ptm.modification.monoisotopicMass, out int rank) ? rank : Sweet.lollipop.mod_rank_sum_threshold)
+            ptm_rank_sum = ptm_combination.Sum(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks.TryGetValue((double)ptm.modification.MonoisotopicMass, out int rank) ? rank : Sweet.lollipop.mod_rank_sum_threshold)
                 + additional_ptm_penalization_factor * (ptm_combination.Count - 1) // penalize additional PTMs
                 - ptm_combination.Count(ptm => Sweet.lollipop.theoretical_database.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
         }
@@ -46,14 +46,14 @@ namespace ProteoformSuiteInternal
         {
             if (unlocalized) //methyl,methyl,methyl = methyl; methyl; methyl, etc
             {
-                string this_ptms = String.Join(", ", ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m));
-                string that_ptms = String.Join(", ", that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m));
+                string this_ptms = String.Join(", ", ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).OrderBy(m => m));
+                string that_ptms = String.Join(", ", that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).OrderBy(m => m));
                 return this_ptms == that_ptms;
             }
             else
             {
-                List<string> this_ptms = this.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
-                List<string> that_ptms = that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList();
+                List<string> this_ptms = this.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).ToList();
+                List<string> that_ptms = that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.OriginalId).ToList();
                 if (this_ptms.Count != that_ptms.Count) return false;
                 foreach (string m in this_ptms.Distinct())
                 {

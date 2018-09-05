@@ -118,19 +118,19 @@ namespace ProteoformSuiteInternal
                 e.adduct =
                     e.linked_proteoform_references != null
                     && e.ptm_set.ptm_combination.Any(m =>
-                        m.modification.id == "Sulfate Adduct"
-                        || m.modification.id == "Acetone Artifact (Unconfirmed)"
-                        || m.modification.id == "Hydrogen Dodecyl Sulfate")
+                        m.modification.OriginalId == "Sulfate Adduct"
+                        || m.modification.OriginalId == "Acetone Artifact (Unconfirmed)"
+                        || m.modification.OriginalId == "Hydrogen Dodecyl Sulfate")
                     && experimental_proteoforms.Any(l =>
                         l.linked_proteoform_references != null
                         && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                         && l.ptm_set.ptm_combination.Count < e.ptm_set.ptm_combination.Count
-                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id) != e.ptm_set.ptm_combination.Count(p => p.modification.id == m.modification.id))
+                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId) != e.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId))
                             .Count(p =>
-                                p.modification.modificationType != "Deconvolution Error"
-                                && p.modification.id != "Sulfate Adduct"
-                                && p.modification.id != "Acetone Artifact (Unconfirmed)"
-                                && p.modification.id != "Hydrogen Dodecyl Sulfate")
+                                p.modification.ModificationType != "Deconvolution Error"
+                                && p.modification.OriginalId != "Sulfate Adduct"
+                                && p.modification.OriginalId != "Acetone Artifact (Unconfirmed)"
+                                && p.modification.OriginalId != "Hydrogen Dodecyl Sulfate")
                             == 0
                         );
                 if (e as TopDownProteoform != null) { (e as TopDownProteoform).set_correct_id(); }

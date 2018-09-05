@@ -1,13 +1,12 @@
-﻿using System;
+﻿using MassSpectrometry;
+using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Proteomics;
-using MassSpectrometry;
 
 namespace ProteoformSuiteInternal
 {
-
     public class TopDownHit
     {
         public int ms2ScanNumber { get; set; }
@@ -30,13 +29,13 @@ namespace ProteoformSuiteInternal
 
         //for mass calibration
         public string biological_replicate { get; set; } = "";
+
         public string technical_replicate { get; set; } = "";
         public string fraction { get; set; } = "";
         public string condition { get; set; } = "";
         public double mz { get; set; }
         public int charge { get; set; }
-        public MsDataScan ms1_scan {get; set;}
-
+        public MsDataScan ms1_scan { get; set; }
 
         public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score)
         {
@@ -50,9 +49,9 @@ namespace ProteoformSuiteInternal
             this.begin = begin;
             this.end = end;
             this.ptm_list = modifications;
-            //if neucode labeled, calculate neucode mass.... 
-            this.reported_mass = Sweet.lollipop.neucode_labeled? Sweet.lollipop.get_neucode_mass(reported_mass, sequence.Count(s => s == 'K')) : reported_mass;
-            this.theoretical_mass = CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
+            //if neucode labeled, calculate neucode mass....
+            this.reported_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(reported_mass, sequence.Count(s => s == 'K')) : reported_mass;
+            this.theoretical_mass = CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Where(p => p.modification != null).Sum(p => (double)p.modification.MonoisotopicMass);
             this.ms2ScanNumber = scan;
             this.ms2_retention_time = retention_time;
             this.filename = filename;
@@ -62,7 +61,6 @@ namespace ProteoformSuiteInternal
 
         public TopDownHit()
         {
-
         }
 
         private double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
@@ -72,7 +70,7 @@ namespace ProteoformSuiteInternal
             List<double> aaMasses = new List<double>();
             for (int i = 0; i < pForm.Length; i++)
             {
-              if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+                if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
             }
             return proteoformMass + aaMasses.Sum();
         }
@@ -80,16 +78,15 @@ namespace ProteoformSuiteInternal
         //calibration
         public string GetSequenceWithChemicalFormula()
         {
-
             var sbsequence = new StringBuilder();
 
             // variable modification on peptide N-terminus
-            ModificationWithMass pep_n_term_variable_mod = ptm_list.Where(p => p.position == 1).Select(m => m.modification).FirstOrDefault();
+            Modification pep_n_term_variable_mod = ptm_list.Where(p => p.position == 1).Select(m => m.modification).FirstOrDefault();
             if (pep_n_term_variable_mod != null)
             {
-                var jj = pep_n_term_variable_mod as ModificationWithMassAndCf;
-                if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
-                    sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
+                var jj = pep_n_term_variable_mod as Modification;
+                if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
+                    sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
                 else
                     return null;
             }
@@ -102,33 +99,31 @@ namespace ProteoformSuiteInternal
                 }
                 sbsequence.Append(sequence[r]);
                 // variable modification on this residue
-                ModificationWithMass residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
+                Modification residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
                 if (residue_variable_mod != null)
                 {
-                    var jj = residue_variable_mod as ModificationWithMassAndCf;
-                    if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
-                        sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
+                    var jj = residue_variable_mod as Modification;
+                    if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
+                        sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
                     else
                         return null;
                 }
             }
 
             // variable modification on peptide C-terminus
-            ModificationWithMass pep_c_term_variable_mod = ptm_list.Where(p => p.position == sequence.Length + 2).Select(m => m.modification).FirstOrDefault();
+            Modification pep_c_term_variable_mod = ptm_list.Where(p => p.position == sequence.Length + 2).Select(m => m.modification).FirstOrDefault();
             if (pep_c_term_variable_mod != null)
             {
-                var jj = pep_c_term_variable_mod as ModificationWithMassAndCf;
-                if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
-                    sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
+                var jj = pep_c_term_variable_mod as Modification;
+                if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
+                    sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
                 else
                     return null;
             }
 
             return sbsequence.ToString();
         }
-
     }
-
 
     public enum TopDownResultType
     {
@@ -136,5 +131,4 @@ namespace ProteoformSuiteInternal
         TightAbsoluteMass,
         Unknown //not read in if unknown...
     }
-
 }

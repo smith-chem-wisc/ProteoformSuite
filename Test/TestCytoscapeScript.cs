@@ -31,7 +31,7 @@ namespace Test
         {
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
-            ModificationWithMass m = new ModificationWithMass("id", "modtype", motif, TerminusLocalization.Any, 1);
+            Modification m = new Modification("id", _modificationType : "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1);
 
             Proteoform p = ConstructorsForTesting.make_a_theoretical();
             ProteoformFamily f = new ProteoformFamily(p);
@@ -64,7 +64,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "unmodified".ToUpper();
-            ModificationWithMass m = new ModificationWithMass("id", "modtype", motif, TerminusLocalization.Any, 1);
+            Modification m = new Modification("id", _modificationType: "modtype", _target: motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1);
 
             Proteoform p = ConstructorsForTesting.make_a_theoretical();
             ProteoformFamily f = new ProteoformFamily(p);

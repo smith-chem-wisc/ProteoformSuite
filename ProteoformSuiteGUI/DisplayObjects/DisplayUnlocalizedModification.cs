@@ -30,7 +30,7 @@ namespace ProteoformSuiteGUI
 
         public string OriginalID
         {
-            get { return m.original_modification.id; }
+            get { return m.original_modification.OriginalId; }
         }
 
         public double Mass
@@ -46,7 +46,7 @@ namespace ProteoformSuiteGUI
 
         public string Type
         {
-            get { return m.original_modification.modificationType; }
+            get { return m.original_modification.ModificationType; }
             set { m.id = value; }
         }
 

@@ -235,8 +235,8 @@ namespace ProteoformSuiteInternal
 
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
-                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
+                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + string.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.OriginalId != "Unmodified");
                 edge_table.Rows.Add
                 (
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
@@ -244,7 +244,7 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
                     edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
-                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
+                        delta_mass + " " + string.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
                         delta_mass
                 );
             }

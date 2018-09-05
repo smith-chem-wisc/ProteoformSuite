@@ -16,7 +16,7 @@ namespace ProteoformSuiteInternal
         {
             List<Ptm> all_ptms = (
                 from position in ptm_data.Keys
-                from modification in ptm_data[position].OfType<ModificationWithMass>()
+                from modification in ptm_data[position].OfType<Modification>()
                 select new Ptm(position, modification))
             .OrderBy(p => p.position).ToList();
 
@@ -27,10 +27,10 @@ namespace ProteoformSuiteInternal
 
             if (limit_triples_and_greater)
             {
-                List<ModificationWithMass> unique_mods = ptm_data.Values.SelectMany(m => m).OfType<ModificationWithMass>().Distinct().ToList();
+                List<Modification> unique_mods = ptm_data.Values.SelectMany(m => m).Distinct().ToList();
                 for (int i = 3; i < num_ptms_needed + 1; i++)
                 {
-                    List<ModificationWithMass> mods_to_repeat = unique_mods.Where(m => ptm_data.Count(kv => kv.Value.Contains(m)) >= i).ToList(); // where the number of unique positions is greater than the number of times to repeat
+                    List<Modification> mods_to_repeat = unique_mods.Where(m => ptm_data.Count(kv => kv.Value.Contains(m)) >= i).ToList(); // where the number of unique positions is greater than the number of times to repeat
                     unique_mass_combinations.AddRange(mods_to_repeat.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, added_ptm_penalization)));
                 }
             }
@@ -96,7 +96,7 @@ namespace ProteoformSuiteInternal
         }
 
         // UNLOCALIZED MODIFICATION COMBINATIONS
-        public static List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<ModificationWithMass> mods, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
+        public static List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<Modification> mods, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             List<PtmSet> sets = new List<PtmSet>();
             List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new[] { new Ptm() }).ToList();

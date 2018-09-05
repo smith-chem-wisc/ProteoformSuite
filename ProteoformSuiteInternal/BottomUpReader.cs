@@ -26,7 +26,7 @@ namespace ProteoformSuiteInternal
         //            for (int p = 0; p < identifications.NumModifications(sirIndex, siiIndex); p++)
         //            {
         //                double modMass = identifications.ModificationMass(sirIndex, siiIndex, p);
-        //                ModificationWithMass mod = null;
+        //                Modification mod = null;
         //                List<PtmSet> set;
         //                Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(modMass, 0), out set);
         //                if (set != null) mod = set.Where(m => m.ptm_combination.Count == 1).Select(m => m.ptm_combination.First().modification).Where(m => m.id == identifications.ModificationValue(sirIndex, siiIndex, p) || (m.linksToOtherDbs.ContainsKey("PSI-MOD") && m.linksToOtherDbs["PSI-MOD"].Any(a => a == identifications.ModificationAcession(sirIndex, siiIndex, p).Split(':')[1]))).FirstOrDefault();

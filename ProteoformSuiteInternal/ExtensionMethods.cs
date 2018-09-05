@@ -32,8 +32,8 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<object> filter(IEnumerable<object> some_list, string s)
         {
             return some_list.Where(f =>
-                    f.GetType().GetProperties().Where(p => new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(p.PropertyType)).Any(i => i.GetValue(f).ToString().Contains(s)) ||
-                    f.GetType().GetFields().Where(i => !i.IsLiteral && new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(i.FieldType)).Any(i => i.GetValue(f).ToString().Contains(s))
+                    f.GetType().GetProperties().Where(p => new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(p.PropertyType)).Any(i => i.GetValue(f) != null && i.GetValue(f).ToString().Contains(s)) ||
+                    f.GetType().GetFields().Where(i => !i.IsLiteral && new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(i.FieldType)).Any(i => i.GetValue(f) != null && i.GetValue(f).ToString().Contains(s))
                 );
         }
 

@@ -154,7 +154,7 @@ namespace Test
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //only one methionine to oxidize, but no PTMs allowed
-            Assert.Less(Sweet.lollipop.modification_ranks[0], Sweet.lollipop.modification_ranks[Sweet.lollipop.theoretical_database.variableModifications[0].monoisotopicMass] - 1); // unmodified gets a lower score than variable oxidation, even with the prioritization (minus one rank)
+            Assert.Less(Sweet.lollipop.modification_ranks[0], Sweet.lollipop.modification_ranks[(double)Sweet.lollipop.theoretical_database.variableModifications[0].MonoisotopicMass] - 1); // unmodified gets a lower score than variable oxidation, even with the prioritization (minus one rank)
 
             Sweet.lollipop.max_ptms = 1;
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
@@ -194,7 +194,7 @@ namespace Test
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(4, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
-            Assert.AreEqual(1, new HashSet<ModificationWithMass>(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.SelectMany(t => t.ptm_set.ptm_combination.Select(ptm => ptm.modification))).Count); //Only the variable modification is in there; no sign of the fake oxidation of K I added
+            Assert.AreEqual(1, new HashSet<Modification>(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.SelectMany(t => t.ptm_set.ptm_combination.Select(ptm => ptm.modification))).Count); //Only the variable modification is in there; no sign of the fake oxidation of K I added
         }
 
         [Test]
@@ -295,17 +295,17 @@ namespace Test
         {
             TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
             tpd.ready_to_make_database(TestContext.CurrentContext.TestDirectory);
-            List<ModificationWithMass> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "variable.txt")).OfType<ModificationWithMass>().ToList();
-            Sweet.lollipop.modification_ranks = mods.ToDictionary(m => m.monoisotopicMass, m => -1);
+            List<Modification> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "variable.txt")).Where(m => m.ValidModification).ToList();
+            Sweet.lollipop.modification_ranks = mods.ToDictionary(m => (double)m.MonoisotopicMass, m => -1);
             tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods);
             tpd.load_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "stored_mods.modnames"));
             tpd.save_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
-            Assert.AreNotEqual(mods.First().id, tpd.unlocalized_lookup.Values.First().id);
+            Assert.AreNotEqual(mods.First().OriginalId, tpd.unlocalized_lookup.Values.First().id);
 
             //Test amending
-            mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt")).OfType<ModificationWithMass>());
-            Sweet.lollipop.modification_ranks = mods.DistinctBy(m => m.monoisotopicMass).ToDictionary(m => m.monoisotopicMass, m => -1);
-            tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods.OfType<ModificationWithMass>());
+            mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt")).OfType<Modification>());
+            Sweet.lollipop.modification_ranks = mods.DistinctBy(m => m.MonoisotopicMass).ToDictionary(m => (double)m.MonoisotopicMass, m => -1);
+            tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods.OfType<Modification>());
             tpd.amend_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
         }
 
@@ -350,7 +350,7 @@ namespace Test
         {
             TheoreticalProteoformDatabase db = new TheoreticalProteoformDatabase();
             db.populate_aa_mass_dictionary();
-            List<ModificationWithMass> var = new List<ModificationWithMass>();
+            List<Modification> var = new List<Modification>();
             List<TheoreticalProteoform> ts = new List<TheoreticalProteoform>();
             ProteinWithGoTerms p = ConstructorsForTesting.make_a_theoretical().ExpandedProteinList.First();
             Parallel.Invoke(
