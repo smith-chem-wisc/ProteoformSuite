@@ -1,0 +1,165 @@
+﻿<UserControl x:Class="ProteoWPFSuite.TheoreticalDatabase"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             mc:Ignorable="d" 
+             MinWidth="1200" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="3"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!--left-->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition> 
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition Height="*" MinHeight="200"></RowDefinition>
+                    <RowDefinition Height="45"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" SelectionChanged="cmbx_DisplayWhichDB_SelectedIndexChanged"></ComboBox>
+                <WindowsFormsHost Grid.Row="1">
+                    <winform:DataGridView x:Name="dgv_loadFiles" DragDrop="dgv_loadFiles_DragDrop" DragEnter="dgv_loadFiles_DragEnter"></winform:DataGridView>
+                </WindowsFormsHost>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btn_addFiles" Content="Add" Height="40" Margin="2 0 2 0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="btn_addFiles_Click"></Button>
+                    <Button x:Name="btn_downloadUniProtPtmList" Content="Download UniProt PTM List" Height="40" Margin="2 0 2 0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="btn_downloadUniProtPtmList_Click"></Button>
+                    <Button x:Name="btn_clearFiles" Content="Clear" Height="40" Margin="2 0 2 0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="btn_clearFiles_Click"></Button>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <GroupBox Grid.Row="0" Grid.ColumnSpan="2" Header="Lysine Isotope Composition">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal" Margin="0 5 0 0">
+                        <RadioButton x:Name="btn_NaturalIsotopes" Content="Natural Isotope Abundance" Checked="btn_NaturalIsotopes_CheckedChanged" Unchecked="btn_NaturalIsotopes_CheckedChanged"></RadioButton>
+                        <Separator Width="10" Background="Transparent"></Separator>
+                        <RadioButton x:Name="btn_NeuCode_Lt" Content="Neucode Light" Unchecked="btn_NeuCode_Lt_CheckedChanged" Checked="btn_NeuCode_Lt_CheckedChanged"></RadioButton>
+                        <Separator Width="10" Background="Transparent"></Separator>
+                        <RadioButton x:Name="btn_NeuCode_Hv" Content="Neucode Heavy" Checked="btn_NeuCode_Hv_CheckedChanged" Unchecked="btn_NeuCode_Hv_CheckedChanged"></RadioButton>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="2" Header="Theoretical Database Creation">
+                    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        
+                        <CheckBox Margin="0 10 0 0" x:Name="ckbx_Carbam" IsChecked="True" Content="Fixed Carbamidomethylation" Unchecked="ckbx_Carbam_CheckedChanged" Checked="ckbx_Carbam_CheckedChanged"></CheckBox>
+                        <CheckBox Margin="0 3 0 0" x:Name="ckbx_OxidMeth" Content="Variable Oxidized Methionine" IsChecked="True" Checked="ckbx_OxidMeth_CheckedChanged" Unchecked="ckbx_OxidMeth_CheckedChanged"></CheckBox>
+                        <CheckBox Margin="0 3 0 0" x:Name="ckbx_Meth_Cleaved" Content="Cleaved N-Methionine" Checked="ckbx_Meth_Cleaved_CheckedChanged" Unchecked="ckbx_Meth_Cleaved_CheckedChanged" IsChecked="True"></CheckBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <WindowsFormsHost Height="25" Width="90" HorizontalAlignment="Left">
+                                <winform:NumericUpDown Value="1" ValueChanged="nUD_NumDecoyDBs_ValueChanged" Maximum="100" Minimum="0" Increment="1" x:Name="nUD_NumDecoyDBs">
+                                </winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <Label Grid.Column="1">Number of Decoy Database</Label>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox x:Name="cb_useRandomSeed" Checked="cb_useRandomSeed_CheckedChanged" Unchecked="cb_useRandomSeed_CheckedChanged" Content="Use Random Seed"></CheckBox>
+                            <WindowsFormsHost HorizontalAlignment="Left" Height="25" Width="60" Grid.Column="1">
+                                <winform:NumericUpDown Maximum="1000" Minimum="1" Increment="1" Value="1" x:Name="nud_randomSeed" ValueChanged="nud_randomSeed_ValueChanged">
+                                </winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <WindowsFormsHost Height="25" Width="90" HorizontalAlignment="Left">
+                                <winform:NumericUpDown x:Name="nUD_MinPeptideLength" ValueChanged="nUD_MinPeptideLength_ValueChanged" Value="7" Maximum="100" Minimum="0" Increment="1" Text="Num">
+                                </winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <Label Grid.Column="1">Minimum Sequence Length</Label>
+                        </Grid>
+                        <CheckBox Checked="ckbx_combineIdenticalSequences_CheckedChanged" Unchecked="ckbx_combineIdenticalSequences_CheckedChanged" Content="Combine Sequence-Identical Proteins" x:Name="ckbx_combineIdenticalSequences"></CheckBox>
+                        <CheckBox Margin="0 3 0 0" Checked="ckbx_combineTheoreticalsByMass_CheckedChanged" Unchecked="ckbx_combineTheoreticalsByMass_CheckedChanged" Content="Combine Theoretical Proteoforms By Mass" x:Name="ckbx_combineTheoreticalsByMass"></CheckBox>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <WindowsFormsHost Margin="5 0 0 0" Grid.Row="1" Height="25" Width="90" HorizontalAlignment="Left">
+                                <winform:NumericUpDown Dock="Fill" Value="3" Maximum="5" Minimum="0" Increment="1" x:Name="nUD_MaxPTMs" ValueChanged="nUD_MaxPTMs_ValueChanged" Enabled="True" Visible="True">
+                                </winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <Label Grid.Column="1">NumberMax Modifications per Proteoform:</Label>
+                        </Grid>
+                        <CheckBox Margin="0 3 0 0" x:Name="cb_limitLargePtmSets" Content="Three or More Mods of a Kind Only" IsChecked="True" Checked="cb_limitLargePtmSets_CheckedChanged" Unchecked="cb_limitLargePtmSets_CheckedChanged"></CheckBox>
+                        <Label Content="Modification Types to Exclude"></Label>
+                        <TextBox x:Name="tb_modTypesToExclude" TextChanged="tb_modTypesToExclude_TextChanged"></TextBox>
+                        <Button Height="50" VerticalAlignment="Stretch" Margin="0 10 0 0" x:Name="btn_Make_Databases" Content="Time to make the databases" Click="btn_Make_Databases_Click"></Button>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Modification Names" VerticalAlignment="Top" Grid.Row="1" Grid.Column="1">
+                    <StackPanel VerticalAlignment="Top">
+                        <Separator Height="5" Background="White"></Separator>
+                        <Button Content="Save Modification Names" Height="25" Click="btn_saveModNames_Click" Margin="2 0 2 0"></Button>
+                        <Separator Height="5" Background="White"></Separator>
+                        <Button Content="Amend Stored Mod Names" Height="25" Click="btn_amendModNames_Click"></Button>
+                        <Separator Height="5" Background="White"></Separator>
+                        <Button Content="Load Modification Names" Height="25" Click="btn_loadModNames_Click"></Button>
+                        <Label Content="Modification Table Filter by Text"></Label>
+                        <TextBox x:Name="tb_modTableFilter" Height="25" TextChanged="tb_modTableFilter_TextChanged"></TextBox>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Modification Names" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1">
+                    <StackPanel VerticalAlignment="Top">
+                        <Label Content="Total Theoretical Proteoforms"></Label>
+                        <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True" Foreground="#FFE0E0E0" Background="#FFF0F0F0"></TextBox>
+                        <Label Content="Database Displayed"></Label>
+                        <ComboBox x:Name="cmbx_DisplayWhichDB" Height="25" SelectionChanged="cmbx_DisplayWhichDB_SelectedIndexChanged"></ComboBox>
+                        <Label Content="Database Filter by Text"></Label>
+                        <TextBox x:Name="tb_tableFilter" Height="25" TextChanged="tb_tableFilter_TextChanged"></TextBox>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <GridSplitter ResizeDirection="Columns" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <WindowsFormsHost>
+                <winform:DataGridView x:Name="dgv_Database" Dock="Fill">
+                    
+                </winform:DataGridView>
+            </WindowsFormsHost>
+            <GridSplitter ResizeDirection="Rows" Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <WindowsFormsHost Grid.Row="2">
+                <winform:DataGridView x:Name="dgv_unlocalizedModifications" Dock="Fill">
+
+                </winform:DataGridView>
+            </WindowsFormsHost>
+
+        </Grid>
+    </Grid>
+</UserControl>

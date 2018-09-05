@@ -1,0 +1,19 @@
+﻿<Window x:Class="ProteoWPFSuite.testWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProteoWPFSuite"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        xmlns:mzl="clr-namespace:MassSpectrometry;assembly=MassSpectrometry"
+        Title="testWin" Height="450" Width="800" MinHeight="800" MinWidth="1200">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="DissociationEnum" MethodName="GetValues"
+                        ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="mzl:DissociationType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+</Window>

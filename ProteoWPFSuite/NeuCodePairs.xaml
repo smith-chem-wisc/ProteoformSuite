@@ -1,0 +1,239 @@
+﻿<UserControl x:Class="ProteoWPFSuite.NeuCodePairs"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:winformchart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             mc:Ignorable="d" 
+             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="400" MinWidth="600">
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="141*"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="168*"/>
+            <RowDefinition Height="88*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <WindowsFormsHost>
+                <winform:DataGridView x:Name="dgv_RawExpNeuCodePairs" AllowUserToOrderColumns="True" ColumnHeadersHeight="18" ColumnHeadersHeightSizeMode="AutoSize" Dock="Fill" >
+                    <winform:DataGridView.RowTemplate>
+                        <winform:DataGridViewRow Height="28" ReadOnly="True"/>
+                    </winform:DataGridView.RowTemplate>
+
+                </winform:DataGridView>
+            </WindowsFormsHost>
+        </Grid>
+        <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+        <Grid Grid.Row="2" Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <!--Codes for left chart and groupbox-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="3"/>
+                    <RowDefinition Height="1.5*"/>
+                </Grid.RowDefinitions>
+                <!--Graph-->
+                <Grid>
+                    <WindowsFormsHost>
+                        <!--Part of this control coded in backend .cs-->
+                        <winformchart:Chart x:Name="ct_LysineCount" Palette="BrightPastel" Text="chart1" Dock="Fill" MouseClick="ct_LysineCount_MouseClick" Visible="True">
+                            <winformchart:Chart.Series>
+                                <winformchart:Series Name="lysineCount" ChartType="Line" ChartArea="ChartArea1" Legend="Legend1" MarkerBorderWidth="1" MarkerSize="5">
+                                    <winformchart:Series.SmartLabelStyle>
+                                        <winformchart:SmartLabelStyle/>
+                                    </winformchart:Series.SmartLabelStyle>
+                                </winformchart:Series>
+                            </winformchart:Chart.Series>
+
+                            <winformchart:Chart.BorderSkin>
+                                <winformchart:BorderSkin/>
+                            </winformchart:Chart.BorderSkin>
+                            <winformchart:Chart.Legends>
+                                <winformchart:Legend Name="Legend1" Enabled="False">
+                                    <winformchart:Legend.Position>
+                                        <winformchart:ElementPosition/>
+                                    </winformchart:Legend.Position>
+                                </winformchart:Legend>
+                            </winformchart:Chart.Legends>
+                            <winformchart:Chart.ChartAreas>
+                                <winformchart:ChartArea x:Name="ChartArea1">
+
+                                </winformchart:ChartArea>
+                            </winformchart:Chart.ChartAreas>
+                        </winformchart:Chart>
+                    </WindowsFormsHost>
+                </Grid>
+                <GridSplitter ResizeDirection="Rows" Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <!--Group Box Part * Avoided Spliting since it seems to have little use-->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" x:Name="kCtAcceptRange" Header="Acceptable Lysine Counts" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TabIndex="12" FontSize="11">
+                        <Grid Margin="0 0 0 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Margin="0 0 0 0" Height="23" Grid.Column="0" Grid.Row="0" FontSize="11">K-Min</Label>
+                            <Label Margin="0,0,0,0" Height="23" Grid.Column="0" Grid.Row="1" FontSize="11">K-Max</Label>
+                            <WindowsFormsHost Grid.Column="1" Height="20">
+                                <winform:NumericUpDown x:Name="KMinAcceptable" Dock="Fill" Maximum="100" Minimum="-100" DecimalPlaces="2" Enabled="True" Visible="True" TabIndex="12" ValueChanged="KMinAcceptable_ValueChanged"/>
+                            </WindowsFormsHost>
+                            <WindowsFormsHost Grid.Row="1" Grid.Column="1" Height="20">
+                                <winform:NumericUpDown x:Name="KMaxAcceptable" Dock="Fill" Enabled="True" DecimalPlaces="2" Maximum="100" Minimum="-100" Visible="True" TabIndex="12" ValueChanged="KMaxAcceptable_ValueChanged"/>
+                            </WindowsFormsHost>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox x:Name="groupBox2" Header="Axis Limits" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TabIndex="12" FontSize="11">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            
+                            <WindowsFormsHost Grid.RowSpan="3" Height="20" Grid.Column="1">
+                                <winform:NumericUpDown x:Name="yMaxKCt" Dock="Fill" TabIndex="7" Visible="True" Enabled="True" Maximum="100" Increment="1" ValueChanged="yMaxKCt_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                            <WindowsFormsHost Grid.Row="3" Grid.RowSpan="3" Height="20" Grid.Column="1">
+                                <winform:NumericUpDown x:Name="yMinKCt" Dock="Fill" Enabled="True" Visible="True" Increment="1" Maximum="100" Minimum="-100" TabIndex="8" ValueChanged="yMinKCt_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                            <WindowsFormsHost Grid.Row="2" Grid.RowSpan="3" Height="20" Grid.Column="0" Margin="0 0 2 0">
+                                <winform:NumericUpDown x:Name="xMinKCt" Dock="Fill" Enabled="True" Visible="True" TabIndex="8" DecimalPlaces="1" Increment="0.1" Maximum="100" Minimum="-100" ValueChanged="xMinKCt_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                            <WindowsFormsHost Grid.Row="2" Grid.RowSpan="3" Height="20" Grid.Column="2" Margin="2 0 0 0">
+                                <winform:NumericUpDown x:Name="xMaxKCt" Dock="Fill" DecimalPlaces="1" Increment="0.1" Maximum="100" TabIndex="9" Visible="True" Enabled="True" ValueChanged="xMaxKCt_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </Grid>
+            <GridSplitter ResizeDirection="Columns" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <Grid Grid.Column="2">
+                <!--codes for right chart and GroupBox-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="3"/>
+                    <RowDefinition Height="1.5*"/>
+                </Grid.RowDefinitions>
+                <Grid>
+                    <WindowsFormsHost>
+                        <winformchart:Chart x:Name="ct_IntensityRatio" Dock="Fill" MouseClick="ct_IntensityRatio_MouseClick" Location="0, 0" Margin="2, 2, 2, 2" TabIndex="1" Text="chart1">
+                            <winformchart:Chart.Series>
+                                <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Name="intensityRatio" Legend="Legend1"/>
+                            </winformchart:Chart.Series>
+                            <winformchart:Chart.Legends>
+                                <winformchart:Legend Name="Legend1" Enabled="False"/>
+                            </winformchart:Chart.Legends>
+                            <winformchart:Chart.ChartAreas>
+                                <winformchart:ChartArea Name="ChartArea1">
+
+                                </winformchart:ChartArea>
+                            </winformchart:Chart.ChartAreas>
+                        </winformchart:Chart>
+                    </WindowsFormsHost>
+                </Grid>
+                <GridSplitter ResizeDirection="Rows" Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <!--Group Box Part-->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" x:Name="groupBox1" Header="Acceptable Intensity Ratios" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TabIndex="12" FontSize="11">
+                        <Grid Margin="0 0 0 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label x:Name="Label4" Margin="0 0 0 0" Height="23" Grid.Column="0" Grid.Row="0" FontSize="11">I-Ratio Min</Label>
+                            <Label x:Name="Label3" Margin="0,0,0,0" Height="23" Grid.Column="0" Grid.Row="1" FontSize="11">I-Ratio Max</Label>
+                            <WindowsFormsHost Grid.Column="1" Height="20">
+                                <winform:NumericUpDown x:Name="IRatMinAcceptable" Dock="Fill" DecimalPlaces="2" Enabled="True" TabIndex="5" Minimum="-100" Maximum="100" Visible="True" Increment="0.05" ValueChanged="IRatMinAcceptable_ValueChanged"/>
+                            </WindowsFormsHost>
+                            <WindowsFormsHost Grid.Row="1" Grid.Column="1" Height="20">
+                                <winform:NumericUpDown x:Name="IRatMaxAcceptable" Dock="Fill" Enabled="True" Increment="0.05" DecimalPlaces="2" Maximum="100" Minimum="-100" TabIndex="7" Visible="True" ValueChanged="IRatMaxAcceptable_ValueChanged"/>
+                            </WindowsFormsHost>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox x:Name="groupBox3" Header="Axis Limits" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TabIndex="12" FontSize="11">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--                            <xctk:IntegerUpDown Grid.Row="0" Grid.ColumnSpan="2" Height="20" Margin="24 0 24 0"></xctk:IntegerUpDown>
+                            <xctk:IntegerUpDown Grid.Row="2" Grid.ColumnSpan="2" Height="20" Margin="24 0 24 0"></xctk:IntegerUpDown>
+                            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="0" Height="20" Margin="3 0 3 0"></xctk:IntegerUpDown>
+                            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Height="20" Margin="3 0 3 0"></xctk:IntegerUpDown>
+                            -->
+                            <WindowsFormsHost Grid.RowSpan="3" Height="20" Grid.Column="1">
+                                <winform:NumericUpDown x:Name="yMaxIRat" Dock="Fill" Enabled="True" Increment="1" Maximum="100" Visible="True" ValueChanged="yMaxIRat_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                            <WindowsFormsHost Grid.Row="3" Grid.RowSpan="3" Height="20" Grid.Column="1">
+                                <winform:NumericUpDown x:Name="yMinIRat" Dock="Fill" Maximum="100" Minimum="-100" Increment="1" Enabled="True" Visible="True" ValueChanged="yMinIRat_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                            <WindowsFormsHost Grid.Row="2" Grid.RowSpan="3" Height="20" Grid.Column="0" Margin="0 0 2 0">
+                                <winform:NumericUpDown x:Name="xMinIRat" Dock="Fill" Enabled="True" Visible="True" Minimum="-100" Maximum="100" DecimalPlaces="2" ValueChanged="xMinIRat_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                            <WindowsFormsHost Grid.Row="2" Grid.RowSpan="3" Height="20" Grid.Column="2" Margin="2 0 0 0">
+                                <winform:NumericUpDown x:Name="xMaxIRat" Dock="Fill" DecimalPlaces="2" Increment="0.05" Maximum="100" TabIndex="13" Visible="True" Enabled="True" ValueChanged="xMaxIRat_ValueChanged"/>
+                            </WindowsFormsHost>
+
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
