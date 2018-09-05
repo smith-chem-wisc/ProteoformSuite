@@ -11,7 +11,6 @@ namespace Test
     [TestFixture]
     public class TestDeltaMassPeak
     {
-
         [OneTimeSetUp]
         public void setup()
         {
@@ -27,7 +26,6 @@ namespace Test
             Sweet.lollipop.et_low_mass_difference = -250;
             Sweet.lollipop.peak_width_base_ee = 0.015;
             Sweet.lollipop.peak_width_base_et = 0.015;
-
 
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("acession1");
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
@@ -62,7 +60,6 @@ namespace Test
             Console.WriteLine("Creating deltaMassPeak");
             DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, new HashSet<ProteoformRelation>(theList));
             Console.WriteLine("Created deltaMassPeak");
-
 
             Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);
             Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
@@ -153,7 +150,7 @@ namespace Test
             Sweet.lollipop.mod_rank_first_quartile = 0;
             Sweet.lollipop.ee_accept_peaks_based_on_rank = true;
             Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-             peak = Sweet.lollipop.ee_peaks[0];
+            peak = Sweet.lollipop.ee_peaks[0];
             Assert.IsFalse(peak.Accepted);
             Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
 
@@ -265,7 +262,7 @@ namespace Test
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
 
-            foreach (IAggregatable c in 
+            foreach (IAggregatable c in
                 n3.Select(n => (n as NeuCodePair).neuCodeLight).
                 Concat(n4.Select(n => (n as NeuCodePair).neuCodeLight)))
             {
@@ -273,7 +270,7 @@ namespace Test
                 Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
             }
 
-            foreach (IAggregatable c in 
+            foreach (IAggregatable c in
                 n3.Select(n => (n as NeuCodePair).neuCodeHeavy).
                 Concat(n4.Select(n => (n as NeuCodePair).neuCodeHeavy)))
             {

@@ -52,7 +52,6 @@ namespace Test
             Assert.AreEqual(0, t.ptm_mass);
         }
 
-
         [Test]
         public void testTheoreticalDatabaseCreateWithPTMs()
         {
@@ -254,7 +253,6 @@ namespace Test
             Assert.AreEqual("T3_3G", psg.Accession);
             Assert.True(psg.IsContaminant);
         }
-
 
         [Test]
         public void test_not_ready_to_make_db_doesnt_crash()
