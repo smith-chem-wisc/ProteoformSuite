@@ -20,7 +20,7 @@ MT   Common
 CF   H26 C12 S1 O4
 //
 ID   N-terminal Acetyl
-TG   K
+TG   X
 PP   N-terminal.
 MM   42.010565
 MT   Common
