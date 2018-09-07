@@ -294,14 +294,24 @@ namespace Test
         [Test]
         public void load_save_unlocalized()
         {
+            Lollipop.enter_uniprot_ptmlist(TestContext.CurrentContext.TestDirectory);
+            string uniprotPtmlist = Sweet.lollipop.input_files.FirstOrDefault(f => f.purpose == Purpose.PtmList).complete_path;
+
             TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
             tpd.ready_to_make_database(TestContext.CurrentContext.TestDirectory);
-            List<Modification> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "variable.txt")).ToList();
-            Sweet.lollipop.modification_ranks = mods.ToDictionary(m => (double)m.MonoisotopicMass, m => -1);
+            List<Modification> mods = PtmListLoader.ReadModsFromFile(uniprotPtmlist).ToList();
+            foreach (Modification m in mods)
+            {
+                if (!Sweet.lollipop.modification_ranks.TryGetValue((double)m.MonoisotopicMass, out int x))
+                {
+                    Sweet.lollipop.modification_ranks.Add((double)m.MonoisotopicMass, -1);
+                }
+            }
             tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods);
             tpd.load_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "stored_mods.modnames"));
             tpd.save_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
-            Assert.AreNotEqual(mods.First().IdWithMotif, tpd.unlocalized_lookup.Values.First().id);
+            Modification firstAcetyl = mods.FirstOrDefault(x => x.OriginalId.StartsWith("N-acetyl"));
+            Assert.AreNotEqual(firstAcetyl.OriginalId, tpd.unlocalized_lookup[firstAcetyl].id);
 
             //Test amending
             mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt")).OfType<Modification>());

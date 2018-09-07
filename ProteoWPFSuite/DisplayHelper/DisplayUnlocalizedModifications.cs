@@ -29,7 +29,7 @@ namespace ProteoWPFSuite
 
         public string OriginalID
         {
-            get { return m.original_modification.IdWithMotif; }
+            get { return m.original_modification.OriginalId; }
         }
 
         public double Mass

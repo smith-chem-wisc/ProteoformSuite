@@ -21,6 +21,7 @@ namespace ProteoformSuiteInternal
                 proteins_with_contaminants_first.SelectMany(p => p.DatabaseReferences),
                 proteins_with_contaminants_first.SelectMany(p => p.GoTerms))
         {
+            RestoreUnfilteredModifications();
             proteinWithGoTermList = proteins_with_contaminants_first.ToList();
             this.AccessionList = proteins_with_contaminants_first.SelectMany(p => p.AccessionList).ToList();
             this.AccessionList.Sort();

@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _topdown_ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                    string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.IdWithMotif + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.IdWithMotif).ToList());
+                    string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
             }
         }
 

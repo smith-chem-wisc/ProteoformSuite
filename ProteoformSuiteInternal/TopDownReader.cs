@@ -49,7 +49,7 @@ namespace ProteoformSuiteInternal
                                 }
                                 if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                                 {
-                                    ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.IdWithMotif == "N-terminal Acetyl on X").FirstOrDefault()));
+                                    ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.OriginalId == "N-terminal Acetyl").FirstOrDefault()));
                                 }
                                 else
                                 {

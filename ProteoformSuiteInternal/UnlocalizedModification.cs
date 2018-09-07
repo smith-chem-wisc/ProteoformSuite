@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
         {
             original_modification = m;
             mass = (double)m.MonoisotopicMass;
-            id = m.IdWithMotif;
+            id = m.OriginalId;
             ptm_count = 1;
             require_proteoform_without_mod = false;
 
@@ -25,6 +25,11 @@ namespace ProteoformSuiteInternal
                 ptm_rank = Sweet.lollipop.mod_rank_first_quartile;
             else
                 ptm_rank = Sweet.lollipop.modification_ranks[(double)m.MonoisotopicMass];
+        }
+
+        public static string LookUpId(Modification m)
+        {
+            return Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification x) ? x.id : m.OriginalId;
         }
     }
 }

@@ -44,14 +44,14 @@ namespace ProteoformSuiteInternal
         {
             if (unlocalized) //methyl,methyl,methyl = methyl; methyl; methyl, etc
             {
-                string this_ptms = string.Join(", ", ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.IdWithMotif).OrderBy(m => m));
-                string that_ptms = string.Join(", ", that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.IdWithMotif).OrderBy(m => m));
+                string this_ptms = string.Join(", ", ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m));
+                string that_ptms = string.Join(", ", that.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m));
                 return this_ptms == that_ptms;
             }
             else
             {
-                List<string> this_ptms = this.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.IdWithMotif).ToList();
-                List<string> that_ptms = that.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.IdWithMotif).ToList();
+                List<string> this_ptms = this.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList();
+                List<string> that_ptms = that.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList();
                 if (this_ptms.Count != that_ptms.Count) return false;
                 foreach (string m in this_ptms.Distinct())
                 {

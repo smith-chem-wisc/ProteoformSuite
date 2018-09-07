@@ -158,8 +158,8 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<Modification>> mod_dict = new Dictionary<string, List<Modification>>();
             foreach (var nice in all_modifications)
             {
-                if (mod_dict.TryGetValue(nice.IdWithMotif, out List<Modification> val)) val.Add(nice);
-                else mod_dict.Add(nice.IdWithMotif, new List<Modification> { nice });
+                if (mod_dict.TryGetValue(nice.OriginalId, out List<Modification> val)) val.Add(nice);
+                else mod_dict.Add(nice.OriginalId, new List<Modification> { nice });
             }
             return mod_dict;
         }
@@ -247,7 +247,7 @@ namespace ProteoformSuiteInternal
                         continue;
                     bool feature_is_just_met_cleavage = Sweet.lollipop.methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
                     string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
-                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key - feature_begin + 1, kv => kv.Value);
+                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
                     if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Sweet.lollipop.min_peptide_length)
                         new_prots.Add(new ProteinWithGoTerms(
                             subsequence,
@@ -433,7 +433,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (var unloc in unlocalized_lookup)
                 {
-                    writer.WriteLine(unloc.Key.IdWithMotif + "\t" + unloc.Value.id + "\t" + unloc.Value.ptm_count.ToString() + "\t" + unloc.Value.require_proteoform_without_mod.ToString());
+                    writer.WriteLine(unloc.Key.OriginalId + "\t" + unloc.Value.id + "\t" + unloc.Value.ptm_count.ToString() + "\t" + unloc.Value.require_proteoform_without_mod.ToString());
                 }
             }
         }
@@ -459,7 +459,7 @@ namespace ProteoformSuiteInternal
 
             foreach (var mod_unlocalized in unlocalized_lookup)
             {
-                if (mod_info.TryGetValue(mod_unlocalized.Key.IdWithMotif, out string[] new_info))
+                if (mod_info.TryGetValue(mod_unlocalized.Key.OriginalId, out string[] new_info))
                 {
                     mod_unlocalized.Value.id = new_info[1];
                     mod_unlocalized.Value.ptm_count = Convert.ToInt32(new_info[2]);
@@ -489,11 +489,11 @@ namespace ProteoformSuiteInternal
 
             foreach (var mod_unlocalized in unlocalized_lookup)
             {
-                string[] new_info = new string[] { mod_unlocalized.Key.IdWithMotif, mod_unlocalized.Value.id, mod_unlocalized.Value.ptm_count.ToString(), mod_unlocalized.Value.require_proteoform_without_mod.ToString() };
-                if (mod_info.TryGetValue(mod_unlocalized.Key.IdWithMotif, out string[] x))
-                    mod_info[mod_unlocalized.Key.IdWithMotif] = new_info;
+                string[] new_info = new string[] { mod_unlocalized.Key.OriginalId, mod_unlocalized.Value.id, mod_unlocalized.Value.ptm_count.ToString(), mod_unlocalized.Value.require_proteoform_without_mod.ToString() };
+                if (mod_info.TryGetValue(mod_unlocalized.Key.OriginalId, out string[] x))
+                    mod_info[mod_unlocalized.Key.OriginalId] = new_info;
                 else
-                    mod_info.Add(mod_unlocalized.Key.IdWithMotif, new_info);
+                    mod_info.Add(mod_unlocalized.Key.OriginalId, new_info);
             }
 
             using (StreamWriter writer = new StreamWriter(filepath))

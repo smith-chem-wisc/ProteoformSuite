@@ -48,7 +48,7 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
-            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.IdWithMotif).Distinct().ToList();
+            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.OriginalId).Distinct().ToList();
             tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
@@ -181,7 +181,7 @@ namespace ProteoWPFSuite
                 Color color;
                 try
                 {
-                    i = mods.IndexOf(ptm.modification.IdWithMotif);
+                    i = mods.IndexOf(ptm.modification.OriginalId);
                     color = colors[i];
                 }
                 catch
@@ -194,11 +194,11 @@ namespace ProteoWPFSuite
                 rtb_sequence.SelectionLength = 1;
                 rtb_sequence.SelectionColor = color;
 
-                rtb_sequence.AppendText("\n" + ptm.modification.IdWithMotif);
+                rtb_sequence.AppendText("\n" + ptm.modification.OriginalId);
                 rtb_sequence.SelectionStart = length;
-                rtb_sequence.SelectionLength = ptm.modification.IdWithMotif.Length + 1;
+                rtb_sequence.SelectionLength = ptm.modification.OriginalId.Length + 1;
                 rtb_sequence.SelectionColor = colors[i];
-                length += ptm.modification.IdWithMotif.Length + 1;
+                length += ptm.modification.OriginalId.Length + 1;
             }
         }
 

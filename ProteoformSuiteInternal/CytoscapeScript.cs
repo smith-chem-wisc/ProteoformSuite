@@ -235,7 +235,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
                 string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + string.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
-                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.IdWithMotif != "Unmodified");
+                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.OriginalId != "Unmodified");
                 edge_table.Rows.Add
                 (
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),

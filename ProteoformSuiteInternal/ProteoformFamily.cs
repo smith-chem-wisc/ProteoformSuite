@@ -125,7 +125,7 @@ namespace ProteoformSuiteInternal
                         l.linked_proteoform_references != null
                         && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                         && l.ptm_set.ptm_combination.Count < e.ptm_set.ptm_combination.Count
-                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.IdWithMotif == m.modification.IdWithMotif) != e.ptm_set.ptm_combination.Count(p => p.modification.IdWithMotif == m.modification.IdWithMotif))
+                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId) != e.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId))
                             .Count(p =>
                                 p.modification.ModificationType != "Deconvolution Error"
                                 && p.modification.OriginalId != "Sulfate Adduct"
