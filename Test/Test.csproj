@@ -237,6 +237,12 @@
     <Content Include="ptmlist.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="sliced_08-02-17_B9_myoblast_A_fract3and4_td_rep2.raw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="st.raw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="stripped_plus2M.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
