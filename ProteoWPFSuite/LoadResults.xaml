@@ -1,0 +1,150 @@
+﻿<UserControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Class="ProteoWPFSuite.LoadResults" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:ProteoWPFSuite" mc:Ignorable="d" FontSize="8" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" MinHeight="800" MinWidth="1200">
+    <Grid x:Name="unique">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1.25*" />
+            <RowDefinition Height="8*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="9*"/>
+        </Grid.ColumnDefinitions>
+        <GroupBox HorizontalAlignment="Left" Height="116" VerticalAlignment="Top" Width="137" FontSize="12" Grid.Column="0" Grid.Row="0">
+
+            <GroupBox.Header>
+                <TextBlock FontWeight="Bold" Text="1. Choose Analysis" />
+            </GroupBox.Header>
+
+            <!--Missing checked even handlers!!!!!!!!!!!!!!!!!-->
+            <Grid>
+                <RadioButton IsChecked="True" x:Name="rb_standardOptions" Click="rb_standardOptions_CheckedChanged" Margin="10,10,47,67" Width="68" Height="17" Content="Standard" />
+                <RadioButton x:Name="rb_chemicalCalibration" Margin="10,32,47,45" Width="68" Height="17" Content="Chemical Calibration" Click="rb_chemicalCalibration_CheckedChanged" />
+                <RadioButton x:Name="rb_deconvolution" Margin="10,49,47,23" Width="68" Height="17" Content="Deconvolution" Click="rb_deconvolution_CheckedChanged"/>
+            </Grid>
+            <!--Finish checked event handlers!!!!!!!!!!!!!!!!!!!-->
+        </GroupBox>
+        <GroupBox HorizontalAlignment="Left" Height="116" VerticalAlignment="Top" Width="1253" FontSize="12" Margin="10,0,0,0" Padding="0,2,0,3" Grid.Row="0" Grid.Column="1">
+            <GroupBox.Header>
+                <TextBlock FontWeight="Bold">2. Set Parameters</TextBlock>
+            </GroupBox.Header>
+            <Border BorderBrush="#FFE0DADA" BorderThickness="1" Padding="0,0,0,1">
+                <Grid x:Name="calib_stand_splitContainer">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*" />
+                        <ColumnDefinition Width="6*" />
+                        <ColumnDefinition Width="7*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!--I am not sure what these two for-->
+                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                        <Label x:Name="label_maxRT"/>
+                        <Label x:Name="label_minRT"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="5,5,0,0">
+                        <xctk:IntegerUpDown x:Name="nud_mincharge" Height="20" Width="49" VerticalAlignment="Top" Value="1" Minimum="1" Maximum="60"></xctk:IntegerUpDown>
+                        <Label x:Name="label_mincharge" Width="Auto" Padding="5,0,5,5">Min Charge</Label>
+                        <xctk:IntegerUpDown x:Name="nud_maxcharge" Height="20" Width="49" VerticalAlignment="Top" Value="60" Minimum="1" Maximum="60"></xctk:IntegerUpDown>
+                        <Label x:Name="label_maxcharge" Width="Auto" Padding="5,0,5,5">Max Charge</Label>
+                    </StackPanel>
+                    <Border BorderBrush="#FFE0DADA" BorderThickness="1,0,1,0" Grid.Row="0" Grid.Column="1" OpacityMask="White" Background="White">
+                        <Grid>
+                            <CheckBox x:Name="cb_calibrate_raw_files" Content="Write Calibrated Raw Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="cb_calibrate_raw_files_CheckedChanged" />
+                            <CheckBox x:Name="cb_calibrate_td_files" Content="Calibrate Top-Down Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,31,0,0" Click="cb_calibrate_td_files_CheckedChanged" />
+                        </Grid>
+                    </Border>
+                    <GroupBox x:Name="fullrun_groupbox" Grid.Column="2" Header="Full Run Save Options">
+                        <Grid Grid.Row="0" Grid.Column="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6*" />
+                                <ColumnDefinition Width="4*" />
+                            </Grid.ColumnDefinitions>
+                            <Border VerticalAlignment="Center" Height="20" Grid.Column="0" BorderBrush="Black" BorderThickness="1 1 1 1">
+                                <TextBlock x:Name="tb_resultsFolder" Background="#FFE6E4E4" />
+                            </Border>
+                            <Button Grid.Column="1" Margin="2 0 0 0" Content="Browse Results Folder"></Button>
+                        </Grid>
+                    </GroupBox>
+                    <Grid Grid.Row="0" Grid.Column="0" Background="White">
+                        <RadioButton x:Name="rb_neucode" Content="NeoCode Labeled" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,10,0,0" Checked="rb_neucode_CheckedChanged" Unchecked="rb_neucode_CheckedChanged"/>
+                        <RadioButton x:Name="rb_unlabeled" Checked="rb_neucode_CheckedChanged" Unchecked="rb_neucode_CheckedChanged" IsChecked="True" Content="Unlabeled" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,31,0,0" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.ColumnSpan="2" FontSize="12">
+            <GroupBox.Header>
+                <TextBlock FontWeight="Bold">Load Data Using Drop Down Menu</TextBlock>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="4*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="9*" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+
+                <ComboBox x:Name="cmb_loadTable1" Grid.Column="0" Grid.Row="0" Margin="2 10 2 25" SelectionChanged="cmb_loadTable1_SelectedIndexChanged"></ComboBox>
+                <WindowsFormsHost Margin="2 10 2 10"  Grid.Row="1" Grid.ColumnSpan="2" Background="#FFE4E4E4">
+                    <winform:DataGridView x:Name="dgv_loadFiles1" CellFormatting="dgv_loadFiles1_CellFormatting" CellMouseClick="dgv_loadFiles1_CellMouseClick" CellValidating="dgv_loadFiles1_CellValidating" DragDrop="dgv_deconResults_DragDrop" DragEnter="dgv_deconResults_DragEnter">
+
+                    </winform:DataGridView>
+                </WindowsFormsHost>
+                <Grid Grid.Row="2" Grid.Column="0">
+
+                </Grid>
+                <GroupBox Grid.Row="2" Grid.Column="0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="btn_browseSummarySaveFolder" Grid.Column="0" Margin="3 30 3 40" Click="btn_browseSummarySaveFolder_Click">Browse Results Folder</Button>
+                        <Button x:Name="bt_AddFiles1" Grid.Column="0" Margin="3 30 3 40" Click="btn_addFiles1_Click">Add</Button>
+                        <Button x:Name="bt_clearFiles1" Grid.Column="1" Margin="3 30 3 40" Click="btn_clearFiles1_Click">Clear</Button>
+                        <GroupBox Header="Text Filter" Grid.Column="2" Margin="10,19,10,10">
+                            <StackPanel Orientation="Vertical">
+                                <TextBox Height="Auto" x:Name="tb_filter1" Background="#FFE6E4E4" Margin="0,0,0,0" />
+                                <Label x:Name="lb_filter1" Height="27" Content="{Binding LabelTxt}" > <!--update as soon as property is changed-->
+                                    
+                                </Label>
+                            </StackPanel>
+                            
+                        </GroupBox>
+
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="2" Grid.Column="1">
+                    <GroupBox.Header>
+                        <TextBlock FontWeight="Bold">4. Start Analysis</TextBlock>
+                    </GroupBox.Header>
+                    <Grid Margin="4 7 4 4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid x:Name="panel_clearresults" Grid.Column="2">
+                            <Button x:Name="bt_clearResults" Content="Clear Results" Margin="2 0 2 0" Click="bt_clearResults_Click"/>
+                        </Grid>
+                        <Grid x:Name="panel_deconv_calib" Grid.Column="0">
+                            <Button x:Name="bt_deconvolute" Margin="2 0 2 0" Content="Deconvolute" Click="bt_deconvolute_Click"/>
+                            <Button x:Name="bt_calibrate" Margin="2 0 2 0" Content="Calibrate" Click="bt_calibrate_Click"/>
+                        </Grid>
+                        <Grid x:Name="panel_step" Grid.Column="0">
+                            <Button x:Name="bt_stepthru" Margin="0 0 0 0" Content="Step Through Progress" Click="bt_stepthru_Click"/>
+                        </Grid>
+                        <Grid x:Name="panel_fullrun" Grid.Column="1">
+                            <Button x:Name="bt_fullrun" Content="Full Run" Margin="2 0 2 0" Click="btn_fullRun_Click"/>
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</UserControl>

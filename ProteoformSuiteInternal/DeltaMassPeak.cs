@@ -65,9 +65,9 @@ namespace ProteoformSuiteInternal
                 possiblePeakAssignments = new List<PtmSet>();
             }
 
-            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.OrderBy(p => p.ptm_rank_sum).Select(ptmset =>
-                String.Join(";", ptmset.ptm_combination.Select(ptm =>
-                    Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id))).Distinct()) + "]";
+            possiblePeakAssignments_string = "[" + string.Join("][", possiblePeakAssignments.OrderBy(p => p.ptm_rank_sum).Select(ptmset =>
+                string.Join(";", ptmset.ptm_combination.Select(ptm => 
+                    UnlocalizedModification.LookUpId(ptm.modification)))).Distinct()) + "]";
 
             Accepted = grouped_relations != null && grouped_relations.Count > 0 && grouped_relations.First().RelationType == ProteoformComparison.ExperimentalTheoretical ?
                 (peak_relation_group_count >= Sweet.lollipop.min_peak_count_et && (!Sweet.lollipop.et_accept_peaks_based_on_rank || possiblePeakAssignments.Count > 0 && possiblePeakAssignments.Any(p => p.ptm_rank_sum < Sweet.lollipop.mod_rank_first_quartile)))

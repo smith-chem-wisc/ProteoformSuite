@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.IO;
 
 namespace ProteoformSuiteGUI
 {
     public partial class LoadResults : Form, ISweetForm
     {
-
         #region Public Constructor
+
         public LoadResults()
         {
             InitializeComponent();
@@ -22,6 +22,7 @@ namespace ProteoformSuiteGUI
             this.AutoScrollMinSize = this.ClientSize;
             populate_file_lists();
         }
+
         #endregion Public Constructor
 
         #region Public Property
@@ -120,7 +121,6 @@ namespace ProteoformSuiteGUI
         private void rb_unlabeled_CheckedChanged(object sender, EventArgs e)
         { }
 
-
         private void rb_standardOptions_CheckedChanged(object sender, EventArgs e)
         {
             populate_file_lists();
@@ -173,7 +173,6 @@ namespace ProteoformSuiteGUI
 
                 cmb_loadTable1.Enabled = true;
 
-
                 bt_calibrate.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
@@ -195,8 +194,8 @@ namespace ProteoformSuiteGUI
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
+                fullrun_groupbox.Visible = true;
             }
-
             else if (rb_chemicalCalibration.Checked)
             {
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
@@ -227,10 +226,8 @@ namespace ProteoformSuiteGUI
 
                 cmb_loadTable1.Enabled = true;
             }
-
             else if (rb_deconvolution.Checked)
             {
-
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
 
                 bt_calibrate.Visible = false;
@@ -439,6 +436,7 @@ namespace ProteoformSuiteGUI
         #endregion CELL FORMATTING Private Methods
 
         #region ADD BUTTONS Private Methods
+
         private void btn_addFiles1_Click(object sender, EventArgs e)
         {
             add_files(cmb_loadTable1, dgv_loadFiles1);
@@ -495,12 +493,11 @@ namespace ProteoformSuiteGUI
             }
             MessageBox.Show("Warning! Cannot find Thermo MSFileReader (v3.0 SP2 is preferred); a crash may result from searching this .raw file");
         }
-    
-
 
         #endregion ADD BUTTONS Private Methods
 
         #region CLEAR BUTTONS Private Methods
+
         private void btn_clearFiles1_Click(object sender, EventArgs e)
         {
             clear_files(cmb_loadTable1, dgv_loadFiles1);
@@ -516,6 +513,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[selected_index]);
         }
+
         #endregion CLEAR BUTTONS Private Methods
 
         #region FULL RUN & STEP THROUGH Private Methods
@@ -528,6 +526,7 @@ namespace ProteoformSuiteGUI
                 + ". Feel free to explore using the Results menu.", "Full Run");
             else MessageBox.Show("Method did not successfully run.", "Full Run");
         }
+
         private void bt_clearResults_Click(object sender, EventArgs e)
         {
             Sweet.lollipop = new Lollipop();
@@ -541,7 +540,8 @@ namespace ProteoformSuiteGUI
                 "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
         }
 
-        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        private FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+
         private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)
         {
             DialogResult dr = folderBrowser.ShowDialog();
@@ -556,12 +556,14 @@ namespace ProteoformSuiteGUI
         #endregion FULL RUN & STEP THROUGH Private Methods
 
         #region FILTERS Private Methods
+
         private void tb_filter1_TextChanged(object sender, EventArgs e)
         {
             int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text);
             DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
         }
+
         #endregion FILTERS Private Methods
 
         #region CHANGED TABLE SELECTION Private Methods
@@ -664,18 +666,18 @@ namespace ProteoformSuiteGUI
                 ActiveControl = tb;
             }
 
-            void tb_enter(object sender, EventArgs e)
+            private void tb_enter(object sender, EventArgs e)
             {
                 this.AcceptButton = okay;
             }
 
-            void okay_click(object sender, EventArgs e)
+            private void okay_click(object sender, EventArgs e)
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
 
-            void cancel_click(object sender, EventArgs e)
+            private void cancel_click(object sender, EventArgs e)
             {
                 this.DialogResult = DialogResult.Cancel;
                 this.Close();
@@ -695,7 +697,7 @@ namespace ProteoformSuiteGUI
             testdialog.Dispose();
         }
 
-        #endregion
+        #endregion CHANGE ALL CELLS private methods
 
         #region Cell Validation Methods
 
@@ -731,6 +733,5 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.calibrate_td_files = cb_calibrate_td_files.Checked;
         }
-
     }
 }

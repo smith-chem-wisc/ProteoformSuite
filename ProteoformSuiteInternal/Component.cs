@@ -97,7 +97,7 @@ namespace ProteoformSuiteInternal
             this.input_file = input_file;
             this.id = input_file.UniqueId.ToString() + "_" + cellStrings[0];
             this.reported_monoisotopic_mass = Double.TryParse(cellStrings[1], out double d) ? d : 0;
-            this.weighted_monoisotopic_mass = reported_monoisotopic_mass ; // this will get immediately replaced and updated as charge states are added.
+            this.weighted_monoisotopic_mass = reported_monoisotopic_mass; // this will get immediately replaced and updated as charge states are added.
             this.intensity_reported = Double.TryParse(cellStrings[2], out d) ? d : 0;
             this.num_detected_intervals = Int32.TryParse(cellStrings[4], out int i) ? i : 0;
             this.reported_delta_mass = Double.TryParse(cellStrings[5], out d) ? d : 0;
@@ -105,12 +105,12 @@ namespace ProteoformSuiteInternal
             this.fract_abundance = Double.TryParse(cellStrings[7], out d) ? d : 0;
             string[] scan_range = cellStrings[8].Split('-');
             string[] rt_range = cellStrings[9].Split('-');
-            if(scan_range.Length == 2)
+            if (scan_range.Length == 2)
             {
                 this.min_scan = Int32.TryParse(scan_range[0], out i) ? i : 0;
                 this.max_scan = Int32.TryParse(scan_range[1], out i) ? i : 0;
             }
-            if(rt_range.Length == 2)
+            if (rt_range.Length == 2)
             {
                 this.min_rt = Double.TryParse(rt_range[0], out d) ? d : 0;
                 this.max_rt = Double.TryParse(rt_range[1], out d) ? d : 0;

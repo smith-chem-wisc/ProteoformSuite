@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -16,6 +15,7 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public List<TopDownHit> topdown_hits;
         private PtmSet _topdown_ptm_set = new PtmSet(new List<Ptm>());
+
         public PtmSet topdown_ptm_set //the ptmset read in with td data
         {
             get
@@ -30,14 +30,14 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _topdown_ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                    String.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
+                    string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
             }
         }
+
         public string topdown_ptm_description { get; set; }
         public ExperimentalProteoform matching_experimental { get; set; } //corresponding experimental
         public bool correct_id { get; set; } //true if the ID given by ProteoformSuite matches ID from topdown
         public string geneID { get; set; }
-
 
         public TopDownProteoform(string accession, List<TopDownHit> hits) : base(accession, null, true)
         {
@@ -87,7 +87,6 @@ namespace ProteoformSuiteInternal
             this.topdown_begin = t.topdown_begin;
             this.gene_name = t.gene_name;
         }
-
 
         public void calculate_td_properties()
         {

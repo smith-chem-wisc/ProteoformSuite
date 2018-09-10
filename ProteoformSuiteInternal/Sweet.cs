@@ -157,7 +157,7 @@ namespace ProteoformSuiteInternal
                    && !setting_elements.Any(s => GetAttribute(s, "field_name") == f.Name)).ToList();
             if (fields.Count > 0)
             {
-                warning_message += "The following parameters did not have a setting specified: " + String.Join(", ", fields.Select(f => f.Name)) + Environment.NewLine;
+                warning_message += "The following parameters did not have a setting specified: " + string.Join(", ", fields.Select(f => f.Name)) + Environment.NewLine;
             }
             lollipop.results_folder = !lollipop.results_folder.StartsWith(".") ? lollipop.results_folder : Path.GetFullPath(Path.Combine(Path.GetDirectoryName(methodFilePath), lollipop.results_folder));
 

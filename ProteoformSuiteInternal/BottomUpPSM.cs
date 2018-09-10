@@ -32,7 +32,7 @@
 //                return
 //                   modifications == null || modifications.Count == 0 ?
 //                       "Unmodified" :
-//                       String.Join("; ", modifications.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
+//                       string.Join("; ", modifications.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
 
 //            }
 //        }

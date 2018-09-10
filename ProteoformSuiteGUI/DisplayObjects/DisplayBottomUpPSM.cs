@@ -5,7 +5,6 @@
 //{
 //    public class DisplayBottomUpPSM : DisplayObject
 //    {
-
 //        #region Public Constructors
 
 //        public DisplayBottomUpPSM(BottomUpPSM t)
@@ -75,7 +74,7 @@
 //            //set column header
 //            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
 //            dgv.Columns[nameof(precursor_mass_error)].HeaderText = "Precursor Mass Error";
-        
+
 //            dgv.AllowUserToAddRows = false;
 //        }
 

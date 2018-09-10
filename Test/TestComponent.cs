@@ -96,7 +96,7 @@ namespace Test
             createdComponent3.mergeTheseComponents(createdComponent4);
 
             Assert.AreEqual(1000d, createdComponent3.intensity_sum);
-            Assert.AreEqual(Math.Round(989.92723551500012d, 5),Math.Round(createdComponent3.weighted_monoisotopic_mass,5));
+            Assert.AreEqual(Math.Round(989.92723551500012d, 5), Math.Round(createdComponent3.weighted_monoisotopic_mass, 5));
             Assert.AreEqual(2, createdComponent3.charge_states.Count);
             Assert.AreEqual(true, createdComponent3.accepted);
             Assert.AreEqual(2, createdComponent3.charge_states.Count());
@@ -181,7 +181,7 @@ namespace Test
             Assert.AreEqual(10, testChargeStateNoCorrection.charge_count);
             Assert.AreEqual(1d, testChargeStateNoCorrection.intensity);
             Assert.AreEqual(100d, testChargeStateNoCorrection.mz_centroid);
-            Assert.AreEqual(Math.Round(989.9272355,5), Math.Round(testChargeStateNoCorrection.calculated_mass),5);
+            Assert.AreEqual(Math.Round(989.9272355, 5), Math.Round(testChargeStateNoCorrection.calculated_mass), 5);
         }
 
         [Test]
@@ -209,7 +209,7 @@ namespace Test
             Assert.AreEqual(10, mergeChargeState1.charge_count);
             Assert.AreEqual(2d, mergeChargeState1.intensity);
             Assert.AreEqual(Math.Round(990.4272355, 5), Math.Round(mergeChargeState1.calculated_mass, 5));
-            Assert.AreEqual(100.05d, Math.Round(mergeChargeState1.mz_centroid,2));
+            Assert.AreEqual(100.05d, Math.Round(mergeChargeState1.mz_centroid, 2));
         }
 
         [Test]

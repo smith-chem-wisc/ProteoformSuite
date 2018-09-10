@@ -5,7 +5,6 @@ namespace ProteoformSuiteInternal
 {
     public class ChargeState
     {
-
         #region Public Properties
 
         public int charge_count { get; set; } //value from deconv 4.0
@@ -13,6 +12,7 @@ namespace ProteoformSuiteInternal
         public double mz_centroid { get; set; } //value from deconv 4.0
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
         public double reported_mass { get; set; } //value from decon 4.0
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
         public ChargeState(List<string> charge_row)
         {
             this.charge_count = Int32.TryParse(charge_row[0], out int i) ? i : -1;
-            this.intensity = (Double.TryParse(charge_row[1], out double d) ? d : 0 ) / this.charge_count; //charge state normalized
+            this.intensity = (Double.TryParse(charge_row[1], out double d) ? d : 0) / this.charge_count; //charge state normalized
             this.mz_centroid = Double.TryParse(charge_row[2], out d) ? d : 0;
             this.reported_mass = Double.TryParse(charge_row[3], out d) ? d : 0;
             this.calculated_mass = correct_calculated_mass();
@@ -58,10 +58,9 @@ namespace ProteoformSuiteInternal
 
         public override string ToString()
         {
-            return String.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
+            return string.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
         }
 
         #endregion Public Methods
-
     }
 }

@@ -1,17 +1,13 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using ProteoformSuiteInternal;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class IdentifiedProteoforms : Form , ISweetForm
+    public partial class IdentifiedProteoforms : Form, ISweetForm
     {
         public IdentifiedProteoforms()
         {
@@ -28,7 +24,6 @@ namespace ProteoformSuiteGUI
             ClearListsTablesFigures(true);
             FillTablesAndCharts();
         }
-
 
         public void ClearListsTablesFigures(bool clear_following)
         {
@@ -55,6 +50,7 @@ namespace ProteoformSuiteGUI
         }
 
         public List<DataTable> DataTables { get; private set; }
+
         public List<DataTable> SetTables()
         {
             DataTables = new List<DataTable>
@@ -93,21 +89,21 @@ namespace ProteoformSuiteGUI
                         writer.WriteLine("Experimental Accession\tExperimental Mass\tExperimental Retention Time\tTheoretical Accession\tTheoretical Description\tTheoretical Begin\tTheoretical End\tTheoretical PTM Description\tTop-Down Accession\tTop-Down Begin\tTop-Down End\tTop-Down PTM Description\tTop-Down Observed Mass\tTop-Down Retention Time\tTop Top-Down C-Score");
                         foreach (ExperimentalProteoform ep in experimentals)
                         {
-                            if(ep.topdown_id)
+                            if (ep.topdown_id)
                             {
                                 TopDownProteoform tdp = ep as TopDownProteoform;
-                                if(tdp.matching_experimental != null)
+                                if (tdp.matching_experimental != null)
                                 {
                                     ExperimentalProteoform exp = tdp.matching_experimental;
-                                    string exp_ptm = exp.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join(", ", exp.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(p => p));
-                                    string td_ptm = tdp.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join(", ", tdp.topdown_ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(p => p));
+                                    string exp_ptm = exp.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join(", ", exp.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(p => p));
+                                    string td_ptm = tdp.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join(", ", tdp.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(p => p));
                                     writer.WriteLine(exp.accession + "\t" + exp.agg_mass + "\t" + exp.agg_rt + "\t" + exp.linked_proteoform_references.First().accession.Split('_')[0] + "\t" + (exp.linked_proteoform_references.First() as TheoreticalProteoform).description + "\t" + exp.begin + "\t" + exp.end + "\t" + exp_ptm
-                                         + "\t" + tdp.accession.Split('_')[0] + "\t" + tdp.topdown_begin + "\t" + tdp.topdown_end + "\t" + td_ptm  + "\t" + tdp.modified_mass + "\t" + tdp.agg_rt + "\t" + tdp.topdown_hits.Max(h => h.score));
+                                         + "\t" + tdp.accession.Split('_')[0] + "\t" + tdp.topdown_begin + "\t" + tdp.topdown_end + "\t" + td_ptm + "\t" + tdp.modified_mass + "\t" + tdp.agg_rt + "\t" + tdp.topdown_hits.Max(h => h.score));
                                 }
                             }
                             else
                             {
-                                string exp_ptm = ep.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join(", ", ep.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(p => p));
+                                string exp_ptm = ep.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join(", ", ep.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(p => p));
                                 TheoreticalProteoform t = ep.linked_proteoform_references.First() as TheoreticalProteoform;
                                 writer.WriteLine(ep.accession + "\t" + ep.agg_mass + "\t" + ep.agg_rt + "\t" + t.accession.Split('_')[0] + "\t" + t.description + "\t" + t.begin + "\t" + t.end + "\t" + exp_ptm
                                      + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A" + "\t" + "N\\A");

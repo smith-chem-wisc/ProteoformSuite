@@ -10,7 +10,6 @@ using System;
 namespace Test
 {
     [TestFixture]
-
     class TestPromex
     {
         [Test]
@@ -18,7 +17,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
-            
+
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
 
             string filepath = Path.Combine(Path.GetDirectoryName(Sweet.lollipop.input_files[0].complete_path), Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path));
@@ -61,7 +60,6 @@ namespace Test
             Assert.AreEqual(51985.25, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_reported), 2);
             Assert.AreEqual(1517513.21, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_sum), 2);
 
-
             Sweet.lollipop.min_likelihood_ratio = 20;
             deconv_components.Clear();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
@@ -71,7 +69,6 @@ namespace Test
             deconv_components.Clear();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
             Assert.AreEqual(123, deconv_components.Count());
-
 
             Sweet.lollipop = new Lollipop();
             // Make sure it hits else statements at end
@@ -123,7 +120,7 @@ namespace Test
             Assert.AreEqual(6, Sweet.lollipop.td_hit_correction.Count);
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
-            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed  
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.tsv")));
             Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")));

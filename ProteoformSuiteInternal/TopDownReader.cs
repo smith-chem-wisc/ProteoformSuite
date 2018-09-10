@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     public class TopDownReader
     {
-
         #region Private Fields
 
         private Dictionary<char, double> aaIsotopeMassList;
@@ -16,6 +15,7 @@ namespace ProteoformSuiteInternal
         #endregion Private Fields
 
         public List<string> topdown_ptms = new List<string>(); //PTMs not in theoretical database added to warning file.
+
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
         {
@@ -25,14 +25,14 @@ namespace ProteoformSuiteInternal
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);//This returns the entire sheet except for the header. Each row of cells is one List<string>
-            //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message. 
+            //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
             Parallel.ForEach(cells, cellStrings =>
             {
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 if (cellStrings.Count == 24)
-                { 
-                TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : ((cellStrings[15] == "Tight Absolute Mass") ? TopDownResultType.TightAbsoluteMass : TopDownResultType.Unknown);
-                    if (tdResultType != TopDownResultType.Unknown) //uknown result type! 
+                {
+                    TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : ((cellStrings[15] == "Tight Absolute Mass") ? TopDownResultType.TightAbsoluteMass : TopDownResultType.Unknown);
+                    if (tdResultType != TopDownResultType.Unknown) //uknown result type!
                     {
                         List<Ptm> ptm_list = new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
                                                               //N-term modifications
@@ -49,17 +49,17 @@ namespace ProteoformSuiteInternal
                                 }
                                 if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                                 {
-                                    ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == "N-terminal Acetyl").FirstOrDefault()));
+                                    ptm_list.Add(new Ptm(position, Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.OriginalId == "N-terminal Acetyl").FirstOrDefault()));
                                 }
                                 else
                                 {
                                     string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                                     while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
-                                    ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                    Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     if (mod == null)
                                     {
                                         psimod = "MOD:" + psimod;
-                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     }
                                     if (mod != null) ptm_list.Add(new Ptm(position, mod));
                                     else
@@ -80,7 +80,7 @@ namespace ProteoformSuiteInternal
                             string[] ptms = cellStrings[9].Split('|');
                             foreach (string ptm in ptms)
                             {
-                                ModificationWithMass mod = null;
+                                Modification mod = null;
                                 string id = "";
                                 if (ptm.Split(':').Length < 2)
                                 {
@@ -113,17 +113,17 @@ namespace ProteoformSuiteInternal
                                     while (resid.Length < 4) resid = "0" + resid;//short part should be the accession number, which is an integer
                                     resid = "AA" + resid;
                                     id = "RESID:" + resid;
-                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
+                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID") && m.DatabaseReference["RESID"].Contains(resid)).FirstOrDefault();
                                 }
                                 else if (ptm.Split(':')[0] == "PSI-MOD")
                                 {
                                     string psimod = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                                     while (psimod.Length < 5) psimod = "0" + psimod;//short part should be the accession number, which is an integer
-                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                    mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     if (mod == null)
                                     {
                                         psimod = "MOD:" + psimod;
-                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("PSI-MOD")).Where(m => m.linksToOtherDbs["PSI-MOD"].Contains(psimod)).FirstOrDefault();
+                                        mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("PSI-MOD") && m.DatabaseReference["PSI-MOD"].Contains(psimod)).FirstOrDefault();
                                     }
                                     id = "PSI-MOD:" + psimod;
                                 }

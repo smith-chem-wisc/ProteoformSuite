@@ -12,7 +12,6 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayUtility
     {
-
         #region Public Methods
 
         public static void FillDataGridView(DataGridView dgv, IEnumerable<object> someList)
@@ -208,6 +207,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Methods
-
     }
 }

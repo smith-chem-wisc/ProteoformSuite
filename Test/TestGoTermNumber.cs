@@ -14,10 +14,10 @@ namespace Test
         [Test]
         public void testLogOddsRatio()
         {
-            int q = 1;//number of enriched proteins with the term
-            int k = 2;//number of enriched proteins
-            int m = 2;//number of proteins in the background with the term
-            int t = 4;//number of proteins in the background
+            int q = 1; // number of enriched proteins with the term
+            int k = 2; // number of enriched proteins
+            int m = 2; // number of proteins in the background with the term
+            int t = 4; // number of proteins in the background
 
             DatabaseReference d = new DatabaseReference("GO", ":1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:one") });
             GoTerm g = new GoTerm(d);
@@ -26,20 +26,20 @@ namespace Test
             //Assert.AreEqual(0.833333m, Math.Round((decimal)gtn.p_value.Truncate(7), 6));
             Assert.AreEqual(0.833333m, Math.Round(gtn.p_value, 6));
 
-            q = 1;//number of enriched proteins with the term
-            k = 2;//number of enriched proteins
-            m = 4;//number of proteins in the background with the term
-            t = 4;//number of proteins in the background
+            q = 1; // number of enriched proteins with the term
+            k = 2; // number of enriched proteins
+            m = 4; // number of proteins in the background with the term
+            t = 4; // number of proteins in the background
 
             gtn = new GoTermNumber(g, q, k, m, t);
             Assert.AreEqual(-1, gtn.log_odds_ratio);
             //Assert.AreEqual(1m, Math.Round((decimal)gtn.p_value.Truncate(7), 6));
             Assert.AreEqual(1m, Math.Round(gtn.p_value, 6));
 
-            q = 2;//number of enriched proteins with the term
-            k = 2;//number of enriched proteins
-            m = 2;//number of proteins in the background with the term
-            t = 4;//number of proteins in the background
+            q = 2; // number of enriched proteins with the term
+            k = 2; // number of enriched proteins
+            m = 2; // number of proteins in the background with the term
+            t = 4; // number of proteins in the background
 
             gtn = new GoTermNumber(g, q, k, m, t);
             Assert.AreEqual(1, gtn.log_odds_ratio);

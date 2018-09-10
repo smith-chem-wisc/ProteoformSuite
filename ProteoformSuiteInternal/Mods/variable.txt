@@ -1,5 +1,5 @@
 ﻿Variable modifications
-ID   Oxidation of M
+ID   Oxidation
 TG   M
 PP   Anywhere.
 MM   15.994915

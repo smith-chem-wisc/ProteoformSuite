@@ -268,7 +268,7 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
             set_nud_minObs_maximum();
-            nud_minObservations.Value = nud_minObservations. Maximum;
+            nud_minObservations.Value = nud_minObservations.Maximum;
         }
 
         private void set_nud_minObs_maximum()
