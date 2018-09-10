@@ -465,8 +465,8 @@ namespace ProteoformSuiteInternal
                     e.family != null ? e.family.family_id.ToString() : "",
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.numeratorIntensitySum : get_tusher_values(e.quant, analysis).numeratorIntensitySum,
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.denominatorIntensitySum : get_tusher_values(e.quant, analysis).denominatorIntensitySum,
-                    e.aggregated.Count > 0 ? string.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2))) : "",
-                    e.aggregated.Count > 0 ? string.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First() as Component).charge_states.Select(cs => cs.charge_count)) : "",
+                    e.aggregated.Count > 0 ? string.Join(", ", e.aggregated.OrderByDescending(c => c.intensity_sum).First().charge_states.Select(cs => Math.Round(cs.mz_centroid, 2))) : "",
+                    e.aggregated.Count > 0 ? string.Join(", ", e.aggregated.OrderByDescending(c => c.intensity_sum).First().charge_states.Select(cs => cs.charge_count)) : "",
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
                 );
             }

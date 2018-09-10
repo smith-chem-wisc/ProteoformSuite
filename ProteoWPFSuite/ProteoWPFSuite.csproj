@@ -334,18 +334,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj">
-      <Project>{6b27b6e2-8eff-43c9-8582-f6224ca9afc1}</Project>
-      <Name>ProteoformSuiteInternal</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Image\lollipop.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="logs.xml">
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj">
+      <Project>{6b27b6e2-8eff-43c9-8582-f6224ca9afc1}</Project>
+      <Name>ProteoformSuiteInternal</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
