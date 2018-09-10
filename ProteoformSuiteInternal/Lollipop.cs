@@ -272,7 +272,7 @@ namespace ProteoformSuiteInternal
                         {
                             continue;
                         }
-                        if (Int32.TryParse(cs[6], out int feature_ID) && csv_feature_info.TryGetValue(feature_ID, out List<string[]> fields) && fields.Count > 0)
+                        if (Int32.TryParse(cs[0], out int feature_ID) && csv_feature_info.TryGetValue(feature_ID, out List<string[]> fields) && fields.Count > 0)
                         {
                             //get charges, intensities for each charge, and fit
                             List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();

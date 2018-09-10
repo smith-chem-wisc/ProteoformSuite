@@ -54,21 +54,21 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { filepath + ".tsv" }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             List<Component> deconv_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
-            Assert.AreEqual(204, deconv_components.Count);
+            Assert.AreEqual(250, deconv_components.Count);
             Assert.AreEqual(2248.2764, Math.Round(deconv_components.OrderBy(c => c.id).First().reported_monoisotopic_mass), 4);
             Assert.AreEqual(2248.2764, Math.Round(deconv_components.OrderBy(c => c.id).First().weighted_monoisotopic_mass), 4);
             Assert.AreEqual(51985.25, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_reported), 2);
-            Assert.AreEqual(1517513.21, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_sum), 2);
+            Assert.AreEqual(267854.84, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_sum), 2);
 
             Sweet.lollipop.min_likelihood_ratio = 20;
             deconv_components.Clear();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
-            Assert.AreEqual(160, deconv_components.Count());
+            Assert.AreEqual(195, deconv_components.Count());
 
             Sweet.lollipop.max_fit = .07;
             deconv_components.Clear();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
-            Assert.AreEqual(123, deconv_components.Count());
+            Assert.AreEqual(109, deconv_components.Count());
 
             Sweet.lollipop = new Lollipop();
             // Make sure it hits else statements at end
@@ -116,7 +116,7 @@ namespace Test
             Assert.AreEqual(6, Sweet.lollipop.td_hits_calibration.Count);
             Assert.AreEqual(5, Sweet.lollipop.td_hits_calibration.Count(h => h.score > 40));
             Assert.AreEqual("Successfully calibrated files.", Sweet.lollipop.calibrate_files());
-            Assert.AreEqual(204, Sweet.lollipop.component_correction.Count);
+            Assert.AreEqual(250, Sweet.lollipop.component_correction.Count);
             Assert.AreEqual(6, Sweet.lollipop.td_hit_correction.Count);
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
@@ -136,8 +136,8 @@ namespace Test
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList(), uncalibrated_components, Purpose.CalibrationIdentification, false);
 
-            Assert.AreEqual(204, calibrated_components.Count());
-            Assert.AreEqual(204, uncalibrated_components.Count());
+            Assert.AreEqual(250, calibrated_components.Count());
+            Assert.AreEqual(250, uncalibrated_components.Count());
             Assert.AreEqual(6, calibrated_td_hits.Count);
             foreach (TopDownHit h in calibrated_td_hits)
             {

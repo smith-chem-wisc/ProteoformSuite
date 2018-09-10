@@ -35,7 +35,8 @@ namespace ProteoformSuiteInternal
         public bool calculating_properties { get; set; } = false;
         private int num_detected_intervals { get; set; }
         public bool accepted { get; set; }
-
+        public double fit_score { get; set; }
+        public double likelihood_ratio { get; set; }
         /// <summary>
         /// Added or substracted from weighted monoisotopic mass. This value is adjusted manually after observing ET histograms. Eventually also after see EE histograms.
         /// </summary>

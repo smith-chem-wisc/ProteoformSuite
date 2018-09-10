@@ -133,8 +133,9 @@ namespace ProteoformSuiteInternal
                         cellStrings.Add(row[10]);
 
                         Component c = new Component(cellStrings, file);
-
-                        for (int a = 0; a < charges.Count; a++)
+                        c.likelihood_ratio = likelihood_ratio;
+                        c.fit_score = fit;
+                        for(int a = 0; a < charges.Count; a++)
                         {
                             //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!!
                             //multiply by charge for intensity because constructor divides (thermo is not charge state normalized!)
