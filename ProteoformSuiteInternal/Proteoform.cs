@@ -17,6 +17,7 @@ namespace ProteoformSuiteInternal
         public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; } = "";
+
         public PtmSet ptm_set
         {
             get
@@ -31,7 +32,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).OrderBy(m => m).ToList());
+                        string.Join("; ", ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
             }
         }
 
@@ -78,7 +79,7 @@ namespace ProteoformSuiteInternal
             return relationships.Where(r => r.Accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
 
-        public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
+        public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<Modification> all_mods_with_mass)
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
             //do relations first closest to candidate ptmset delta mass, then in order of relation delta mass (need to do in same order every round)
@@ -105,9 +106,9 @@ namespace ProteoformSuiteInternal
                 foreach (PtmSet set in all_possible_ptmsets)
                 {
                     bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
-                    List<ModificationWithMass> these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
-                    List<ModificationWithMass> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
-                    bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.id == m1.id) >= those_mods.Count(m2 => m2.id == m1.id)); //# of each mod in current set must be greater than or equal to # in set to remove.
+                    List<Modification> these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
+                    List<Modification> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
+                    bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.OriginalId == m1.OriginalId) >= those_mods.Count(m2 => m2.OriginalId == m1.OriginalId)); //# of each mod in current set must be greater than or equal to # in set to remove.
                     bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                     {
@@ -115,7 +116,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
+                // If they're the same and someone hasn't labeled 0 difference with a "Modification", then label it null
                 if (best_addition == null && best_loss == null && Math.Abs(r.peak.DeltaMass) <= mass_tolerance)
                 {
                     lock (r) lock (e) assign_pf_identity(e, ptm_set, r, sign, null, theoretical_base);
@@ -131,7 +132,7 @@ namespace ProteoformSuiteInternal
                 PtmSet with_mod_change = null;
                 if (best_loss == null)
                 {
-                    with_mod_change = new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
+                    with_mod_change = new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.MonoisotopicMass != 0).ToList()));
                 }
                 else
                 {
@@ -150,41 +151,41 @@ namespace ProteoformSuiteInternal
             return identified;
         }
 
-        public List<PtmSet> generate_possible_added_ptmsets(List<PtmSet> possible_peak_assignments, double deltaM, double mass_tolerance, List<ModificationWithMass> all_mods_with_mass,
+        public List<PtmSet> generate_possible_added_ptmsets(List<PtmSet> possible_peak_assignments, double deltaM, double mass_tolerance, List<Modification> all_mods_with_mass,
             TheoreticalProteoform theoretical_base, int additional_ptm_penalty, bool final_assignment)
         {
-            List<ModificationWithMass> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
+            List<Modification> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
 
             foreach (PtmSet set in possible_peak_assignments)
             {
-                List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
+                List<Modification> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
 
                 int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m.modification, out UnlocalizedModification x) ? x.ptm_count : 1) - 1); // penalize additional PTMs
-                foreach (ModificationWithMass m in mods_in_set)
+                foreach (Modification m in mods_in_set)
                 {
-                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue(m.monoisotopicMass, out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
+                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue((double)m.MonoisotopicMass, out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
 
-                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.ToString() == "M" && theoretical_base.begin == 2 && this.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
-                    bool motif_matches_n_terminus = this.begin - theoretical_base.begin  >= 0 && this.begin - theoretical_base.begin < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() && !mods_in_set.Any(mod => mod.modificationType == "AminoAcid" && mod.motif.ToString() == "M");
-                    bool motif_matches_c_terminus = this.end - this.begin >= 0 && this.end - this.begin < theoretical_base.sequence.Length && m.motif.ToString() == theoretical_base.sequence[this.end - this.begin].ToString();
+                    bool could_be_m_retention = m.ModificationType == "AminoAcid" && m.Target.ToString() == "M" && theoretical_base.begin == 2 && this.begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
+                    bool motif_matches_n_terminus = this.begin - theoretical_base.begin >= 0 && this.begin - theoretical_base.begin < theoretical_base.sequence.Length && m.Target.ToString() == theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() && !mods_in_set.Any(mod => mod.ModificationType == "AminoAcid" && mod.Target.ToString() == "M");
+                    bool motif_matches_c_terminus = this.end - this.begin >= 0 && this.end - this.begin < theoretical_base.sequence.Length && m.Target.ToString() == theoretical_base.sequence[this.end - this.begin].ToString();
 
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
-                    if (m.modificationType == "Missing" && cannot_be_degradation
-                        || m.modificationType == "AminoAcid" && !could_be_m_retention
+                    if (m.ModificationType == "Missing" && cannot_be_degradation
+                        || m.ModificationType == "AminoAcid" && !could_be_m_retention
                         || (u != null ? u.require_proteoform_without_mod : false) && set.ptm_combination.Count > 1)
                     {
                         rank_sum = Int32.MaxValue;
                         break;
                     }
 
-                    bool could_be_n_term_degradation = m.modificationType == "Missing" && motif_matches_n_terminus;
-                    bool could_be_c_term_degradation = m.modificationType == "Missing" && motif_matches_c_terminus;
+                    bool could_be_n_term_degradation = m.ModificationType == "Missing" && motif_matches_n_terminus;
+                    bool could_be_c_term_degradation = m.ModificationType == "Missing" && motif_matches_c_terminus;
 
                     //if selected, going to only allow mods in Mods folder (type "Common"), Missing, Missed Monoisotopic, known mods for that protein, or Unmodified
                     if (Sweet.lollipop.only_assign_common_or_known_mods && final_assignment)
                     {
-                        if (!(m.monoisotopicMass == 0 || m.modificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.modificationType == "Deconvolution Error" || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m)))
+                        if (!(m.MonoisotopicMass == 0 || m.ModificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.ModificationType == "Deconvolution Error" || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m)))
                         {
                             rank_sum = Int32.MaxValue;
                             break;
@@ -194,7 +195,7 @@ namespace ProteoformSuiteInternal
                     // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, other degradations and methionine cleavage are weighted mid-level
                     // 2. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
-                    if (m.monoisotopicMass == 0)
+                    if (m.MonoisotopicMass == 0)
                     {
                         rank_sum += mod_rank;
                         continue;
@@ -206,7 +207,7 @@ namespace ProteoformSuiteInternal
                     {
                         rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
                     }
-                    else if (m.modificationType == "Deconvolution Error")
+                    else if (m.ModificationType == "Deconvolution Error")
                     {
                         rank_sum += Sweet.lollipop.neucode_labeled ?
                             Sweet.lollipop.mod_rank_third_quartile :   //in neucode-labeled data, fewer missed monoisotopics - don't prioritize
@@ -214,8 +215,8 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
-                        rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m)  ||
-                            known_mods.Select(mod => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod, out UnlocalizedModification um) ? um.id : mod.id).Contains(Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification um2) ? um2.id : m.id) 
+                        rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ||
+                            known_mods.Select(mod => UnlocalizedModification.LookUpId(mod)).Contains(UnlocalizedModification.LookUpId(m))
                                 ?
                             mod_rank :
                             mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
@@ -259,19 +260,19 @@ namespace ProteoformSuiteInternal
                 List<Ptm> remove = new List<Ptm>();
 
                 //do retention of M first
-                foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "AminoAcid"))
+                foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "AminoAcid"))
                 {
                     e.begin--;
                     remove.Add(mod);
                 }
-                foreach (var mod in set.ptm_combination.Where(m => m.modification.modificationType == "Missing"))
+                foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "Missing"))
                 {
-                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() == mod.modification.motif.ToString())
+                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() == mod.modification.Target.ToString())
                     {
                         e.begin++;
                         remove.Add(mod); //dont have in ptmset --> change the begin & end
                     }
-                    else if (theoretical_base.sequence[this.end - this.begin].ToString() == mod.modification.motif.ToString())
+                    else if (theoretical_base.sequence[this.end - this.begin].ToString() == mod.modification.Target.ToString())
                     {
                         e.end--;
                         remove.Add(mod);
@@ -283,19 +284,21 @@ namespace ProteoformSuiteInternal
                 }
                 e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
 
-
                 e.uniprot_mods = "";
-                foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList().Distinct().OrderBy(m => m))
+                foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m))
                 {
-                    //positions with mod
-                    List<int> theo_ptms = theoretical_base.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Where(p => p.Key >= e.begin && p.Key <= e.end &&
-                        p.Value.Where(m => m as ModificationWithMass != null).Select(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m as ModificationWithMass, out UnlocalizedModification x) ? x.id : m.id).Contains(mod)).Select(m => m.Key).ToList();
+                    // positions with mod
+                    List<int> theo_ptms = theoretical_base.ExpandedProteinList.First()
+                        .OneBasedPossibleLocalizedModifications
+                        .Where(p => p.Key >= e.begin && p.Key <= e.end
+                            && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                        .Select(m => m.Key).ToList();
                     if (theo_ptms.Count > 0)
                     {
-                        e.uniprot_mods += mod + " @ " + String.Join(", ", theo_ptms) + "; ";
+                        e.uniprot_mods += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
                     }
-                    if (e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Count(m => m == mod)
-                        > theo_ptms.Count)
+                    if (e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                        .Count(m => m == mod) > theo_ptms.Count)
                     {
                         e.novel_mods = true;
                     }
@@ -315,8 +318,6 @@ namespace ProteoformSuiteInternal
             {
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
             }
-
-
         }
 
         #endregion Private Methods

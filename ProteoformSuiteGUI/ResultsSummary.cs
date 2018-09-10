@@ -9,7 +9,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class ResultsSummary : Form, ISweetForm
     {
-
         #region Public Constructor
 
         public ResultsSummary()
@@ -88,7 +87,7 @@ namespace ProteoformSuiteGUI
 
         #region Private Fields
 
-        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        private FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
 
         #endregion Private Fields
 
@@ -116,6 +115,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Methods
-
     }
 }

@@ -8,7 +8,9 @@ namespace ProteoformSuiteInternal
     {
         //Function to get random number
         private static readonly Random random = new Random();
+
         private static readonly object syncLock = new object();
+
         public static double RandomNumber()
         {
             lock (syncLock)
@@ -19,7 +21,7 @@ namespace ProteoformSuiteInternal
 
         public static IEnumerable<IEnumerable<T>> Combinations<T>(this IEnumerable<T> elements, int k)//given an array of elements, it returns all combination sub arrays of length k
         {
-            return k == 0 ? 
+            return k == 0 ?
                 new[] { new T[0] } :
                     elements.SelectMany((e, i) => elements.Skip(i + 1).Combinations(k - 1).Select(c => (new[] { e }).Concat(c)));
         }
@@ -32,8 +34,8 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<object> filter(IEnumerable<object> some_list, string s)
         {
             return some_list.Where(f =>
-                    f.GetType().GetProperties().Where(p => new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(p.PropertyType)).Any(i => i.GetValue(f).ToString().Contains(s)) ||
-                    f.GetType().GetFields().Where(i => !i.IsLiteral && new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(i.FieldType)).Any(i => i.GetValue(f).ToString().Contains(s))
+                    f.GetType().GetProperties().Where(p => new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(p.PropertyType)).Any(i => i.GetValue(f) != null && i.GetValue(f).ToString().Contains(s)) ||
+                    f.GetType().GetFields().Where(i => !i.IsLiteral && new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(i.FieldType)).Any(i => i.GetValue(f) != null && i.GetValue(f).ToString().Contains(s))
                 );
         }
 
@@ -55,7 +57,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static T[] Slice<T>(this T[] source, int index, int length)  // returns a copy of a hunk of an object array. 
+        public static T[] Slice<T>(this T[] source, int index, int length)  // returns a copy of a hunk of an object array.
         {
             T[] slice = new T[length];
             Array.Copy(source, index, slice, 0, length);

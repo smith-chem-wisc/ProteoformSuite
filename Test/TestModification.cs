@@ -19,13 +19,13 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
 
-            listForPosition1.Add(new ModificationWithMass("description1", "type", motif, TerminusLocalization.Any, 1));
-            listForPosition1.Add(new ModificationWithMass("description2", "type", motif, TerminusLocalization.Any, 2));
+            listForPosition1.Add(new Modification("description1", _modificationType : "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1));
+            listForPosition1.Add(new Modification("description2", _modificationType: "type", _target: motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 2));
 
             List<Modification> listForPosition2 = new List<Modification>();
 
-            listForPosition2.Add(new ModificationWithMass("description3", "type", motif, TerminusLocalization.Any, 3));
-            listForPosition2.Add(new ModificationWithMass("description4", "type", motif, TerminusLocalization.Any, 4));
+            listForPosition2.Add(new Modification("description3", _modificationType: "type", _target: motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 3));
+            listForPosition2.Add(new Modification("description4", _modificationType: "type", _target: motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 4));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -57,13 +57,13 @@ namespace Test
 
             List<Modification> listForPosition1 = new List<Modification>();
 
-            listForPosition1.Add(new ModificationWithMass("description1", "", motif, TerminusLocalization.Any, 1.1));
-            listForPosition1.Add(new ModificationWithMass("description2", "", motif, TerminusLocalization.Any, 2.01));
+            listForPosition1.Add(new Modification("description1", "", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1.1));
+            listForPosition1.Add(new Modification("description2", "", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 2.01));
 
             List<Modification> listForPosition2 = new List<Modification>();
 
-            listForPosition2.Add(new ModificationWithMass("description3", "", motif, TerminusLocalization.Any, 3.001));
-            listForPosition2.Add(new ModificationWithMass("description4", "", motif, TerminusLocalization.Any, 4.0001));
+            listForPosition2.Add(new Modification("description3", "", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 3.001));
+            listForPosition2.Add(new Modification("description4", "", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 4.0001));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -95,15 +95,15 @@ namespace Test
             ModificationMotif.TryGetMotif("K", out motif);
 
             List<Modification> listForPosition1 = new List<Modification>();
-            listForPosition1.Add(new ModificationWithMass("description1", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition1.Add(new Modification("description1", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition2 = new List<Modification>();
-            listForPosition2.Add(new ModificationWithMass("description2", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition2.Add(new Modification("description2", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition3 = new List<Modification>();
-            listForPosition3.Add(new ModificationWithMass("description3", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition3.Add(new Modification("description3", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition4 = new List<Modification>();
-            listForPosition4.Add(new ModificationWithMass("description4", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition4.Add(new Modification("description4", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition5 = new List<Modification>();
-            listForPosition5.Add(new ModificationWithMass("description5", "type", motif, TerminusLocalization.Any, 100, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition5.Add(new Modification("description5", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 100, _databaseReference : new Dictionary<string, IList<string>>()));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -134,17 +134,17 @@ namespace Test
             ModificationMotif.TryGetMotif("K", out motif);
 
             List<Modification> listForPosition1 = new List<Modification>();
-            listForPosition1.Add(new ModificationWithMass("description1", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition1.Add(new Modification("description1", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition2 = new List<Modification>();
-            listForPosition2.Add(new ModificationWithMass("description2", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition2.Add(new Modification("description2", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition3 = new List<Modification>();
-            listForPosition3.Add(new ModificationWithMass("description3", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition3.Add(new Modification("description3", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition4 = new List<Modification>();
-            listForPosition4.Add(new ModificationWithMass("description4", "type", motif, TerminusLocalization.Any, 1, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition4.Add(new Modification("description4", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition5 = new List<Modification>();
-            listForPosition5.Add(new ModificationWithMass("description5", "type", motif, TerminusLocalization.Any, 100, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition5.Add(new Modification("description5", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 100, _databaseReference : new Dictionary<string, IList<string>>()));
             List<Modification> listForPosition6 = new List<Modification>();
-            listForPosition5.Add(new ModificationWithMass("description6", "type", motif, TerminusLocalization.Any, 200, new Dictionary<string, IList<string>>(), new List<string>(), new List<double>()));
+            listForPosition5.Add(new Modification("description6", "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 200, _databaseReference : new Dictionary<string, IList<string>>()));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -183,7 +183,7 @@ namespace Test
             };
             List<PtmSet> sets1 = PtmCombos.get_combinations(a1, 3, new Dictionary<double, int> { { 16, 1 }, { 42, 2 } }, 1, true);
             Assert.AreEqual(1, sets1.Count(s => s.ptm_combination.Count == 3));
-            Assert.True(sets1.Where(s => s.ptm_combination.Count == 3).First().ptm_combination.All(p => p.modification.id == "ox"));
+            Assert.True(sets1.Where(s => s.ptm_combination.Count == 3).First().ptm_combination.All(p => p.modification.OriginalId == "ox"));
 
             IDictionary<int, List<Modification>> a2 = new Dictionary<int, List<Modification>>
             {

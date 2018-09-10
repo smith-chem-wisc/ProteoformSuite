@@ -1,5 +1,4 @@
 ﻿using Proteomics;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,15 +20,14 @@ namespace ProteoformSuiteInternal
                 false,
                 new Dictionary<InputFile, Protein[]>())
         {
-            description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
-            name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
-            fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
+            description = string.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
+            name = string.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
+            fragment = string.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
             contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
-          //  psm_list = theoreticals_with_contaminants_first.SelectMany(p => p.psm_list).ToList();
+            //  psm_list = theoreticals_with_contaminants_first.SelectMany(p => p.psm_list).ToList();
             topdown_theoretical = theoreticals_with_contaminants_first.Any(t => t.topdown_theoretical);
         }
 
         #endregion Public Constructor
-
     }
 }

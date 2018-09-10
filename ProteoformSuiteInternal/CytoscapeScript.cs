@@ -10,7 +10,6 @@ namespace ProteoformSuiteInternal
 {
     public static class CytoscapeScript
     {
-
         #region Private Methods
 
         private static IEnumerable<ProteoformFamily> get_families(IEnumerable<TheoreticalProteoform> theoreticals, List<ProteoformFamily> all_families)
@@ -49,7 +48,7 @@ namespace ProteoformSuiteInternal
                    select f;
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region CYTOSCAPE SCRIPT Fields
 
@@ -69,7 +68,7 @@ namespace ProteoformSuiteInternal
 
         public static string script_file_extension = ".txt";
 
-        #endregion
+        #endregion CYTOSCAPE SCRIPT Fields
 
         #region CYTOSCAPE SCRIPT Public Methods
 
@@ -112,7 +111,7 @@ namespace ProteoformSuiteInternal
                 gene_centric_families, prefered_gene_label);
         }
 
-        #endregion Public Methods
+        #endregion CYTOSCAPE SCRIPT Public Methods
 
         #region CYTOSCAPE SCRIPT Private Methods
 
@@ -156,7 +155,7 @@ namespace ProteoformSuiteInternal
 
             string selected_family_string = "Finished building selected famil";
             selected_family_string += families.Count == 1 ? "y :" : "ies :#";
-            selected_family_string += (families.Count <= 3) ? String.Join(", #", families.Select(f => f.family_id)) : String.Join(", #", families.Select(f => f.family_id).ToList().Take(3)) + ", etc.";
+            selected_family_string += (families.Count <= 3) ? string.Join(", #", families.Select(f => f.family_id)) : string.Join(", #", families.Select(f => f.family_id).ToList().Take(3)) + ", etc.";
             return selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.";
         }
 
@@ -166,14 +165,12 @@ namespace ProteoformSuiteInternal
             double sleep_factor = feature_count / 1000;
             string node_column_types = quantitative != null ? "s,s,d,s,i,d,d,boolean,s" : "s,s,d,s,i"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
             string edge_column_types = "s,s,s,s,s";
-            return String.Join(Environment.NewLine, new string[] {
-
+            return string.Join(Environment.NewLine, new string[] {
                 //Load Tables
                 "network import file file=\"" + edges_path + "\" firstRowAsColumnNames=true delimiters=\"\\t\" indexColumnSourceInteraction=\"1\" indexColumnTargetInteraction=\"3\" startLoadRow=\"0\" dataTypeList=\"" + edge_column_types + "\"",
                 "command sleep duration=" + (0.8 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "table import file file=\"" + nodes_path + "\" startLoadRow=\"0\" keyColumnIndex=\"1\" DataTypeTargetForNetworkCollection=\"Node Table Columns\" dataTypeList=\"" + node_column_types + "\"",
                 "command sleep duration=" + (0.5 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
-
 
                 //Load Settings
                 "vizmap load file file=\"" + styles_path + "\"",
@@ -198,6 +195,7 @@ namespace ProteoformSuiteInternal
 
         //Headers
         public static string lysine_count_header = "lysine_ct";
+
         public static string delta_mass_header = "delta_mass";
         public static string edge_ptm_header = "modification";
         public static string proteoform_type_header = "E_or_T";
@@ -209,6 +207,7 @@ namespace ProteoformSuiteInternal
 
         //Node types
         public static string experimental_label = "experimental";
+
         public static string experimental_notQuantified_label = "experimental_below_quantification_threshold";
         public static string unmodified_theoretical_label = "theoretical";
         public static string modified_theoretical_label = "modified_theoretical";
@@ -218,9 +217,9 @@ namespace ProteoformSuiteInternal
         //Other
         public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
 
-        #endregion CYTOSCAPE NODE AND EDGE TABLES Public Fields
+        #endregion CYTOSCAPE NODE AND EDGE TABLES Fields
 
-        #region  CYTOSCAPE NODE AND EDGE TABLES Methods
+        #region CYTOSCAPE NODE AND EDGE TABLES Methods
 
         public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families,
             string edge_label, string node_label, int double_rounding,
@@ -235,8 +234,8 @@ namespace ProteoformSuiteInternal
 
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
-                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
+                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + string.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.OriginalId != "Unmodified");
                 edge_table.Rows.Add
                 (
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
@@ -244,7 +243,7 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
                     edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
-                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
+                        delta_mass + " " + string.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
                         delta_mass
                 );
             }
@@ -283,8 +282,6 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-
-
             return get_table_string(edge_table);
         }
 
@@ -308,7 +305,6 @@ namespace ProteoformSuiteInternal
                 node_table.Columns.Add(piechart_header, typeof(string));
             }
 
-
             //Choose the layout order
             IEnumerable<Proteoform> layout_order;
             switch (Lollipop.node_positioning.ToList().IndexOf(node_position))
@@ -318,6 +314,7 @@ namespace ProteoformSuiteInternal
                 default:
                     layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).OrderBy(p => p.modified_mass);
                     break;
+
                 case 1: //mass-based spiral
                     layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().OrderBy(p => p.modified_mass));
                     break;
@@ -339,7 +336,7 @@ namespace ProteoformSuiteInternal
 
                     string node_type = quantitative != null && ep.quant.intensitySum == 0 ?
                         experimental_notQuantified_label :
-                        quantitative == null && ep.topdown_id? 
+                        quantitative == null && ep.topdown_id ?
                         td_label :
                         experimental_label;
 
@@ -348,10 +345,10 @@ namespace ProteoformSuiteInternal
                         ep.agg_intensity == 0 ? mock_intensity : ep.agg_intensity.ToString();
 
                     //Names and size
-                    node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });
+                    node_rows += string.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });
 
                     //Set tooltip information
-                    string tooltip = String.Join("; ", new string[]
+                    string tooltip = string.Join("; ", new string[]
                     {
                         "Accession = " + p.accession.ToString(),
                         "Aggregated Mass = " + ep.agg_mass.ToString(),
@@ -365,7 +362,7 @@ namespace ProteoformSuiteInternal
                     if (quantitative != null && ep.quant.intensitySum > 0)
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
-                        String.Join("; ", new string[] {
+                        string.Join("; ", new string[] {
                             "Q-Value = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.roughSignificanceFDR.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.roughSignificanceFDR.ToString() : ""),
                             "Log2FC = " + (quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.logfold2change.ToString() : ep.quant.tusherlogFoldChange.ToString()),
                             "Significant = " + (quantitative as TusherAnalysis1 != null ? ep.quant.TusherValues1.significant.ToString() : quantitative as TusherAnalysis2 != null ? ep.quant.TusherValues2.significant.ToString() : quantitative as Log2FoldChangeAnalysis != null ? ep.quant.Log2FoldChangeValues.significant.ToString() : ""),
@@ -418,7 +415,7 @@ namespace ProteoformSuiteInternal
 
             foreach (DataRow row in table.Rows)
             {
-                result_string.AppendLine(String.Join("\t", row.ItemArray));
+                result_string.AppendLine(string.Join("\t", row.ItemArray));
             }
 
             return result_string.ToString();
@@ -429,21 +426,19 @@ namespace ProteoformSuiteInternal
             if (p as ExperimentalProteoform != null)
             {
                 ExperimentalProteoform e = p as ExperimentalProteoform;
-                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_"  + e.accession;
+                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
                     name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
                           + " " + e.begin + "to" + e.end + " " +
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
-                            String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                            string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
                 return name;
             }
-
             else if (p as TheoreticalProteoform != null)
             {
                 return p.accession + " " + p.ptm_description;
             }
-
             else
             {
                 return p.accession;
@@ -457,7 +452,7 @@ namespace ProteoformSuiteInternal
                 "\" labellist = \",\"";
         }
 
-        #endregion  CYTOSCAPE NODE AND EDGE TABLES Methods
+        #endregion CYTOSCAPE NODE AND EDGE TABLES Methods
 
         #region CYTOSCAPE STYLES XML Fields
 
@@ -470,7 +465,7 @@ namespace ProteoformSuiteInternal
             "Marshmallow",
             "Wisconsin Schaum Torte"
         };
-        
+
         public static Dictionary<string, List<string>> color_schemes = new Dictionary<string, List<string>>
         {
             //Colors: 0) exp, 1) ptm, 2) theo, 3) pie, 4) gene, 5) annulus, 6) top-down
@@ -495,7 +490,7 @@ namespace ProteoformSuiteInternal
         //These are the default styles associated with the "Sample1" style in Cytoscape
         public static Dictionary<string, string> default_styles = new Dictionary<string, string>()
         {
-            //DEFAULT NETWORK STYLES 
+            //DEFAULT NETWORK STYLES
             { "NETWORK_WIDTH", "550.0"},
             { "NETWORK_EDGE_SELECTION", "true"},
             { "NETWORK_TITLE", ""},
@@ -604,7 +599,7 @@ namespace ProteoformSuiteInternal
             { "EDGE_TARGET_ARROW_UNSELECTED_PAINT", "#000000"}
         };
 
-        #endregion CYTOSCAPE STYLES XML Public Fields
+        #endregion CYTOSCAPE STYLES XML Fields
 
         #region CYTOSCAPE STYLES XML Methods
 
@@ -658,7 +653,6 @@ namespace ProteoformSuiteInternal
                     writer.WriteStartElement("visualProperty");
                     writer.WriteAttributeString("name", style.Key);
 
-
                     //Defaults
                     if (style.Key == "NODE_LABEL_POSITION")
                     {
@@ -671,7 +665,6 @@ namespace ProteoformSuiteInternal
                     {
                         writer.WriteAttributeString("default", style.Value);
                     }
-
 
                     //Discrete and continuous mapping
                     if (style.Key == "NODE_FILL_COLOR")
@@ -779,7 +772,6 @@ namespace ProteoformSuiteInternal
                 }
                 writer.WriteEndElement();
 
-
                 //EDGE PROPERTIES
                 writer.WriteStartElement("edge");
                 writer.WriteStartElement("dependency");
@@ -857,6 +849,5 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion CYTOSCAPE STYLES XML Methods
-
     }
 }

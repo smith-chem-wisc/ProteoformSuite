@@ -360,11 +360,11 @@ namespace Test
             TopDownHit hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>();
-            ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains("AA0502")).FirstOrDefault();
+            Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0502")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(hit.sequence.Length, mod));
-            ModificationWithMass mod2 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains("AA0170")).FirstOrDefault();
+            Modification mod2 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0170")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(3, mod2));
-            ModificationWithMass mod3 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains("AA0433")).FirstOrDefault();
+            Modification mod3 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0433")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(1, mod3));
 
             string sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula();
@@ -376,21 +376,21 @@ namespace Test
             Assert.AreEqual("[C2H4]AS[C5H12NO5P]DA[H3C2N1O1]CSDAS[C6H9NO3]D", sequencewithchemicalformula);
 
             //should return null if N term formula wrong or doesn't match mass
-            ModificationWithMassAndCf badNtermMod = new ModificationWithMassAndCf("badNtermMod", null, null, TerminusLocalization.NProt, Chemistry.ChemicalFormula.ParseFormula("H"), -1000, null, null, null, null);
+            Modification badNtermMod = new Modification("badNtermMod", _locationRestriction : "N-terminal.", _chemicalFormula : ChemicalFormula.ParseFormula("H"), _monoisotopicMass : -1000);
             hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badNtermMod) };
             Assert.IsNull(hit.GetSequenceWithChemicalFormula());
 
             //should return null if mod chem formula wrong or doesn't match mass
-            ModificationWithMassAndCf badMod = new ModificationWithMassAndCf("badMod", null, null, TerminusLocalization.Any, Chemistry.ChemicalFormula.ParseFormula("H"), -1000, null, null, null, null);
+            Modification badMod = new Modification("badMod", _locationRestriction : "Anywhere.", _chemicalFormula : ChemicalFormula.ParseFormula("H"), _monoisotopicMass : -1000);
             hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badMod) };
             Assert.IsNull(hit.GetSequenceWithChemicalFormula());
 
             //should return null if N term formula wrong or doesn't match mass
-            ModificationWithMassAndCf badCtermMod = new ModificationWithMassAndCf("badCtermMod", null, null, TerminusLocalization.ProtC, Chemistry.ChemicalFormula.ParseFormula("H"), -1000, null, null, null, null);
+            Modification badCtermMod = new Modification("badCtermMod", _locationRestriction : "C-terminal.", _chemicalFormula : ChemicalFormula.ParseFormula("H"), _monoisotopicMass : -1000);
             hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badCtermMod) };

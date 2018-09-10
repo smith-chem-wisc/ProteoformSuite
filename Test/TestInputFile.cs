@@ -53,7 +53,7 @@ namespace Test
             Sweet.change_file(mock, mock.biological_replicate, nameof(mock.biological_replicate), mock.biological_replicate.ToString(), "2");
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
+            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
             Sweet.lollipop.enter_input_files(folder, extension, purpose, destination, true);
             Assert.AreEqual(2, destination.Count);
             Assert.True(destination.All(f => f.extension == extension[0]));
@@ -74,7 +74,7 @@ namespace Test
             Sweet.change_file(mock, mock.biological_replicate, nameof(mock.biological_replicate), mock.biological_replicate.ToString(), "2");
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
+            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
             Sweet.add_files_from_presets(destination);
             Assert.AreEqual(1, destination.Count);
             Assert.True(destination[0].lt_condition == "Normal");

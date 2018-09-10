@@ -7,7 +7,6 @@ namespace ProteoformSuiteGUI
 {
     public class ExcelWriter
     {
-
         #region Private Field
 
         private XLWorkbook workbook = new XLWorkbook();
@@ -39,7 +38,7 @@ namespace ProteoformSuiteGUI
                 {
                     try
                     {
-                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = 
+                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType =
                             Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ?
                             XLCellValues.Number :
                             XLCellValues.Text;
@@ -91,7 +90,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Private Method
-
     }
 }
-

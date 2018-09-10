@@ -14,7 +14,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class ProteoformSweet : Form
     {
-
         #region Public Fields
 
         public LoadResults loadResults = new LoadResults();
@@ -35,13 +34,13 @@ namespace ProteoformSuiteGUI
 
         #region Private Fields
 
-        FolderBrowserDialog resultsFolderOpen = new FolderBrowserDialog();
-        OpenFileDialog methodFileOpen = new OpenFileDialog();
-        SaveFileDialog methodFileSave = new SaveFileDialog();
-        OpenFileDialog openResults = new OpenFileDialog();
-        SaveFileDialog saveResults = new SaveFileDialog();
-        SaveFileDialog saveExcelDialog = new SaveFileDialog();
-        ISweetForm current_form;
+        private FolderBrowserDialog resultsFolderOpen = new FolderBrowserDialog();
+        private OpenFileDialog methodFileOpen = new OpenFileDialog();
+        private SaveFileDialog methodFileSave = new SaveFileDialog();
+        private OpenFileDialog openResults = new OpenFileDialog();
+        private SaveFileDialog saveResults = new SaveFileDialog();
+        private SaveFileDialog saveExcelDialog = new SaveFileDialog();
+        private ISweetForm current_form;
 
         #endregion Private Fields
 
@@ -71,7 +70,6 @@ namespace ProteoformSuiteGUI
 
         private void InitializeForms()
         {
-
             forms = new List<ISweetForm>
             {
                 loadResults,
@@ -169,6 +167,7 @@ namespace ProteoformSuiteGUI
             showForm(proteoformFamilies);
             proteoformFamilies.initialize_every_time();
         }
+
         private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(topDown);
@@ -193,7 +192,6 @@ namespace ProteoformSuiteGUI
             showForm(resultsSummary);
         }
 
-    
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods
@@ -244,7 +242,7 @@ namespace ProteoformSuiteGUI
                 };
                 loadResults.InitializeParameterSet(); // updates the textbox
                 if (loadResults.ReadyToRunTheGamut())
-                   loadResults.RunTheGamut(false); // updates the dgvs
+                    loadResults.RunTheGamut(false); // updates the dgvs
                 return true;
             }
             return false;
@@ -252,7 +250,7 @@ namespace ProteoformSuiteGUI
 
         public bool open_method(string methodFilePath, string[] lines, bool add_files)
         {
-            bool method_file_success = Sweet.open_method(methodFilePath, String.Join(Environment.NewLine, lines), add_files, out string warning);
+            bool method_file_success = Sweet.open_method(methodFilePath, string.Join(Environment.NewLine, lines), add_files, out string warning);
             if (warning.Length > 0 && MessageBox.Show("WARNING" + Environment.NewLine + Environment.NewLine + warning, "Open Method", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                 return false;
             foreach (ISweetForm form in forms) form.InitializeParameterSet();
@@ -363,21 +361,21 @@ namespace ProteoformSuiteGUI
             if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
-                warning_methods.Add(String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                warning_methods.Add(string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
             if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
             }
             if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
             }
-            if(warning_methods.Count > 1)
+            if (warning_methods.Count > 1)
             {
-                MessageBox.Show(String.Join("\n\n", warning_methods));
+                MessageBox.Show(string.Join("\n\n", warning_methods));
             }
             //Program ran successfully
             stopwatch.Stop();
@@ -398,12 +396,11 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
                 return;
             }
-            
+
             ExcelWriter writer = new ExcelWriter();
             writer.ExportToExcel(data_tables, (current_form as Form).Name);
             SaveExcelFile(writer, (current_form as Form).Name + "_table.xlsx");
         }
-
 
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -451,7 +448,6 @@ namespace ProteoformSuiteGUI
 
         private void resultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
         }
     }
 }

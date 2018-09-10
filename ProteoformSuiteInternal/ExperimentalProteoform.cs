@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     //Note ExperimentalProteoform is a bit of a misnomer. These are not experimental observations, but rather aggregated experimental
     //observations. Each NeuCodePair is an ExperimentalProteoform, but this class is used after accounting for missed lysines and monoisotopics.
-    //However, I think this makes the programming a bit cleaner, since "Experimental-Theoretical" pairs should naturally be between 
+    //However, I think this makes the programming a bit cleaner, since "Experimental-Theoretical" pairs should naturally be between
     //"ExperimentalProteoform" and "TheoreticalProteoform" objects
 
     public class ExperimentalProteoform : Proteoform
     {
-
         #region Public Field
 
         public IAggregatable root;
@@ -37,7 +34,7 @@ namespace ProteoformSuiteInternal
 
         public List<BiorepTechrepIntensity> biorepTechrepIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
 
-       // public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>();
+        // public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>();
 
         public QuantitativeProteoformValues quant { get; set; }
 
@@ -49,7 +46,7 @@ namespace ProteoformSuiteInternal
 
         public double agg_rt { get; set; } = 0;
 
-        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
+        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once.
 
         public string manual_validation_id { get; set; } = "";
 
@@ -59,7 +56,7 @@ namespace ProteoformSuiteInternal
 
         public bool topdown_id { get; set; }
 
-        public bool adduct { get; set; } 
+        public bool adduct { get; set; }
 
         public bool ambiguous { get; set; }
 
@@ -68,12 +65,12 @@ namespace ProteoformSuiteInternal
         public string uniprot_mods { get; set; }
 
         public bool novel_mods { get; set; }
-        
+
         #endregion Public Properties
 
         #region Public Constructors
 
-        public ExperimentalProteoform(string accession, IAggregatable root, List<IAggregatable> candidate_observations, bool is_target) 
+        public ExperimentalProteoform(string accession, IAggregatable root, List<IAggregatable> candidate_observations, bool is_target)
             : base(accession)
         {
             quant = new QuantitativeProteoformValues(this);
@@ -83,7 +80,7 @@ namespace ProteoformSuiteInternal
             this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
 
-        public ExperimentalProteoform(string accession, IAggregatable root, bool is_target) 
+        public ExperimentalProteoform(string accession, IAggregatable root, bool is_target)
             : base(accession)
         {
             quant = new QuantitativeProteoformValues(this);
@@ -91,7 +88,7 @@ namespace ProteoformSuiteInternal
             this.is_target = is_target;
         }
 
-        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<IAggregatable> candidate_observations, bool is_target, bool neucode_labeled) 
+        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<IAggregatable> candidate_observations, bool is_target, bool neucode_labeled)
             : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
             if (neucode_labeled)
@@ -107,7 +104,6 @@ namespace ProteoformSuiteInternal
                 this.calculate_properties();
                 this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
-
             else
             {
                 Component cRoot = new Component();
@@ -121,7 +117,6 @@ namespace ProteoformSuiteInternal
                 this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
-
 
         // COPYING CONSTRUCTOR
         public ExperimentalProteoform(ExperimentalProteoform eP)
@@ -169,27 +164,26 @@ namespace ProteoformSuiteInternal
             if (intense_cs == null)
                 return "";
 
-            return "File: " + intense.input_file.filename 
-                + "; Scan Range: " + intense.min_scan + "-" + intense.max_scan 
+            return "File: " + intense.input_file.filename
+                + "; Scan Range: " + intense.min_scan + "-" + intense.max_scan
                 + "; Charge State m/z (+" + intense_cs.charge_count.ToString() + "): " + intense_cs.mz_centroid + "; RT (min): " + intense.rt_apex;
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region Public Methods
 
         public double calculate_mass_error()
         {
-           string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence
-                    .Substring(begin < linked_proteoform_references.First().begin? 0 : begin - linked_proteoform_references.First().begin,
-                    1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin ));
+            string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence
+                     .Substring(begin < linked_proteoform_references.First().begin ? 0 : begin - linked_proteoform_references.First().begin,
+                     1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin));
             if (begin < linked_proteoform_references.First().begin) sequence = "M" + sequence;
             double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
             return agg_mass - theoretical_mass;
         }
 
-        #endregion
-
+        #endregion Public Methods
 
         #region Aggregation Public Methods
 
@@ -239,8 +233,8 @@ namespace ProteoformSuiteInternal
             accepted = true;
         }
 
-        //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
-        //lysine count first, and then aggregated based on mass and retention time afterwards, which may give a slightly different root for the 
+        //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on
+        //lysine count first, and then aggregated based on mass and retention time afterwards, which may give a slightly different root for the
         //experimental proteoform because the precursor aggregation may shuffle the intensity order slightly. We haven't observed any negative
         //impact of this difference as of 160812. -AC
         public bool includes(IAggregatable candidate, IAggregatable root)
@@ -257,6 +251,7 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Aggregation Public Methods
+
         #region Aggregation Private Methods
 
         private bool tolerable_rt(IAggregatable candidate, double rt_apex)
@@ -346,7 +341,7 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Quantitation Public Method
-       
+
         #region Public Methods
 
         public void shift_masses(int shift, bool neucode_labeled)
@@ -371,6 +366,5 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Methods
-
     }
 }

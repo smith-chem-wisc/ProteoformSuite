@@ -91,7 +91,7 @@ namespace Test
         [Test]
         public void TestTopdownReader()
         {
-            //unlabeled
+            // unlabeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.carbamidomethylation = false;
@@ -102,8 +102,8 @@ namespace Test
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
             Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10894.157, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
@@ -113,7 +113,7 @@ namespace Test
             Assert.AreEqual(10894.157, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(10894.130, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
 
-            //neucode labeled
+            // neucode labeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.carbamidomethylation = false;
@@ -135,7 +135,7 @@ namespace Test
             Assert.AreEqual(10934.228, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(10934.201, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
 
-            //carbamidomethylated
+            // carbamidomethylated
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.carbamidomethylation = true;
@@ -155,7 +155,7 @@ namespace Test
             Assert.AreEqual(4, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(10951.178, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
 
-            //carbamidomethylated and neucode labeled
+            // carbamidomethylated and neucode labeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
             Sweet.lollipop.carbamidomethylation = true;
@@ -245,7 +245,7 @@ namespace Test
             //need to make decon error top "deconvolution error"
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("S", out motif);
-            ModificationWithMass m = new ModificationWithMass("id", "modtype", motif, TerminusLocalization.Any, 1);
+            Modification m = new Modification("id", _modificationType : "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1);
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(-1, m) });
             Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(set);
@@ -253,7 +253,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.Add(-1.0, new List<PtmSet>() { set });
 
             //need missing error
-            ModificationWithMass m2 = new ModificationWithMass("id", "modtype", motif, TerminusLocalization.Any, 1);
+            Modification m2 = new Modification("id", _modificationType : "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1);
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m2);
             PtmSet set2 = new PtmSet(new List<Ptm> { new Ptm(-1, m2) });
             Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(set2);
@@ -373,17 +373,17 @@ namespace Test
             //same begin and end, T has more PTMs
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
-            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new Modification("Acetylation", _modificationType : "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 42.02)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end TD has more of a PTM type
             td.ptm_set = new PtmSet(new List<Ptm>());
-            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new Modification("Acetylation", _modificationType : "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 42.02)) });
             td.set_correct_id();
             Assert.IsFalse(td.correct_id);
             //same begin and end and PTMs
-            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
-            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "type", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            td.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new Modification("Acetylation", _modificationType : "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 42.02)) });
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new Modification("Acetylation", _modificationType : "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 42.02)) });
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
         }
@@ -410,8 +410,8 @@ namespace Test
             t3.topdown_end = 128;
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
-            t3.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(10, new ModificationWithMass("Acetylation", "Unlocalized", motif, TerminusLocalization.Any, 79.96, null, null, null, null)) });
-            t5.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", "Unloaclized", motif, TerminusLocalization.Any, 42.02, null, null, null, null)) });
+            t3.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(10, new Modification("Acetylation", _modificationType : "Unlocalized", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 79.96)) });
+            t5.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new Modification("Acetylation", _modificationType : "Unloaclized", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 42.02)) });
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.methionine_cleavage = true;

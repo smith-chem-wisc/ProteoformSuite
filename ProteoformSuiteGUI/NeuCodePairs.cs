@@ -11,7 +11,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class NeuCodePairs : Form, ISweetForm
     {
-
         #region Public Constructor
 
         public NeuCodePairs()
@@ -81,7 +80,7 @@ namespace ProteoformSuiteGUI
 
         public List<DataTable> SetTables()
         {
-            DataTables = new List<DataTable> { DisplayNeuCodePair.FormatNeuCodeTable(Sweet.lollipop.raw_neucode_pairs.Select(x => new DisplayNeuCodePair(x)).ToList(), "NeuCodePairs" ) };
+            DataTables = new List<DataTable> { DisplayNeuCodePair.FormatNeuCodeTable(Sweet.lollipop.raw_neucode_pairs.Select(x => new DisplayNeuCodePair(x)).ToList(), "NeuCodePairs") };
             return DataTables;
         }
 
@@ -176,7 +175,6 @@ namespace ProteoformSuiteGUI
             ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
         }
 
-
         private void yMaxKCt_ValueChanged(object sender, EventArgs e)
         {
             ct_LysineCount.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxKCt.Value.ToString());
@@ -217,7 +215,6 @@ namespace ProteoformSuiteGUI
             ct_IntensityRatio.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxIRat.Value.ToString());
         }
 
-
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_lysine_ct = KMinAcceptable.Value;
@@ -254,10 +251,10 @@ namespace ProteoformSuiteGUI
 
         #region Tooltip Private Methods
 
-        Point? ct_intensityRatio_prevPosition = null;
-        ToolTip ct_intensityRatio_tt = new ToolTip();
+        private Point? ct_intensityRatio_prevPosition = null;
+        private ToolTip ct_intensityRatio_tt = new ToolTip();
 
-        void ct_IntensityRatio_MouseClick(object sender, MouseEventArgs e)
+        private void ct_IntensityRatio_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -265,10 +262,10 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        Point? ct_LysineCount_prevPosition = null;
-        ToolTip ct_LysineCount_tt = new ToolTip();
+        private Point? ct_LysineCount_prevPosition = null;
+        private ToolTip ct_LysineCount_tt = new ToolTip();
 
-        void ct_LysineCount_MouseClick(object sender, MouseEventArgs e)
+        private void ct_LysineCount_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -277,6 +274,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Tooltip Private Methods
-
     }
 }

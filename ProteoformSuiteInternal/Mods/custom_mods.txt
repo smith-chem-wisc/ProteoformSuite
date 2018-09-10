@@ -1,33 +1,33 @@
 ID   Sulfate Adduct
-TG   Any
+TG   X
 PP   Anywhere.
 MM   97.967377
 MT   Common
 CF   H2 O4 S1
 //
 ID   Acetone Artifact (Unconfirmed)
-TG   Any
+TG   X
 PP   Anywhere.
 MM   98.0732
 MT   Common
 CF   C6 H10 O1
 //
 ID   Hydrogen Dodecyl Sulfate
-TG   Any
+TG   X
 PP   Anywhere.
 MM   266.15516
 MT   Common
 CF   H26 C12 S1 O4
 //
 ID   N-terminal Acetyl
-TG   K
+TG   X
 PP   N-terminal.
 MM   42.010565
 MT   Common
 CF   H2 C2 O1
 //
 ID   GPI anchor
-TG   Any
+TG   X
 PP   Anywhere.
 MM   123.00853
 MT   Common
@@ -37,7 +37,7 @@ DR   RESID; AA0162.
 DR   RESID; AA0158.
 //
 ID   Formyl
-TG   Any
+TG   X
 PP   Anywhere.
 MM   27.994915
 MT   Common
@@ -46,7 +46,7 @@ DR   RESID; AA0021.
 DR   PSI-MOD; MOD:00482.
 //
 ID   Succinyl
-TG   Any
+TG   X
 PP   Anywhere.
 CF   C4 H4 O3
 MT   Common

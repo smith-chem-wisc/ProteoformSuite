@@ -88,7 +88,6 @@ namespace ProteoformSuiteGUI
             get { return t.novel_mods; }
         }
 
-
         public int theoretical_begin
         {
             get { return t.begin; }

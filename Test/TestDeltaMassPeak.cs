@@ -330,7 +330,7 @@ namespace Test
             d2.mass_shifter = null;
             using (StreamWriter file = new StreamWriter(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml")))
                 file.WriteLine(Sweet.save_method());
-            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), String.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
+            Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), string.Join(Environment.NewLine, File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"))), true, out string warning);
             Sweet.mass_shifts_from_presets();
             d2.shift_experimental_masses(Convert.ToInt32(d2.mass_shifter), true);
 
