@@ -194,7 +194,6 @@ namespace ProteoformSuiteGUI
                 rb_neucode.Visible = true;
                 rb_unlabeled.Visible = true;
                 calib_stand_splitContainer.Visible = true;
-                fullrun_groupbox.Visible = true;
             }
             else if (rb_chemicalCalibration.Checked)
             {

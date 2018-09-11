@@ -492,7 +492,7 @@ namespace ProteoformSuiteInternal
 
         #region TOPPIC
 
-        private static IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
+        private static MsDataFile myMsDataFile;
 
         public string Toppic(string directory, int maxcharge, int maxmass, double mzerror, double snratio, double precursorwindow, int activationmethod, bool carbamidomethylation, int masserrortolerance, int maxshift, int maxnumberofshifts)
         {
