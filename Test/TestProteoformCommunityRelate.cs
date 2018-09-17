@@ -433,6 +433,26 @@ namespace Test
             });
             prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
             Assert.AreEqual(0, prList.Count);
+
+            //test methionine retention
+            pf1.modified_mass = 2131.04;
+            pf1.lysine_count = 1;
+            pf2.modified_mass = 2000;
+            pf2.lysine_count = 1;
+            pf2.begin = 2;
+
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("M", out motif);
+            Modification m = new Modification("Met retention", _modificationType: "AminoAcid", _target: motif, _locationRestriction: "Anywhere.", _monoisotopicMass: 131.04);
+            Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m);
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
+            Sweet.lollipop.modification_ranks.Add(131.04, 2);
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
+
+            paE[0] = pf1;
+            paT[0] = pf2;
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
         }
 
         [Test]
