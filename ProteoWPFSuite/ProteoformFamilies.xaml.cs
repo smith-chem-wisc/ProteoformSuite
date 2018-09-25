@@ -33,7 +33,7 @@ namespace ProteoWPFSuite
         #endregion Public Methods
 
 
-        public ProteoformSweet MDIParent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ProteoformSweet MDIParent { get; set; }
 
         public List<DataTable> DataTables => throw new NotImplementedException();
 

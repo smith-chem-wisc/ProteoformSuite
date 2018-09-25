@@ -19,7 +19,7 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for ExperimentTheoreticalComparison.xaml
     /// </summary>
-    public partial class ExperimentTheoreticalComparison : UserControl,ISweetForm
+    public partial class ExperimentTheoreticalComparison : UserControl,ISweetForm, ITabbedMDI
     {
         public ExperimentTheoreticalComparison()
         {
@@ -27,6 +27,8 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables => throw new NotImplementedException();
+
+        public ProteoformSweet MDIParent { get; set; }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {

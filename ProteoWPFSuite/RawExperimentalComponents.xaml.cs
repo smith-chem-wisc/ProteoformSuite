@@ -13,7 +13,7 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for RawExperimentalComponents.xaml
     /// </summary>
-    public partial class RawExperimentalComponents : UserControl, ISweetForm
+    public partial class RawExperimentalComponents : UserControl, ISweetForm, ITabbedMDI
     {
         #region Public Constructor
         public RawExperimentalComponents()
@@ -26,6 +26,7 @@ namespace ProteoWPFSuite
         #region Public Property
 
         public List<DataTable> DataTables { get; private set; }
+        public ProteoformSweet MDIParent { get; set; }
 
         #endregion Public Property
 

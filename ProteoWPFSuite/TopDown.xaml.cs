@@ -11,15 +11,13 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for TopDown.xaml
     /// </summary>
-    public partial class TopDown : UserControl, ISweetForm
+    public partial class TopDown : UserControl, ISweetForm, ITabbedMDI
     {
         private static Color[] colors = new Color[20];
         private static List<string> mods = new List<string>();
-        private ProteoformSweet parMDI;
         public TopDown()
         {
             InitializeComponent();
-            //this.parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
         }
 
         public void InitializeParameterSet()
@@ -35,6 +33,8 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables { get; private set; }
+        public ProteoformSweet MDIParent { get; set; }
+
         public List<DataTable> SetTables()
         {
             DataTables = new List<DataTable>
@@ -100,7 +100,7 @@ namespace ProteoWPFSuite
             }
             //need to refill theo database --> added theoreticsl
             
-            parMDI.theoreticalDatabase.FillTablesAndCharts();
+            MDIParent.theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
         }
         public void ClearListsTablesFigures(bool clear_following)
@@ -119,9 +119,9 @@ namespace ProteoWPFSuite
             rtb_sequence.Clear();
             if (clear_following)
             {
-                for (int i = parMDI.forms.IndexOf(this) + 1; i < parMDI.forms.Count; i++)
+                for (int i = MDIParent.forms.IndexOf(this) + 1; i < MDIParent.forms.Count; i++)
                 {
-                    ISweetForm sweet = parMDI.forms[i];
+                    ISweetForm sweet = MDIParent.forms[i];
                     if (sweet as RawExperimentalComponents == null)
                         sweet.ClearListsTablesFigures(false);
                 }

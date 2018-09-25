@@ -19,7 +19,7 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for AggregatedProteoforms.xaml
     /// </summary>
-    public partial class AggregatedProteoforms : UserControl,ISweetForm
+    public partial class AggregatedProteoforms : UserControl,ISweetForm,ITabbedMDI
     {
         public AggregatedProteoforms()
         {
@@ -27,6 +27,8 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables => throw new NotImplementedException();
+
+        public ProteoformSweet MDIParent { get; set; }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {
