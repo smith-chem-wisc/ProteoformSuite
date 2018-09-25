@@ -29,7 +29,7 @@ namespace Test
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
-            DeltaMassPeak peak = new DeltaMassPeak(prs[0],new HashSet<ProteoformRelation>(prs));
+            DeltaMassPeak peak = new DeltaMassPeak(prs[0], new HashSet<ProteoformRelation>(prs));
             Sweet.lollipop.et_peaks = new List<DeltaMassPeak> { peak };
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
             test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
@@ -86,8 +86,8 @@ namespace Test
             Assert.AreEqual(4, test_community.families.First().proteoforms.Count);
             Assert.AreEqual(4, test_community.families.First().experimental_proteoforms.Count);
             Assert.AreEqual(0, test_community.families.First().theoretical_proteoforms.Count);
-        }    
-       
+        }
+
         [Test]
         public void test_construct_two_families()
         {
@@ -102,7 +102,7 @@ namespace Test
 
             Sweet.lollipop.ee_max_mass_difference = 20;
             Sweet.lollipop.peak_width_base_ee = 0.015;
-            Sweet.lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
+            Sweet.lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't....
 
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
@@ -156,7 +156,6 @@ namespace Test
                 { f, new Protein[] { p1 } }
             };
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
-            
 
             //One accepted ET relation; should give one ProteoformFamily
             Sweet.lollipop.min_peak_count_et = 1;
@@ -182,7 +181,6 @@ namespace Test
             Assert.AreEqual(p1.Name, test_community.families.First().name_list);
             Assert.AreEqual(pf2.accession, test_community.families.First().accession_list);
         }
-        
 
         public static string p1_accession = "T1";
         public static string p1_name = "name";
@@ -211,8 +209,8 @@ namespace Test
 
             Sweet.lollipop.ee_max_mass_difference = 20;
             Sweet.lollipop.peak_width_base_ee = 0.015;
-            Sweet.lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
-            Sweet.lollipop.min_peak_count_et = 2; //needs to be lower so the 2 ET relations are accepted 
+            Sweet.lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't....
+            Sweet.lollipop.min_peak_count_et = 2; //needs to be lower so the 2 ET relations are accepted
 
             //TheoreticalProteoformGroup
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
@@ -221,7 +219,6 @@ namespace Test
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf", 1234.56, p1, dict);
             TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("T1_asdf_pf2", "T1_asdf_1", 1234.56, dict);
-
 
             //ExperimentalProteoforms
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1", 0, 0, true);
@@ -283,14 +280,14 @@ namespace Test
 
             community.construct_families();
 
-            //Testing the identification of experimentals   
+            //Testing the identification of experimentals
             //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
             //test that the relation.represented_modification gets set
             Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 19 || r.represented_ptmset == null));
             Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "unmodified"));
             Assert.True(pf1 == pf3.linked_proteoform_references.First() || pf2 == pf3.linked_proteoform_references.First());
 
-            //uniprot vs. novel mods 
+            //uniprot vs. novel mods
             Assert.AreEqual("oxidation", pf3.linked_proteoform_references.First().ptm_description);
             Assert.AreEqual("oxidation", pf4.linked_proteoform_references.First().ptm_description);
             Assert.AreEqual("oxidation", pf5.linked_proteoform_references.First().ptm_description);
@@ -317,8 +314,6 @@ namespace Test
             Assert.IsFalse(pf6.novel_mods);
             Assert.IsFalse(pf7.novel_mods);
             Assert.IsFalse(pf8.novel_mods);
-
-
 
             //test I don't get re-reassignments
             Assert.AreEqual(pf3, pf4.linked_proteoform_references.Last()); //test that the proteoform.theoretical_reference gets set to each successive PF base
@@ -402,7 +397,6 @@ namespace Test
             Assert.IsFalse(Sweet.lollipop.ed_relations.First().Value.FirstOrDefault().Accepted); //should be false if peak unaccepted
             Assert.AreEqual(1, Sweet.lollipop.et_peaks.Count);
             Assert.IsNotNull(Sweet.lollipop.ed_relations.Values.SelectMany(v => v).First().peak);
-
 
             //peak is accepted --> relation should be accepted, peak added to relation
             Sweet.lollipop.clear_et();

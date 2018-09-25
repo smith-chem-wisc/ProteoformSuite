@@ -6,7 +6,6 @@ using System.Linq;
 using System.IO;
 using Proteomics;
 
-
 namespace Test
 {
     [TestFixture]
@@ -23,7 +22,7 @@ namespace Test
         {
             List<IAggregatable> components = new List<IAggregatable>();
             InputFile inFile = new InputFile("somepath", Labeling.NeuCode, Purpose.Identification);
-            
+
             for (int i = 0; i < 2; i++)
             {
                 Component light = new Component();
@@ -99,7 +98,7 @@ namespace Test
         public void neucode_proteoform_calculate_properties()
         {
             Sweet.lollipop.neucode_labeled = true;
-            List<IAggregatable> components = generate_neucode_components(starter_mass);        
+            List<IAggregatable> components = generate_neucode_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated.Count);
             Assert.AreEqual(3, e.lysine_count);
@@ -165,7 +164,6 @@ namespace Test
             e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated.Count);
         }
-
 
         //Maximum number of missed
         public static int missed_monoisotopics = Sweet.lollipop.maximum_missed_monos;
@@ -266,7 +264,7 @@ namespace Test
         public void aggregate_consecutive_charge_states()
         {
             List<ChargeState> cs = new List<ChargeState>();
-            for(int i = 5; i < 8; i++)
+            for (int i = 5; i < 8; i++)
             {
                 cs.Add(new ChargeState(i, 1000, 1000));
             }
@@ -286,7 +284,7 @@ namespace Test
 
         [Test]
         public void test_aggregate_copy()
-        { 
+        {
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -363,7 +361,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(0, exps_out.Count);
 
-
             // DOESN'T PASS WHEN LESS THAN THRESHOLD
             //One biorep obs doesn't pass 2 from any-single-conditon test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
@@ -387,7 +384,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(1, exps_out.Count);
 
-
             // DOESN'T PASS WHEN LESS THAN THRESHOLD IN SPECIFIC CONDITIONS UNLESS ANY-CONDITION
             //One biorep obs in two different conditions doesn't pass 2 from any-single-conditon test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
@@ -400,7 +396,6 @@ namespace Test
             //One biorep obs in two different conditions doesn't pass 2 from for-each-conditon test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
-
 
             //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
             foreach (var x in exps[0].aggregated)
@@ -415,7 +410,6 @@ namespace Test
 
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
-
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
             exps[0].aggregated.Clear();
@@ -519,7 +513,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(0, exps_out.Count);
 
-
             // DOESN'T PASS WHEN LESS THAN THRESHOLD
             //Two biorep+techrep obs in single condition doesn't pass 3 from any-single-conditon test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
@@ -544,7 +537,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(1, exps_out.Count);
 
-
             // DOESN'T PASS WHEN LESS THAN THRESHOLD IN SPECIFIC CONDITIONS UNLESS ANY-CONDITION
             //Two and one biorep+techrep obs in two different conditions doesn't pass 3 from any-single-conditon test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
@@ -558,7 +550,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 3);
             Assert.AreEqual(0, exps_out.Count);
 
-
             //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
             foreach (var x in exps[0].aggregated) x.input_file.lt_condition = "not_a_condition";
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
@@ -569,8 +560,6 @@ namespace Test
 
             exps_out = Sweet.lollipop.determineAggProteoformsMeetingCriteria(conditions, exps, fromeach, 3);
             Assert.AreEqual(0, exps_out.Count);
-
-
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
             exps[0].aggregated.Clear();

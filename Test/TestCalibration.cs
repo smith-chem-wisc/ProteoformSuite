@@ -1,19 +1,19 @@
-﻿using NUnit.Framework;
+﻿using Chemistry;
+using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Proteomics;
 using System.Linq;
 using System;
 using Chemistry;
 
-
 namespace Test
 {
     [TestFixture]
-    class TestCalibration
+    internal class TestCalibration
     {
-
         [Test]
         public void get_file_descriptions()
         {
@@ -167,7 +167,7 @@ namespace Test
             if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")))
                 File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML"));
             Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")));
-            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx"))) 
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")))
                 File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx"));
             Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
             Sweet.lollipop.read_in_calibration_td_hits();
@@ -178,7 +178,7 @@ namespace Test
             Assert.AreEqual(6, Sweet.lollipop.td_hit_correction.Count);
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
-            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed  
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
             Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")));
@@ -204,7 +204,7 @@ namespace Test
             }
             foreach (ChargeState cs in calibrated_components.SelectMany(c => c.charge_states))
             {
-              Assert.True(Sweet.lollipop.component_correction.Values.Contains(Math.Round(cs.mz_centroid, 5)));
+                Assert.True(Sweet.lollipop.component_correction.Values.Contains(Math.Round(cs.mz_centroid, 5)));
             }
             //sometimes have a cs that doesn't change - want to make sure not ALL of them didn't...
             Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(cs => calibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity)));
@@ -248,7 +248,6 @@ namespace Test
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].biological_replicate = "1";
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].lt_condition = "normal";
 
-
             //add another file - not same biorep as td file... should not be calibrated
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].fraction = "4";
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].technical_replicate = "1";
@@ -280,7 +279,7 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.td_hit_correction.Count);
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
             Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
-            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed      
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
             Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML"))); //didn't calibrate topdown
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")));
@@ -343,7 +342,7 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.calibration_components.Count);
             Assert.AreEqual(0, Sweet.lollipop.component_correction.Count);
             Assert.AreEqual(0, Sweet.lollipop.td_hit_correction.Count);
-            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz != h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed  
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz != h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
             Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
             Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
         }
@@ -357,7 +356,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
 
-            //make theo database so have ptm's and sequences... 
+            //make theo database so have ptm's and sequences...
             TopDownHit hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>();
@@ -371,26 +370,26 @@ namespace Test
             string sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula();
             Assert.AreEqual("[C2H4]AS[C5H12NO5P]DACSDAS[C6H9NO3]D", sequencewithchemicalformula);
 
-            //should add carbamidomethylation to C... 
+            //should add carbamidomethylation to C...
             Sweet.lollipop.carbamidomethylation = true;
             sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula();
             Assert.AreEqual("[C2H4]AS[C5H12NO5P]DA[H3C2N1O1]CSDAS[C6H9NO3]D", sequencewithchemicalformula);
 
-            //should return null if N term formula wrong or doesn't match mass 
-            ModificationWithMassAndCf badNtermMod = new ModificationWithMassAndCf("badNtermMod", null, null, TerminusLocalization.NProt, Chemistry.ChemicalFormula.ParseFormula("H") , -1000, null, null, null, null);
+            //should return null if N term formula wrong or doesn't match mass
+            ModificationWithMassAndCf badNtermMod = new ModificationWithMassAndCf("badNtermMod", null, null, TerminusLocalization.NProt, Chemistry.ChemicalFormula.ParseFormula("H"), -1000, null, null, null, null);
             hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badNtermMod) };
             Assert.IsNull(hit.GetSequenceWithChemicalFormula());
 
-            //should return null if mod chem formula wrong or doesn't match mass 
+            //should return null if mod chem formula wrong or doesn't match mass
             ModificationWithMassAndCf badMod = new ModificationWithMassAndCf("badMod", null, null, TerminusLocalization.Any, Chemistry.ChemicalFormula.ParseFormula("H"), -1000, null, null, null, null);
             hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badMod) };
             Assert.IsNull(hit.GetSequenceWithChemicalFormula());
 
-            //should return null if N term formula wrong or doesn't match mass 
+            //should return null if N term formula wrong or doesn't match mass
             ModificationWithMassAndCf badCtermMod = new ModificationWithMassAndCf("badCtermMod", null, null, TerminusLocalization.ProtC, Chemistry.ChemicalFormula.ParseFormula("H"), -1000, null, null, null, null);
             hit = new TopDownHit();
             hit.sequence = "ASDACSDASD";
