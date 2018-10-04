@@ -74,55 +74,6 @@ namespace ProteoformSuiteInternal
             }
             return proteoformMass + aaMasses.Sum();
         }
-
-        //calibration
-        public string GetSequenceWithChemicalFormula()
-        {
-            var sbsequence = new StringBuilder();
-
-            // variable modification on peptide N-terminus
-            Modification pep_n_term_variable_mod = ptm_list.Where(p => p.position == 1).Select(m => m.modification).FirstOrDefault();
-            if (pep_n_term_variable_mod != null)
-            {
-                var jj = pep_n_term_variable_mod as Modification;
-                if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
-                    sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
-                else
-                    return null;
-            }
-
-            for (int r = 0; r < sequence.Length; r++)
-            {
-                if (Sweet.lollipop.carbamidomethylation && sequence[r] == 'C')
-                {
-                    sbsequence.Append("[H3C2N1O1]");
-                }
-                sbsequence.Append(sequence[r]);
-                // variable modification on this residue
-                Modification residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
-                if (residue_variable_mod != null)
-                {
-                    var jj = residue_variable_mod as Modification;
-                    if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
-                        sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
-                    else
-                        return null;
-                }
-            }
-
-            // variable modification on peptide C-terminus
-            Modification pep_c_term_variable_mod = ptm_list.Where(p => p.position == sequence.Length + 2).Select(m => m.modification).FirstOrDefault();
-            if (pep_c_term_variable_mod != null)
-            {
-                var jj = pep_c_term_variable_mod as Modification;
-                if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
-                    sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
-                else
-                    return null;
-            }
-
-            return sbsequence.ToString();
-        }
     }
 
     public enum TopDownResultType

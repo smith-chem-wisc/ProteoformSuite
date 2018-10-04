@@ -80,6 +80,7 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.rb_mostAbundantMass = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -565,6 +566,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.rb_mostAbundantMass);
             this.groupBox1.Controls.Add(this.btn_NeuCode_Hv);
             this.groupBox1.Controls.Add(this.btn_NeuCode_Lt);
             this.groupBox1.Controls.Add(this.btn_NaturalIsotopes);
@@ -581,7 +583,7 @@
             // btn_NeuCode_Hv
             // 
             this.btn_NeuCode_Hv.AutoSize = true;
-            this.btn_NeuCode_Hv.Location = new System.Drawing.Point(11, 75);
+            this.btn_NeuCode_Hv.Location = new System.Drawing.Point(11, 55);
             this.btn_NeuCode_Hv.Margin = new System.Windows.Forms.Padding(2);
             this.btn_NeuCode_Hv.Name = "btn_NeuCode_Hv";
             this.btn_NeuCode_Hv.Size = new System.Drawing.Size(104, 17);
@@ -594,7 +596,7 @@
             // btn_NeuCode_Lt
             // 
             this.btn_NeuCode_Lt.AutoSize = true;
-            this.btn_NeuCode_Lt.Location = new System.Drawing.Point(11, 49);
+            this.btn_NeuCode_Lt.Location = new System.Drawing.Point(11, 35);
             this.btn_NeuCode_Lt.Margin = new System.Windows.Forms.Padding(2);
             this.btn_NeuCode_Lt.Name = "btn_NeuCode_Lt";
             this.btn_NeuCode_Lt.Size = new System.Drawing.Size(96, 17);
@@ -607,7 +609,7 @@
             // btn_NaturalIsotopes
             // 
             this.btn_NaturalIsotopes.AutoSize = true;
-            this.btn_NaturalIsotopes.Location = new System.Drawing.Point(11, 23);
+            this.btn_NaturalIsotopes.Location = new System.Drawing.Point(11, 16);
             this.btn_NaturalIsotopes.Margin = new System.Windows.Forms.Padding(2);
             this.btn_NaturalIsotopes.Name = "btn_NaturalIsotopes";
             this.btn_NaturalIsotopes.Size = new System.Drawing.Size(155, 17);
@@ -809,6 +811,19 @@
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
+            // rb_mostAbundantMass
+            // 
+            this.rb_mostAbundantMass.AutoSize = true;
+            this.rb_mostAbundantMass.Location = new System.Drawing.Point(11, 76);
+            this.rb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
+            this.rb_mostAbundantMass.Name = "rb_mostAbundantMass";
+            this.rb_mostAbundantMass.Size = new System.Drawing.Size(163, 17);
+            this.rb_mostAbundantMass.TabIndex = 8;
+            this.rb_mostAbundantMass.TabStop = true;
+            this.rb_mostAbundantMass.Text = "Most Abundant Isotope Mass";
+            this.rb_mostAbundantMass.UseVisualStyleBackColor = true;
+            this.rb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.rb_mostAbundantMass_CheckedChanged);
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -925,5 +940,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
+        private System.Windows.Forms.RadioButton rb_mostAbundantMass;
     }
 }

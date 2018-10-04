@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using System.Text;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -466,6 +468,55 @@ namespace ProteoformSuiteInternal
             return unlabeled_mass - lysine_count * 128.094963 + lysine_count * 136.109162;
         }
 
+        //calibration
+        public string GetSequenceWithChemicalFormula(string sequence, List<Ptm> ptm_list)
+        {
+            var sbsequence = new StringBuilder();
+
+            // variable modification on peptide N-terminus
+            Modification pep_n_term_variable_mod = ptm_list.Where(p => p.position == 1).Select(m => m.modification).FirstOrDefault();
+            if (pep_n_term_variable_mod != null)
+            {
+                var jj = pep_n_term_variable_mod as Modification;
+                if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
+                    sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
+                else
+                    return null;
+            }
+
+            for (int r = 0; r < sequence.Length; r++)
+            {
+                if (Sweet.lollipop.carbamidomethylation && sequence[r] == 'C')
+                {
+                    sbsequence.Append("[H3C2N1O1]");
+                }
+                sbsequence.Append(sequence[r]);
+                // variable modification on this residue
+                Modification residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
+                if (residue_variable_mod != null)
+                {
+                    var jj = residue_variable_mod as Modification;
+                    if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
+                        sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
+                    else
+                        return null;
+                }
+            }
+
+            // variable modification on peptide C-terminus
+            Modification pep_c_term_variable_mod = ptm_list.Where(p => p.position == sequence.Length + 2).Select(m => m.modification).FirstOrDefault();
+            if (pep_c_term_variable_mod != null)
+            {
+                var jj = pep_c_term_variable_mod as Modification;
+                if (jj != null && Math.Abs(jj.ChemicalFormula.MonoisotopicMass - (double)jj.MonoisotopicMass) < 1e-5)
+                    sbsequence.Append('[' + jj.ChemicalFormula.Formula + ']');
+                else
+                    return null;
+            }
+
+            return sbsequence.ToString();
+        }
+
         #endregion TOPDOWN
 
         #region AGGREGATED PROTEOFORMS Public Fields
@@ -787,9 +838,10 @@ namespace ProteoformSuiteInternal
         public bool methionine_oxidation = true;
         public bool carbamidomethylation = true;
         public bool methionine_cleavage = true;
-        public bool natural_lysine_isotope_abundance = false;
-        public bool neucode_light_lysine = true;
+        public bool natural_lysine_isotope_abundance = true;
+        public bool neucode_light_lysine = false;
         public bool neucode_heavy_lysine = false;
+        public bool most_abundant_mass = false;
         public int max_ptms = 4;
         public int decoy_databases = 10;
         public int min_peptide_length = 7;

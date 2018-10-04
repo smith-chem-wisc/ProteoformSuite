@@ -127,8 +127,9 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            btn_NeuCode_Lt.Checked = Sweet.lollipop.neucode_labeled;
-            btn_NaturalIsotopes.Checked = !Sweet.lollipop.neucode_labeled;
+            btn_NeuCode_Lt.Checked = Sweet.lollipop.neucode_light_lysine;
+            btn_NaturalIsotopes.Checked = Sweet.lollipop.natural_lysine_isotope_abundance;
+            rb_mostAbundantMass.Checked = Sweet.lollipop.most_abundant_mass;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -443,6 +444,11 @@ namespace ProteoformSuiteGUI
         private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
+        }
+
+        private void rb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.most_abundant_mass = rb_mostAbundantMass.Checked;
         }
     }
 }
