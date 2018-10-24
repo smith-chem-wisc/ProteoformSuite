@@ -70,6 +70,11 @@ namespace ProteoformSuiteInternal
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.ModificationType)));
             });
 
+            //var decoyProteins =
+            //    UsefulProteomicsDatabases.DecoyProteinGenerator.GenerateDecoys(
+            //        theoretical_proteins.Values.SelectMany(p => p).ToList(), DecoyType.Reverse);
+            //ProteinDbWriter.WriteXmlDatabase(null, theoretical_proteins.Values.SelectMany(p => p).Concat(decoyProteins).ToList(), "C:\\users\\lschaffer2\\desktop\\databaseWithDecoys.xml");
+
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
             {
                 List<Modification> new_mods = !filename.EndsWith("variable.txt") || Sweet.lollipop.methionine_oxidation ?
@@ -300,13 +305,15 @@ namespace ProteoformSuiteInternal
         public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
-            //Calculate the properties of this sequence
-            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
 
-            if (unmodified_mass > 300000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
+
+            if (seq.Length > 3000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
             {
                 return;
             }
+
+            //Calculate the properties of this sequence
+            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, new List<Ptm>(), aaIsotopeMassList);
 
             int lysine_count = seq.Split('K').Length - 1;
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
@@ -335,21 +342,29 @@ namespace ProteoformSuiteInternal
                 //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
                 foreach (PtmSet ptm_set in unique_ptm_groups)
                 {
-                    TheoreticalProteoform t =
-                        new TheoreticalProteoform(
-                            accession + "_P" + ptm_set_counter.ToString(),
-                            prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
-                            seq,
-                            (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
-                            unmodified_mass,
-                            lysine_count,
-                            ptm_set,
-                            decoy_number < 0,
-                            check_contaminants,
-                            theoretical_proteins);
-                    t.topdown_theoretical = prot.topdown_protein;
-                    new_theoreticals.Add(t);
-                    ptm_set_counter++;
+                  //  if (target_rts.TryGetValue(seq, out var rt))
+                    {
+
+                        TheoreticalProteoform t =
+                            new TheoreticalProteoform(
+                                accession + "_P" + ptm_set_counter.ToString(),
+                                prot.FullDescription + "_P" + ptm_set_counter.ToString() +
+                                (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                                seq,
+                                (prot as ProteinSequenceGroup != null
+                                    ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray()
+                                    : new ProteinWithGoTerms[] {prot}),
+                                unmodified_mass,
+                                lysine_count,
+                                ptm_set,
+                                decoy_number < 0,
+                                check_contaminants,
+                                theoretical_proteins);
+                        t.topdown_theoretical = prot.topdown_protein;
+                     //   t.predicted_RT = Convert.ToDouble(rt);
+                        new_theoreticals.Add(t);
+                        ptm_set_counter++;
+                    }
                 }
             }
             add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);
@@ -470,6 +485,7 @@ namespace ProteoformSuiteInternal
                     mod_unlocalized.Value.id = new_info[1];
                     mod_unlocalized.Value.ptm_count = Convert.ToInt32(new_info[2]);
                     mod_unlocalized.Value.require_proteoform_without_mod = Convert.ToBoolean(new_info[3]);
+                    mod_unlocalized.Value.DeepRTSymbol = new_info[4];
                 }
             }
         }
@@ -514,21 +530,37 @@ namespace ProteoformSuiteInternal
         #endregion Unlocalized Mods Public Methods
 
         #region Private Methods
+        Dictionary<string, string> target_rts = new Dictionary<string, string>();
+        Dictionary<string, string> decoy_rts = new Dictionary<string, string>();
 
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<Modification> variableModifications)
         {
+            //string[] lines = File.ReadAllLines("C:\\users\\lschaffer2\\desktop\\target_mouse_database.txt");
+            //foreach (var line in lines)
+            //{
+            //    target_rts.Add(line.Split('\t')[0], line.Split('\t')[1]);
+            //}
+
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
             //Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
             foreach (var p in expanded_proteins)
             {
-                EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications);
+                EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications,
+                    p.Accession, theoretical_proteoforms, -100, variableModifications);
             }
+
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
             Sweet.lollipop.target_proteoform_community.community_number = -100;
         }
 
         private void process_decoys(TheoreticalProteoform[] entries)
         {
+            //string[] lines = File.ReadAllLines("C:\\users\\lschaffer2\\desktop\\decoy_mouse_database.txt");
+            //foreach (var line in lines)
+            //{
+            //    decoy_rts.Add(line.Split('\t')[0], line.Split('\t')[1]);
+            //}
+
             Sweet.lollipop.decoy_proteoform_communities.Clear();
             Parallel.For(0, Sweet.lollipop.decoy_databases, decoyNumber =>
             {
@@ -545,12 +577,16 @@ namespace ProteoformSuiteInternal
                 foreach (var p in shuffled_proteoforms)
                 {
                     string hunk = giantProtein.Substring(prevLength, p.sequence.Length);
-                    prevLength += p.sequence.Length;
-                    var unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(hunk, aaIsotopeMassList);
-                    TheoreticalProteoform t = new TheoreticalProteoform(p.accession + "_DECOY_" + decoyNumber,
-                        p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'),
-                        p.ptm_set, false, p.contaminant, theoretical_proteins);
-                    decoy_proteoforms.Add(t);
+                  //  if (decoy_rts.TryGetValue(hunk, out var rt))
+                    {
+                        prevLength += p.sequence.Length;
+                        var unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(hunk, new List<Ptm>(), aaIsotopeMassList);
+                        TheoreticalProteoform t = new TheoreticalProteoform(p.accession + "_DECOY_" + decoyNumber,
+                            p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'),
+                            p.ptm_set, false, p.contaminant, theoretical_proteins);
+                     //   t.predicted_RT = Convert.ToDouble(rt);
+                        decoy_proteoforms.Add(t);
+                    }
                 }
 
                 lock (Sweet.lollipop.decoy_proteoform_communities)

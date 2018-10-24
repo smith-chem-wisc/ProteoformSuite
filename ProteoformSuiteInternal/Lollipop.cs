@@ -865,6 +865,7 @@ namespace ProteoformSuiteInternal
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
+        public double max_RT_difference_ET = 0;
         public bool ee_accept_peaks_based_on_rank = true;
         public bool et_accept_peaks_based_on_rank = true;
         public double ee_max_mass_difference = 300;

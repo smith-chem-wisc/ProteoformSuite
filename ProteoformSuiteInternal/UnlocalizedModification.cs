@@ -9,6 +9,7 @@ namespace ProteoformSuiteInternal
         public int ptm_count { get; set; }
         public bool require_proteoform_without_mod { get; set; }
         public int ptm_rank { get; set; }
+        public string DeepRTSymbol { get; set; }
         public Modification original_modification { get; set; }
 
         public UnlocalizedModification(Modification m)

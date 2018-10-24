@@ -60,6 +60,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rb_mostAbundantMass = new System.Windows.Forms.RadioButton();
             this.btn_NeuCode_Hv = new System.Windows.Forms.RadioButton();
             this.btn_NeuCode_Lt = new System.Windows.Forms.RadioButton();
             this.btn_NaturalIsotopes = new System.Windows.Forms.RadioButton();
@@ -80,7 +81,6 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.rb_mostAbundantMass = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -580,6 +580,19 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lysine Isotope Composition";
             // 
+            // rb_mostAbundantMass
+            // 
+            this.rb_mostAbundantMass.AutoSize = true;
+            this.rb_mostAbundantMass.Location = new System.Drawing.Point(11, 76);
+            this.rb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
+            this.rb_mostAbundantMass.Name = "rb_mostAbundantMass";
+            this.rb_mostAbundantMass.Size = new System.Drawing.Size(163, 17);
+            this.rb_mostAbundantMass.TabIndex = 8;
+            this.rb_mostAbundantMass.TabStop = true;
+            this.rb_mostAbundantMass.Text = "Most Abundant Isotope Mass";
+            this.rb_mostAbundantMass.UseVisualStyleBackColor = true;
+            this.rb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.rb_mostAbundantMass_CheckedChanged);
+            // 
             // btn_NeuCode_Hv
             // 
             this.btn_NeuCode_Hv.AutoSize = true;
@@ -810,19 +823,6 @@
             this.splitter1.Size = new System.Drawing.Size(3, 737);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
-            // 
-            // rb_mostAbundantMass
-            // 
-            this.rb_mostAbundantMass.AutoSize = true;
-            this.rb_mostAbundantMass.Location = new System.Drawing.Point(11, 76);
-            this.rb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
-            this.rb_mostAbundantMass.Name = "rb_mostAbundantMass";
-            this.rb_mostAbundantMass.Size = new System.Drawing.Size(163, 17);
-            this.rb_mostAbundantMass.TabIndex = 8;
-            this.rb_mostAbundantMass.TabStop = true;
-            this.rb_mostAbundantMass.Text = "Most Abundant Isotope Mass";
-            this.rb_mostAbundantMass.UseVisualStyleBackColor = true;
-            this.rb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.rb_mostAbundantMass_CheckedChanged);
             // 
             // TheoreticalDatabase
             // 

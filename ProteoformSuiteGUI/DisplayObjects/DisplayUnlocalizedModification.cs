@@ -68,6 +68,12 @@ namespace ProteoformSuiteGUI
             set { m.ptm_rank = value; }
         }
 
+        public string DeepRTSymbol
+        {
+            get { return m.DeepRTSymbol; }
+            set { m.DeepRTSymbol = value; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods

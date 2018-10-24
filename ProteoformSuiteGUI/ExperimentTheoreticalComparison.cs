@@ -491,5 +491,10 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.et_accept_peaks_based_on_rank = cb_et_peak_accept_rank.Checked;
             change_peak_acceptance();
         }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.max_RT_difference_ET = Convert.ToDouble(numericUpDown1.Value);
+        }
     }
 }

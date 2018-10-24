@@ -19,6 +19,7 @@ namespace ProteoformSuiteInternal
         public double unmodified_mass { get; set; }
         public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
+        public double predicted_RT { get; set; }
 
         //  public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
         public bool contaminant { get; set; }
@@ -48,50 +49,53 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-
-            //if most abundant mass, calculate iso distrubution, set modified/unmodified masses to most abundant.
-            if (Sweet.lollipop.most_abundant_mass)
-            {
-
-                var formula = new Proteomics.AminoAcidPolymer.Peptide(sequence).GetChemicalFormula();
-
-                // append mod formulas
-                foreach (var mod in ptm_set.ptm_combination)
-                {
-                    var modCf = mod.modification.ChemicalFormula;
-
-                    if (modCf != null)
-                    {
-                        formula.Add(modCf);
-                    }
-                }
-
-                // Calculate isotopic distribution of the full peptide
-                var dist = IsotopicDistribution.GetDistribution(formula, 0.1, 1e-12);
-
-                double[] masses = dist.Masses.ToArray();
-                double[] intensities = dist.Intensities.ToArray();
-                double max = intensities.Max();
-                int modeMassIndex = Array.IndexOf(intensities, max);
-                this.modified_mass = masses[modeMassIndex];
-                this.modified_mass = formula.AverageMass;
-            }
+            this.modified_mass = CalculateProteoformMass(sequence, ptm_set.ptm_combination,
+                Sweet.lollipop.theoretical_database.aaIsotopeMassList);
         }
 
         #endregion Public Constructor
 
         #region Public Method
 
-        public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
+        public static double CalculateProteoformMass(string sequence, List<Ptm> ptm_combination,
+            Dictionary<char, double> aaIsotopeMassList)
         {
-            double proteoformMass = 18.010565; // start with water
-            char[] aminoAcids = pForm.ToCharArray();
-            List<double> aaMasses = new List<double>();
-            for (int i = 0; i < pForm.Length; i++)
+            if (!Sweet.lollipop.most_abundant_mass)
             {
-                if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+                double proteoformMass = 18.010565; // start with water
+                char[] aminoAcids = sequence.ToCharArray();
+                List<double> aaMasses = new List<double>();
+                for (int i = 0; i < sequence.Length; i++)
+                {
+                    if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+                }
+
+                return proteoformMass + aaMasses.Sum() +
+                       ptm_combination.Sum(p => (double)p.modification.MonoisotopicMass);
             }
-            return proteoformMass + aaMasses.Sum();
+
+            //if most abundant mass, calculate iso distrubution, set modified/unmodified masses to most abundant.
+            var formula = new Proteomics.AminoAcidPolymer.Peptide(sequence).GetChemicalFormula();
+
+            // append mod formulas
+            foreach (var mod in ptm_combination)
+            {
+                var modCf = mod.modification.ChemicalFormula;
+
+                if (modCf != null)
+                {
+                    formula.Add(modCf);
+                }
+            }
+
+            // Calculate isotopic distribution of the full peptide
+            var dist = IsotopicDistribution.GetDistribution(formula, 0.1, 1e-12);
+
+            double[] masses = dist.Masses.ToArray();
+            double[] intensities = dist.Intensities.ToArray();
+            double max = intensities.Max();
+            int modeMassIndex = Array.IndexOf(intensities, max);
+            return masses[modeMassIndex];
         }
 
         #endregion Public Method

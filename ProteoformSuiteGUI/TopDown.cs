@@ -6,6 +6,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Accord.Math;
+using Proteomics.AminoAcidPolymer;
 using Proteomics.RetentionTimePrediction;
 
 namespace ProteoformSuiteGUI
@@ -102,7 +104,163 @@ namespace ProteoformSuiteGUI
             //need to refill theo database --> added theoreticsl
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
-          
+
+            ////write file with sequences and RT for deepRT
+            List<string> linesToWrite = new List<string>();
+
+            //foreach (var hit in Sweet.lollipop.top_down_hits)
+            //{
+            //    if (hit.score < 40 || hit.ms2_retention_time < 35 || hit.ms2_retention_time > 95)
+            //    {
+            //        continue;
+            //    }
+
+            //    string sequence = hit.sequence;
+
+            //    foreach (var mod in hit.ptm_list.OrderByDescending(p => p.position))
+            //    {
+            //        Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod.modification,
+            //            out UnlocalizedModification unlocalizedMod);
+            //        if (unlocalizedMod.DeepRTSymbol == null)
+            //        {
+            //            MessageBox.Show(unlocalizedMod.id);
+            //            return;
+            //        }
+
+            //        int position_in_sequence = mod.position - hit.begin;
+            //        sequence = sequence.Insert(position_in_sequence, unlocalizedMod.DeepRTSymbol);
+            //    }
+
+            //    linesToWrite.Add(sequence + "\t" + hit.ms2_retention_time + "\t" + hit.score + "\t" + hit.pfr_accession + "\t" + hit.ptm_list.Count);
+            //}
+
+            //using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\allHits.txt"))
+            //{
+            //    writer.WriteLine("sequence\tRT\tCscore\tPFR\tptmCount");
+            //    foreach (var line in linesToWrite)
+            //    {
+            //        writer.WriteLine(line);
+            //    }
+            //}
+            List<string> topHitsForTransferTrain = new List<string>() {"sequence\tRT\taccession\tPFR\tfilename\tscan\tscore"};
+            List<string> topHitsForTransferTest = new List<string>() { "sequence\tRT\taccession\tPFR\tfilename\tscan\tscore" };
+            List<string> allHits = new List<string>() { "sequence\tRT\taccession\tPFR\tfilename\tscan\tscore" };
+            Random r = new Random();
+            List<TopDownHit> shuffledHits = Sweet.lollipop.top_down_hits.Where(h => h.score > 3.0 && h.ms2_retention_time > 35 && h.ms2_retention_time < 95).OrderBy(h => r.Next()).ToList();
+            int numForTrainSet = shuffledHits.Count > 11000 ? 9000 : (int)(shuffledHits.Count * 0.80);
+            int numForTestSet = shuffledHits.Count > 11000 ? 1000 : (int)(shuffledHits.Count * 0.10);
+
+            foreach (var h in shuffledHits)
+            {
+                string sequence = h.sequence;
+                foreach (var mod in h.ptm_list.OrderByDescending(m => m.position))
+                {
+                    Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod.modification,
+                        out UnlocalizedModification unlocalizedMod);
+                    if (unlocalizedMod.DeepRTSymbol == null)
+                    {
+                        MessageBox.Show(unlocalizedMod.id);
+                        return;
+                    }
+
+                    int position_in_sequence = mod.position - h.begin;
+                    sequence = sequence.Insert(position_in_sequence, unlocalizedMod.DeepRTSymbol);
+                }
+
+                if (topHitsForTransferTrain.Count >= numForTrainSet)
+                {
+                    if (topHitsForTransferTest.Count >= numForTestSet)
+                    {
+                        if (!topHitsForTransferTrain.Select(l => l.Split('\t')[0]).Contains(sequence)
+                        && !topHitsForTransferTest.Select(l => l.Split('\t')[0]).Contains(sequence))
+                        {
+                            allHits.Add(sequence + "\t" + h.ms2_retention_time + "\t" + h.accession + "\t" + h.pfr_accession + "\t" + h.filename + "\t" + h.ms2ScanNumber + "\t" + h.score);
+                        }
+                    }
+                    else
+                    {
+                        if (!topHitsForTransferTrain.Select(l => l.Split('\t')[0]).Contains(sequence))
+                        {
+                            topHitsForTransferTest.Add(sequence + "\t" + h.ms2_retention_time + "\t" + h.accession + "\t" + h.pfr_accession + "\t" + h.filename + "\t" + h.ms2ScanNumber + "\t" + h.score);
+                        }
+                    }
+                }
+                else
+                {
+                    topHitsForTransferTrain.Add(sequence + "\t" + h.ms2_retention_time + "\t" + h.accession + "\t" + h.pfr_accession + "\t" + h.filename + "\t" + h.ms2ScanNumber + "\t" + h.score);
+                }
+            }
+
+            File.WriteAllLines("C:\\users\\lschaffer2\\desktop\\tophitsTrain.txt", topHitsForTransferTrain);
+            File.WriteAllLines("C:\\users\\lschaffer2\\desktop\\tophitsTest.txt", topHitsForTransferTest);
+            File.WriteAllLines("C:\\users\\lschaffer2\\desktop\\hitsnotonotherlist.txt", allHits);
+
+
+            //foreach (var p in Sweet.lollipop.topdown_proteoforms)
+            //{
+            //    if (p.topdown_hits.Max(h => h.score) < 40 || p.topdown_hits.Count < 2 || p.agg_rt < 35 || p.agg_rt > 95)
+            //    {
+            //        continue;
+            //    }
+
+            //    string sequence = p.sequence;
+            //    foreach (var mod in p.topdown_ptm_set.ptm_combination.OrderByDescending(m => m.position))
+            //    {
+            //        Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(mod.modification,
+            //            out UnlocalizedModification unlocalizedMod);
+            //        if (unlocalizedMod.DeepRTSymbol == null)
+            //        {
+            //            MessageBox.Show(unlocalizedMod.id);
+            //            return;
+            //        }
+
+            //        int position_in_sequence = mod.position - p.topdown_begin;
+            //        sequence = sequence.Insert(position_in_sequence, unlocalizedMod.DeepRTSymbol);
+            //    }
+
+            //    linesToWrite.Add(sequence + "\t" + p.agg_rt);
+
+            //}
+
+            //int countinTrainingSet = (int)(linesToWrite.Count * 0.80);
+            //int countInTestingSet = (int)(linesToWrite.Count * 0.10);
+            //Random random = new Random();
+            //var shuffled = linesToWrite.OrderBy(item => random.Next()).ToList();
+            //using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\trainingset.txt"))
+            //{
+            //    writer.WriteLine("sequence\tRT");
+            //    for (int i = 0; i < countinTrainingSet; i++)
+            //    {
+            //        writer.WriteLine(shuffled[i]);
+            //    }
+            //}
+            //using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\testingSet.txt"))
+            //{
+            //    writer.WriteLine("sequence\tRT");
+            //    for (int i = countinTrainingSet; i < countinTrainingSet + countInTestingSet; i++)
+            //    {
+            //        writer.WriteLine(shuffled[i]);
+            //    }
+            //}
+            //using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\validationSet.txt"))
+            //{
+            //    writer.WriteLine("sequence\tRT");
+            //    for (int i = countinTrainingSet + countInTestingSet; i < shuffled.Count; i++)
+            //    {
+            //        writer.WriteLine(shuffled[i]);
+            //    }
+            //}
+
+            //CZE cze = new CZE(1, 20000);
+            //using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\cze_RT_prediction_SEChits.txt"))
+            //{
+            //    foreach (var h in Sweet.lollipop.top_down_hits)
+            //    {
+            //        var x = cze.TheoreticalElutionTime(
+            //            CZE.PredictedElectrophoreticMobility(h.sequence, h.reported_mass));
+            //        writer.WriteLine(h.pfr_accession + "\t" + h.score + "\t" + h.ms2_retention_time + "\t" + x + "\t" + String.Join(";", h.ptm_list.Select(p => p.modification.OriginalId)) + "\t" + h.sequence);
+            //    }
+            //}
         }
 
         public void ClearListsTablesFigures(bool clear_following)
