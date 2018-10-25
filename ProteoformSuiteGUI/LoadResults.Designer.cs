@@ -36,22 +36,22 @@
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.box_parameters = new System.Windows.Forms.GroupBox();
+            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.calib_stand_splitContainer = new System.Windows.Forms.SplitContainer();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
+            this.label_mincharge = new System.Windows.Forms.Label();
+            this.nud_mincharge = new System.Windows.Forms.NumericUpDown();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
-            this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
-            this.label_minRT = new System.Windows.Forms.Label();
             this.label_maxRT = new System.Windows.Forms.Label();
-            this.label_mincharge = new System.Windows.Forms.Label();
-            this.label_maxcharge = new System.Windows.Forms.Label();
-            this.nud_mincharge = new System.Windows.Forms.NumericUpDown();
-            this.nud_maxcharge = new System.Windows.Forms.NumericUpDown();
+            this.label_minRT = new System.Windows.Forms.Label();
             this.fullrun_groupbox = new System.Windows.Forms.GroupBox();
             this.fullrun_splitContainer = new System.Windows.Forms.SplitContainer();
             this.tb_resultsFolder = new System.Windows.Forms.TextBox();
             this.btn_browseSummarySaveFolder = new System.Windows.Forms.Button();
+            this.box_dgv = new System.Windows.Forms.GroupBox();
+            this.panel_dgv = new System.Windows.Forms.Panel();
             this.box_start = new System.Windows.Forms.GroupBox();
             this.panel_step = new System.Windows.Forms.Panel();
             this.bt_stepthru = new System.Windows.Forms.Button();
@@ -62,9 +62,9 @@
             this.bt_calibrate = new System.Windows.Forms.Button();
             this.panel_fullrun = new System.Windows.Forms.Panel();
             this.bt_fullrun = new System.Windows.Forms.Button();
-            this.box_dgv = new System.Windows.Forms.GroupBox();
-            this.panel_dgv = new System.Windows.Forms.Panel();
             this.dgv_loadFiles1 = new System.Windows.Forms.DataGridView();
+            this.nud_maxcharge = new System.Windows.Forms.NumericUpDown();
+            this.label_maxcharge = new System.Windows.Forms.Label();
             this.panel_cmb = new System.Windows.Forms.Panel();
             this.box_addclearfilter = new System.Windows.Forms.GroupBox();
             this.panel_addbtn = new System.Windows.Forms.Panel();
@@ -86,29 +86,29 @@
             this.topbar_splitcontainer.SuspendLayout();
             this.box_loadoptions.SuspendLayout();
             this.box_parameters.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).BeginInit();
-            this.calib_stand_splitContainer.Panel1.SuspendLayout();
-            this.calib_stand_splitContainer.Panel2.SuspendLayout();
-            this.calib_stand_splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
             this.param_splitcontainer.Panel1.SuspendLayout();
             this.param_splitcontainer.Panel2.SuspendLayout();
             this.param_splitcontainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).BeginInit();
+            this.calib_stand_splitContainer.Panel1.SuspendLayout();
+            this.calib_stand_splitContainer.Panel2.SuspendLayout();
+            this.calib_stand_splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).BeginInit();
             this.fullrun_groupbox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fullrun_splitContainer)).BeginInit();
             this.fullrun_splitContainer.Panel1.SuspendLayout();
             this.fullrun_splitContainer.Panel2.SuspendLayout();
             this.fullrun_splitContainer.SuspendLayout();
+            this.box_dgv.SuspendLayout();
+            this.panel_dgv.SuspendLayout();
             this.box_start.SuspendLayout();
             this.panel_step.SuspendLayout();
             this.panel_clearresults.SuspendLayout();
             this.panel_deconv_calib.SuspendLayout();
             this.panel_fullrun.SuspendLayout();
-            this.box_dgv.SuspendLayout();
-            this.panel_dgv.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).BeginInit();
             this.panel_cmb.SuspendLayout();
             this.box_addclearfilter.SuspendLayout();
             this.panel_addbtn.SuspendLayout();
@@ -133,7 +133,6 @@
             // 
             // base_splitcontainer.Panel2
             // 
-            this.base_splitcontainer.Panel2.Controls.Add(this.box_start);
             this.base_splitcontainer.Panel2.Controls.Add(this.box_dgv);
             this.base_splitcontainer.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.base_splitcontainer.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -155,7 +154,7 @@
             // 
             this.topbar_splitcontainer.Panel2.Controls.Add(this.box_parameters);
             this.topbar_splitcontainer.Size = new System.Drawing.Size(1395, 116);
-            this.topbar_splitcontainer.SplitterDistance = 140;
+            this.topbar_splitcontainer.SplitterDistance = 176;
             this.topbar_splitcontainer.TabIndex = 0;
             this.topbar_splitcontainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.topbar_splitcontainer_SplitterMoved);
             // 
@@ -168,7 +167,7 @@
             this.box_loadoptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.box_loadoptions.Location = new System.Drawing.Point(0, 0);
             this.box_loadoptions.Name = "box_loadoptions";
-            this.box_loadoptions.Size = new System.Drawing.Size(140, 116);
+            this.box_loadoptions.Size = new System.Drawing.Size(176, 116);
             this.box_loadoptions.TabIndex = 52;
             this.box_loadoptions.TabStop = false;
             this.box_loadoptions.Text = "1. Choose Analysis";
@@ -214,26 +213,47 @@
             // 
             // box_parameters
             // 
-            this.box_parameters.Controls.Add(this.calib_stand_splitContainer);
             this.box_parameters.Controls.Add(this.param_splitcontainer);
             this.box_parameters.Dock = System.Windows.Forms.DockStyle.Fill;
             this.box_parameters.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.box_parameters.Location = new System.Drawing.Point(0, 0);
             this.box_parameters.Name = "box_parameters";
-            this.box_parameters.Size = new System.Drawing.Size(1251, 116);
+            this.box_parameters.Size = new System.Drawing.Size(1215, 116);
             this.box_parameters.TabIndex = 48;
             this.box_parameters.TabStop = false;
             this.box_parameters.Text = "2. Set Parameters";
             // 
+            // param_splitcontainer
+            // 
+            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.param_splitcontainer.Location = new System.Drawing.Point(3, 15);
+            this.param_splitcontainer.Name = "param_splitcontainer";
+            // 
+            // param_splitcontainer.Panel1
+            // 
+            this.param_splitcontainer.Panel1.Controls.Add(this.calib_stand_splitContainer);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxRT);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label_minRT);
+            this.param_splitcontainer.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.param_splitcontainer_Panel1_Paint);
+            // 
+            // param_splitcontainer.Panel2
+            // 
+            this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
+            this.param_splitcontainer.Size = new System.Drawing.Size(1209, 98);
+            this.param_splitcontainer.SplitterDistance = 629;
+            this.param_splitcontainer.TabIndex = 1;
+            // 
             // calib_stand_splitContainer
             // 
-            this.calib_stand_splitContainer.Location = new System.Drawing.Point(3, 15);
+            this.calib_stand_splitContainer.Location = new System.Drawing.Point(3, 0);
             this.calib_stand_splitContainer.Name = "calib_stand_splitContainer";
             // 
             // calib_stand_splitContainer.Panel1
             // 
             this.calib_stand_splitContainer.Panel1.Controls.Add(this.rb_neucode);
             this.calib_stand_splitContainer.Panel1.Controls.Add(this.rb_unlabeled);
+            this.calib_stand_splitContainer.Panel1.Controls.Add(this.label_mincharge);
+            this.calib_stand_splitContainer.Panel1.Controls.Add(this.nud_mincharge);
             // 
             // calib_stand_splitContainer.Panel2
             // 
@@ -247,7 +267,7 @@
             // 
             this.rb_neucode.AutoSize = true;
             this.rb_neucode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_neucode.Location = new System.Drawing.Point(13, 4);
+            this.rb_neucode.Location = new System.Drawing.Point(18, 4);
             this.rb_neucode.Name = "rb_neucode";
             this.rb_neucode.Size = new System.Drawing.Size(111, 17);
             this.rb_neucode.TabIndex = 56;
@@ -268,6 +288,39 @@
             this.rb_unlabeled.Text = "Unlabeled";
             this.rb_unlabeled.UseVisualStyleBackColor = true;
             this.rb_unlabeled.CheckedChanged += new System.EventHandler(this.rb_unlabeled_CheckedChanged);
+            // 
+            // label_mincharge
+            // 
+            this.label_mincharge.AutoSize = true;
+            this.label_mincharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_mincharge.Location = new System.Drawing.Point(68, 75);
+            this.label_mincharge.Name = "label_mincharge";
+            this.label_mincharge.Size = new System.Drawing.Size(61, 13);
+            this.label_mincharge.TabIndex = 67;
+            this.label_mincharge.Text = "Min Charge";
+            // 
+            // nud_mincharge
+            // 
+            this.nud_mincharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_mincharge.Location = new System.Drawing.Point(3, 75);
+            this.nud_mincharge.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.nud_mincharge.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_mincharge.Name = "nud_mincharge";
+            this.nud_mincharge.Size = new System.Drawing.Size(49, 20);
+            this.nud_mincharge.TabIndex = 63;
+            this.nud_mincharge.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // cb_calibrate_td_files
             // 
@@ -295,114 +348,27 @@
             this.cb_calibrate_raw_files.Visible = false;
             this.cb_calibrate_raw_files.Click += new System.EventHandler(this.cb_calibrate_raw_files_CheckedChanged);
             // 
-            // param_splitcontainer
-            // 
-            this.param_splitcontainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.param_splitcontainer.Location = new System.Drawing.Point(3, 15);
-            this.param_splitcontainer.Name = "param_splitcontainer";
-            // 
-            // param_splitcontainer.Panel1
-            // 
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_minRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxRT);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_mincharge);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label_maxcharge);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_mincharge);
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_maxcharge);
-            // 
-            // param_splitcontainer.Panel2
-            // 
-            this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
-            this.param_splitcontainer.Size = new System.Drawing.Size(1245, 98);
-            this.param_splitcontainer.SplitterDistance = 648;
-            this.param_splitcontainer.TabIndex = 1;
-            // 
-            // label_minRT
-            // 
-            this.label_minRT.Location = new System.Drawing.Point(0, 0);
-            this.label_minRT.Name = "label_minRT";
-            this.label_minRT.Size = new System.Drawing.Size(100, 23);
-            this.label_minRT.TabIndex = 0;
-            // 
             // label_maxRT
             // 
-            this.label_maxRT.Location = new System.Drawing.Point(0, 0);
+            this.label_maxRT.Location = new System.Drawing.Point(40, 13);
             this.label_maxRT.Name = "label_maxRT";
             this.label_maxRT.Size = new System.Drawing.Size(100, 23);
             this.label_maxRT.TabIndex = 1;
+            this.label_maxRT.Click += new System.EventHandler(this.label_maxRT_Click);
             // 
-            // label_mincharge
+            // label_minRT
             // 
-            this.label_mincharge.AutoSize = true;
-            this.label_mincharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_mincharge.Location = new System.Drawing.Point(50, 4);
-            this.label_mincharge.Name = "label_mincharge";
-            this.label_mincharge.Size = new System.Drawing.Size(61, 13);
-            this.label_mincharge.TabIndex = 67;
-            this.label_mincharge.Text = "Min Charge";
-            // 
-            // label_maxcharge
-            // 
-            this.label_maxcharge.AutoSize = true;
-            this.label_maxcharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_maxcharge.Location = new System.Drawing.Point(172, 4);
-            this.label_maxcharge.Name = "label_maxcharge";
-            this.label_maxcharge.Size = new System.Drawing.Size(64, 13);
-            this.label_maxcharge.TabIndex = 66;
-            this.label_maxcharge.Text = "Max Charge";
-            // 
-            // nud_mincharge
-            // 
-            this.nud_mincharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_mincharge.Location = new System.Drawing.Point(0, 1);
-            this.nud_mincharge.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.nud_mincharge.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_mincharge.Name = "nud_mincharge";
-            this.nud_mincharge.Size = new System.Drawing.Size(49, 20);
-            this.nud_mincharge.TabIndex = 63;
-            this.nud_mincharge.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // nud_maxcharge
-            // 
-            this.nud_maxcharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nud_maxcharge.Location = new System.Drawing.Point(120, 0);
-            this.nud_maxcharge.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.nud_maxcharge.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_maxcharge.Name = "nud_maxcharge";
-            this.nud_maxcharge.Size = new System.Drawing.Size(49, 20);
-            this.nud_maxcharge.TabIndex = 62;
-            this.nud_maxcharge.Value = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
+            this.label_minRT.Location = new System.Drawing.Point(136, 13);
+            this.label_minRT.Name = "label_minRT";
+            this.label_minRT.Size = new System.Drawing.Size(100, 23);
+            this.label_minRT.TabIndex = 0;
             // 
             // fullrun_groupbox
             // 
             this.fullrun_groupbox.Controls.Add(this.fullrun_splitContainer);
             this.fullrun_groupbox.Dock = System.Windows.Forms.DockStyle.Right;
             this.fullrun_groupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fullrun_groupbox.Location = new System.Drawing.Point(4, 0);
+            this.fullrun_groupbox.Location = new System.Drawing.Point(-13, 0);
             this.fullrun_groupbox.Name = "fullrun_groupbox";
             this.fullrun_groupbox.Size = new System.Drawing.Size(589, 98);
             this.fullrun_groupbox.TabIndex = 62;
@@ -433,6 +399,7 @@
             this.tb_resultsFolder.Name = "tb_resultsFolder";
             this.tb_resultsFolder.Size = new System.Drawing.Size(400, 20);
             this.tb_resultsFolder.TabIndex = 34;
+            this.tb_resultsFolder.TextChanged += new System.EventHandler(this.tb_resultsFolder_TextChanged);
             // 
             // btn_browseSummarySaveFolder
             // 
@@ -446,6 +413,33 @@
             this.btn_browseSummarySaveFolder.UseVisualStyleBackColor = true;
             this.btn_browseSummarySaveFolder.Click += new System.EventHandler(this.btn_browseSummarySaveFolder_Click);
             // 
+            // box_dgv
+            // 
+            this.box_dgv.Controls.Add(this.panel_dgv);
+            this.box_dgv.Controls.Add(this.panel_cmb);
+            this.box_dgv.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.box_dgv.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.box_dgv.Location = new System.Drawing.Point(0, 0);
+            this.box_dgv.Name = "box_dgv";
+            this.box_dgv.Size = new System.Drawing.Size(1395, 743);
+            this.box_dgv.TabIndex = 6;
+            this.box_dgv.TabStop = false;
+            this.box_dgv.Text = "3. Load Data Using Drop Down Menu";
+            // 
+            // panel_dgv
+            // 
+            this.panel_dgv.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel_dgv.Controls.Add(this.box_start);
+            this.panel_dgv.Controls.Add(this.dgv_loadFiles1);
+            this.panel_dgv.Controls.Add(this.nud_maxcharge);
+            this.panel_dgv.Controls.Add(this.label_maxcharge);
+            this.panel_dgv.Location = new System.Drawing.Point(3, 51);
+            this.panel_dgv.Name = "panel_dgv";
+            this.panel_dgv.Size = new System.Drawing.Size(1389, 568);
+            this.panel_dgv.TabIndex = 1;
+            // 
             // box_start
             // 
             this.box_start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -454,7 +448,7 @@
             this.box_start.Controls.Add(this.panel_deconv_calib);
             this.box_start.Controls.Add(this.panel_fullrun);
             this.box_start.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.box_start.Location = new System.Drawing.Point(763, 625);
+            this.box_start.Location = new System.Drawing.Point(763, 365);
             this.box_start.Name = "box_start";
             this.box_start.Size = new System.Drawing.Size(629, 115);
             this.box_start.TabIndex = 8;
@@ -524,14 +518,15 @@
             // 
             // bt_calibrate
             // 
+            this.bt_calibrate.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.bt_calibrate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bt_calibrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.bt_calibrate.Location = new System.Drawing.Point(0, 0);
             this.bt_calibrate.Name = "bt_calibrate";
             this.bt_calibrate.Size = new System.Drawing.Size(200, 88);
             this.bt_calibrate.TabIndex = 42;
-            this.bt_calibrate.Text = "Calibrate";
-            this.bt_calibrate.UseVisualStyleBackColor = true;
+            this.bt_calibrate.Text = "dfasdfafdasfdwf";
+            this.bt_calibrate.UseVisualStyleBackColor = false;
             this.bt_calibrate.Click += new System.EventHandler(this.bt_calibrate_Click);
             // 
             // panel_fullrun
@@ -554,30 +549,6 @@
             this.bt_fullrun.UseVisualStyleBackColor = true;
             this.bt_fullrun.Click += new System.EventHandler(this.btn_fullRun_Click);
             // 
-            // box_dgv
-            // 
-            this.box_dgv.Controls.Add(this.panel_dgv);
-            this.box_dgv.Controls.Add(this.panel_cmb);
-            this.box_dgv.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.box_dgv.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.box_dgv.Location = new System.Drawing.Point(0, 0);
-            this.box_dgv.Name = "box_dgv";
-            this.box_dgv.Size = new System.Drawing.Size(1395, 743);
-            this.box_dgv.TabIndex = 6;
-            this.box_dgv.TabStop = false;
-            this.box_dgv.Text = "3. Load Data Using Drop Down Menu";
-            // 
-            // panel_dgv
-            // 
-            this.panel_dgv.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel_dgv.Controls.Add(this.dgv_loadFiles1);
-            this.panel_dgv.Location = new System.Drawing.Point(3, 51);
-            this.panel_dgv.Name = "panel_dgv";
-            this.panel_dgv.Size = new System.Drawing.Size(1389, 568);
-            this.panel_dgv.TabIndex = 1;
-            // 
             // dgv_loadFiles1
             // 
             this.dgv_loadFiles1.AllowDrop = true;
@@ -595,6 +566,40 @@
             this.dgv_loadFiles1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgv_loadFiles1_CellValidating);
             this.dgv_loadFiles1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragDrop);
             this.dgv_loadFiles1.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragEnter);
+            // 
+            // nud_maxcharge
+            // 
+            this.nud_maxcharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nud_maxcharge.Location = new System.Drawing.Point(304, 108);
+            this.nud_maxcharge.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.nud_maxcharge.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_maxcharge.Name = "nud_maxcharge";
+            this.nud_maxcharge.Size = new System.Drawing.Size(49, 20);
+            this.nud_maxcharge.TabIndex = 62;
+            this.nud_maxcharge.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            // 
+            // label_maxcharge
+            // 
+            this.label_maxcharge.AutoSize = true;
+            this.label_maxcharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_maxcharge.Location = new System.Drawing.Point(316, 66);
+            this.label_maxcharge.Name = "label_maxcharge";
+            this.label_maxcharge.Size = new System.Drawing.Size(64, 13);
+            this.label_maxcharge.TabIndex = 66;
+            this.label_maxcharge.Text = "Max Charge";
+            this.label_maxcharge.Click += new System.EventHandler(this.label_maxcharge_Click);
             // 
             // panel_cmb
             // 
@@ -645,9 +650,9 @@
             this.box_filter.Controls.Add(this.tb_filter1);
             this.box_filter.Dock = System.Windows.Forms.DockStyle.Right;
             this.box_filter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.box_filter.Location = new System.Drawing.Point(480, 16);
+            this.box_filter.Location = new System.Drawing.Point(477, 16);
             this.box_filter.Name = "box_filter";
-            this.box_filter.Size = new System.Drawing.Size(520, 81);
+            this.box_filter.Size = new System.Drawing.Size(523, 81);
             this.box_filter.TabIndex = 0;
             this.box_filter.TabStop = false;
             this.box_filter.Text = "Text Filter";
@@ -732,33 +737,33 @@
             this.box_loadoptions.ResumeLayout(false);
             this.box_loadoptions.PerformLayout();
             this.box_parameters.ResumeLayout(false);
+            this.param_splitcontainer.Panel1.ResumeLayout(false);
+            this.param_splitcontainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
+            this.param_splitcontainer.ResumeLayout(false);
             this.calib_stand_splitContainer.Panel1.ResumeLayout(false);
             this.calib_stand_splitContainer.Panel1.PerformLayout();
             this.calib_stand_splitContainer.Panel2.ResumeLayout(false);
             this.calib_stand_splitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.calib_stand_splitContainer)).EndInit();
             this.calib_stand_splitContainer.ResumeLayout(false);
-            this.param_splitcontainer.Panel1.ResumeLayout(false);
-            this.param_splitcontainer.Panel1.PerformLayout();
-            this.param_splitcontainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).EndInit();
-            this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nud_mincharge)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).EndInit();
             this.fullrun_groupbox.ResumeLayout(false);
             this.fullrun_splitContainer.Panel1.ResumeLayout(false);
             this.fullrun_splitContainer.Panel1.PerformLayout();
             this.fullrun_splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fullrun_splitContainer)).EndInit();
             this.fullrun_splitContainer.ResumeLayout(false);
+            this.box_dgv.ResumeLayout(false);
+            this.panel_dgv.ResumeLayout(false);
+            this.panel_dgv.PerformLayout();
             this.box_start.ResumeLayout(false);
             this.panel_step.ResumeLayout(false);
             this.panel_clearresults.ResumeLayout(false);
             this.panel_deconv_calib.ResumeLayout(false);
             this.panel_fullrun.ResumeLayout(false);
-            this.box_dgv.ResumeLayout(false);
-            this.panel_dgv.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_maxcharge)).EndInit();
             this.panel_cmb.ResumeLayout(false);
             this.box_addclearfilter.ResumeLayout(false);
             this.panel_addbtn.ResumeLayout(false);
@@ -805,20 +810,20 @@
         private System.Windows.Forms.DataGridView dgv_loadFiles1;
         private System.Windows.Forms.GroupBox box_start;
         private System.Windows.Forms.Panel panel_fullrun;
-        private System.Windows.Forms.Button bt_fullrun;
         private System.Windows.Forms.Panel panel_step;
-        private System.Windows.Forms.Button bt_stepthru;
         private System.Windows.Forms.Panel panel_clearresults;
         private System.Windows.Forms.Button bt_clearResults;
         private System.Windows.Forms.GroupBox box_addclearfilter;
         private System.Windows.Forms.Panel panel_deconv_calib;
-        private System.Windows.Forms.Button bt_deconvolute;
-        private System.Windows.Forms.Button bt_calibrate;
         private System.Windows.Forms.SplitContainer calib_stand_splitContainer;
         private System.Windows.Forms.CheckBox cb_calibrate_raw_files;
         private System.Windows.Forms.GroupBox fullrun_groupbox;
         private System.Windows.Forms.SplitContainer fullrun_splitContainer;
         private System.Windows.Forms.TextBox tb_resultsFolder;
         private System.Windows.Forms.Button btn_browseSummarySaveFolder;
+        private System.Windows.Forms.Button bt_stepthru;
+        private System.Windows.Forms.Button bt_deconvolute;
+        private System.Windows.Forms.Button bt_calibrate;
+        private System.Windows.Forms.Button bt_fullrun;
     }
 }

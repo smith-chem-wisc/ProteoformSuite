@@ -301,8 +301,8 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            else if (!e.topdown_id && e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-             && e.linked_proteoform_references.Count == this.linked_proteoform_references.Count + 1)
+            //if already been assigned -- check if gene name != this gene name ==> ambiguous
+            else if (!e.topdown_id && (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
             {
                 e.ambiguous = true;
             }
@@ -315,8 +315,6 @@ namespace ProteoformSuiteInternal
             {
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
             }
-
-
         }
 
         #endregion Private Methods

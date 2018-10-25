@@ -1218,7 +1218,7 @@ namespace ProteoformSuiteInternal
             {
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
-                    MsDataFile myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
+                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
                         ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
                         null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
@@ -1226,9 +1226,9 @@ namespace ProteoformSuiteInternal
                     {
                         int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(hit.ms2_retention_time);
                         hit.ms2ScanNumber = scanNum;
-                        if (myMsDataFile.GetOneBasedScan(scanNum) as MsDataScan != null && scanNum <= myMsDataFile.NumSpectra)
+                        if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum <= myMsDataFile.NumSpectra)
                         {
-                            hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as MsDataScan).IsolationMz, 0)); //m / (m/z)  round to get charge
+                            hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge
                             if (hit.charge > 0)
                             {
                                 hit.mz = hit.reported_mass.ToMz(hit.charge);

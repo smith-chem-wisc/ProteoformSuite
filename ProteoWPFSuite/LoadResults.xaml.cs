@@ -280,7 +280,7 @@ namespace ProteoWPFSuite
                 fullrun_groupbox.Visibility = Visibility.Collapsed;
                 cmb_loadTable1.IsEnabled = false;
             }
-            cb_select = 0;
+            CB_select = 0;
             cmb_loadTable1.SelectedItem = cmb_loadTable1.Items[cb_select];
             LabelTxt = cmb_loadTable1.Items[cb_select].ToString();
             //MessageBox.Show(LabelTxt + " , " + Lollipop.file_lists.Count());
@@ -599,11 +599,6 @@ namespace ProteoWPFSuite
         private void cb_calibrate_td_files_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.calibrate_td_files = (bool)cb_calibrate_td_files.IsChecked;
-        }
-
-        private void test(object sender, RoutedEventArgs e)
-        {
-            LabelTxt = "Way To Go";
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

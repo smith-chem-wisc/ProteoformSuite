@@ -213,7 +213,7 @@ namespace Test
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
 
-            // Identify adds nothing to the PtmSet of the Experimental, so it will be labeled Unmodified. It adds the TheoreticalProteoform to the linked reference.
+            // Identify adds nothing to the PtmSet of the Experimental, so it will be labeled Unmodified. It adds the TheoreticalProteoform to the linked reference. 
             t.identify_connected_experimentals(new List<PtmSet> { set_not_quite_zero, set_unmodified }, new List<ModificationWithMass> { set_not_quite_zero.ptm_combination[0].modification, set_not_quite_zero.ptm_combination[1].modification, set_unmodified.ptm_combination[0].modification, });
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.mass);
@@ -301,7 +301,7 @@ namespace Test
             Assert.AreEqual(3, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous); //dont have same path length, not ambiguous
+            Assert.IsTrue(e2.ambiguous); //dont have same path length, still ambiguous
             Assert.IsFalse(e1.ambiguous);
             Assert.IsTrue(e3.ambiguous);
         }
@@ -332,6 +332,7 @@ namespace Test
             {
                 { Math.Round(acetyl.mass, 1), new List<PtmSet> { acetyl }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
             };
+
 
             //unmodified = OK
             ConstructorsForTesting.make_relation(e1, t1, ProteoformComparison.ExperimentalTheoretical, 0);
@@ -399,6 +400,7 @@ namespace Test
             fam.construct_family();
             fam.identify_experimentals();
             Assert.IsNotNull(e1.linked_proteoform_references);
+
         }
     }
 }

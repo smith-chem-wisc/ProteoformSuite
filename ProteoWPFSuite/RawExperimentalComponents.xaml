@@ -8,6 +8,7 @@
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         Height="692" Width="1141">
+    
     <Grid x:Name="splitContainer1">
         <!--GridSplitter: Splitting affects either side-->
         <Grid.RowDefinitions>

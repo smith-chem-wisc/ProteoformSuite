@@ -4,8 +4,10 @@ using ProteoformSuiteInternal;
 namespace Test
 {
     [TestFixture]
+
     public class TestAminoAcidMasses
     {
+
         [Test]
         public void TestAminoAcidMassesConstructor()
         {

@@ -19,6 +19,7 @@ namespace ProteoWPFSuite
         public RawExperimentalComponents()
         {
             InitializeComponent();
+            
             //Our layout is responsive and no needs for autoscroll
         }
         #endregion Public Constructor

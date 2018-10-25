@@ -17,18 +17,18 @@ namespace ProteoWPFSuite
     {
 
         #region Public Fields
-        public LoadResults loadResults = new LoadResults();
-        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
-        public NeuCodePairs neuCodePairs = new NeuCodePairs();
-        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
-        public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
-        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
-        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
-        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
-        public Quantification quantification = new Quantification();
-        public TopDown topDown = new TopDown();
-        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms();
-        public ResultsSummary resultsSummary = new ResultsSummary();
+        public LoadResults loadResults = new LoadResults(); //finished
+        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents(); //finished
+        public NeuCodePairs neuCodePairs = new NeuCodePairs(); //finished
+        public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase(); //finished
+        public TopDown topDown = new TopDown();//finished
+        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms(); //working on
+        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Not
+        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Not
+        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Not
+        public Quantification quantification = new Quantification();//Not
+        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms(); //Not
+        public ResultsSummary resultsSummary = new ResultsSummary();//Not
         public List<ISweetForm> forms = new List<ISweetForm>(); //contains a list of user controls
         #endregion Public Fields
 
