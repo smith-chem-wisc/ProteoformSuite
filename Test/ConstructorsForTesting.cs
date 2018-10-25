@@ -83,7 +83,9 @@ namespace Test
             Modification unmodification = new Modification("Unmodified", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 0);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm() });
-            return new TheoreticalProteoform(a, "", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
+            var t =  new TheoreticalProteoform(a, "", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
+            t.modified_mass = mass;
+            return t;
         }
 
 

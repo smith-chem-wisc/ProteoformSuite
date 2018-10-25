@@ -25,8 +25,6 @@ namespace Test
             Assert.AreEqual(136.109162, MassesList1.AA_Masses['K']);
             var MassesList2 = new AminoAcidMasses(true, false);
             Assert.Less(MassesList2.AA_Masses['K'], 136.109162);
-            var MassesList3 = new AminoAcidMasses(true, true);
-            Assert.Greater(MassesList3.AA_Masses['K'], 136.109162);
         }
     }
 }

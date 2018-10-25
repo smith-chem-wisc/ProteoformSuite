@@ -76,7 +76,7 @@ namespace ProteoformSuiteInternal
             return proteoformMass + aaMasses.Sum();
         }
 
-        public ChemicalFormula GetSequenceWithChemicalFormula()
+        public ChemicalFormula GetChemicalFormula()
         {
             var formula = new Proteomics.AminoAcidPolymer.Peptide(sequence).GetChemicalFormula();
 
@@ -88,6 +88,10 @@ namespace ProteoformSuiteInternal
                 if (modCf != null)
                 {
                     formula.Add(modCf);
+                }
+                else
+                {
+                    return null;
                 }
             }
 

@@ -19,7 +19,6 @@ namespace ProteoformSuiteInternal
         public double unmodified_mass { get; set; }
         public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
-        public double predicted_RT { get; set; }
 
         //  public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
         public bool contaminant { get; set; }

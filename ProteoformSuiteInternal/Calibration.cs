@@ -162,7 +162,7 @@ namespace ProteoformSuiteInternal
                 }
 
 
-                var formula = identification.GetSequenceWithChemicalFormula();
+                var formula = identification.GetChemicalFormula();
                 if (formula == null)
                 {
                     continue;
