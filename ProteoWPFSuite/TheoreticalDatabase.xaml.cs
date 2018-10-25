@@ -150,7 +150,7 @@ namespace ProteoWPFSuite
             ckbx_combineIdenticalSequences.IsChecked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.IsChecked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
 
-            tb_modTypesToExclude.Text = String.Join(",", Sweet.lollipop.mod_types_to_exclude);
+            tb_modTypesToExclude.Text = string.Join(",", Sweet.lollipop.mod_types_to_exclude);
 
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
@@ -171,7 +171,7 @@ namespace ProteoWPFSuite
             if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
         }
 
