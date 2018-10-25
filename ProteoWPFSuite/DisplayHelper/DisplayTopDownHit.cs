@@ -1,4 +1,4 @@
-﻿using ProteoformSuiteInternal;
+using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -80,7 +80,7 @@ namespace ProteoWPFSuite
                     "Unknown" :
                     h.ptm_list.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", h.ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).ToList());
+                        string.Join("; ", h.ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
             }
         }
 
