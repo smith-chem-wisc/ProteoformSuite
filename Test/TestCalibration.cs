@@ -367,12 +367,13 @@ namespace Test
             Modification mod3 = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0433")).FirstOrDefault();
             hit.ptm_list.Add(new Ptm(1, mod3));
 
-            string sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula();
+
+            string sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula().ToString();
             Assert.AreEqual("[C2H4]AS[C5H12NO5P]DACSDAS[C6H9NO3]D", sequencewithchemicalformula);
 
             //should add carbamidomethylation to C...
             Sweet.lollipop.carbamidomethylation = true;
-            sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula();
+            sequencewithchemicalformula = hit.GetSequenceWithChemicalFormula().ToString();
             Assert.AreEqual("[C2H4]AS[C5H12NO5P]DA[H3C2N1O1]CSDAS[C6H9NO3]D", sequencewithchemicalformula);
 
             //should return null if N term formula wrong or doesn't match mass

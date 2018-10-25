@@ -49,17 +49,20 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-            this.modified_mass = CalculateProteoformMass(sequence, ptm_set.ptm_combination,
-                Sweet.lollipop.theoretical_database.aaIsotopeMassList);
+            this.modified_mass = CalculateProteoformMass(sequence, ptm_set.ptm_combination);
         }
 
         #endregion Public Constructor
 
         #region Public Method
 
-        public static double CalculateProteoformMass(string sequence, List<Ptm> ptm_combination,
-            Dictionary<char, double> aaIsotopeMassList)
+        public static double CalculateProteoformMass(string sequence, List<Ptm> ptm_combination)
         {
+            if (Sweet.lollipop.theoretical_database.aaIsotopeMassList == null)
+            {
+                Sweet.lollipop.theoretical_database.populate_aa_mass_dictionary();
+            }
+
             if (!Sweet.lollipop.most_abundant_mass)
             {
                 double proteoformMass = 18.010565; // start with water
@@ -67,7 +70,8 @@ namespace ProteoformSuiteInternal
                 List<double> aaMasses = new List<double>();
                 for (int i = 0; i < sequence.Length; i++)
                 {
-                    if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+                    if (Sweet.lollipop.theoretical_database.aaIsotopeMassList.ContainsKey(aminoAcids[i]))
+                        aaMasses.Add(Sweet.lollipop.theoretical_database.aaIsotopeMassList[aminoAcids[i]]);
                 }
 
                 return proteoformMass + aaMasses.Sum() +

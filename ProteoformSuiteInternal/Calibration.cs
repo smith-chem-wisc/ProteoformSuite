@@ -161,17 +161,11 @@ namespace ProteoformSuiteInternal
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
                 }
 
-                var formula = new Proteomics.AminoAcidPolymer.Peptide(identification.sequence).GetChemicalFormula();
 
-                // append mod formulas
-                foreach (var mod in identification.ptm_list)
+                var formula = identification.GetSequenceWithChemicalFormula();
+                if (formula == null)
                 {
-                    var modCf = mod.modification.ChemicalFormula;
-
-                    if (modCf != null)
-                    {
-                        formula.Add(modCf);
-                    }
+                    continue;
                 }
 
                 // Calculate isotopic distribution of the full peptide

@@ -127,9 +127,7 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            btn_NeuCode_Lt.Checked = Sweet.lollipop.neucode_light_lysine;
-            btn_NaturalIsotopes.Checked = Sweet.lollipop.natural_lysine_isotope_abundance;
-            rb_mostAbundantMass.Checked = Sweet.lollipop.most_abundant_mass;
+            cb_mostAbundantMass.Checked = Sweet.lollipop.most_abundant_mass;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -246,21 +244,6 @@ namespace ProteoformSuiteGUI
         private void ckbx_Meth_Cleaved_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.methionine_cleavage = ckbx_Meth_Cleaved.Checked;
-        }
-
-        private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.natural_lysine_isotope_abundance = btn_NaturalIsotopes.Checked;
-        }
-
-        private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.neucode_light_lysine = btn_NeuCode_Lt.Checked;
-        }
-
-        private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.neucode_heavy_lysine = btn_NeuCode_Hv.Checked;
         }
 
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
@@ -445,10 +428,10 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
         }
-
-        private void rb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
+        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.most_abundant_mass = rb_mostAbundantMass.Checked;
+            Sweet.lollipop.most_abundant_mass = cb_mostAbundantMass.Checked;
+
         }
     }
 }

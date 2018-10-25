@@ -175,7 +175,8 @@ namespace ProteoformSuiteGUI
             get
             {
                 return connected_proteoforms[1] as ExperimentalProteoform != null ?
-                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt : (connected_proteoforms[1] as TheoreticalProteoform).predicted_RT;
+                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt :
+                    0;
             }
         }
 
@@ -358,6 +359,7 @@ namespace ProteoformSuiteGUI
             if (mask_experimental)
             {
                 if (property_name == nameof(agg_intensity_2)) { return false; }
+                if (property_name == nameof(agg_RT_2)) { return false; }
                 if (property_name == nameof(num_observations_2)) { return false; }
                 if (property_name == nameof(manual_validation_id_2)) { return false; }
                 if (property_name == nameof(RelationType)) { return false; }

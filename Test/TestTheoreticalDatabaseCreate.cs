@@ -60,9 +60,6 @@ namespace Test
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = true;
             Sweet.lollipop.methionine_cleavage = true;
-            Sweet.lollipop.natural_lysine_isotope_abundance = false;
-            Sweet.lollipop.neucode_light_lysine = true;
-            Sweet.lollipop.neucode_heavy_lysine = false;
             Sweet.lollipop.max_ptms = 3;
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.min_peptide_length = 7;
@@ -99,9 +96,6 @@ namespace Test
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = true;
             Sweet.lollipop.methionine_cleavage = true;
-            Sweet.lollipop.natural_lysine_isotope_abundance = false;
-            Sweet.lollipop.neucode_light_lysine = true;
-            Sweet.lollipop.neucode_heavy_lysine = false;
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.min_peptide_length = 7;

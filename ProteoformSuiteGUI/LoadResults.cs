@@ -107,9 +107,6 @@ namespace ProteoformSuiteGUI
         {
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
             Sweet.lollipop.neucode_labeled = rb_neucode.Checked;
-            Sweet.lollipop.neucode_light_lysine = rb_neucode.Checked;
-            Sweet.lollipop.natural_lysine_isotope_abundance = !rb_neucode.Checked;
-
             foreach (InputFile f in Sweet.lollipop.input_files)
             {
                 if (rb_neucode.Checked) f.label = Labeling.NeuCode;

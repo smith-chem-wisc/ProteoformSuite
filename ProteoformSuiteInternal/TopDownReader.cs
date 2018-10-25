@@ -21,7 +21,7 @@ namespace ProteoformSuiteInternal
         {
             //if neucode labeled, calculate neucode light theoretical AND observed mass! --> better for matching up
             //if carbamidomethylated, add 57 to theoretical mass (already in observed mass...)
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, !Sweet.lollipop.neucode_labeled, Sweet.lollipop.neucode_labeled, false).AA_Masses;
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);//This returns the entire sheet except for the header. Each row of cells is one List<string>

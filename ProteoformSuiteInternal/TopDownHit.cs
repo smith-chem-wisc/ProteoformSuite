@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -73,6 +74,24 @@ namespace ProteoformSuiteInternal
                 if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
             }
             return proteoformMass + aaMasses.Sum();
+        }
+
+        public ChemicalFormula GetSequenceWithChemicalFormula()
+        {
+            var formula = new Proteomics.AminoAcidPolymer.Peptide(sequence).GetChemicalFormula();
+
+            // append mod formulas
+            foreach (var mod in ptm_list)
+            {
+                var modCf = mod.modification.ChemicalFormula;
+
+                if (modCf != null)
+                {
+                    formula.Add(modCf);
+                }
+            }
+
+            return formula;
         }
     }
 

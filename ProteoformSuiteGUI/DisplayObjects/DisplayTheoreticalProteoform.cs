@@ -126,10 +126,6 @@ namespace ProteoformSuiteGUI
             get { return t.topdown_theoretical; }
         }
 
-        public double rt
-        {
-            get { return t.predicted_RT; }
-        }
         #endregion Public Properties
 
         #region Public Methods
