@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -37,11 +35,11 @@ namespace ProteoWPFSuite
             set
             {
                 //to avoid setting twice
-                if (value < 0 || Sweet.lollipop.agg_observation_requirement == cmbx_observationsTypeRequired.SelectedItem.ToString())
+                if (value < 0 || (cmbx_observationsTypeRequired.SelectedItem!=null && Sweet.lollipop.agg_observation_requirement == cmbx_observationsTypeRequired.SelectedItem.ToString()))
                     return;
                 cb_select = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CB_SELECT"));
-
+                cmbx_observationsTypeRequired.SelectedItem = cmbx_observationsTypeRequired.Items[value];
                 Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
                 set_nud_minObs_maximum();
                 nud_minObservations.Value = nud_minObservations.Maximum;

@@ -6,13 +6,12 @@ using MassSpectrometry;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
-using System.Diagnostics;
-
 
 namespace ProteoformSuiteInternal
 {
@@ -130,7 +129,7 @@ namespace ProteoformSuiteInternal
         public static void enter_uniprot_ptmlist(string current_directory)
         {
             Loaders.LoadUniprot(Path.Combine(current_directory, "ptmlist.txt"), Loaders.GetFormalChargesDictionary(Loaders.LoadPsiMod(Path.Combine(current_directory, "PSI-MOD.obo2.xml"))));
-            Sweet.lollipop.enter_input_files(new[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
+            Sweet.lollipop.enter_input_files(new[] { Path.Combine(current_directory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
         }
 
         #endregion Input Files
@@ -153,7 +152,7 @@ namespace ProteoformSuiteInternal
             ComponentReader.components_with_errors.Clear();
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
-                List<Component> someComponents = file.extension == ".xlsx" ? file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics) 
+                List<Component> someComponents = file.extension == ".xlsx" ? file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics)
                         : file.reader.read_components_from_tsv(file, remove_missed_monos_and_harmonics);
                 lock (destination) destination.AddRange(someComponents);
             });
@@ -248,7 +247,7 @@ namespace ProteoformSuiteInternal
                         string[] fields = lines[i].Split(',');
                         if (fields.Length >= 7 && Int32.TryParse(fields[6], out int featureID))
                         {
-                            if(csv_feature_info.TryGetValue(featureID, out List<string[]> value))
+                            if (csv_feature_info.TryGetValue(featureID, out List<string[]> value))
                             {
                                 value.Add(fields);
                             }
@@ -278,7 +277,7 @@ namespace ProteoformSuiteInternal
                             //get charges, intensities for each charge, and fit
                             List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();
                             List<double> intensities = charges.Select(c => fields.Where(a => a[1] == c.ToString()).Sum(fields2 => Double.TryParse(fields2[2], out double intensity) ? intensity : 0)).ToList();
-                            new_lines.Add(lines[i] + "\t" + String.Join(",", charges) + "\t" + String.Join(",", intensities) + "\t" +  fields.First()[4]);
+                            new_lines.Add(lines[i] + "\t" + string.Join(",", charges) + "\t" + string.Join(",", intensities) + "\t" + fields.First()[4]);
                         }
                     }
                     File.WriteAllLines(filelocation + ".tsv", new_lines);
@@ -396,12 +395,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion NEUCODE PAIRS
-
-        #region MSPathFinder
-
-
-
-        #endregion
 
         #region TOPDOWN
 
@@ -906,6 +899,7 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
+
         public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",
@@ -1218,7 +1212,7 @@ namespace ProteoformSuiteInternal
             {
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
-                    IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
+                    MsDataFile myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
                         ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
                         null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
@@ -1226,9 +1220,9 @@ namespace ProteoformSuiteInternal
                     {
                         int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(hit.ms2_retention_time);
                         hit.ms2ScanNumber = scanNum;
-                        if (myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor != null && scanNum <= myMsDataFile.NumSpectra)
+                        if (myMsDataFile.GetOneBasedScan(scanNum) as MsDataScan != null && scanNum <= myMsDataFile.NumSpectra)
                         {
-                            hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge
+                            hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as MsDataScan).IsolationMz, 0)); //m / (m/z)  round to get charge
                             if (hit.charge > 0)
                             {
                                 hit.mz = hit.reported_mass.ToMz(hit.charge);
@@ -1259,7 +1253,7 @@ namespace ProteoformSuiteInternal
                 return "Error: Multiple raw files have the same labels for biological replicate, technical replicate, and fraction.";
             get_td_hit_chargestates();
             if (td_hits_calibration.Any(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == ""))
-                return "Error: need to input all raw files for top-down hits: " + String.Join(", ", td_hits_calibration.Where(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
+                return "Error: need to input all raw files for top-down hits: " + string.Join(", ", td_hits_calibration.Where(h => h.fraction == "" || h.biological_replicate == "" || h.technical_replicate == "" || h.condition == "").Select(h => h.filename).Distinct());
             foreach (string condition in input_files.Select(f => f.lt_condition).Distinct())
             {
                 foreach (string biological_replicate in input_files.Where(f => f.lt_condition == condition).Select(f => f.biological_replicate).Distinct())
@@ -1272,7 +1266,7 @@ namespace ProteoformSuiteInternal
                         process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && (Sweet.lollipop.neucode_labeled || f.biological_replicate == biological_replicate) && f.fraction == fraction && f.lt_condition == condition).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                         if (ComponentReader.components_with_errors.Count > 0)
                         {
-                            return "Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors);
+                            return "Error in Deconvolution Results File: " + string.Join(", ", ComponentReader.components_with_errors);
                         }
                         foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.SpectraFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.lt_condition == condition))
                         {
@@ -1304,7 +1298,7 @@ namespace ProteoformSuiteInternal
                     Calibration.calibrate_td_hits_file(file);
                 }
             }
-            return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + String.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
+            return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + string.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
         }
 
         public void determine_shifts(InputFile raw_file)
@@ -1352,8 +1346,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion CALIBRATION
-
-
 
         #region RESULTS Public Field
 

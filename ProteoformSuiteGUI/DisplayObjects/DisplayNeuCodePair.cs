@@ -40,7 +40,7 @@ namespace ProteoformSuiteGUI
 
         public string overlapping_charge_states
         {
-            get { return String.Join(",", c.charge_states.Select(x => x.charge_count.ToString())); }
+            get { return string.Join(",", c.charge_states.Select(x => x.charge_count.ToString())); }
         }
 
         public double intensity_ratio

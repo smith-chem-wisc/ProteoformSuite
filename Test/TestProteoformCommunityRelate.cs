@@ -97,7 +97,6 @@ namespace Test
             pa2[2] = pf5;
             prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental, true, TestContext.CurrentContext.TestDirectory, false);
             Assert.AreEqual(0, prList.Count);
-
         }
 
         [Test]
@@ -221,14 +220,14 @@ namespace Test
 
         public static void prepare_for_et(List<double> delta_masses)
         {
-            Sweet.lollipop.theoretical_database.all_mods_with_mass = new List<ModificationWithMass>();
+            Sweet.lollipop.theoretical_database.all_mods_with_mass = new List<Modification>();
             Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>();
             Sweet.lollipop.modification_ranks = new Dictionary<double, int>();
 
             //Prepare for making ET relation
             foreach (double delta_m in new HashSet<double>(delta_masses))
             {
-                ModificationWithMass m = ConstructorsForTesting.get_modWithMass("fake" + delta_m.ToString(), delta_m);
+                Modification m = ConstructorsForTesting.get_modWithMass("fake" + delta_m.ToString(), delta_m);
                 Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m);
                 Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
                 Sweet.lollipop.modification_ranks.Add(delta_m, 2);
@@ -434,8 +433,27 @@ namespace Test
             });
             prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
             Assert.AreEqual(0, prList.Count);
-        }
 
+            //test methionine retention
+            pf1.modified_mass = 2131.04;
+            pf1.lysine_count = 1;
+            pf2.modified_mass = 2000;
+            pf2.lysine_count = 1;
+            pf2.begin = 2;
+
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("M", out motif);
+            Modification m = new Modification("Met retention", _modificationType: "AminoAcid", _target: motif, _locationRestriction: "Anywhere.", _monoisotopicMass: 131.04);
+            Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m);
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
+            Sweet.lollipop.modification_ranks.Add(131.04, 2);
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
+
+            paE[0] = pf1;
+            paT[0] = pf2;
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
+        }
 
         [Test]
         public void TestProteoformCommunityRelate_ED()
@@ -447,11 +465,11 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.ed_relations.Count);
 
             //create a decoy proteoform community
-            Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());            
+            Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1);
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { pf2 };
             Sweet.lollipop.relate_ed();
-            // Have a single decoy community --> have single ed_relations 
+            // Have a single decoy community --> have single ed_relations
             Assert.AreEqual(1, Sweet.lollipop.ed_relations.Count);
             // But it's empty
             Assert.IsEmpty(Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"]);

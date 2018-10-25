@@ -9,7 +9,6 @@ namespace Test
     [TestFixture]
     class TestRemoveMonoisotopicDuplicatesHarmonics
     {
-
         ComponentReader cr = new ComponentReader();
         Lollipop L = new Lollipop();
         List<Component> cList = new List<Component>();
@@ -21,8 +20,8 @@ namespace Test
             L.neucode_labeled = false;
 
             List<double> possibleMissedMonoisotopicsList =
-                        Enumerable.Range(-3, 7).Select(x =>
-                        1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS).ToList();
+                Enumerable.Range(-3, 7).Select(x =>
+                1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS).ToList();
 
             int counter = 0;
             foreach (double mass in possibleMissedMonoisotopicsList)
@@ -93,8 +92,10 @@ namespace Test
             L.neucode_labeled = false;
 
             List<double> possibleHarmonicList = // 2 missed on the top means up to 4 missed monos on the 2nd harmonic and 6 missed monos on the 3rd harmonic
-                        Enumerable.Range(-4, 9).Select(x => (1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 2d).Concat(
-                            Enumerable.Range(-6, 13).Select(x => (1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 3d)).ToList();
+                Enumerable.Range(-4, 9).Select(x => (1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 2d)
+                .Concat(
+                Enumerable.Range(-6, 13).Select(x => (1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 3d))
+                .ToList();
 
             possibleHarmonicList.Add(1000d);
 
@@ -136,7 +137,6 @@ namespace Test
             List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(1, compressed.Count);
-
         }
 
         [Test]
@@ -254,7 +254,6 @@ namespace Test
             Assert.AreEqual(1000, Convert.ToInt32(compressed.FirstOrDefault().weighted_monoisotopic_mass));
         }
 
-
         [Test]
         public void CompressHarmonicsUnequalNumberChargeStates_LowMassHighChargeStateCount()
         {
@@ -337,11 +336,9 @@ namespace Test
             c3.calculate_properties();
             cList.Add(c3);
 
-
             List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(2, compressed.Count);
         }
-
     }
 }

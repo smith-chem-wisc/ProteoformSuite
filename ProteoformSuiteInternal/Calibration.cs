@@ -4,25 +4,25 @@ using IO.MzML;
 using IO.Thermo;
 using MassSpectrometry;
 using MathNet.Numerics.Statistics;
+using SharpLearning.Containers.Matrices;
+using SharpLearning.CrossValidation.TrainingTestSplitters;
+using SharpLearning.Metrics.Regression;
+using SharpLearning.Optimization;
+using SharpLearning.RandomForest.Learners;
+using SharpLearning.RandomForest.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using SharpLearning.Containers.Matrices;
-using SharpLearning.CrossValidation.TrainingTestSplitters;
-using SharpLearning.RandomForest.Learners;
-using SharpLearning.RandomForest.Models;
-using SharpLearning.Metrics.Regression;
-using SharpLearning.Optimization;
 
 namespace ProteoformSuiteInternal
 {
     public class Calibration
     {
         //CALIBRATION WITH TD HITS
-        private IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
+        private MsDataFile myMsDataFile;
 
         private List<TopDownHit> all_topdown_hits;
         private List<TopDownHit> high_scoring_topdown_hits;
@@ -79,7 +79,6 @@ namespace ProteoformSuiteInternal
             return true;
         }
 
-        
         public void CalibrateHitsAndComponents(RegressionForestModel bestCf)
         {
             foreach (TopDownHit hit in all_topdown_hits)
@@ -102,14 +101,13 @@ namespace ProteoformSuiteInternal
                     cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime, Math.Log(scan.TotalIonCurrent), scan.InjectionTime.HasValue ? Math.Log(scan.InjectionTime.Value) : double.NaN });
                 }
             }
-            foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
+            foreach (var a in myMsDataFile.GetAllScansList().Where(s => s.MsnOrder == 1))
             {
-                Func<Spectra.IPeak, double> theFunc = x => x.X - bestCf.Predict(new double[] { x.X, a.RetentionTime, Math.Log(a.TotalIonCurrent), a.InjectionTime.HasValue ? Math.Log(a.InjectionTime.Value) : double.NaN });
+                Func<MzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime, Math.Log(a.TotalIonCurrent), a.InjectionTime.HasValue ? Math.Log(a.InjectionTime.Value) : double.NaN });
                 a.MassSpectrum.ReplaceXbyApplyingFunction(theFunc);
             }
         }
 
-       
         private DataPointAquisitionResults GetDataPoints()
         {
             DataPointAquisitionResults res = new DataPointAquisitionResults()
@@ -127,7 +125,7 @@ namespace ProteoformSuiteInternal
                 Component matching_component = null;
                 if (identification.filename != raw_file.filename) //if calibrating across files find component with matching mass and retention time
                 {
-                    //NOTE: only looking at components from same raw file... looking for components corresponding to td hits from any files w/ same br, fraction, condition however. 
+                    //NOTE: only looking at components from same raw file... looking for components corresponding to td hits from any files w/ same br, fraction, condition however.
                     //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes same br, tr, fraction, condition (same file!)
                     //if neucode labled, look for the light component mass (loaded in...)
                     List<Component> potential_matches = Sweet.lollipop.calibration_components.
@@ -167,7 +165,7 @@ namespace ProteoformSuiteInternal
                 {
                     continue;
                 }
-                Proteomics.Peptide coolPeptide = new Proteomics.Peptide(SequenceWithChemicalFormulas);
+                Proteomics.AminoAcidPolymer.Peptide coolPeptide = new Proteomics.AminoAcidPolymer.Peptide(SequenceWithChemicalFormulas);
 
                 // Calculate isotopic distribution of the full peptide
 
@@ -346,7 +344,7 @@ namespace ProteoformSuiteInternal
             // learn an initial model
             var myModel = learner.Learn(trainingSetX, trainingSetY);
 
-            // parameter ranges for the optimizer 
+            // parameter ranges for the optimizer
             var parameters = new ParameterBounds[]
             {
                 new ParameterBounds(min: 100, max: 150, transform: Transform.Linear),
@@ -389,7 +387,7 @@ namespace ProteoformSuiteInternal
             var result = optimizer.OptimizeBest(minimize);
             var best = result.ParameterSet;
 
-            // create the final learner using the best parameters 
+            // create the final learner using the best parameters
             // (parameters that resulted in the model with the least error)
             learner = new RegressionRandomForestLearner(
                     trees: (int)best[0],
@@ -473,7 +471,7 @@ namespace ProteoformSuiteInternal
                         if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                         {
                             double value;
-                            //CHECK WITH CHARGE NORMALIZED INTENSITY!! 
+                            //CHECK WITH CHARGE NORMALIZED INTENSITY!!
                             if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
                             {
                                 row.Cell(4).SetValue(value);
@@ -488,7 +486,7 @@ namespace ProteoformSuiteInternal
                 string[] old = File.ReadAllLines(old_absolute_path);
                 List<string> new_file = new List<string>();
                 new_file.Add(old[0]);
-                for(int i = 1; i < old.Length; i++)
+                for (int i = 1; i < old.Length; i++)
                 {
                     string[] row = old[i].Split('\t');
                     if (row.Length == 20 && Double.TryParse(row[5], out double mass) && Double.TryParse(row[9], out double intensity))
@@ -499,7 +497,7 @@ namespace ProteoformSuiteInternal
                             //do intensity weighted new monoisotopic mass for each feature
                             //just rewrite, don't bother with dictionary, etc......
                             row[5] = value.ToString();
-                            new_file.Add(String.Join("\t", row));
+                            new_file.Add(string.Join("\t", row));
                         }
                     }
                 }

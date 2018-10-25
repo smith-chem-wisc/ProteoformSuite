@@ -16,7 +16,6 @@ namespace Test
         public static int starter_lysine_count = 3;
         List<Component> empty_quant_components_list = new List<Component>();
 
-
         //class methods here
         public static List<IAggregatable> generate_neucode_components(double mass, double lightIntensity, double heavyIntensity, int lysineCount)
         {
@@ -378,7 +377,6 @@ namespace Test
             Assert.AreEqual(70, resultFour.Count());
         }
 
-
         class DummyBiorepable : IFileIntensity //empty class that inherits IBiorepable. useful for testing.
         {
             public InputFile input_file { get; set; }
@@ -692,7 +690,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(0, exps_out.Count);
 
-
             // DOESN'T PASS WHEN LESS THAN THRESHOLD
             //One biorep obs doesn't pass 2 from any-single-conditon test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
@@ -706,14 +703,12 @@ namespace Test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
 
-
             BiorepIntensity b2 = new BiorepIntensity(false, 100.ToString(), conditions[1], 0);
             exps[0].biorepIntensityList.Add(b2);
 
             //One biorep in each condition passes for-each-conditon test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(1, exps_out.Count);
-
 
             // DOESN'T PASS WHEN LESS THAN THRESHOLD IN SPECIFIC CONDITIONS UNLESS ANY-CONDITION
             //One biorep obs in two different conditions doesn't pass 2 from any-single-conditon test
@@ -728,7 +723,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
 
-
             //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
             foreach (BiorepIntensity b in exps[0].biorepIntensityList) b.condition = "not_a_condition";
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
@@ -739,7 +733,6 @@ namespace Test
 
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
-
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
             BiorepIntensity b3 = new BiorepIntensity(false, 1.ToString(), conditions[0], 0);
@@ -805,7 +798,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(0, exps_out.Count);
 
-
             // DOESN'T PASS WHEN LESS THAN THRESHOLD
             //Two biorep+techrep obs in single condition doesn't pass 3 from any-single-conditon test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
@@ -819,14 +811,12 @@ namespace Test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
 
-
             BiorepTechrepIntensity b2 = new BiorepTechrepIntensity(false, 100.ToString(), conditions[1], 1.ToString(), 0);
             exps[0].biorepTechrepIntensityList.Add(b2);
 
             //At least one biorep+techrep in each condition passes for-each-conditon test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 1);
             Assert.AreEqual(1, exps_out.Count);
-
 
             // DOESN'T PASS WHEN LESS THAN THRESHOLD IN SPECIFIC CONDITIONS UNLESS ANY-CONDITION
             //Two and one biorep+techrep obs in two different conditions doesn't pass 3 from any-single-conditon test
@@ -841,7 +831,6 @@ namespace Test
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 3);
             Assert.AreEqual(0, exps_out.Count);
 
-
             //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
             foreach (BiorepTechrepIntensity b in exps[0].biorepTechrepIntensityList) b.condition = "not_a_condition";
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 3);
@@ -852,7 +841,6 @@ namespace Test
 
             exps_out = Sweet.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 3);
             Assert.AreEqual(0, exps_out.Count);
-
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
             BiorepTechrepIntensity b3 = new BiorepTechrepIntensity(false, 1.ToString(), conditions[0], 1.ToString(), 0);
@@ -1008,7 +996,7 @@ namespace Test
             };
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
-            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict); 
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E1");
@@ -1391,7 +1379,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            for(int i = 1; i <= 100; i++)
+            for (int i = 1; i <= 100; i++)
             {
                 ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("");
                 e.quant.Log2FoldChangeValues.pValue_uncorrected = ExtensionMethods.Student2T((double)i / 10, 10);

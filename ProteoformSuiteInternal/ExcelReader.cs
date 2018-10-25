@@ -1,10 +1,8 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ProteoformSuiteInternal
 {
@@ -15,7 +13,7 @@ namespace ProteoformSuiteInternal
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(file.complete_path, false))
             {
                 // Get Data in Sheet1 of Excel file
-                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
+                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document
                 WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
                 SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
                 IEnumerable<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
@@ -34,7 +32,7 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {  //deconvolution results -- blank cells should be ignored
-                        for(int k = 0; k < row.Descendants<Cell>().Count(); k++)
+                        for (int k = 0; k < row.Descendants<Cell>().Count(); k++)
                         {
                             cellStrings.Add(GetCellValue(spreadsheetDocument, row.Descendants<Cell>().ElementAt(k)));
                         }
@@ -45,7 +43,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        //TD files have blank spaces in middle of rows/columns -- need this to account for those. 
+        //TD files have blank spaces in middle of rows/columns -- need this to account for those.
         private static IEnumerable<Cell> GetRowCells(Row row)
         {
             int currentCount = 0;

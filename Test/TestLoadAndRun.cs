@@ -10,7 +10,7 @@ namespace Test
         [Test]
         public void test_load_and_run()
         {
-            //set parameters -- change some parameters to other than the current defaults... 
+            //set parameters -- change some parameters to other than the current defaults...
             Sweet.lollipop.max_intensity_ratio = 3.5m;
             Sweet.lollipop.min_intensity_ratio = 1.5m;
             Sweet.lollipop.max_lysine_ct = 21m;
@@ -40,7 +40,7 @@ namespace Test
             Sweet.lollipop.ee_max_mass_difference = 250;
             Sweet.lollipop.ee_max_RetentionTime_difference = 2.5;
             Sweet.lollipop.peak_width_base_ee = 0.015;
-            //load method --> should switch parametetrs to saved 
+            //load method --> should switch parametetrs to saved
             Sweet.open_method(Path.Combine(TestContext.CurrentContext.TestDirectory, "method.xml"), saved_method, false, out string warning);
 
             //tests that the method settings properly a) saved b)loaded up above
@@ -61,4 +61,3 @@ namespace Test
         }
     }
 }
-

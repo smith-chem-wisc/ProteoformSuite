@@ -6,7 +6,7 @@ namespace ProteoformSuiteInternal
 {
     public class GeneName
     {
-        public IEnumerable<Tuple<string,string>> gene_names { get; private set; }
+        public IEnumerable<Tuple<string, string>> gene_names { get; private set; }
         public string ordered_locus { get; private set; }
         public string primary { get; private set; }
 

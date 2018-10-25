@@ -100,7 +100,7 @@ namespace ProteoformSuiteGUI
 
         public bool novel_mods
         {
-            get { return e.novel_mods;  }
+            get { return e.novel_mods; }
         }
 
         public int Begin
@@ -130,7 +130,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.linked_proteoform_references != null ?
-                    String.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())
+                    string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())
                 : "";
             }
         }
@@ -216,7 +216,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.topdown_id ? "" :
-                 String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2)));
+                 string.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => Math.Round(cs.mz_centroid, 2)));
             }
         }
 
@@ -225,7 +225,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.topdown_id ? "" :
-                    String.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => cs.charge_count));
+                    string.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => cs.charge_count));
             }
         }
 
