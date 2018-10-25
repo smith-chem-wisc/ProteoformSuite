@@ -146,9 +146,9 @@ namespace ProteoformSuiteGUI
             List<string> topHitsForTransferTest = new List<string>() { "sequence\tRT\taccession\tPFR\tfilename\tscan\tscore" };
             List<string> allHits = new List<string>() { "sequence\tRT\taccession\tPFR\tfilename\tscan\tscore" };
             Random r = new Random();
-            List<TopDownHit> shuffledHits = Sweet.lollipop.top_down_hits.Where(h => h.score > 3.0 && h.ms2_retention_time > 35 && h.ms2_retention_time < 95).OrderBy(h => r.Next()).ToList();
-            int numForTrainSet = shuffledHits.Count > 11000 ? 9000 : (int)(shuffledHits.Count * 0.80);
-            int numForTestSet = shuffledHits.Count > 11000 ? 1000 : (int)(shuffledHits.Count * 0.10);
+            List<TopDownHit> shuffledHits = Sweet.lollipop.top_down_hits.Where(h => h.score > 40 && h.ms2_retention_time > 35 && h.ms2_retention_time < 95).OrderBy(h => r.Next()).ToList();
+            int numForTrainSet = shuffledHits.Count > 5000 ? 4500 : (int)(shuffledHits.Count * 0.80);
+            int numForTestSet = shuffledHits.Count > 5000 ? 500 : (int)(shuffledHits.Count * 0.10);
 
             foreach (var h in shuffledHits)
             {
