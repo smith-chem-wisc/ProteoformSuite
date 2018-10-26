@@ -317,6 +317,7 @@ namespace Test
         [Test]
         public void test_enter_theoretical_proteoform_family()
         {
+            Sweet.lollipop = new Lollipop();
             List<TheoreticalProteoform> theoreticals = new List<TheoreticalProteoform>();
             Sweet.lollipop.theoretical_database.populate_aa_mass_dictionary();
 
