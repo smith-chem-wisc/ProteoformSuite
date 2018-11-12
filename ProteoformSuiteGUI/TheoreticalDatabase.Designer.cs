@@ -42,6 +42,7 @@
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cb_mostAbundantMass = new System.Windows.Forms.CheckBox();
             this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
@@ -76,7 +77,6 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.cb_mostAbundantMass = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -337,6 +337,20 @@
             this.groupBox3.TabIndex = 49;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
+            // 
+            // cb_mostAbundantMass
+            // 
+            this.cb_mostAbundantMass.AutoSize = true;
+            this.cb_mostAbundantMass.Checked = true;
+            this.cb_mostAbundantMass.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_mostAbundantMass.Location = new System.Drawing.Point(9, 25);
+            this.cb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
+            this.cb_mostAbundantMass.Name = "cb_mostAbundantMass";
+            this.cb_mostAbundantMass.Size = new System.Drawing.Size(126, 17);
+            this.cb_mostAbundantMass.TabIndex = 52;
+            this.cb_mostAbundantMass.Text = "Most Abundant Mass";
+            this.cb_mostAbundantMass.UseVisualStyleBackColor = true;
+            this.cb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
             // 
             // nud_randomSeed
             // 
@@ -750,20 +764,6 @@
             this.splitter1.Size = new System.Drawing.Size(3, 737);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
-            // 
-            // cb_mostAbundantMass
-            // 
-            this.cb_mostAbundantMass.AutoSize = true;
-            this.cb_mostAbundantMass.Checked = true;
-            this.cb_mostAbundantMass.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_mostAbundantMass.Location = new System.Drawing.Point(9, 25);
-            this.cb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
-            this.cb_mostAbundantMass.Name = "cb_mostAbundantMass";
-            this.cb_mostAbundantMass.Size = new System.Drawing.Size(126, 17);
-            this.cb_mostAbundantMass.TabIndex = 52;
-            this.cb_mostAbundantMass.Text = "Most Abundant Mass";
-            this.cb_mostAbundantMass.UseVisualStyleBackColor = true;
-            this.cb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
             // 
             // TheoreticalDatabase
             // 

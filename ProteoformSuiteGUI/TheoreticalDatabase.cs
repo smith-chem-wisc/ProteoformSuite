@@ -287,7 +287,6 @@ namespace ProteoformSuiteGUI
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
@@ -349,7 +348,6 @@ namespace ProteoformSuiteGUI
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Sweet.lollipop.input_files, true);
             }
 

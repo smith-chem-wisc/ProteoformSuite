@@ -66,8 +66,19 @@ namespace ProteoformSuiteInternal
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
-                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, true, DecoyType.None, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out Dictionary<string, Modification> um).ToArray());
-                lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.ModificationType)));
+                if(database.extension == ".xml")
+                {
+                    lock (theoretical_proteins)
+                        theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, true, DecoyType.None, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out Dictionary<string, Modification> um).ToArray());
+                    lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.ModificationType)));
+
+                }
+                else if (database.extension == ".fasta")
+                {
+                    lock (theoretical_proteins)
+                        theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
+                   ProteinDbLoader.UniprotOrganismRegex, out var dbErrors).ToArray());
+                }
             });
 
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
@@ -293,7 +304,7 @@ namespace ProteoformSuiteInternal
             Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
             List<InputFile> proteinDbs = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList();
             return proteinDbs.Count > 0
-                && (proteinDbs.Any(file => ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)
+                && (proteinDbs.Any(file => file.extension == ".xml" && ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)
                 || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0);
         }
 

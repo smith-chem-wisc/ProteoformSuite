@@ -195,17 +195,6 @@ namespace ProteoformSuiteGUI
 
             return dt;
         }
-
-        public static bool CheckForProteinFastas(ComboBox cmb, IEnumerable<string> files)
-        {
-            if (Lollipop.file_filters[cmb.SelectedIndex].Contains(".fasta") && files.Any(x => x.Contains(".fasta")))
-            {
-                MessageBox.Show("Usage of protein fasta files is not yet enabled. Please use a protein XML file for now, e.g. from UniProt. (See this site for more information, and let us know there if this is an issue for you: https://github.com/smith-chem-wisc/ProteoformSuite/issues/477.)", "Load Files Message");
-                return true;
-            }
-            return false;
-        }
-
         #endregion Public Methods
     }
 }
