@@ -29,7 +29,7 @@ namespace ProteoWPFSuite
 
         public string OriginalID
         {
-            get { return m.original_modification.OriginalId; }
+            get { return m.original_modification.id; }
         }
 
         public double Mass
@@ -45,7 +45,7 @@ namespace ProteoWPFSuite
 
         public string Type
         {
-            get { return m.original_modification.ModificationType; }
+            get { return m.original_modification.modificationType; }
             set { m.id = value; }
         }
 

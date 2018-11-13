@@ -32,7 +32,7 @@
                 <MenuItem x:Name="quantificationToolStripMenuItem" Click="quantificationToolStripMenuItem_Click" Header="Quantification"/>
                 <MenuItem Header="Results Summary" Click="resultsSummaryToolStripMenuItem_Click"/>
                 <MenuItem Header="test" Click="testWin"/>
-                
+
             </MenuItem>
             <MenuItem Header="Method">
                 <MenuItem Header="Save Method" Click="saveMethodToolStripMenuItem1_Click"/>
@@ -49,8 +49,8 @@
             </TabControl.ItemContainerStyle>
             <TabItem x:Name="test" Header="Test">
             </TabItem>
-            
+
         </TabControl>
     </Grid>
-    
+   
 </UserControl>

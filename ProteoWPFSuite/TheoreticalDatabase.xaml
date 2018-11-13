@@ -22,8 +22,8 @@
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"></RowDefinition>
-                    <RowDefinition Height="*" MinHeight="200"></RowDefinition>
-                    <RowDefinition Height="45"></RowDefinition>
+                    <RowDefinition Height="*" MinHeight="100"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" SelectionChanged="cmbx_DisplayWhichDB_SelectedIndexChanged"></ComboBox>
                 <WindowsFormsHost Grid.Row="1">
@@ -32,7 +32,7 @@
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button x:Name="btn_addFiles" Content="Add" Height="40" Margin="2 0 2 0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="btn_addFiles_Click"></Button>
