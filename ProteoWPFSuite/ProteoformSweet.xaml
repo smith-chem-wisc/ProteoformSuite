@@ -44,7 +44,7 @@
                 <Style TargetType="TabItem">
                     <Setter Property="Height" Value="Auto" />
                     <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="FontSize" Value="14px"/>
+                    <Setter Property="FontSize" Value="12px"/>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabItem x:Name="test" Header="Test">

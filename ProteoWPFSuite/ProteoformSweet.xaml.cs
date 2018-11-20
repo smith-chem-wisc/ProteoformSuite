@@ -22,7 +22,7 @@ namespace ProteoWPFSuite
         public NeuCodePairs neuCodePairs = new NeuCodePairs(); //finished
         public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase(); //finished
         public TopDown topDown = new TopDown();//finished
-        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms(); //working on
+        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms(); //finished
         public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Not
         public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Not
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Not
@@ -48,11 +48,7 @@ namespace ProteoWPFSuite
         {
             InitializeComponent();
 
-            ClosingTabItem test = new ClosingTabItem();
-            test.Title = "test";
-            MDIContainer.Items.Add(test);
-            test.Focus();
-
+            
             InitializeForms();
             loadResults.InitializeParameterSet();
             showForm(loadResults);
@@ -95,8 +91,8 @@ namespace ProteoWPFSuite
         }
         private void showForm(UserControl form)
         {
-            TabItem temp = new TabItem();
-            temp.Header = form.GetType().Name;
+            ClosingTabItem temp = new ClosingTabItem();
+            temp.Title = form.GetType().Name;
             temp.Content = form;
             MDIContainer.Items.Add(temp);
             MDIContainer.SelectedItem = temp;

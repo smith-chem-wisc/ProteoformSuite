@@ -23,7 +23,7 @@ namespace ProteoWPFSuite
             Window wdo = new Window
             {
                 Title = "Proteo Display",
-                Content = new ProteoformSweet(),
+                Content = new AggregatedProteoforms(),
                 MinHeight = 450,
                 MinWidth = 800
             };

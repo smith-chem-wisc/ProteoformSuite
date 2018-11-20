@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ProteoformSuiteInternal;
 using System.ComponentModel;
+
 namespace ProteoWPFSuite
 {
     /// <summary>
@@ -17,6 +18,8 @@ namespace ProteoWPFSuite
         #region Private Field
         private ExperimentalProteoform selected_pf;
         private int cb_select;
+        private bool? ck1;
+        private bool? ck2;
         private bool? ra;
         private bool? rb;
         private bool? rc;
@@ -45,6 +48,36 @@ namespace ProteoWPFSuite
                 nud_minObservations.Value = nud_minObservations.Maximum;
             }
         }
+        public bool? CK1
+        {
+            get
+            {
+                return ck1;
+            }
+            set
+            {
+                if (ck1 == (bool)value)
+                    return;
+                ck1 = (bool)value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK1"));
+                Sweet.lollipop.add_td_proteoforms = (bool)ck1;
+            }
+        }
+        public bool? CK2
+        {
+            get
+            {
+                return ck2;
+            }
+            set
+            {
+                if (ck2 == (bool)value)
+                    return;
+                ck2 = (bool)value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK2"));
+                Sweet.lollipop.validate_proteoforms = (bool)ck2;
+            }
+        }
         public bool? RA
         {
             get
@@ -53,9 +86,9 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (value == null || ra==value)
+                if (ra==(bool)value)
                     return;
-                ra = value;
+                ra = (bool)value;
                 PropertyChanged?.Invoke(this,new PropertyChangedEventArgs("RA"));
                 if ((bool)rb_displayIdentificationComponents.IsChecked)
                 {
@@ -109,13 +142,21 @@ namespace ProteoWPFSuite
         {
             InitializeComponent();
             InitializeParameterSet();
-            RA = true;
+            BindingSetup();
         }
 
         #endregion Public Constructor
 
         #region Private Methods
-
+        private void BindingSetup()
+        {
+            this.DataContext = this;
+            RA = true;
+            RB = false;
+            RC = false;
+            CK1 = true;
+            CK2 = true;
+        }
         private void CellClick(int rowIndex)
         {
             if (rowIndex >= 0)
@@ -217,12 +258,7 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
         }
-        /*
-        private void cb_validateProteoforms_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.validate_proteoforms = cb_validateProteoforms.Checked;
-        }*/
-
+        
         private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             IEnumerable<object> selected_aggregates = tb_tableFilter.Text == "" ?
@@ -258,24 +294,28 @@ namespace ProteoWPFSuite
                 nud_minObservations.Maximum = Sweet.lollipop.input_files.Count(f => f.purpose == Purpose.Identification) == 0 ? 0 : conditions.Min(c => Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.lt_condition == c).Concat(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Where(x => x.hv_condition == c)).Select(x => x.biological_replicate + x.technical_replicate).Distinct().Count());
             }
         }
+
+        private void nud_minObservations_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
+        }
         #endregion Private Methods
 
         #region Public Methods
-        /*
-                public bool ReadyToRunTheGamut()
-                {
-                    return Sweet.lollipop.topdown_proteoforms.Count > 0 || (Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0);
-                }
+        public bool ReadyToRunTheGamut()
+        {
+            return Sweet.lollipop.topdown_proteoforms.Count > 0 || (Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0);
+        }
 
-                public void RunTheGamut(bool full_run)
-                {
-                    ClearListsTablesFigures(true);
-                    Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, Sweet.lollipop.min_num_CS);
-                    Sweet.lollipop.assign_best_components_for_manual_validation(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
-                    FillTablesAndCharts();
-                    updateFiguresOfMerit();
-                }
-        */
+        public void RunTheGamut(bool full_run)
+        {
+            ClearListsTablesFigures(true);
+            Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, Sweet.lollipop.min_num_CS);
+            Sweet.lollipop.assign_best_components_for_manual_validation(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
+            FillTablesAndCharts();
+            updateFiguresOfMerit();
+        }
+
         public List<DataTable> SetTables()
         {
             DataTables = new List<DataTable>
@@ -311,7 +351,7 @@ namespace ProteoWPFSuite
             CB_SELECT = Sweet.lollipop.agg_observation_requirement == new Lollipop().agg_observation_requirement ? // check that the default has not been changed (haven't loaded presets)
                 0 :
                 Lollipop.observation_requirement_possibilities.ToList().IndexOf(Sweet.lollipop.agg_observation_requirement);
-            cmbx_observationsTypeRequired.SelectedItem = Sweet.lollipop.agg_observation_requirement;
+            cmbx_observationsTypeRequired.SelectedItem = Sweet.lollipop.agg_observation_requirement;//replace addrange, which is not in wpf
 
             nud_minObservations.Minimum = 1;
             set_nud_minObs_maximum();
@@ -319,7 +359,7 @@ namespace ProteoWPFSuite
                 && agg_minBiorepsWithObservations >= nud_minObservations.Minimum) nud_minObservations.Value = agg_minBiorepsWithObservations;
             else nud_minObservations.Value = nud_minObservations.Maximum;
             Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
-            cb_add_td_proteoforms.IsChecked = Sweet.lollipop.add_td_proteoforms;
+            CK1 = Sweet.lollipop.add_td_proteoforms;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -343,20 +383,10 @@ namespace ProteoWPFSuite
         }
 
         #endregion Public Methods
-        
 
-        public bool ReadyToRunTheGamut()
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        public void RunTheGamut(bool full_run)
-        {
-            throw new NotImplementedException();
-        }
-        private void nud_minObservations_ValueChanged(object sender, EventArgs e)
-        {
-
+            CK1 = !CK1;
         }
     }
 }

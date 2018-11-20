@@ -30,7 +30,7 @@
                     <DockPanel Margin="0 5 0 0" Height="28">
                         <Label DockPanel.Dock="Left" Margin="10 0 10 0" Width="170">Ret. Time Tolerance (min)</Label>
                         <WindowsFormsHost Margin="0 0 10 0" DockPanel.Dock="Left">
-                            <winform:NumericUpDown Dock="Fill" x:Name="nUD_RetTimeToleranace" ValueChanged="nUD_RetTimeToleranace_ValueChanged"></winform:NumericUpDown>
+                            <winform:NumericUpDown Dock="Fill" x:Name="nUD_RetTimeToleranace" ValueChanged="nUD_RetTimeToleranace_ValueChanged" DecimalPlaces="2"></winform:NumericUpDown>
                         </WindowsFormsHost>
                     </DockPanel>
                     <DockPanel Margin="0 5 0 0" Height="28">
@@ -65,8 +65,8 @@
                         </Grid>
                     </GroupBox>
                     <DockPanel Height="28">
-                        <CheckBox IsChecked="True" Margin="0 0 5 0" x:Name="cb_add_td_proteoforms">Add Top-Down Proteoforms</CheckBox><!--cb_add_td_proteoforms_CheckedChanged, chekced binding-->
-                        <CheckBox IsChecked="True" x:Name="cb_validateProteoforms">Validate Proteoforms</CheckBox><!--cb_validateProteoforms_CheckedChanged-->
+                        <CheckBox IsChecked="{Binding Path=CK1,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Margin="0 0 5 0" x:Name="cb_add_td_proteoforms">Add Top-Down Proteoforms</CheckBox><!--cb_add_td_proteoforms_CheckedChanged, chekced binding-->
+                        <CheckBox IsChecked="{Binding Path=CK2,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" x:Name="cb_validateProteoforms">Validate Proteoforms</CheckBox><!--cb_validateProteoforms_CheckedChanged-->
                     </DockPanel>
                     <DockPanel LastChildFill="True" Height="28">
                         <Label Margin="0 0 5 0" MinWidth="223">Total Accepted Aggregated Proteoforms</Label>
