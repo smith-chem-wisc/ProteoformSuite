@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using TheoreticalProteoform = ProteoformSuiteInternal.TheoreticalProteoform;
 
 namespace ProteoformSuiteGUI
 {
@@ -152,6 +153,16 @@ namespace ProteoformSuiteGUI
                 return e.linked_proteoform_references != null ?
                    (e.linked_proteoform_references[0] as TheoreticalProteoform).fragment :
                     "";
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return e.linked_proteoform_references != null
+                    ? (e.linked_proteoform_references[0] as TheoreticalProteoform).description
+                    : "";
             }
         }
 

@@ -15,7 +15,7 @@ namespace Test
         public void assign_missing_aa_identity()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, false).AA_Masses;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 886.45, 0); // sequence with all serines
             t.sequence = "AAAAAAAAAAAS";
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
@@ -105,7 +105,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false,false).AA_Masses;
 
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1232.43, 0, true);
@@ -189,7 +189,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, true, false, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false,false).AA_Masses;
 
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1106.42, 0, true);
@@ -226,7 +226,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, !Sweet.lollipop.neucode_labeled, Sweet.lollipop.neucode_labeled, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new Modification("Sulfate Adduct", _modificationType : "Common", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 97.97)) });
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
@@ -296,7 +296,7 @@ namespace Test
             }
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(3, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -310,7 +310,7 @@ namespace Test
         public void only_common_and_known_mods()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
             Sweet.lollipop.only_assign_common_or_known_mods = true;
             Lollipop.preferred_gene_label = "primary";
             TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("T1", 100000, 0); // sequence with all serines

@@ -42,6 +42,7 @@
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cb_mostAbundantMass = new System.Windows.Forms.CheckBox();
             this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
@@ -59,10 +60,6 @@
             this.nUD_NumDecoyDBs = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btn_NeuCode_Hv = new System.Windows.Forms.RadioButton();
-            this.btn_NeuCode_Lt = new System.Windows.Forms.RadioButton();
-            this.btn_NaturalIsotopes = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -114,7 +111,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.param_splitcontainer)).BeginInit();
@@ -304,7 +300,6 @@
             // 
             this.splitContainer8.Panel1.AutoScroll = true;
             this.splitContainer8.Panel1.Controls.Add(this.groupBox3);
-            this.splitContainer8.Panel1.Controls.Add(this.groupBox1);
             // 
             // splitContainer8.Panel2
             // 
@@ -317,6 +312,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.cb_mostAbundantMass);
             this.groupBox3.Controls.Add(this.nud_randomSeed);
             this.groupBox3.Controls.Add(this.cb_limitLargePtmSets);
             this.groupBox3.Controls.Add(this.cb_useRandomSeed);
@@ -335,16 +331,30 @@
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox3.Location = new System.Drawing.Point(0, 96);
+            this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(260, 310);
+            this.groupBox3.Size = new System.Drawing.Size(260, 342);
             this.groupBox3.TabIndex = 49;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
             // 
+            // cb_mostAbundantMass
+            // 
+            this.cb_mostAbundantMass.AutoSize = true;
+            this.cb_mostAbundantMass.Checked = true;
+            this.cb_mostAbundantMass.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_mostAbundantMass.Location = new System.Drawing.Point(9, 25);
+            this.cb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
+            this.cb_mostAbundantMass.Name = "cb_mostAbundantMass";
+            this.cb_mostAbundantMass.Size = new System.Drawing.Size(126, 17);
+            this.cb_mostAbundantMass.TabIndex = 52;
+            this.cb_mostAbundantMass.Text = "Most Abundant Mass";
+            this.cb_mostAbundantMass.UseVisualStyleBackColor = true;
+            this.cb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
+            // 
             // nud_randomSeed
             // 
-            this.nud_randomSeed.Location = new System.Drawing.Point(170, 105);
+            this.nud_randomSeed.Location = new System.Drawing.Point(163, 138);
             this.nud_randomSeed.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -370,7 +380,7 @@
             this.cb_limitLargePtmSets.AutoSize = true;
             this.cb_limitLargePtmSets.Checked = true;
             this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(16, 223);
+            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(9, 256);
             this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
             this.cb_limitLargePtmSets.Size = new System.Drawing.Size(191, 17);
             this.cb_limitLargePtmSets.TabIndex = 51;
@@ -381,7 +391,7 @@
             // cb_useRandomSeed
             // 
             this.cb_useRandomSeed.AutoSize = true;
-            this.cb_useRandomSeed.Location = new System.Drawing.Point(51, 107);
+            this.cb_useRandomSeed.Location = new System.Drawing.Point(44, 140);
             this.cb_useRandomSeed.Name = "cb_useRandomSeed";
             this.cb_useRandomSeed.Size = new System.Drawing.Size(119, 17);
             this.cb_useRandomSeed.TabIndex = 20;
@@ -394,7 +404,7 @@
             this.ckbx_OxidMeth.AutoSize = true;
             this.ckbx_OxidMeth.Checked = true;
             this.ckbx_OxidMeth.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_OxidMeth.Location = new System.Drawing.Point(16, 41);
+            this.ckbx_OxidMeth.Location = new System.Drawing.Point(9, 74);
             this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
             this.ckbx_OxidMeth.Size = new System.Drawing.Size(162, 17);
@@ -405,7 +415,7 @@
             // 
             // nUD_MinPeptideLength
             // 
-            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(16, 127);
+            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(9, 160);
             this.nUD_MinPeptideLength.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MinPeptideLength.Name = "nUD_MinPeptideLength";
             this.nUD_MinPeptideLength.Size = new System.Drawing.Size(48, 20);
@@ -422,7 +432,7 @@
             this.ckbx_Meth_Cleaved.AutoSize = true;
             this.ckbx_Meth_Cleaved.Checked = true;
             this.ckbx_Meth_Cleaved.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(16, 62);
+            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(9, 95);
             this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
             this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
@@ -436,7 +446,7 @@
             this.ckbx_Carbam.AutoSize = true;
             this.ckbx_Carbam.Checked = true;
             this.ckbx_Carbam.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Carbam.Location = new System.Drawing.Point(16, 19);
+            this.ckbx_Carbam.Location = new System.Drawing.Point(9, 52);
             this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Carbam.Name = "ckbx_Carbam";
             this.ckbx_Carbam.Size = new System.Drawing.Size(157, 17);
@@ -448,7 +458,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 246);
+            this.label7.Location = new System.Drawing.Point(5, 279);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(149, 13);
@@ -457,7 +467,7 @@
             // 
             // tb_modTypesToExclude
             // 
-            this.tb_modTypesToExclude.Location = new System.Drawing.Point(15, 261);
+            this.tb_modTypesToExclude.Location = new System.Drawing.Point(8, 294);
             this.tb_modTypesToExclude.Margin = new System.Windows.Forms.Padding(2);
             this.tb_modTypesToExclude.Name = "tb_modTypesToExclude";
             this.tb_modTypesToExclude.Size = new System.Drawing.Size(202, 20);
@@ -466,7 +476,7 @@
             // 
             // nUD_MaxPTMs
             // 
-            this.nUD_MaxPTMs.Location = new System.Drawing.Point(15, 193);
+            this.nUD_MaxPTMs.Location = new System.Drawing.Point(8, 226);
             this.nUD_MaxPTMs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MaxPTMs.Maximum = new decimal(new int[] {
             5,
@@ -486,7 +496,7 @@
             // btn_Make_Databases
             // 
             this.btn_Make_Databases.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btn_Make_Databases.Location = new System.Drawing.Point(3, 285);
+            this.btn_Make_Databases.Location = new System.Drawing.Point(3, 317);
             this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(254, 22);
@@ -498,7 +508,7 @@
             // ckbx_combineIdenticalSequences
             // 
             this.ckbx_combineIdenticalSequences.AutoSize = true;
-            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(16, 151);
+            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(9, 184);
             this.ckbx_combineIdenticalSequences.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineIdenticalSequences.Name = "ckbx_combineIdenticalSequences";
             this.ckbx_combineIdenticalSequences.Size = new System.Drawing.Size(203, 17);
@@ -510,7 +520,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(69, 130);
+            this.label4.Location = new System.Drawing.Point(62, 163);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(136, 13);
@@ -520,7 +530,7 @@
             // ckbx_combineTheoreticalsByMass
             // 
             this.ckbx_combineTheoreticalsByMass.AutoSize = true;
-            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(16, 174);
+            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(9, 207);
             this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
             this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
@@ -531,7 +541,7 @@
             // 
             // nUD_NumDecoyDBs
             // 
-            this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(16, 83);
+            this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(9, 116);
             this.nUD_NumDecoyDBs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_NumDecoyDBs.Name = "nUD_NumDecoyDBs";
             this.nUD_NumDecoyDBs.Size = new System.Drawing.Size(48, 20);
@@ -546,7 +556,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(69, 86);
+            this.label2.Location = new System.Drawing.Point(62, 119);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(144, 13);
@@ -556,66 +566,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(68, 197);
+            this.label1.Location = new System.Drawing.Point(61, 230);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(164, 13);
             this.label1.TabIndex = 7;
             this.label1.Text = "Max Modifications per Proteoform";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.btn_NeuCode_Hv);
-            this.groupBox1.Controls.Add(this.btn_NeuCode_Lt);
-            this.groupBox1.Controls.Add(this.btn_NaturalIsotopes);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox1.Location = new System.Drawing.Point(0, 0);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(260, 96);
-            this.groupBox1.TabIndex = 5;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Lysine Isotope Composition";
-            // 
-            // btn_NeuCode_Hv
-            // 
-            this.btn_NeuCode_Hv.AutoSize = true;
-            this.btn_NeuCode_Hv.Location = new System.Drawing.Point(11, 75);
-            this.btn_NeuCode_Hv.Margin = new System.Windows.Forms.Padding(2);
-            this.btn_NeuCode_Hv.Name = "btn_NeuCode_Hv";
-            this.btn_NeuCode_Hv.Size = new System.Drawing.Size(104, 17);
-            this.btn_NeuCode_Hv.TabIndex = 7;
-            this.btn_NeuCode_Hv.TabStop = true;
-            this.btn_NeuCode_Hv.Text = "NeuCode Heavy";
-            this.btn_NeuCode_Hv.UseVisualStyleBackColor = true;
-            this.btn_NeuCode_Hv.CheckedChanged += new System.EventHandler(this.btn_NeuCode_Hv_CheckedChanged);
-            // 
-            // btn_NeuCode_Lt
-            // 
-            this.btn_NeuCode_Lt.AutoSize = true;
-            this.btn_NeuCode_Lt.Location = new System.Drawing.Point(11, 49);
-            this.btn_NeuCode_Lt.Margin = new System.Windows.Forms.Padding(2);
-            this.btn_NeuCode_Lt.Name = "btn_NeuCode_Lt";
-            this.btn_NeuCode_Lt.Size = new System.Drawing.Size(96, 17);
-            this.btn_NeuCode_Lt.TabIndex = 6;
-            this.btn_NeuCode_Lt.TabStop = true;
-            this.btn_NeuCode_Lt.Text = "NeuCode Light";
-            this.btn_NeuCode_Lt.UseVisualStyleBackColor = true;
-            this.btn_NeuCode_Lt.CheckedChanged += new System.EventHandler(this.btn_NeuCode_Lt_CheckedChanged);
-            // 
-            // btn_NaturalIsotopes
-            // 
-            this.btn_NaturalIsotopes.AutoSize = true;
-            this.btn_NaturalIsotopes.Location = new System.Drawing.Point(11, 23);
-            this.btn_NaturalIsotopes.Margin = new System.Windows.Forms.Padding(2);
-            this.btn_NaturalIsotopes.Name = "btn_NaturalIsotopes";
-            this.btn_NaturalIsotopes.Size = new System.Drawing.Size(155, 17);
-            this.btn_NaturalIsotopes.TabIndex = 0;
-            this.btn_NaturalIsotopes.TabStop = true;
-            this.btn_NaturalIsotopes.Text = "Natural Isotope Abundance";
-            this.btn_NaturalIsotopes.UseVisualStyleBackColor = true;
-            this.btn_NaturalIsotopes.CheckedChanged += new System.EventHandler(this.btn_NaturalIsotopes_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -856,8 +812,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -881,10 +835,6 @@
         private System.Windows.Forms.NumericUpDown nUD_NumDecoyDBs;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown nUD_MaxPTMs;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton btn_NeuCode_Hv;
-        private System.Windows.Forms.RadioButton btn_NeuCode_Lt;
-        private System.Windows.Forms.RadioButton btn_NaturalIsotopes;
         private System.Windows.Forms.CheckBox ckbx_Meth_Cleaved;
         private System.Windows.Forms.CheckBox ckbx_Carbam;
         private System.Windows.Forms.CheckBox ckbx_OxidMeth;
@@ -925,5 +875,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
+        private System.Windows.Forms.CheckBox cb_mostAbundantMass;
     }
 }

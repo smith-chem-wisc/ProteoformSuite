@@ -66,8 +66,19 @@ namespace ProteoformSuiteInternal
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
-                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, true, DecoyType.None, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out Dictionary<string, Modification> um).ToArray());
-                lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.ModificationType)));
+                if(database.extension == ".xml")
+                {
+                    lock (theoretical_proteins)
+                        theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, true, DecoyType.None, all_known_modifications, database.ContaminantDB, Sweet.lollipop.mod_types_to_exclude, out Dictionary<string, Modification> um).ToArray());
+                    lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).Where(m => !Sweet.lollipop.mod_types_to_exclude.Contains(m.ModificationType)));
+
+                }
+                else if (database.extension == ".fasta")
+                {
+                    lock (theoretical_proteins)
+                        theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
+                   ProteinDbLoader.UniprotOrganismRegex, out var dbErrors).ToArray());
+                }
             });
 
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
@@ -105,8 +116,8 @@ namespace ProteoformSuiteInternal
         public void make_theoretical_proteoforms()
         {
             theoreticals_by_accession.Clear();
-            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             populate_aa_mass_dictionary();
+            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             add_topdown_sequences();
             if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ThenBy(x => x.BaseSequence).ToArray(); // Take on harder problems first to use parallelization more effectively
@@ -212,7 +223,7 @@ namespace ProteoformSuiteInternal
             return mod_ranks;
         }
 
-        public static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
+        public ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
         {
             List<ProteinWithGoTerms> expanded_prots = new List<ProteinWithGoTerms>();
             foreach (Protein p in proteins)
@@ -293,7 +304,7 @@ namespace ProteoformSuiteInternal
             Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
             List<InputFile> proteinDbs = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList();
             return proteinDbs.Count > 0
-                && (proteinDbs.Any(file => ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)
+                && (proteinDbs.Any(file => file.extension == ".xml" && ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)
                 || Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() > 0);
         }
 
@@ -301,7 +312,13 @@ namespace ProteoformSuiteInternal
         {
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
             //Calculate the properties of this sequence
-            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
+            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, new List<Ptm>());
+
+            if (unmodified_mass > 300000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
+            {
+                return;
+            }
+
             int lysine_count = seq.Split('K').Length - 1;
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
@@ -406,7 +423,7 @@ namespace ProteoformSuiteInternal
 
         public void populate_aa_mass_dictionary()
         {
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
         }
 
         #endregion Public Methods
@@ -512,7 +529,11 @@ namespace ProteoformSuiteInternal
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
+            //Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
+            foreach (var p in expanded_proteins)
+            {
+                EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications);
+            }
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
             Sweet.lollipop.target_proteoform_community.community_number = -100;
         }
@@ -536,8 +557,9 @@ namespace ProteoformSuiteInternal
                 {
                     string hunk = giantProtein.Substring(prevLength, p.sequence.Length);
                     prevLength += p.sequence.Length;
+                    var unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(hunk, new List<Ptm>());
                     TheoreticalProteoform t = new TheoreticalProteoform(p.accession + "_DECOY_" + decoyNumber,
-                        p.description, hunk, p.ExpandedProteinList, TheoreticalProteoform.CalculateProteoformMass(hunk, aaIsotopeMassList), hunk.Count(s => s == 'K'),
+                        p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'),
                         p.ptm_set, false, p.contaminant, theoretical_proteins);
                     decoy_proteoforms.Add(t);
                 }

@@ -179,7 +179,8 @@ namespace ProteoformSuiteInternal
                      .Substring(begin < linked_proteoform_references.First().begin ? 0 : begin - linked_proteoform_references.First().begin,
                      1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin));
             if (begin < linked_proteoform_references.First().begin) sequence = "M" + sequence;
-            double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
+            double theoretical_mass =
+                TheoreticalProteoform.CalculateProteoformMass(sequence, ptm_set.ptm_combination);
             return agg_mass - theoretical_mass;
         }
 

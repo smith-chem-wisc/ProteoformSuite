@@ -415,9 +415,6 @@ namespace Test
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.methionine_cleavage = true;
-            Sweet.lollipop.natural_lysine_isotope_abundance = true;
-            Sweet.lollipop.neucode_light_lysine = false;
-            Sweet.lollipop.neucode_heavy_lysine = false;
             Sweet.lollipop.combine_identical_sequences = false;
             Sweet.lollipop.combine_theoretical_proteoforms_byMass = false;
             Sweet.lollipop.max_ptms = 3;

@@ -246,17 +246,14 @@ namespace ProteoWPFSuite
 
         private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.natural_lysine_isotope_abundance = (bool)btn_NaturalIsotopes.IsChecked;
         }
 
         private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.neucode_light_lysine = (bool)btn_NeuCode_Lt.IsChecked;
         }
 
         private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.neucode_heavy_lysine = (bool)btn_NeuCode_Hv.IsChecked;
         }
 
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)

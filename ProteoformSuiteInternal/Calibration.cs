@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using FlashLFQ;
 
 namespace ProteoformSuiteInternal
 {
@@ -160,16 +161,15 @@ namespace ProteoformSuiteInternal
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
                 }
 
-                var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
-                if (SequenceWithChemicalFormulas == null)
+
+                var formula = identification.GetChemicalFormula();
+                if (formula == null)
                 {
                     continue;
                 }
-                Proteomics.AminoAcidPolymer.Peptide coolPeptide = new Proteomics.AminoAcidPolymer.Peptide(SequenceWithChemicalFormulas);
 
                 // Calculate isotopic distribution of the full peptide
-
-                var dist = IsotopicDistribution.GetDistribution(coolPeptide.GetChemicalFormula(), 0.1, 0.001);
+                var dist = IsotopicDistribution.GetDistribution(formula, 0.1, 0.001);
 
                 double[] masses = dist.Masses.ToArray();
                 double[] intensities = dist.Intensities.ToArray();

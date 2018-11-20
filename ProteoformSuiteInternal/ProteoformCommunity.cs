@@ -292,7 +292,7 @@ namespace ProteoformSuiteInternal
                 active.Clear();
             }
             if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
             Parallel.ForEach(families, f => f.identify_experimentals());
             //read in BU results if available, map to proteoforms.
             //Sweet.lollipop.BottomUpPSMList.Clear();

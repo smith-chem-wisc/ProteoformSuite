@@ -147,8 +147,11 @@ namespace Test
             foreach (Component c in calibrated_components)
             {
                 Assert.True(Sweet.lollipop.component_correction.Values.Contains(System.Math.Round(c.weighted_monoisotopic_mass, 5)));
-                Assert.IsFalse(uncalibrated_components.Any(c2 => c2.reported_monoisotopic_mass == c.reported_monoisotopic_mass));
             }
+
+            Assert.IsFalse(uncalibrated_components.All(c2 =>
+                calibrated_components.Select(c => c.reported_monoisotopic_mass)
+                    .Contains(c2.reported_monoisotopic_mass)));
         }
     }
 }

@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using System.Text;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -787,9 +789,7 @@ namespace ProteoformSuiteInternal
         public bool methionine_oxidation = true;
         public bool carbamidomethylation = true;
         public bool methionine_cleavage = true;
-        public bool natural_lysine_isotope_abundance = false;
-        public bool neucode_light_lysine = true;
-        public bool neucode_heavy_lysine = false;
+        public bool most_abundant_mass = false;
         public int max_ptms = 4;
         public int decoy_databases = 10;
         public int min_peptide_length = 7;

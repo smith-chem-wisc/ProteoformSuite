@@ -150,7 +150,7 @@ namespace ProteoformSuiteGUI
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             nUD_PeakWidthBase.Minimum = 0.001m;
-            nUD_PeakWidthBase.Maximum = 0.5000m;
+            nUD_PeakWidthBase.Maximum = 1;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(Sweet.lollipop.peak_width_base_et); // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
             nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;

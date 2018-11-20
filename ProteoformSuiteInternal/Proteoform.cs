@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -156,7 +157,7 @@ namespace ProteoformSuiteInternal
         {
             List<Modification> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
-
+            
             foreach (PtmSet set in possible_peak_assignments)
             {
                 List<Modification> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
@@ -203,7 +204,7 @@ namespace ProteoformSuiteInternal
 
                     rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
-                    if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
+                    if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation )
                     {
                         rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
                     }
@@ -212,6 +213,7 @@ namespace ProteoformSuiteInternal
                         rank_sum += Sweet.lollipop.neucode_labeled ?
                             Sweet.lollipop.mod_rank_third_quartile :   //in neucode-labeled data, fewer missed monoisotopics - don't prioritize
                             1; //in label-free, more missed monoisotoipcs, should prioritize (set to same priority as variable modification)
+                        rank_sum -= additional_ptm_penalty;
                     }
                     else
                     {
