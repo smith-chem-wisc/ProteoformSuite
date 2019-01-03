@@ -814,7 +814,8 @@ namespace ProteoformSuiteInternal
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public bool ee_accept_peaks_based_on_rank = true;
-        public bool et_accept_peaks_based_on_rank = true;
+        public bool et_use_ppm_notch = false;
+        public double ppm_tolerance_et = 1;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;

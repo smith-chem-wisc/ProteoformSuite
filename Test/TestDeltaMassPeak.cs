@@ -161,26 +161,6 @@ namespace Test
             peak = Sweet.lollipop.ee_peaks[0];
             Assert.IsTrue(peak.Accepted);
             Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
-
-            //test autoaccept for et relations
-            foreach (var r in prs2) r.RelationType = ProteoformComparison.ExperimentalTheoretical;
-            Sweet.lollipop.clear_ee();
-            Sweet.lollipop.clear_et();
-            Sweet.lollipop.mod_rank_first_quartile = 0;
-            Sweet.lollipop.et_accept_peaks_based_on_rank = true;
-            Sweet.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            peak = Sweet.lollipop.et_peaks[0];
-            Assert.IsFalse(peak.Accepted);
-            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
-
-            Sweet.lollipop.clear_et();
-            Sweet.lollipop.min_peak_count_et = 2;
-            Sweet.lollipop.mod_rank_first_quartile = 1;
-            Sweet.lollipop.et_accept_peaks_based_on_rank = true;
-            Sweet.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            peak = Sweet.lollipop.et_peaks[0];
-            Assert.IsTrue(peak.Accepted);
-            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
         }
 
         [Test]

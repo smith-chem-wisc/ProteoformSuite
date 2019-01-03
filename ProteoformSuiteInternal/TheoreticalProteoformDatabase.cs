@@ -311,13 +311,15 @@ namespace ProteoformSuiteInternal
         public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
-            //Calculate the properties of this sequence
-            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, new List<Ptm>());
 
-            if (unmodified_mass > 300000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
+            if (seq.Length > 3000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
             {
                 return;
             }
+
+            //Calculate the properties of this sequence
+            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, new List<Ptm>());
+
 
             int lysine_count = seq.Split('K').Length - 1;
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
