@@ -37,7 +37,7 @@ namespace Test
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms[0].topdown_hits.Count());  //higher scoring topdown hit should be root.
 
             //Test no aggregation outside retention time range
-            tdhList[1].ms2_retention_time += Convert.ToDouble(Sweet.lollipop.retention_time_tolerance + 1);
+            tdhList[1].ms2_retention_time += Convert.ToDouble(Sweet.lollipop.td_retention_time_tolerance + 1);
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms.Count());
