@@ -334,7 +334,6 @@ namespace Test
             Assert.AreEqual(td1.topdown_id, td2.topdown_id);
             Assert.AreEqual(td1.agg_mass, td2.agg_mass);
             Assert.AreEqual(td1.is_target, td2.is_target);
-            Assert.AreEqual(td1.mass_shifted, td2.mass_shifted);
         }
 
         [Test]

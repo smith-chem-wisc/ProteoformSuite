@@ -46,8 +46,6 @@ namespace ProteoformSuiteInternal
 
         public double agg_rt { get; set; } = 0;
 
-        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once.
-
         public string manual_validation_id { get; set; } = "";
 
         public string manual_validation_verification { get; set; } = "";
@@ -140,7 +138,6 @@ namespace ProteoformSuiteInternal
             agg_rt = e.agg_rt;
             lysine_count = e.lysine_count;
             accepted = e.accepted;
-            mass_shifted = e.mass_shifted;
             is_target = e.is_target;
             family = e.family;
             aggregated = new List<IAggregatable>(e.aggregated);
@@ -362,8 +359,6 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-
-            mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
 
         #endregion Public Methods

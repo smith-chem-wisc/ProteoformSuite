@@ -138,10 +138,11 @@ namespace ProteoformSuiteGUI
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
+            var relations_within = relations.Where(r => r.DeltaMass >= peak.DeltaMass - peak_width_base
+                                                        && r.DeltaMass <= peak.DeltaMass + peak_width_base).Select(r => r.nearby_relations_count).ToList();
             ct.ChartAreas[0].AxisY.Maximum = 1 + Math.Max(
                 Convert.ToInt32(peak.peak_relation_group_count * 1.2),
-                Convert.ToInt32(relations.Where(r => r.DeltaMass >= peak.DeltaMass - peak_width_base
-                    && r.DeltaMass <= peak.DeltaMass + peak_width_base).Select(r => r.nearby_relations_count).Max())
+                Convert.ToInt32(relations_within.Count > 0 ? relations_within.Max() : 0)
             ); //this automatically scales the vertical axis to the peak height plus 20%, also accounting for the nearby trace of unadjusted relation group counts
 
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";

@@ -59,7 +59,7 @@ namespace ProteoWPFSuite
 
         public bool mass_shifted
         {
-            get { return e.mass_shifted; }
+            get { return e.aggregated.Any(c => c as Component != null && (c as Component).manual_mass_shift != 0); }
         }
 
         public int observation_count

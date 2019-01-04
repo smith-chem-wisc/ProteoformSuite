@@ -239,9 +239,6 @@ namespace Test
             DeltaMassPeak d2 = Sweet.lollipop.et_peaks[1];
             d2.shift_experimental_masses(-1, true);
 
-            Assert.IsTrue(pf3.mass_shifted);
-            Assert.IsTrue(pf4.mass_shifted);
-
             foreach (IAggregatable c in
                 n3.Select(n => (n as NeuCodePair).neuCodeLight).
                 Concat(n4.Select(n => (n as NeuCodePair).neuCodeLight)))
@@ -314,9 +311,6 @@ namespace Test
             Sweet.mass_shifts_from_presets();
             d2.shift_experimental_masses(Convert.ToInt32(d2.mass_shifter), true);
 
-            Assert.IsTrue(pf3.mass_shifted);
-            Assert.IsTrue(pf4.mass_shifted);
-
             foreach (Component c in
                 n3.OfType<NeuCodePair>().Select(n => n.neuCodeLight).
                 Concat(n4.OfType<NeuCodePair>().Select(n => n.neuCodeLight)))
@@ -380,8 +374,6 @@ namespace Test
             DeltaMassPeak d2 = Sweet.lollipop.et_peaks[1];
             d2.shift_experimental_masses(-1, false);
 
-            Assert.IsTrue(pf3.mass_shifted);
-            Assert.IsTrue(pf4.mass_shifted);
             foreach (Component c in pf3.aggregated.Concat(pf4.aggregated).OfType<Component>())
             {
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);

@@ -215,7 +215,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in this.grouped_relations)
             {
                 Proteoform p = r.connected_proteoforms[0];
-                if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Contains(p))
+                if (p is ExperimentalProteoform && Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Contains(p))
                 {
                     (p as ExperimentalProteoform).shift_masses(shift, neucode_labeled);
                 }
