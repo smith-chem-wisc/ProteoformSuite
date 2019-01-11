@@ -87,88 +87,89 @@ namespace Test
         }
 
         [Test]
-        public void TestAcceptDeltaMassPeaks()
-        {
-            Sweet.lollipop = new Lollipop();
-            ProteoformCommunity test_community = new ProteoformCommunity();
-            Sweet.lollipop.target_proteoform_community = test_community;
-
-            Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
-            {
-                { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
-            };
-
-            //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
-            //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
-            Sweet.lollipop.min_peak_count_ee = 2;
-            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
-            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
-            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
-
-            ProteoformComparison comparison34 = ProteoformComparison.ExperimentalExperimental;
-            ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
-            ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
-            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0, TestContext.CurrentContext.TestDirectory);
-            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0, TestContext.CurrentContext.TestDirectory);
-            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0, TestContext.CurrentContext.TestDirectory);
-
-            //Test display strings
-            Assert.AreEqual("E1", pr2.connected_proteoforms[0].accession);
-            Assert.AreEqual("E2", pr2.connected_proteoforms[1].accession);
-            pr2.RelationType = ProteoformComparison.ExperimentalExperimental;
-            pr2.RelationType = ProteoformComparison.ExperimentalTheoretical;
-            pr2.RelationType = ProteoformComparison.ExperimentalDecoy;
-            pr2.RelationType = ProteoformComparison.ExperimentalFalse;
-            pr2.RelationType = comparison34;
-
-            List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
-            foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.InstanceId).ToList());
-            Assert.AreEqual(3, pr2.nearby_relations_count);
-            Assert.AreEqual(3, pr3.nearby_relations_count);
-            Assert.AreEqual(3, pr4.nearby_relations_count);
-
-            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
-            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
-            //auto accept set to false
-            Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
-            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            Assert.AreEqual(1, Sweet.lollipop.ee_peaks.Count);
-            DeltaMassPeak peak = Sweet.lollipop.ee_peaks[0];
-            Assert.IsTrue(peak.Accepted);
-            Assert.AreEqual(3, peak.grouped_relations.Count);
-            Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
-            Assert.AreEqual(0, pr2.peak.DeltaMass);
-            Assert.AreEqual("[unmodified]", peak.possiblePeakAssignments_string);
-
-            //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
-            Assert.True(pf3.relationships.Contains(pr2));
-            Assert.True(pf4.relationships.Contains(pr2) && pf4.relationships.Contains(pr3));
-            Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
-
-            //autoaccept set to true, must be less than first quartile rank...
-            Sweet.lollipop.clear_ee();
-            Sweet.lollipop.mod_rank_first_quartile = 0;
-            Sweet.lollipop.ee_accept_peaks_based_on_rank = true;
-            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            peak = Sweet.lollipop.ee_peaks[0];
-            Assert.IsFalse(peak.Accepted);
-            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
-
-            Sweet.lollipop.clear_ee();
-            Sweet.lollipop.mod_rank_first_quartile = 1;
-            Sweet.lollipop.ee_accept_peaks_based_on_rank = true;
-            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            peak = Sweet.lollipop.ee_peaks[0];
-            Assert.IsTrue(peak.Accepted);
-            Assert.AreEqual(0, peak.possiblePeakAssignments.Min(p => p.ptm_rank_sum));
-        }
-
-        [Test]
-        public void TestAcceptDeltaMassPeaksWithNotches()
+        public void TestDeltaMassPeakConstructorWithNotches()
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.et_use_ppm_notch = true;
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            ConstructorsForTesting.read_mods();
+            Sweet.lollipop.et_high_mass_difference = 250;
+            Sweet.lollipop.et_low_mass_difference = -250;
+
+
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("acession1");
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
+            pf1.modified_mass = 1000;
+            ProteoformComparison relation_type = ProteoformComparison.ExperimentalTheoretical;
+            double delta_mass = 1 - 1e-7;
+
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("acession3");
+            TheoreticalProteoform pf4 = ConstructorsForTesting.make_a_theoretical();
+            pf3.modified_mass = 1000;
+            ProteoformComparison relation_type2 = ProteoformComparison.ExperimentalTheoretical;
+            double delta_mass2 = 1;
+
+
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("acession5");
+            TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
+            pf5.modified_mass = 1000;
+            ProteoformComparison relation_type3 = ProteoformComparison.ExperimentalTheoretical;
+            double delta_mass3 = 1 + 1e-7;
+
+            ExperimentalProteoform pf55 = ConstructorsForTesting.ExperimentalProteoform("acession5");
+            TheoreticalProteoform pf65 = ConstructorsForTesting.make_a_theoretical();
+            pf55.modified_mass = 1000;
+            ProteoformComparison relation_type35 = ProteoformComparison.ExperimentalTheoretical;
+            double delta_mass35 = 1 + 2e-7;
+
+            TestProteoformCommunityRelate.prepare_for_et(new List<double>(){1});
+            List<ProteoformRelation> theList = new List<ProteoformRelation>();
+
+            theList.Add(new ProteoformRelation(pf1, pf2, relation_type, delta_mass, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf5, pf6, relation_type3, delta_mass3, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf55, pf65, relation_type35, delta_mass35, TestContext.CurrentContext.TestDirectory));
+
+            ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2, TestContext.CurrentContext.TestDirectory);
+
+            //base_relation.nearby_relations = base_relation.set_nearby_group(theList, theList.Select(r => r.InstanceId).ToList());
+            Console.WriteLine("Creating deltaMassPeak");
+            DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, new HashSet<ProteoformRelation>(theList));
+            Console.WriteLine("Created deltaMassPeak");
+
+            Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);
+            Assert.AreEqual(4, deltaMassPeak.grouped_relations.Count);
+            Assert.AreEqual("[fake1]", deltaMassPeak.possiblePeakAssignments_string);
+            Assert.AreEqual(1.0, deltaMassPeak.DeltaMass);
+            Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
+
+            decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
+
+            ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("experimental1");
+            TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
+            pf7.modified_mass = 1000;
+            ProteoformComparison relation_type4 = ProteoformComparison.ExperimentalDecoy;
+            double delta_mass4 = 1;
+            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4, TestContext.CurrentContext.TestDirectory);
+
+            decoy_relations["decoyDatabase1"].Add(decoy_relation);
+
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
+
+            decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
+        }
+
+
+        [Test]
+        public void TestAcceptDeltaMassPeaks()
+        {
+            Sweet.lollipop = new Lollipop();
             ProteoformCommunity test_community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = test_community;
 
