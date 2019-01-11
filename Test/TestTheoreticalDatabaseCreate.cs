@@ -328,7 +328,7 @@ namespace Test
 
             //too large of proteoform
             string sequence = "K";
-            for (int i = 0; i < 2500; i++)
+            for (int i = 0; i < 3000; i++)
             {
                 sequence += "K";
             }
