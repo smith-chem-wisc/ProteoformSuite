@@ -239,7 +239,7 @@ namespace ProteoformSuiteInternal
                     p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
                     p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
                     p.GeneNames.ToList(),
-                    p.OneBasedPossibleLocalizedModifications.ToDictionary(kv => kv.Key - startPosAfterCleavage, kv => kv.Value),
+                    p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= begin + startPosAfterCleavage && kv.Key <= end).ToDictionary(kv => kv.Key, kv => kv.Value),
                     new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
                     p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences.ToList(), goTerms.ToList()));
 

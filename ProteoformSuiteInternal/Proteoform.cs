@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Chemistry;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace ProteoformSuiteInternal
 {
@@ -287,7 +288,7 @@ namespace ProteoformSuiteInternal
                 e.ptm_set = new PtmSet(e.ptm_set.ptm_combination);
 
                 e.uniprot_mods = "";
-                foreach (string mod in e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m))
+                foreach (string mod in e.ptm_set.ptm_combination.Where(ptm => ptm.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m))
                 {
                     // positions with mod
                     List<int> theo_ptms = theoretical_base.ExpandedProteinList.First()
