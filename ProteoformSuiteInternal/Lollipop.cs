@@ -191,7 +191,7 @@ namespace ProteoformSuiteInternal
         {
             int successfully_deconvoluted_files = 0;
             string dir = Directory.GetCurrentDirectory();
-            Loaders.LoadElements(dir + @"\elements.dat");
+            Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 Process proc = new Process();
