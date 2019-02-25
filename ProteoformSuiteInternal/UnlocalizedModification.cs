@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
             require_proteoform_without_mod = false;
 
             if (m.ModificationType == "Common")
-                ptm_rank = 1;
+                ptm_rank = 2;
             else if (m.ModificationType == "Deconvolution Error")
                 ptm_rank = 1;
             else
