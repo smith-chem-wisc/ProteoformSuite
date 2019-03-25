@@ -211,10 +211,12 @@
     <Compile Include="DataStructures\SortableBindingList.cs" />
     <Compile Include="DisplayHelper\DisplayChargeState.cs" />
     <Compile Include="DisplayHelper\DisplayComponent.cs" />
+    <Compile Include="DisplayHelper\DisplayDeltaMassPeak.cs" />
     <Compile Include="DisplayHelper\DisplayExperimentalProteoform.cs" />
     <Compile Include="DisplayHelper\DisplayInputFile.cs" />
     <Compile Include="DisplayHelper\DisplayNeuCodePair.cs" />
     <Compile Include="DisplayHelper\DisplayObject.cs" />
+    <Compile Include="DisplayHelper\DisplayProteoformRelation.cs" />
     <Compile Include="DisplayHelper\DisplayTheoreticalProteoform.cs" />
     <Compile Include="DisplayHelper\DisplayTopDownHit.cs" />
     <Compile Include="DisplayHelper\DisplayTopDownProteoform.cs" />
@@ -231,6 +233,7 @@
     </Compile>
     <Compile Include="HelperClass\ClosingTabItem.cs" />
     <Compile Include="HelperClass\MDIHelpers.cs" />
+    <Compile Include="HelperClass\RelationUtility.cs" />
     <Compile Include="IdentifiedProteoforms.xaml.cs">
       <DependentUpon>IdentifiedProteoforms.xaml</DependentUpon>
     </Compile>

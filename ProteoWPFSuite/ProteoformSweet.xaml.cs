@@ -18,13 +18,14 @@ namespace ProteoWPFSuite
 
         #region Public Fields
         public LoadResults loadResults = new LoadResults(); //finished
-        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents(); //finished
+       
         public NeuCodePairs neuCodePairs = new NeuCodePairs(); //finished
+        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents(); //finished
         public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase(); //finished
         public TopDown topDown = new TopDown();//finished
         public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms(); //finished
-        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Not
-        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Not
+        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Finished
+        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Working on
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Not
         public Quantification quantification = new Quantification();//Not
         public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms(); //Not
@@ -424,7 +425,7 @@ namespace ProteoWPFSuite
             if (Sweet.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
 
             if (Sweet.lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
-            if (Sweet.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            //if (Sweet.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
