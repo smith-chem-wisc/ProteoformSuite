@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
             DeltaMass = base_relation.DeltaMass;
             InstanceId = instance_counter;
 
-            if (RelationType == ProteoformComparison.ExperimentalExperimental || !Sweet.lollipop.et_use_ppm_notch)
+            if (RelationType == ProteoformComparison.ExperimentalExperimental || !Sweet.lollipop.et_use_notch)
             {
                 grouped_relations = find_nearby_relations(relations_to_group);
 
@@ -142,7 +142,7 @@ namespace ProteoformSuiteInternal
 
             List<ProteoformRelation> decoys_in_peaks = new List<ProteoformRelation>();
             if (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy &&
-                Sweet.lollipop.et_use_ppm_notch)
+                Sweet.lollipop.et_use_notch)
             {
                 decoys_in_peaks = all_relations
                     .Where(r => r.candidate_ptmset != null && r.candidate_ptmset.mass == DeltaMass).ToList();

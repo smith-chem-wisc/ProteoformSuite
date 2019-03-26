@@ -350,11 +350,14 @@ namespace ProteoformSuiteInternal
                 {
                     if (neucode_labeled)
                     {
+                        if ((c as NeuCodePair).neuCodeLight.manual_mass_shift != 0) continue;
+                        if ((c as NeuCodePair).neuCodeHeavy.manual_mass_shift != 0) continue;
                         (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     }
                     else
                     {
+                        if ((c as Component).manual_mass_shift != 0) continue;
                         (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     }
                 }

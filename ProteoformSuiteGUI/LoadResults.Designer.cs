@@ -39,6 +39,8 @@
             this.calib_stand_splitContainer = new System.Windows.Forms.SplitContainer();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
+            this.cb_rt_cali = new System.Windows.Forms.CheckBox();
+            this.cb_mass_cali = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
@@ -237,6 +239,8 @@
             // 
             // calib_stand_splitContainer.Panel2
             // 
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_rt_cali);
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_mass_cali);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_td_files);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_raw_files);
             this.calib_stand_splitContainer.Size = new System.Drawing.Size(483, 98);
@@ -269,11 +273,41 @@
             this.rb_unlabeled.UseVisualStyleBackColor = true;
             this.rb_unlabeled.CheckedChanged += new System.EventHandler(this.rb_unlabeled_CheckedChanged);
             // 
+            // cb_rt_cali
+            // 
+            this.cb_rt_cali.AutoSize = true;
+            this.cb_rt_cali.Checked = true;
+            this.cb_rt_cali.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_rt_cali.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_rt_cali.Location = new System.Drawing.Point(3, 26);
+            this.cb_rt_cali.Name = "cb_rt_cali";
+            this.cb_rt_cali.Size = new System.Drawing.Size(150, 17);
+            this.cb_rt_cali.TabIndex = 63;
+            this.cb_rt_cali.Text = "Retention Time Calibration";
+            this.cb_rt_cali.UseVisualStyleBackColor = true;
+            this.cb_rt_cali.Visible = false;
+            this.cb_rt_cali.CheckedChanged += new System.EventHandler(this.cb_rt_cali_CheckedChanged);
+            // 
+            // cb_mass_cali
+            // 
+            this.cb_mass_cali.AutoSize = true;
+            this.cb_mass_cali.Checked = true;
+            this.cb_mass_cali.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_mass_cali.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_mass_cali.Location = new System.Drawing.Point(3, 7);
+            this.cb_mass_cali.Name = "cb_mass_cali";
+            this.cb_mass_cali.Size = new System.Drawing.Size(103, 17);
+            this.cb_mass_cali.TabIndex = 62;
+            this.cb_mass_cali.Text = "Mass Calibration";
+            this.cb_mass_cali.UseVisualStyleBackColor = true;
+            this.cb_mass_cali.Visible = false;
+            this.cb_mass_cali.CheckedChanged += new System.EventHandler(this.cb_mass_cali_CheckedChanged);
+            // 
             // cb_calibrate_td_files
             // 
             this.cb_calibrate_td_files.AutoSize = true;
             this.cb_calibrate_td_files.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_calibrate_td_files.Location = new System.Drawing.Point(3, 54);
+            this.cb_calibrate_td_files.Location = new System.Drawing.Point(3, 71);
             this.cb_calibrate_td_files.Name = "cb_calibrate_td_files";
             this.cb_calibrate_td_files.Size = new System.Drawing.Size(144, 17);
             this.cb_calibrate_td_files.TabIndex = 61;
@@ -286,7 +320,7 @@
             // 
             this.cb_calibrate_raw_files.AutoSize = true;
             this.cb_calibrate_raw_files.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_calibrate_raw_files.Location = new System.Drawing.Point(3, 31);
+            this.cb_calibrate_raw_files.Location = new System.Drawing.Point(3, 48);
             this.cb_calibrate_raw_files.Name = "cb_calibrate_raw_files";
             this.cb_calibrate_raw_files.Size = new System.Drawing.Size(150, 17);
             this.cb_calibrate_raw_files.TabIndex = 60;
@@ -820,5 +854,7 @@
         private System.Windows.Forms.SplitContainer fullrun_splitContainer;
         private System.Windows.Forms.TextBox tb_resultsFolder;
         private System.Windows.Forms.Button btn_browseSummarySaveFolder;
+        private System.Windows.Forms.CheckBox cb_rt_cali;
+        private System.Windows.Forms.CheckBox cb_mass_cali;
     }
 }

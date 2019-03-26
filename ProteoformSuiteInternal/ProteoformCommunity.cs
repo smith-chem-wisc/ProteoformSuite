@@ -77,17 +77,41 @@ namespace ProteoformSuiteInternal
                         if (pf1 as TopDownProteoform == null) pf1.gene_name = null;
                     }
 
-                    if (limit_et_relations && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
+                    if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
                     {
-                        ProteoformRelation best_relation = pf1.candidate_relatives
-                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, current_directory))
-                            .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
-                            .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6) // get the best explanation for the experimental observation
-                            .FirstOrDefault();
+                        if (limit_et_relations)
+                        {
+                            ProteoformRelation best_relation = pf1.candidate_relatives
+                                .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type,
+                                    pf1.modified_mass - pf2.modified_mass, current_directory))
+                                .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
+                                .OrderBy(r =>
+                                    r.candidate_ptmset.ptm_rank_sum +
+                                    Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) *
+                                    10E-6) // get the best explanation for the experimental observation
+                                .FirstOrDefault();
 
-                        pf1.candidate_relatives = best_relation != null ?
-                            new List<Proteoform> { best_relation.connected_proteoforms[1] } :
-                            new List<Proteoform>();
+                            pf1.candidate_relatives = best_relation != null
+                                ? new List<Proteoform> { best_relation.connected_proteoforms[1] }
+                                : new List<Proteoform>();
+                        }
+                        else //candidate relatives will be best T from each gene (won't get -42, etc)
+                        {
+                            List<ProteoformRelation> best_relatives_for_each_gene_name = new List<ProteoformRelation>();
+                            var gene_names = pf1.candidate_relatives.Select(r =>
+                                    (r as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop.preferred_gene_label)).Distinct();
+                            foreach (var gene_name in gene_names)
+                            {
+                                best_relatives_for_each_gene_name.Add(pf1.candidate_relatives.Where(p => (p as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop.preferred_gene_label) == gene_name)
+                                    .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, current_directory))
+                                    .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
+                                    .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6) // get the best explanation for the experimental observation
+                                    .FirstOrDefault());
+                            }
+
+                            pf1.candidate_relatives = best_relatives_for_each_gene_name != null ?
+                                best_relatives_for_each_gene_name.Where(r => r != null).Select(r => r.connected_proteoforms[1]).ToList() : new List<Proteoform>();
+                        }
                     }
                 }
             });
