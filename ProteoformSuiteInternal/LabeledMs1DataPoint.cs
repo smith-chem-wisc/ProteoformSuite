@@ -12,14 +12,13 @@
         public double RTError { get; private set; }
         public double[] Inputs { get; private set; }
 
-        public LabeledMs1DataPoint(double mz, double retentionTime, double logTotalIonCurrent, double logInjectionTime, double massError, double RTError, TopDownHit identification)
+        public LabeledMs1DataPoint(double mz, double retentionTime, double logTotalIonCurrent, double logInjectionTime, double massError, TopDownHit identification)
         {
             this.mz = mz;
             this.retentionTime = retentionTime;
             this.logTotalIonCurrent = logTotalIonCurrent;
             this.logInjectionTime = logInjectionTime;
             this.massError = massError;
-            this.RTError = RTError;
             this.identification = identification;
             Inputs = new double[] { mz, retentionTime };
         }
