@@ -197,7 +197,9 @@ namespace ProteoformSuiteInternal
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, int>>();
             foreach (TopDownHit identification in high_scoring_topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass))
             {
-                List<int> scanNumbers = new List<int>() { identification.ms2ScanNumber };
+                int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(identification.ms2_retention_time);
+
+                List<int> scanNumbers = new List<int>() { scanNum };
                 int proteinCharge = identification.charge;
 
                 Component matching_component = null;
@@ -214,8 +216,8 @@ namespace ProteoformSuiteInternal
                     if (potential_matches.Count > 0)
                     {
                         matching_component = potential_matches.Where(c =>
-                           Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 5
-                           && Math.Abs(c.rt_apex - identification.ms1_scan.RetentionTime) < 10).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
+                           Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
+                           && Math.Abs(c.rt_apex - identification.ms1_scan.RetentionTime) < 5).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
                     }
                     else
                     {
@@ -511,18 +513,34 @@ namespace ProteoformSuiteInternal
                 {
                     double corrected_mass;
                     double corrected_RT;
-                    if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0], row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
+                    if (Sweet.lollipop.mass_calibration)
                     {
-                        row.Cell(17).SetValue(corrected_mass);
+                        if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
+                            new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0],
+                                row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
+                        {
+                            row.Cell(17).SetValue(corrected_mass);
+                        }
+                        //if hit's file not calibrated (not enough calibration points, remove from list
+                        else
+                        {
+                            lock (rows_to_delete) rows_to_delete.Add(row);
+                        }
                     }
-                    if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0], row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_RT))
+
+                    if (Sweet.lollipop.retention_time_calibration)
                     {
-                        row.Cell(19).SetValue(corrected_RT);
-                    }
-                    //if hit's file not calibrated (not enough calibration points, remove from list
-                    else
-                    {
-                        lock (rows_to_delete) rows_to_delete.Add(row);
+                        if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
+                            new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0],
+                                row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_RT))
+                        {
+                            row.Cell(19).SetValue(corrected_RT);
+                        }
+                        //if hit's file not calibrated (not enough calibration points, remove from list
+                        else
+                        {
+                            lock (rows_to_delete) rows_to_delete.Add(row);
+                        }
                     }
                 }
             });

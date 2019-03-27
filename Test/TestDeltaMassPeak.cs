@@ -90,7 +90,7 @@ namespace Test
         public void TestDeltaMassPeakConstructorWithNotches()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.et_use_ppm_notch = true;
+            Sweet.lollipop.et_use_notch = true;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             ConstructorsForTesting.read_mods();
             Sweet.lollipop.et_high_mass_difference = 250;

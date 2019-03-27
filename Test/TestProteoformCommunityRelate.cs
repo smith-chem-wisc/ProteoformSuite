@@ -459,7 +459,7 @@ namespace Test
         public void TestUnabeledProteoformCommunityRelateWithNotches_ET()
         {
             Sweet.lollipop.neucode_labeled = false;
-            Sweet.lollipop.et_use_ppm_notch = true;
+            Sweet.lollipop.et_use_notch = true;
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
@@ -614,7 +614,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
-            Sweet.lollipop.et_use_ppm_notch = true;
+            Sweet.lollipop.et_use_notch = true;
             Sweet.lollipop.decoy_databases = 1;
             // In empty comminity, relate ed is empty
             Assert.AreEqual(0, Sweet.lollipop.ed_relations.Count);
