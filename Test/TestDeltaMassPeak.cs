@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace Test
 {
@@ -338,6 +339,36 @@ namespace Test
 
             Sweet.lollipop.clear_et();
             Assert.AreEqual(0, Sweet.lollipop.et_peaks.Count);
+
+            //don't double shift E if it's in two peaks...
+            pr1 = new ProteoformRelation(pf1, pf5, comparison14, 1, TestContext.CurrentContext.TestDirectory);
+            pr2 = new ProteoformRelation(pf1, pf6, comparison14, 1, TestContext.CurrentContext.TestDirectory);
+            prs = new List<ProteoformRelation> { pr1, pr2 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
+            test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
+            Assert.AreEqual(1, Sweet.lollipop.et_peaks.Count);
+
+            //Shift the peaks, which shifts all of the proteoforms
+            d2 = Sweet.lollipop.et_peaks[0];
+            d2.shift_experimental_masses(-1, true);
+
+
+            foreach (IAggregatable c in
+                n3.Select(n => (n as NeuCodePair).neuCodeLight).
+                    Concat(n4.Select(n => (n as NeuCodePair).neuCodeLight)))
+            {
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, (c as Component).manual_mass_shift);
+                Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
+            }
+
+            foreach (IAggregatable c in
+                n3.Select(n => (n as NeuCodePair).neuCodeHeavy).
+                    Concat(n4.Select(n => (n as NeuCodePair).neuCodeHeavy)))
+            {
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, (c as Component).manual_mass_shift);
+                Assert.AreEqual(200 + TestExperimentalProteoform.starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
+            }
+
         }
 
         [Test]
@@ -453,6 +484,27 @@ namespace Test
 
             //Shift the peaks, which shifts all of the proteoforms
             DeltaMassPeak d2 = Sweet.lollipop.et_peaks[1];
+            d2.shift_experimental_masses(-1, false);
+
+            foreach (Component c in pf3.aggregated.Concat(pf4.aggregated).OfType<Component>())
+            {
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
+                Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
+            }
+
+            Sweet.lollipop.clear_et();
+            Assert.AreEqual(0, Sweet.lollipop.et_peaks.Count);
+
+            //don't double shift E if it's in two peaks...
+            pr1 = new ProteoformRelation(pf1, pf5, comparison14, 1, TestContext.CurrentContext.TestDirectory);
+            pr2 = new ProteoformRelation(pf1, pf6, comparison14, 1, TestContext.CurrentContext.TestDirectory);
+            prs = new List<ProteoformRelation> { pr1, pr2 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
+            test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
+            Assert.AreEqual(1, Sweet.lollipop.et_peaks.Count);
+
+            //Shift the peaks, which shifts all of the proteoforms
+            d2 = Sweet.lollipop.et_peaks[0];
             d2.shift_experimental_masses(-1, false);
 
             foreach (Component c in pf3.aggregated.Concat(pf4.aggregated).OfType<Component>())
