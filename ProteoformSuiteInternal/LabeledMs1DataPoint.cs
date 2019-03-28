@@ -9,7 +9,6 @@
         public double logInjectionTime;
         public readonly TopDownHit identification;
         public double massError { get; private set; }
-        public double RTError { get; private set; }
         public double[] Inputs { get; private set; }
 
         public LabeledMs1DataPoint(double mz, double retentionTime, double logTotalIonCurrent, double logInjectionTime, double massError, TopDownHit identification)
