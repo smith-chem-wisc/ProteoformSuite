@@ -310,6 +310,7 @@ namespace Test
         public void only_common_and_known_mods()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.mod_rank_sum_threshold = 1;
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
             Sweet.lollipop.only_assign_common_or_known_mods = true;
             Lollipop.preferred_gene_label = "primary";

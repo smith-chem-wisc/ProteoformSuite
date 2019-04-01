@@ -455,11 +455,48 @@ namespace Test
             Assert.AreEqual(1, prList.Count);
         }
 
+
+        [Test]
+        public void TestUnabeledProteoformCommunityRelateLargePeakBase_ET()
+        {
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.et_use_notch = false;
+            Sweet.lollipop.peak_width_base_et = 1;
+
+            // One experimental one theoretical protoeform; mass difference < 500 -- return 1
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
+            pf2.modified_mass = 1010.0;
+            pf2.lysine_count = 1;
+            pf2.is_target = true;
+            pf2.ExpandedProteinList = new List<ProteinWithGoTerms> {p1};
+            ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
+            TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
+            paE[0] = pf1;
+            paT[0] = pf2;
+            List<ProteoformRelation> prList = new List<ProteoformRelation>();
+            prepare_for_et(new List<double> { pf1.modified_mass - pf2.modified_mass - .9 });
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, true,
+                TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
+
+            prepare_for_et(new List<double> { pf1.modified_mass - pf2.modified_mass + .9 });
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, true,
+                TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
+
+            prepare_for_et(new List<double> { pf1.modified_mass - pf2.modified_mass + 1 });
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, true,
+                TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(0, prList.Count);
+
+        }
+
         [Test]
         public void TestUnabeledProteoformCommunityRelateWithNotches_ET()
         {
             Sweet.lollipop.neucode_labeled = false;
-            Sweet.lollipop.et_use_ppm_notch = true;
+            Sweet.lollipop.et_use_notch = true;
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
@@ -614,7 +651,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
-            Sweet.lollipop.et_use_ppm_notch = true;
+            Sweet.lollipop.et_use_notch = true;
             Sweet.lollipop.decoy_databases = 1;
             // In empty comminity, relate ed is empty
             Assert.AreEqual(0, Sweet.lollipop.ed_relations.Count);

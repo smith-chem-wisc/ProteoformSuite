@@ -61,7 +61,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, int> formalChargesDictionary = Loaders.GetFormalChargesDictionary(psiModDeserialized);
 
             List<Modification> all_known_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList)
-                .SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path, formalChargesDictionary))
+                .SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path, formalChargesDictionary, out List<(Modification, string)> filteredModificationsWithWarnings))
                 .ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
             {
                 List<Modification> new_mods = !filename.EndsWith("variable.txt") || Sweet.lollipop.methionine_oxidation ?
-                    PtmListLoader.ReadModsFromFile(filename, formalChargesDictionary).ToList() :
+                    PtmListLoader.ReadModsFromFile(filename, formalChargesDictionary, out List<(Modification, string)> filteredModificationsWithWarnings).ToList() :
                     new List<Modification>(); // Empty variable modifications if not selected
                 if (filename.EndsWith("variable.txt"))
                     variableModifications = new_mods;
@@ -301,7 +301,7 @@ namespace ProteoformSuiteInternal
         /// <returns></returns>
         public bool ready_to_make_database(string current_directory)
         {
-            Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
+            Loaders.LoadElements();
             List<InputFile> proteinDbs = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList();
             return proteinDbs.Count > 0
                 && (proteinDbs.Any(file => file.extension == ".xml" && ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0)

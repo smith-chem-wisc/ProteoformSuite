@@ -53,7 +53,7 @@ namespace ProteoformSuiteGUI
         {
             shift_masses();  //check for shifts from GUI
             ClearListsTablesFigures(true);
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, Sweet.lollipop.et_bestETRelationOnly);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             shift_masses(); //check for shifts from presets (need to have peaks formed first)
@@ -150,7 +150,7 @@ namespace ProteoformSuiteGUI
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             nUD_PeakWidthBase.Minimum = 0.001m;
-            nUD_PeakWidthBase.Maximum = 1;
+            nUD_PeakWidthBase.Maximum = 10;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(Sweet.lollipop.peak_width_base_et); // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
             nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;
@@ -167,11 +167,14 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
-            cb_use_ppm_notch.Checked = Sweet.lollipop.et_use_ppm_notch;
+            cb_use_ppm_notch.Checked = Sweet.lollipop.et_use_notch;
+            rb_ppm.Checked = Sweet.lollipop.et_notch_ppm;
+            rb_daltons.Checked = !Sweet.lollipop.et_notch_ppm;
+            cb_bestETPairOnly.Checked = Sweet.lollipop.et_bestETRelationOnly;
 
-            nUD_ppm_tolerance.Minimum = 0;
-            nUD_ppm_tolerance.Maximum = 15;
-            nUD_ppm_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.ppm_tolerance_et);
+            nUD_notch_tolerance.Minimum = 0;
+            nUD_notch_tolerance.Maximum = 30;
+            nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_et);
         }
 
         #endregion Public Methods
@@ -492,12 +495,33 @@ namespace ProteoformSuiteGUI
 
         private void cb_et_peak_accept_rank_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.et_use_ppm_notch = cb_use_ppm_notch.Checked;
+            Sweet.lollipop.et_use_notch = cb_use_ppm_notch.Checked;
+            label10.Visible = cb_use_ppm_notch.Checked;
+            nUD_notch_tolerance.Visible = cb_use_ppm_notch.Checked;
+            rb_daltons.Visible = cb_use_ppm_notch.Checked;
+            rb_ppm.Visible = cb_use_ppm_notch.Checked;
         }
 
         private void nUD_ppm_tolerance_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.ppm_tolerance_et = Convert.ToDouble(nUD_ppm_tolerance.Value);
+            Sweet.lollipop.notch_tolerance_et = Convert.ToDouble(nUD_notch_tolerance.Value);
+        }
+
+        private void cb_bestETPairOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.et_bestETRelationOnly = cb_bestETPairOnly.Checked;
+        }
+
+        private void rb_daltons_CheckedChanged(object sender, EventArgs e)
+        {
+            rb_ppm.Checked = !rb_daltons.Checked;
+            Sweet.lollipop.et_notch_ppm = !rb_daltons.Checked;
+        }
+
+        private void rb_ppm_CheckedChanged(object sender, EventArgs e)
+        {
+            rb_daltons.Checked = !rb_ppm.Checked;
+            Sweet.lollipop.et_notch_ppm = rb_ppm.Checked;
         }
     }
 }

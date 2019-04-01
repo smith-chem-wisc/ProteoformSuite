@@ -218,10 +218,11 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
+                        //if annotated in DB for this, just add 1?
                         rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ||
                             known_mods.Select(mod => UnlocalizedModification.LookUpId(mod)).Contains(UnlocalizedModification.LookUpId(m))
                                 ?
-                            mod_rank :
+                            1 :
                             mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                     }
                 }
