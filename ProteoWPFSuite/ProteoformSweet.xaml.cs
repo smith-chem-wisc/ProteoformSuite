@@ -25,8 +25,8 @@ namespace ProteoWPFSuite
         public TopDown topDown = new TopDown();//finished
         public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms(); //finished
         public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Finished
-        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Working on
-        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Not
+        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Finished
+        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Finished
         public Quantification quantification = new Quantification();//Not
         public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms(); //Not
         public ResultsSummary resultsSummary = new ResultsSummary();//Not
@@ -159,7 +159,7 @@ namespace ProteoWPFSuite
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             showForm(proteoformFamilies);
-            proteoformFamilies.initialize_every_time();
+            //proteoformFamilies.initialize_every_time();
         }
         private void topdownResultsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(topDown);
 
