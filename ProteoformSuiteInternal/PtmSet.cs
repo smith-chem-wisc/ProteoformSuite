@@ -9,6 +9,8 @@ namespace ProteoformSuiteInternal
 
         public double mass { get; private set; }
 
+        public string ptm_description { get; set; } 
+
         public List<Ptm> ptm_combination { get; private set; }
 
         public int ptm_rank_sum { get; set; }
@@ -21,6 +23,12 @@ namespace ProteoformSuiteInternal
         {
             ptm_combination = unique_ptm_combination;
             mass = ptm_combination.Select(ptm => ptm.modification).Sum(m => (double)m.MonoisotopicMass);
+            ptm_description = ptm_combination == null ?
+                "Unknown" :
+                ptm_combination.Count == 0 ?
+                    "Unmodified" :
+                    string.Join("; ", ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
+
         }
 
         public PtmSet(List<Ptm> unique_ptm_combination, Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)

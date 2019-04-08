@@ -204,6 +204,7 @@ namespace ProteoformSuiteGUI
 
         private void shift_masses()
         {
+            Sweet.mass_shifts_from_presets(); //shift peaks
             List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
             if (peaks_to_shift.Count > 0)
             {

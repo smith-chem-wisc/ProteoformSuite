@@ -217,7 +217,7 @@ namespace Test
             t.identify_connected_experimentals(new List<PtmSet> { set_not_quite_zero, set_unmodified }, new List<Modification> { set_not_quite_zero.ptm_combination[0].modification, set_not_quite_zero.ptm_combination[1].modification, set_unmodified.ptm_combination[0].modification, });
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.mass);
-            Assert.AreEqual(new Ptm().modification.OriginalId, e.ptm_description); // it's unmodified
+            Assert.AreEqual(new Ptm().modification.OriginalId, e.ptm_set.ptm_description); // it's unmodified
             Assert.AreEqual(0.02, Math.Round(e.calculate_mass_error(), 2));
         }
 

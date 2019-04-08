@@ -122,7 +122,7 @@ namespace ProteoformSuiteInternal
             if (Sweet.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ThenBy(x => x.BaseSequence).ToArray(); // Take on harder problems first to use parallelization more effectively
             process_entries(expanded_proteins, variableModifications);
-            process_decoys(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.OrderBy(x => x.modified_mass).ThenBy(x => x.ptm_description).ThenBy(x => x.sequence).ThenBy(x => x.name).ToArray());
+            process_decoys(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.OrderBy(x => x.modified_mass).ThenBy(x => x.ptm_set.ptm_description).ThenBy(x => x.sequence).ThenBy(x => x.name).ToArray());
 
             Parallel.ForEach(new ProteoformCommunity[] { Sweet.lollipop.target_proteoform_community }.Concat(Sweet.lollipop.decoy_proteoform_communities.Values), community =>
             {

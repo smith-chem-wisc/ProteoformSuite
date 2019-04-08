@@ -516,7 +516,7 @@ namespace ProteoformSuiteInternal
                 array[2] = e.linked_proteoform_references == null ? "N/A" : e.linked_proteoform_references.Last().gene_name.primary;
                 array[3] = e.linked_proteoform_references == null ? "N/A" : string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
                 array[4] = e.linked_proteoform_references == null ? "N/A" : string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct());
-                array[5] = e.linked_proteoform_references == null ? "N/A" : e.ptm_description;
+                array[5] = e.linked_proteoform_references == null ? "N/A" : e.ptm_set.ptm_description;
                 array[6] = e.linked_proteoform_references == null ? "N/A" : e.begin + " to " + e.end;
                 array[7] = e.agg_mass;
                 array[8] = e.agg_rt;

@@ -135,10 +135,10 @@ namespace ProteoformSuiteInternal
                     {
                         narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < Sweet.lollipop.peak_width_base_et).ToList();
                     }
-                    candidate_ptmset = pf2.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass,
-                            mass_tolerance, Sweet.lollipop.theoretical_database.all_mods_with_mass, t,
-                            Sweet.lollipop.mod_rank_first_quartile, false)
-                        .OrderBy(x =>
+
+                    candidate_ptmset = Proteoform.generate_possible_added_ptmsets(narrower_range_of_candidates,
+                            Sweet.lollipop.theoretical_database.all_mods_with_mass, t, pf2.begin, pf2.end, pf2.ptm_set,
+                            Sweet.lollipop.mod_rank_first_quartile, false).OrderBy(x =>
                             x.ptm_rank_sum +
                             Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) *
                             10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1

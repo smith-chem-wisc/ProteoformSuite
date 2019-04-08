@@ -74,6 +74,7 @@ namespace ProteoformSuiteInternal
                     {
                         pf1.ptm_set = null;
                         pf1.linked_proteoform_references = null;
+                        pf1.ambiguous_identifications.Clear();
                         if (pf1 as TopDownProteoform == null) pf1.gene_name = null;
                     }
 
@@ -236,7 +237,6 @@ namespace ProteoformSuiteInternal
             {
                 Sweet.lollipop.et_peaks.AddRange(peaks);
                 Sweet.update_peaks_from_presets(ProteoformComparison.ExperimentalTheoretical); // accept or unaccept peaks noted in presets
-                Sweet.mass_shifts_from_presets(); //shift peaks
             }
             else
             {
@@ -381,6 +381,7 @@ namespace ProteoformSuiteInternal
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
+                p.ambiguous_identifications.Clear();
                 if (p as TopDownProteoform == null) { p.gene_name = null; }
                 p.ambiguous = false;
                 p.novel_mods = false;
