@@ -27,13 +27,14 @@ namespace Test
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set.mass, 1)] = new List<PtmSet> { set };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[Math.Round(set_unmodified.mass, 1)] = new List<PtmSet> { set_unmodified };
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>() {set, set_unmodified};
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
             t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
-            t.identify_connected_experimentals(new List<PtmSet> { set_unmodified }, new List<Modification>());
+            t.identify_connected_experimentals();
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
-            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<Modification> { set.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e.begin);
@@ -55,10 +56,10 @@ namespace Test
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
             t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
-            t.identify_connected_experimentals(new List<PtmSet> { set_unmodified }, new List<Modification>());
+            t.identify_connected_experimentals();
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
-            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<Modification> { set.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e.begin);
@@ -84,10 +85,10 @@ namespace Test
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
             t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
-            t.identify_connected_experimentals(new List<PtmSet> { set_unmodified }, new List<Modification>());
+            t.identify_connected_experimentals();
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
-            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<Modification> { set.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
             Assert.AreEqual(2, e.begin);
@@ -144,12 +145,12 @@ namespace Test
                 { Math.Round(set3.mass, 1), new List<PtmSet> { set3 } },
                 { Math.Round(set4.mass, 1), new List<PtmSet> { set4 } },
             };
-
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>() {set, set2, set3, set4};
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("", 1106.4, 0, true);
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 126.03);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals(new List<PtmSet> { set }, new List<Modification> { set.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(0, e2.ptm_set.mass);
             Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(), 2));
@@ -159,7 +160,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 84.02);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals(new List<PtmSet> { set2 }, new List<Modification> { set2.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(42.01, e2.ptm_set.mass);
             Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(), 2));
@@ -169,7 +170,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 42.01);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals(new List<PtmSet> { set3 }, new List<Modification> { set3.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(84.02, e2.ptm_set.mass);
             Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(), 2));
@@ -180,7 +181,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 168.04);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals(new List<PtmSet> { set4 }, new List<Modification> { set4.ptm_combination.First().modification });
+            e.identify_connected_experimentals();
             Assert.IsNull(e2.linked_proteoform_references);
         }
 
@@ -212,9 +213,9 @@ namespace Test
 
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-
+            TestProteoformCommunityRelate.prepare_for_et(new List<double>() { set_not_quite_zero.mass });
             // Identify adds nothing to the PtmSet of the Experimental, so it will be labeled Unmodified. It adds the TheoreticalProteoform to the linked reference.
-            t.identify_connected_experimentals(new List<PtmSet> { set_not_quite_zero, set_unmodified }, new List<Modification> { set_not_quite_zero.ptm_combination[0].modification, set_not_quite_zero.ptm_combination[1].modification, set_unmodified.ptm_combination[0].modification, });
+            t.identify_connected_experimentals();
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.mass);
             Assert.AreEqual(new Ptm().modification.OriginalId, e.ptm_set.ptm_description); // it's unmodified
@@ -301,7 +302,7 @@ namespace Test
             Assert.AreEqual(3, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous); //dont have same path length, not ambiguous
+            Assert.IsTrue(e2.ambiguous); 
             Assert.IsFalse(e1.ambiguous);
             Assert.IsTrue(e3.ambiguous);
         }

@@ -179,7 +179,7 @@ namespace ProteoformSuiteInternal
         {
             List<Modification> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
-            
+
             foreach (PtmSet set in possible_peak_assignments)
             {
                 List<Modification> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
@@ -206,9 +206,10 @@ namespace ProteoformSuiteInternal
                     bool could_be_c_term_degradation = m.ModificationType == "Missing" && motif_matches_c_terminus;
 
                     //if selected, going to only allow mods in Mods folder (type "Common"), Missing, Missed Monoisotopic, known mods for that protein, or Unmodified
-                    if (!Sweet.lollipop.et_use_notch && Sweet.lollipop.only_assign_common_or_known_mods && final_assignment)
+                    if (Sweet.lollipop.only_assign_common_or_known_mods && final_assignment)
                     {
-                        if (!(m.MonoisotopicMass == 0 || m.ModificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.ModificationType == "Deconvolution Error" || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m)))
+                        if (!(m.MonoisotopicMass == 0 || m.ModificationType == "Common" || could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation || m.ModificationType == "Deconvolution Error" || known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ||
+                              known_mods.Select(mod => UnlocalizedModification.LookUpId(mod)).Contains(UnlocalizedModification.LookUpId(m))))
                         {
                             rank_sum = Int32.MaxValue;
                             break;
@@ -243,7 +244,7 @@ namespace ProteoformSuiteInternal
                         rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ||
                             known_mods.Select(mod => UnlocalizedModification.LookUpId(mod)).Contains(UnlocalizedModification.LookUpId(m))
                                 ?
-                            1 :
+                            1 : //mod rank
                             mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                     }
                 }

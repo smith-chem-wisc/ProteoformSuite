@@ -74,7 +74,7 @@ namespace ProteoWPFSuite
 
         public string PS_ptm_description
         {
-            get { return t.ptm_description; }
+            get { return t.ptm_set.ptm_description; }
         }
 
         public string uniprot_mods

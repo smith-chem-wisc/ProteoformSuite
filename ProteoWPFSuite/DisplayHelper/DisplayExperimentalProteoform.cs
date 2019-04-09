@@ -89,7 +89,7 @@ namespace ProteoWPFSuite
 
         public string ptm_description
         {
-            get { return e.linked_proteoform_references != null ? e.ptm_description : ""; }
+            get { return e.linked_proteoform_references != null ? e.ptm_set.ptm_description : ""; }
         }
 
         public string uniprot_mods

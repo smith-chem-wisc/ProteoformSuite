@@ -237,6 +237,7 @@ namespace ProteoformSuiteInternal
             {
                 Sweet.lollipop.et_peaks.AddRange(peaks);
                 Sweet.update_peaks_from_presets(ProteoformComparison.ExperimentalTheoretical); // accept or unaccept peaks noted in presets
+                Sweet.mass_shifts_from_presets(); //shift peaks
             }
             else
             {

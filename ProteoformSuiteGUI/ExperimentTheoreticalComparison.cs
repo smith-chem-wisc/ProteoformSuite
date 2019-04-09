@@ -56,7 +56,11 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, Sweet.lollipop.et_bestETRelationOnly);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
-            shift_masses(); //check for shifts from presets (need to have peaks formed first)
+            if (full_run)
+            {
+                shift_masses(); //check for shifts from presets (need to have peaks formed first)
+                RunTheGamut(false);
+            }
             FillTablesAndCharts();
         }
 
@@ -204,7 +208,6 @@ namespace ProteoformSuiteGUI
 
         private void shift_masses()
         {
-            Sweet.mass_shifts_from_presets(); //shift peaks
             List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
             if (peaks_to_shift.Count > 0)
             {
@@ -231,7 +234,6 @@ namespace ProteoformSuiteGUI
                     ((ProteoformSweet)MdiParent).neuCodePairs.FillTablesAndCharts();
                 }
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.RunTheGamut(false);
-                RunTheGamut(false); //will need to rerun the Gamut if peaks shifted from preset.
             }
         }
 
