@@ -58,8 +58,6 @@ namespace ProteoformSuiteInternal
 
         public bool ambiguous { get; set; }
 
-        public double mass_error { get; set; } = double.NaN;
-
         public string uniprot_mods { get; set; }
 
         public bool novel_mods { get; set; }
@@ -170,15 +168,15 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public double calculate_mass_error()
+        public double calculate_mass_error(TheoreticalProteoform t, PtmSet ptm_set, int begin, int end)
         {
-            string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence
-                     .Substring(begin < linked_proteoform_references.First().begin ? 0 : begin - linked_proteoform_references.First().begin,
-                     1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin));
-            if (begin < linked_proteoform_references.First().begin) sequence = "M" + sequence;
+            string sequence = t.sequence
+                     .Substring(begin < t.begin ? 0 : begin - t.begin,
+                     1 + end - (begin < t.begin ? t.begin : begin));
+            if (begin < t.begin) sequence = "M" + sequence;
             double theoretical_mass =
                 TheoreticalProteoform.CalculateProteoformMass(sequence, ptm_set.ptm_combination);
-            return agg_mass - theoretical_mass;
+            return Math.Round(agg_mass - theoretical_mass, 4 );
         }
 
         #endregion Public Methods

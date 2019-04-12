@@ -134,7 +134,6 @@ namespace ProteoformSuiteInternal
                             == 0
                         );
                 if (e as TopDownProteoform != null) { (e as TopDownProteoform).set_correct_id(); }
-                if (e.linked_proteoform_references != null) { e.mass_error = e.calculate_mass_error(); }
             });
         }
 

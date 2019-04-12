@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
         public PtmSet(List<Ptm> unique_ptm_combination)
         {
             ptm_combination = unique_ptm_combination;
-            mass = ptm_combination.Select(ptm => ptm.modification).Sum(m => (double)m.MonoisotopicMass);
+            mass = ptm_combination == null ? 0 : ptm_combination.Select(ptm => ptm.modification).Sum(m => (double)m.MonoisotopicMass);
             ptm_description = ptm_combination == null ?
                 "Unknown" :
                 ptm_combination.Count == 0 ?

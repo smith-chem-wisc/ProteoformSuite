@@ -197,9 +197,12 @@ namespace ProteoformSuiteGUI
             get { return e.topdown_id; }
         }
 
-        public double mass_error
+        public string mass_error
         {
-            get { return e.mass_error; }
+            get { return (e.linked_proteoform_references != null ? e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString() : "N/A")
+                         + (e.ambiguous_identifications.Count > 0
+                             ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.Item1 as TheoreticalProteoform, i.Item4, i.Item2, i.Item3).ToString()))
+                             : ""); }
         }
 
         public bool Adduct

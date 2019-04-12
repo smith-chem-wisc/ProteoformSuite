@@ -224,6 +224,7 @@ namespace ProteoformSuiteGUI
                 {
                     int int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
                     peak.shift_experimental_masses(int_mass_shifter, Sweet.lollipop.neucode_labeled);
+                    Sweet.shift_peak_action(peak);
                 }
 
                 ((ProteoformSweet)MdiParent).rawExperimentalComponents.FillTablesAndCharts();
