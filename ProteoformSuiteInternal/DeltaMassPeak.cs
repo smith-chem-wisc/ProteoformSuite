@@ -83,9 +83,9 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                possiblePeakAssignments = new List<PtmSet>() {base_relation.candidate_ptmset};
-                DeltaMass = base_relation.candidate_ptmset.mass;
-                grouped_relations = relations_to_group.Where(r => r.candidate_ptmset.mass == DeltaMass).ToList();
+                grouped_relations = relations_to_group.Where(r => r.candidate_ptmset.mass == base_relation.candidate_ptmset.mass).ToList();
+                possiblePeakAssignments = grouped_relations.Select(r => r.candidate_ptmset).ToList();
+                DeltaMass = possiblePeakAssignments.First().mass;
             }
 
             foreach (ProteoformRelation mass_difference in grouped_relations)

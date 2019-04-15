@@ -60,7 +60,6 @@ namespace ProteoformSuiteGUI
             set
             {
                 (display_object as DeltaMassPeak).mass_shifter = value;
-                Sweet.shift_peak_action(display_object as DeltaMassPeak);
             }
         }
 

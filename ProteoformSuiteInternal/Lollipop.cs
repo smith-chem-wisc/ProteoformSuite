@@ -1372,6 +1372,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1399,6 +1400,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;

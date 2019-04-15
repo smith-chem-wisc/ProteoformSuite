@@ -285,19 +285,19 @@ namespace Test
             Assert.True(pf1 == pf3.linked_proteoform_references.First() || pf2 == pf3.linked_proteoform_references.First());
 
             //uniprot vs. novel mods
-            Assert.AreEqual("oxidation", pf3.linked_proteoform_references.First().ptm_description);
-            Assert.AreEqual("oxidation", pf4.linked_proteoform_references.First().ptm_description);
-            Assert.AreEqual("oxidation", pf5.linked_proteoform_references.First().ptm_description);
-            Assert.AreEqual("oxidation", pf6.linked_proteoform_references.First().ptm_description);
-            Assert.AreEqual("oxidation", pf7.linked_proteoform_references.First().ptm_description);
-            Assert.AreEqual("oxidation", pf8.linked_proteoform_references.First().ptm_description);
+            Assert.AreEqual("oxidation", pf3.linked_proteoform_references.First().ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf4.linked_proteoform_references.First().ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf5.linked_proteoform_references.First().ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf6.linked_proteoform_references.First().ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf7.linked_proteoform_references.First().ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf8.linked_proteoform_references.First().ptm_set.ptm_description);
 
-            Assert.AreEqual("oxidation", pf3.ptm_description);
-            Assert.AreEqual("oxidation", pf4.ptm_description);
-            Assert.AreEqual("oxidation", pf5.ptm_description);
-            Assert.AreEqual("oxidation", pf6.ptm_description);
-            Assert.AreEqual("oxidation", pf7.ptm_description);
-            Assert.AreEqual("oxidation", pf8.ptm_description);
+            Assert.AreEqual("oxidation", pf3.ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf4.ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf5.ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf6.ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf7.ptm_set.ptm_description);
+            Assert.AreEqual("oxidation", pf8.ptm_set.ptm_description);
 
             Assert.AreEqual("", pf3.uniprot_mods);
             Assert.AreEqual("", pf4.uniprot_mods);

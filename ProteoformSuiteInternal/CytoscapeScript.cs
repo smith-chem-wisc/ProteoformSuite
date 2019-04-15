@@ -326,7 +326,7 @@ namespace ProteoformSuiteInternal
             {
                 if (p as TheoreticalProteoform != null)
                 {
-                    string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
+                    string node_type = String.Equals(p.ptm_set.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                     node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
                 }
 
@@ -437,7 +437,7 @@ namespace ProteoformSuiteInternal
             }
             else if (p as TheoreticalProteoform != null)
             {
-                return p.accession + " " + p.ptm_description;
+                return p.accession + " " + p.ptm_set.ptm_description;
             }
             else
             {

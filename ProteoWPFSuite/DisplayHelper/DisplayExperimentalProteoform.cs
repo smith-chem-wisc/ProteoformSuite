@@ -89,7 +89,7 @@ namespace ProteoWPFSuite
 
         public string ptm_description
         {
-            get { return e.linked_proteoform_references != null ? e.ptm_description : ""; }
+            get { return e.linked_proteoform_references != null ? e.ptm_set.ptm_description : ""; }
         }
 
         public string uniprot_mods
@@ -175,9 +175,9 @@ namespace ProteoWPFSuite
             get { return e.topdown_id; }
         }
 
-        public double mass_error
+        public string mass_error
         {
-            get { return e.mass_error; }
+            get { return e.linked_proteoform_references != null ? e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString() : "N/A" ; }
         }
 
         public bool Adduct
