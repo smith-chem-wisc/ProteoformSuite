@@ -351,7 +351,6 @@ namespace ProteoformSuiteInternal
                     this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                     || e.begin != begin || e.end != end || !e.ptm_set.same_ptmset(ptm_set, true))
                 {
-                    e.ambiguous = true;
                     Proteoform linked_proteoform_reference =
                         this.linked_proteoform_references == null || this.linked_proteoform_references.Count == 0
                             ? this
@@ -372,7 +371,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            if (this as ExperimentalProteoform != null && (this as ExperimentalProteoform).ambiguous)
+            if (this as ExperimentalProteoform != null && (this as ExperimentalProteoform).ambiguous_identifications.Count > 0)
             {
                 foreach (var id in this.ambiguous_identifications)
                 {
@@ -420,7 +419,6 @@ namespace ProteoformSuiteInternal
                             p.Item4.same_ptmset(new_id.Item4, true)))
                         {
                             e.ambiguous_identifications.Add(new_id);
-                            e.ambiguous = true;
                         }
                     }
                 }

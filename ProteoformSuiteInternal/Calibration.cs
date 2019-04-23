@@ -53,31 +53,109 @@ namespace ProteoformSuiteInternal
 
             if (dataPointAcquisitionResult.Ms1List.Count < 10) return false;
 
-            var myMs1DataPoints = new List<(double[] xValues, double yValue)>();
-
-            for (int i = 0; i < dataPointAcquisitionResult.Ms1List.Count; i++)
+            if (Sweet.lollipop.mass_calibration)
             {
-                //x values
-                var explanatoryVariables = new double[4];
-                explanatoryVariables[0] = dataPointAcquisitionResult.Ms1List[i].mz;
-                explanatoryVariables[1] = dataPointAcquisitionResult.Ms1List[i].retentionTime;
-                explanatoryVariables[2] = dataPointAcquisitionResult.Ms1List[i].logTotalIonCurrent;
-                explanatoryVariables[3] = dataPointAcquisitionResult.Ms1List[i].logInjectionTime;
+                var myMs1DataPoints = new List<(double[] xValues, double yValue)>();
 
-                //yvalue
-                double mzError = dataPointAcquisitionResult.Ms1List[i].massError;
+                for (int i = 0; i < dataPointAcquisitionResult.Ms1List.Count; i++)
+                {
+                    //x values
+                    var explanatoryVariables = new double[4];
+                    explanatoryVariables[0] = dataPointAcquisitionResult.Ms1List[i].mz;
+                    explanatoryVariables[1] = dataPointAcquisitionResult.Ms1List[i].retentionTime;
+                    explanatoryVariables[2] = dataPointAcquisitionResult.Ms1List[i].logTotalIonCurrent;
+                    explanatoryVariables[3] = dataPointAcquisitionResult.Ms1List[i].logInjectionTime;
 
-                myMs1DataPoints.Add((explanatoryVariables, mzError));
+                    //yvalue
+                    double mzError = dataPointAcquisitionResult.Ms1List[i].massError;
+
+                    myMs1DataPoints.Add((explanatoryVariables, mzError));
+                }
+
+                var ms1Model = GetRandomForestModel(myMs1DataPoints);
+
+                CalibrateHitsAndComponents(ms1Model);
+                if (Sweet.lollipop.calibrate_raw_files)
+                {
+                    MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile,
+                        raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
+                }
             }
 
-            var ms1Model = GetRandomForestModel(myMs1DataPoints);
-
-            CalibrateHitsAndComponents(ms1Model);
-            if (Sweet.lollipop.calibrate_raw_files)
+            if (Sweet.lollipop.retention_time_calibration)
             {
-                MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, raw_file.directory + "\\" + raw_file.filename + "_calibrated.mzML", false);
+                var myMs1DataPoints = new List<(double[] xValues, double yValue)>();
+                List<TopDownHit> firstElutingTopDownHit = new List<TopDownHit>();
+                List<string> PFRs = high_scoring_topdown_hits.Select(h => h.pfr_accession).Distinct().ToList();
+                foreach (var PFR in PFRs)
+                {
+                    var firstHitWithPFR = high_scoring_topdown_hits
+                        .Where(h => h.pfr_accession == PFR).OrderBy(h => h.ms2_retention_time).First();
+                    firstElutingTopDownHit.Add(firstHitWithPFR);
+                }
+
+                for (int i = 0; i < dataPointAcquisitionResult.Ms1List.Count; i++)
+                {
+                    if (firstElutingTopDownHit.Contains(dataPointAcquisitionResult.Ms1List[i].identification))
+                    {
+                        //x values
+                        var explanatoryVariables = new double[1];
+                        explanatoryVariables[0] = dataPointAcquisitionResult.Ms1List[i].retentionTime;
+
+                        //yvalue
+                        double RTError = dataPointAcquisitionResult.Ms1List[i].RTError;
+
+                        myMs1DataPoints.Add((explanatoryVariables, RTError));
+                    }
+                }
+
+                if (myMs1DataPoints.Count < 10) return false;
+
+                var ms1Model = GetRandomForestModel(myMs1DataPoints);
+
+                foreach (Component c in Sweet.lollipop.calibration_components.Where(h => h.input_file.lt_condition == raw_file.lt_condition && h.input_file.biological_replicate == raw_file.biological_replicate && h.input_file.fraction == raw_file.fraction && h.input_file.technical_replicate == raw_file.technical_replicate))
+                {
+                    c.rt_apex = c.rt_apex - ms1Model.Predict(new double[] { c.rt_apex });
+                }
             }
+
             return true;
+        }
+
+        public void RetentionTimeCalibrateTopDownHits(List<TopDownHit> topdown_hits)
+        {
+            all_topdown_hits = topdown_hits.Where(h => h.score > 0).ToList();
+            high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
+            List<string> filenames_orderbydescendingUniquePFRs = high_scoring_topdown_hits.Select(h => h.filename).Distinct().OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count()).ToList();
+            if (filenames_orderbydescendingUniquePFRs.Count == 1) return; //only if more than 1 file.
+
+            //calibrate everything to file with most unique hits.
+            List<TopDownHit> calibrated_RT_topdown_hits =
+                all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs.First()).ToList();
+
+            for (int i = 1; i < filenames_orderbydescendingUniquePFRs.Count; i++)
+            {
+                var myMs1DataPoints = new List<(double[] xValue, double yValue)>();
+                List<string> PFRs = high_scoring_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]).Select(h => h.pfr_accession).Distinct().ToList();
+                foreach (var PFR in PFRs)
+                {
+                    double minRTNewFile = high_scoring_topdown_hits
+                        .Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i] && h.pfr_accession == PFR)
+                        .Min(h => h.ms2_retention_time);
+                    var calibratedRTs = calibrated_RT_topdown_hits
+                        .Where(h => h.pfr_accession == PFR);
+                    if (calibratedRTs.Count() == 0) continue;
+
+                    var calibratedminRT = calibratedRTs.Min(h => h.ms2_retention_time);
+
+                    myMs1DataPoints.Add((new double[] { minRTNewFile }, minRTNewFile - calibratedminRT));
+                }
+                var ms1Model = GetRandomForestModel(myMs1DataPoints);
+                foreach (TopDownHit hit in all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]))
+                {
+                    hit.ms2_retention_time = hit.ms2_retention_time - ms1Model.Predict(new double[] { hit.ms2_retention_time });
+                }
+            }
         }
 
         public void CalibrateHitsAndComponents(RegressionForestModel bestCf)
@@ -99,6 +177,7 @@ namespace ProteoformSuiteInternal
                         scan = myMsDataFile.GetOneBasedScan(scanNumber);
                         ms1Scan = scan.MsnOrder == 1;
                     }
+
                     cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime, Math.Log(scan.TotalIonCurrent), scan.InjectionTime.HasValue ? Math.Log(scan.InjectionTime.Value) : double.NaN });
                 }
             }
@@ -120,7 +199,9 @@ namespace ProteoformSuiteInternal
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, int>>();
             foreach (TopDownHit identification in high_scoring_topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass))
             {
-                List<int> scanNumbers = new List<int>() { identification.ms2ScanNumber };
+                int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(identification.ms2_retention_time);
+
+                List<int> scanNumbers = new List<int>() { scanNum };
                 int proteinCharge = identification.charge;
 
                 Component matching_component = null;
@@ -137,8 +218,8 @@ namespace ProteoformSuiteInternal
                     if (potential_matches.Count > 0)
                     {
                         matching_component = potential_matches.Where(c =>
-                           Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
-                           && Math.Abs(c.rt_apex - identification.ms1_scan.RetentionTime) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
+                           Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < Sweet.lollipop.cali_mass_tolerance
+                           && Math.Abs(c.rt_apex - identification.ms1_scan.RetentionTime) < Sweet.lollipop.cali_rt_tolerance).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - identification.theoretical_mass)).FirstOrDefault();
                     }
                     else
                     {
@@ -159,6 +240,10 @@ namespace ProteoformSuiteInternal
                         rt = myMsDataFile.GetOneBasedScan(scanNumber + 1).RetentionTime;
                     }
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
+                    if (matching_component.charge_states.Count == 1)
+                    {
+                        proteinCharge = identification.charge;
+                    }
                 }
 
 
@@ -257,8 +342,7 @@ namespace ProteoformSuiteInternal
                                 theMZ = Sweet.lollipop.get_neucode_mass(theMZ.ToMass(chargeToLookAt), identification.sequence.Count(s => s == 'K')).ToMz(chargeToLookAt);
                             }
 
-                            //10 ppm
-                            double mass_tolerance = theMZ / 1e6 * 10;
+                            double mass_tolerance = theMZ / 1e6 * Sweet.lollipop.cali_mass_tolerance;
                             var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - mass_tolerance, theMZ + mass_tolerance);
                             if (npwr == 0)
                             {
@@ -281,7 +365,7 @@ namespace ProteoformSuiteInternal
                             {
                                 peaksAddedHashSet.Add(theTuple);
                                 highestKnownChargeForThisPeptide = Math.Max(highestKnownChargeForThisPeptide, chargeToLookAt);
-                                trainingPointsToAverage.Add(new LabeledMs1DataPoint((double)closestPeakMZ, double.NaN, double.NaN, double.NaN, (double)closestPeakMZ - theMZ, null));
+                                trainingPointsToAverage.Add(new LabeledMs1DataPoint((double)closestPeakMZ, double.NaN, double.NaN, double.NaN, (double)closestPeakMZ - theMZ, (double)fullMS1scan.RetentionTime - identification.ms2_retention_time, null));
                             }
                             else
                             {
@@ -311,6 +395,7 @@ namespace ProteoformSuiteInternal
                                 Math.Log(fullMS1scan.TotalIonCurrent),
                                 fullMS1scan.InjectionTime.HasValue ? Math.Log(fullMS1scan.InjectionTime.Value) : double.NaN,
                                 trainingPointsToAverage.Select(b => b.massError).Median(),
+                                trainingPointsToAverage.OrderBy(b => b.retentionTime).First().RTError,
                                 identification);
                         }
                         chargeToLookAt += i;
@@ -428,18 +513,41 @@ namespace ProteoformSuiteInternal
                 if (row.RowNumber() != 1)
                 {
                     double corrected_mass;
-                    if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0], row.Cell(19).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
+                    double corrected_RT;
+
+                    if (Sweet.lollipop.retention_time_calibration)
                     {
-                        row.Cell(17).SetValue(corrected_mass);
+                        if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
+                            new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0],
+                                row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_RT))
+                        {
+                            row.Cell(19).SetValue(corrected_RT);
+                        }
+                        //if hit's file not calibrated (not enough calibration points, remove from list
+                        else
+                        {
+                            lock (rows_to_delete) rows_to_delete.Add(row);
+                        }
                     }
-                    //if hit's file not calibrated (not enough calibration points, remove from list
-                    else
+
+                    if (Sweet.lollipop.mass_calibration)
                     {
-                        lock (rows_to_delete) rows_to_delete.Add(row);
+                        if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
+                            new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0],
+                                row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
+                        {
+                            row.Cell(17).SetValue(corrected_mass);
+                        }
+                        //if hit's file not calibrated (not enough calibration points, remove from list
+                        else
+                        {
+                            lock (rows_to_delete) rows_to_delete.Add(row);
+                        }
                     }
+
                 }
             });
-            foreach (IXLRow row in rows_to_delete)
+            foreach (IXLRow row in rows_to_delete.Distinct())
             {
                 row.Delete(); //can't parallelize
             }
@@ -464,18 +572,27 @@ namespace ProteoformSuiteInternal
                 }
                 var workbook = new XLWorkbook(new_absolute_path);
                 var worksheet = workbook.Worksheets.Worksheet(1);
-                Parallel.ForEach(worksheet.Rows(), row =>
+                Parallel.ForEach(worksheet.Rows(2, worksheet.Rows().Count()), row =>
                 {
                     if (row.Cell(1).Value.ToString().Length == 0)
                     {
                         if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                         {
-                            double value;
+                            double corrected_mass;
                             //CHECK WITH CHARGE NORMALIZED INTENSITY!!
-                            if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
+                            if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out corrected_mass))
                             {
-                                row.Cell(4).SetValue(value);
+                                row.Cell(4).SetValue(corrected_mass);
                             }
+
+                        }
+                    }
+                    else
+                    {
+                        double corrected_RT;
+                        if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0), Math.Round(row.Cell(2).GetDouble(), 2)), out corrected_RT))
+                        {
+                            row.Cell(11).SetValue(corrected_RT);
                         }
                     }
                 });
@@ -489,14 +606,34 @@ namespace ProteoformSuiteInternal
                 for (int i = 1; i < old.Length; i++)
                 {
                     string[] row = old[i].Split('\t');
-                    if (row.Length == 20 && Double.TryParse(row[5], out double mass) && Double.TryParse(row[9], out double intensity))
+                    double mass;
+                    double intensity;
+                    if (row.Length == 20 && Double.TryParse(row[5], out mass) && Double.TryParse(row[9], out intensity))
                     {
                         double value;
-                        if (Sweet.lollipop.component_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
+                        if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
-                            //do intensity weighted new monoisotopic mass for each feature
-                            //just rewrite, don't bother with dictionary, etc......
                             row[5] = value.ToString();
+                            new_file.Add(string.Join("\t", row));
+                        }
+                        if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
+                        {
+                            row[10] = value.ToString();
+                            new_file.Add(string.Join("\t", row));
+                        }
+                    }
+                    else if (row.Length == 3 && Double.TryParse(row[0], out mass) &&
+                             Double.TryParse(row[1], out intensity))
+                    {
+                        double value;
+                        if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
+                        {
+                            row[0] = value.ToString();
+                            new_file.Add(string.Join("\t", row));
+                        }
+                        if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
+                        {
+                            row[2] = value.ToString();
                             new_file.Add(string.Join("\t", row));
                         }
                     }

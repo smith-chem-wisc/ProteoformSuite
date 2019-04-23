@@ -39,6 +39,7 @@
             this.calib_stand_splitContainer = new System.Windows.Forms.SplitContainer();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
+            this.cb_rt_cali = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_td_files = new System.Windows.Forms.CheckBox();
             this.cb_calibrate_raw_files = new System.Windows.Forms.CheckBox();
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
@@ -76,6 +77,11 @@
             this.panel_clearbtn = new System.Windows.Forms.Panel();
             this.bt_clearFiles1 = new System.Windows.Forms.Button();
             this.cmb_loadTable1 = new System.Windows.Forms.ComboBox();
+            this.cb_mass_cali = new System.Windows.Forms.CheckBox();
+            this.nUD_cali_mass_tolerance = new System.Windows.Forms.NumericUpDown();
+            this.nUD_cali_RT_tolerance = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.base_splitcontainer)).BeginInit();
             this.base_splitcontainer.Panel1.SuspendLayout();
             this.base_splitcontainer.Panel2.SuspendLayout();
@@ -115,6 +121,8 @@
             this.box_filter.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel_clearbtn.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_cali_mass_tolerance)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_cali_RT_tolerance)).BeginInit();
             this.SuspendLayout();
             // 
             // base_splitcontainer
@@ -237,6 +245,12 @@
             // 
             // calib_stand_splitContainer.Panel2
             // 
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.label4);
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.label3);
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.nUD_cali_RT_tolerance);
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.nUD_cali_mass_tolerance);
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_mass_cali);
+            this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_rt_cali);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_td_files);
             this.calib_stand_splitContainer.Panel2.Controls.Add(this.cb_calibrate_raw_files);
             this.calib_stand_splitContainer.Size = new System.Drawing.Size(483, 98);
@@ -268,6 +282,19 @@
             this.rb_unlabeled.Text = "Unlabeled";
             this.rb_unlabeled.UseVisualStyleBackColor = true;
             this.rb_unlabeled.CheckedChanged += new System.EventHandler(this.rb_unlabeled_CheckedChanged);
+            // 
+            // cb_rt_cali
+            // 
+            this.cb_rt_cali.AutoSize = true;
+            this.cb_rt_cali.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_rt_cali.Location = new System.Drawing.Point(3, 78);
+            this.cb_rt_cali.Name = "cb_rt_cali";
+            this.cb_rt_cali.Size = new System.Drawing.Size(147, 17);
+            this.cb_rt_cali.TabIndex = 63;
+            this.cb_rt_cali.Text = "Calibrate Retention Times";
+            this.cb_rt_cali.UseVisualStyleBackColor = true;
+            this.cb_rt_cali.Visible = false;
+            this.cb_rt_cali.CheckedChanged += new System.EventHandler(this.cb_rt_cali_CheckedChanged);
             // 
             // cb_calibrate_td_files
             // 
@@ -711,6 +738,89 @@
             this.cmb_loadTable1.TabIndex = 42;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             // 
+            // cb_mass_cali
+            // 
+            this.cb_mass_cali.AutoSize = true;
+            this.cb_mass_cali.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_mass_cali.Location = new System.Drawing.Point(3, 54);
+            this.cb_mass_cali.Name = "cb_mass_cali";
+            this.cb_mass_cali.Size = new System.Drawing.Size(106, 17);
+            this.cb_mass_cali.TabIndex = 64;
+            this.cb_mass_cali.Text = "Calibrate Masses";
+            this.cb_mass_cali.UseVisualStyleBackColor = true;
+            this.cb_mass_cali.Visible = false;
+            this.cb_mass_cali.CheckedChanged += new System.EventHandler(this.cb_mass_cali_CheckedChanged);
+            // 
+            // nUD_cali_mass_tolerance
+            // 
+            this.nUD_cali_mass_tolerance.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.nUD_cali_mass_tolerance.DecimalPlaces = 1;
+            this.nUD_cali_mass_tolerance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nUD_cali_mass_tolerance.Location = new System.Drawing.Point(263, 55);
+            this.nUD_cali_mass_tolerance.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_cali_mass_tolerance.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nUD_cali_mass_tolerance.Name = "nUD_cali_mass_tolerance";
+            this.nUD_cali_mass_tolerance.Size = new System.Drawing.Size(86, 20);
+            this.nUD_cali_mass_tolerance.TabIndex = 65;
+            this.nUD_cali_mass_tolerance.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUD_cali_mass_tolerance.ValueChanged += new System.EventHandler(this.nUD_cali_mass_tolerance_ValueChanged);
+            // 
+            // nUD_cali_RT_tolerance
+            // 
+            this.nUD_cali_RT_tolerance.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.nUD_cali_RT_tolerance.DecimalPlaces = 1;
+            this.nUD_cali_RT_tolerance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nUD_cali_RT_tolerance.Location = new System.Drawing.Point(263, 77);
+            this.nUD_cali_RT_tolerance.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_cali_RT_tolerance.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nUD_cali_RT_tolerance.Name = "nUD_cali_RT_tolerance";
+            this.nUD_cali_RT_tolerance.Size = new System.Drawing.Size(86, 20);
+            this.nUD_cali_RT_tolerance.TabIndex = 66;
+            this.nUD_cali_RT_tolerance.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUD_cali_RT_tolerance.ValueChanged += new System.EventHandler(this.nUD_cali_RT_tolerance_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(161, 58);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(97, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Mass Tol. (ppm)";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(181, 78);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(81, 13);
+            this.label4.TabIndex = 67;
+            this.label4.Text = "RT Tol. (min)";
+            // 
             // LoadResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -767,6 +877,8 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel_clearbtn.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_cali_mass_tolerance)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_cali_RT_tolerance)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -820,5 +932,11 @@
         private System.Windows.Forms.SplitContainer fullrun_splitContainer;
         private System.Windows.Forms.TextBox tb_resultsFolder;
         private System.Windows.Forms.Button btn_browseSummarySaveFolder;
+        private System.Windows.Forms.CheckBox cb_rt_cali;
+        private System.Windows.Forms.CheckBox cb_mass_cali;
+        private System.Windows.Forms.NumericUpDown nUD_cali_mass_tolerance;
+        private System.Windows.Forms.NumericUpDown nUD_cali_RT_tolerance;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
     }
 }

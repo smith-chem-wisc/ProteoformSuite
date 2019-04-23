@@ -56,8 +56,6 @@ namespace ProteoformSuiteInternal
 
         public bool adduct { get; set; }
 
-        public bool ambiguous { get; set; }
-
         public string uniprot_mods { get; set; }
 
         public bool novel_mods { get; set; }
@@ -158,8 +156,8 @@ namespace ProteoformSuiteInternal
             ChargeState intense_cs = intense.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
             if (intense_cs == null)
                 return "";
-
-            return "File: " + intense.input_file.filename
+            var component = intense as Component;
+            return (component != null ? component.id + " " : "") + "File: " + intense.input_file.filename
                 + "; Scan Range: " + intense.min_scan + "-" + intense.max_scan
                 + "; Charge State m/z (+" + intense_cs.charge_count.ToString() + "): " + intense_cs.mz_centroid + "; RT (min): " + intense.rt_apex;
         }

@@ -40,6 +40,10 @@ namespace ProteoformSuiteGUI
             rb_unlabeled.Checked = !rb_neucode.Checked;
             cb_calibrate_td_files.Checked = Sweet.lollipop.calibrate_td_files;
             cb_calibrate_raw_files.Checked = Sweet.lollipop.calibrate_raw_files;
+            cb_mass_cali.Checked = Sweet.lollipop.mass_calibration;
+            cb_rt_cali.Checked = Sweet.lollipop.retention_time_calibration;
+            nUD_cali_mass_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_mass_tolerance);
+            nUD_cali_RT_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_rt_tolerance);
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
@@ -154,10 +158,15 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.SelectedIndex = 0;
 
                 cmb_loadTable1.Enabled = true;
-
+                label3.Visible = false;
+                label4.Visible = false;
+                nUD_cali_mass_tolerance.Visible = false;
+                nUD_cali_RT_tolerance.Visible = false;
                 bt_calibrate.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
+                cb_rt_cali.Visible = false;
+                cb_mass_cali.Visible = false;
                 bt_deconvolute.Visible = false;
                 bt_stepthru.Visible = true;
                 bt_fullrun.Visible = true;
@@ -178,9 +187,15 @@ namespace ProteoformSuiteGUI
             else if (rb_chemicalCalibration.Checked)
             {
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                label3.Visible = true;
+                label4.Visible = true;
+                nUD_cali_mass_tolerance.Visible = true;
+                nUD_cali_RT_tolerance.Visible = true;
                 bt_calibrate.Visible = true;
                 cb_calibrate_td_files.Visible = true;
                 cb_calibrate_raw_files.Visible = true;
+                cb_rt_cali.Visible = true;
+                cb_mass_cali.Visible = true;
                 bt_deconvolute.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
@@ -209,10 +224,15 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.SelectedIndex = 0;
 
                 cmb_loadTable1.Enabled = false;
-
+                label3.Visible = false;
+                label4.Visible = false;
+                nUD_cali_mass_tolerance.Visible = false;
+                nUD_cali_RT_tolerance.Visible = false;
                 bt_calibrate.Visible = false;
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
+                cb_rt_cali.Visible = false;
+                cb_mass_cali.Visible = false;
                 bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
                 bt_calibrate.Visible = false;
@@ -604,6 +624,27 @@ namespace ProteoformSuiteGUI
 
         private void topbar_splitcontainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
+        }
+
+        private void cb_rt_cali_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.retention_time_calibration = cb_rt_cali.Checked;
+
+        }
+
+        private void cb_mass_cali_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.mass_calibration = cb_mass_cali.Checked;
+        }
+
+        private void nUD_cali_mass_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.cali_mass_tolerance = Convert.ToDouble(nUD_cali_mass_tolerance.Value);
+        }
+
+        private void nUD_cali_RT_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.cali_rt_tolerance = Convert.ToDouble(nUD_cali_RT_tolerance.Value);
         }
     }
 }
