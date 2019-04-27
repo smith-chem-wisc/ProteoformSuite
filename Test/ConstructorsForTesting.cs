@@ -6,6 +6,7 @@ using Proteomics;
 using ProteoformSuiteInternal;
 using UsefulProteomicsDatabases;
 using System.IO;
+using Proteomics.AminoAcidPolymer;
 
 namespace Test
 {
@@ -83,7 +84,9 @@ namespace Test
             Modification unmodification = new Modification("Unmodified", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 0);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm() });
-            return new TheoreticalProteoform(a, "", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
+            var t =  new TheoreticalProteoform(a, "", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
+            t.modified_mass = mass;
+            return t;
         }
 
 
@@ -159,8 +162,8 @@ namespace Test
 
         public static Dictionary<string, List<Modification>> read_mods()
         {
-            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
-            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            Loaders.LoadElements();
+            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path, out List<(Modification, string)> filteredModificationsWithWarnings)).ToList();
             return Sweet.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }

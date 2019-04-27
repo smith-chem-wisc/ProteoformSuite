@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Proteomics.RetentionTimePrediction;
 
 namespace ProteoformSuiteGUI
 {
@@ -47,9 +49,9 @@ namespace ProteoformSuiteGUI
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
             mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.OriginalId).Distinct().ToList();
-            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
+            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count(td => td.accepted).ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
-            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
+            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Where(td => td.accepted).Select(p => p.pfr_accession).Distinct().Count().ToString();
         }
 
         public void RunTheGamut(bool full_run)
@@ -100,6 +102,7 @@ namespace ProteoformSuiteGUI
             //need to refill theo database --> added theoreticsl
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
+          
         }
 
         public void ClearListsTablesFigures(bool clear_following)

@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using System.Text;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -139,7 +141,7 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
-        public double raw_component_mass_tolerance = 10;
+        public double raw_component_mass_tolerance = 5;
         public double min_likelihood_ratio = 0;
         public double max_fit = 0.2;
 
@@ -189,7 +191,7 @@ namespace ProteoformSuiteInternal
         {
             int successfully_deconvoluted_files = 0;
             string dir = Directory.GetCurrentDirectory();
-            Loaders.LoadElements(dir + @"\elements.dat");
+            Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 Process proc = new Process();
@@ -477,12 +479,12 @@ namespace ProteoformSuiteInternal
         public HashSet<Component> remaining_verification_components = new HashSet<Component>();
         public HashSet<Component> remaining_quantification_components = new HashSet<Component>();
         public bool validate_proteoforms = true;
-        public double mass_tolerance = 10; //ppm
-        public double retention_time_tolerance = 5; //min
+        public double mass_tolerance = 5; //ppm
+        public double retention_time_tolerance = 2.5; //min
         public int maximum_missed_monos = 3;
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
-        public int min_num_CS = 1;
+        public int min_num_CS = 3;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
         public bool add_td_proteoforms = true;
@@ -784,13 +786,11 @@ namespace ProteoformSuiteInternal
 
         #region THEORETICAL DATABASE Public Fields
 
-        public bool methionine_oxidation = true;
-        public bool carbamidomethylation = true;
+        public bool methionine_oxidation = false;
+        public bool carbamidomethylation = false;
         public bool methionine_cleavage = true;
-        public bool natural_lysine_isotope_abundance = false;
-        public bool neucode_light_lysine = true;
-        public bool neucode_heavy_lysine = false;
-        public int max_ptms = 4;
+        public bool most_abundant_mass = false;
+        public int max_ptms = 2;
         public int decoy_databases = 10;
         public int min_peptide_length = 7;
         public double ptmset_mass_tolerance = 0.00001;
@@ -805,7 +805,7 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
 
         //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
-        public bool useRandomSeed_decoys = false;
+        public bool useRandomSeed_decoys = true;
 
         public int randomSeed_decoys = 1;
 
@@ -814,17 +814,18 @@ namespace ProteoformSuiteInternal
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public bool ee_accept_peaks_based_on_rank = true;
-        public bool et_accept_peaks_based_on_rank = true;
+        public bool et_use_notch = false;
+        public bool et_notch_ppm = true;
+        public bool et_bestETRelationOnly = true;
+        public double notch_tolerance_et = 1;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
         public double et_high_mass_difference = 350;
-        public double no_mans_land_lowerBound = 0.22;
-        public double no_mans_land_upperBound = 0.88;
-        public double peak_width_base_et = 0.03; //need to be separate so you can change one and not other.
-        public double peak_width_base_ee = 0.03;
-        public double min_peak_count_et = 10;
-        public double min_peak_count_ee = 10;
+        public double peak_width_base_et = .02; //need to be separate so you can change one and not other.
+        public double peak_width_base_ee = .02;
+        public double min_peak_count_et = 50;
+        public double min_peak_count_ee = 50;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -839,7 +840,7 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
+                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, et_bestETRelationOnly));
                 if (i == 0)
                     ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
@@ -1371,6 +1372,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1398,6 +1400,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;

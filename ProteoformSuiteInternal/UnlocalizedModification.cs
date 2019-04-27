@@ -20,11 +20,11 @@ namespace ProteoformSuiteInternal
             require_proteoform_without_mod = false;
 
             if (m.ModificationType == "Common")
-                ptm_rank = Sweet.lollipop.mod_rank_first_quartile / 2;
+                ptm_rank = 2;
             else if (m.ModificationType == "Deconvolution Error")
-                ptm_rank = Sweet.lollipop.mod_rank_first_quartile;
+                ptm_rank = 1;
             else
-                ptm_rank = Sweet.lollipop.modification_ranks[(double)m.MonoisotopicMass];
+                ptm_rank = Sweet.lollipop.modification_ranks[(double) m.MonoisotopicMass];
         }
 
         public static string LookUpId(Modification m)

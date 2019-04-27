@@ -21,7 +21,6 @@ namespace Test
             Sweet.lollipop.maximum_missed_lysines = 0;
             Sweet.lollipop.min_num_CS = 0;
             Sweet.lollipop.max_ptms = 0;
-            Sweet.lollipop.no_mans_land_upperBound = 0.64;
             Sweet.lollipop.peak_width_base_ee = 0.001;
             Sweet.lollipop.ee_max_mass_difference = 100;
             Sweet.lollipop.ee_max_RetentionTime_difference = 10;
@@ -36,7 +35,6 @@ namespace Test
             Sweet.lollipop.max_lysine_ct = 26.2m;
             Sweet.lollipop.min_num_CS = 1;
             Sweet.lollipop.max_ptms = 3;
-            Sweet.lollipop.no_mans_land_upperBound = 0.88;
             Sweet.lollipop.ee_max_mass_difference = 250;
             Sweet.lollipop.ee_max_RetentionTime_difference = 2.5;
             Sweet.lollipop.peak_width_base_ee = 0.015;
@@ -54,7 +52,6 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.maximum_missed_lysines);
             Assert.AreEqual(0, Sweet.lollipop.min_num_CS);
             Assert.AreEqual(0, Sweet.lollipop.max_ptms);
-            Assert.AreEqual(0.64, Sweet.lollipop.no_mans_land_upperBound);
             Assert.AreEqual(100, Sweet.lollipop.ee_max_mass_difference);
             Assert.AreEqual(0.001, Sweet.lollipop.peak_width_base_ee);
             Assert.AreEqual(10, Sweet.lollipop.ee_max_RetentionTime_difference);

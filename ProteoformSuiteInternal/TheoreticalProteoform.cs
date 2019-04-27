@@ -1,7 +1,9 @@
-﻿using Proteomics;
+﻿using System;
+using Proteomics;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -46,22 +48,57 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
+            this.modified_mass = CalculateProteoformMass(sequence, ptm_set.ptm_combination);
         }
 
         #endregion Public Constructor
 
         #region Public Method
 
-        public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
+        public static double CalculateProteoformMass(string sequence, List<Ptm> ptm_combination)
         {
-            double proteoformMass = 18.010565; // start with water
-            char[] aminoAcids = pForm.ToCharArray();
-            List<double> aaMasses = new List<double>();
-            for (int i = 0; i < pForm.Length; i++)
+            if (Sweet.lollipop.theoretical_database.aaIsotopeMassList == null)
             {
-                if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+                Sweet.lollipop.theoretical_database.populate_aa_mass_dictionary();
             }
-            return proteoformMass + aaMasses.Sum();
+
+            if (!Sweet.lollipop.most_abundant_mass)
+            {
+                double proteoformMass = 18.010565; // start with water
+                char[] aminoAcids = sequence.ToCharArray();
+                List<double> aaMasses = new List<double>();
+                for (int i = 0; i < sequence.Length; i++)
+                {
+                    if (Sweet.lollipop.theoretical_database.aaIsotopeMassList.ContainsKey(aminoAcids[i]))
+                        aaMasses.Add(Sweet.lollipop.theoretical_database.aaIsotopeMassList[aminoAcids[i]]);
+                }
+
+                return proteoformMass + aaMasses.Sum() +
+                       ptm_combination.Sum(p => (double)p.modification.MonoisotopicMass);
+            }
+
+            //if most abundant mass, calculate iso distrubution, set modified/unmodified masses to most abundant.
+            var formula = new Proteomics.AminoAcidPolymer.Peptide(sequence).GetChemicalFormula();
+
+            // append mod formulas
+            foreach (var mod in ptm_combination)
+            {
+                var modCf = mod.modification.ChemicalFormula;
+
+                if (modCf != null)
+                {
+                    formula.Add(modCf);
+                }
+            }
+
+            // Calculate isotopic distribution of the full peptide
+            var dist = IsotopicDistribution.GetDistribution(formula, 0.1, 1e-12);
+
+            double[] masses = dist.Masses.ToArray();
+            double[] intensities = dist.Intensities.ToArray();
+            double max = intensities.Max();
+            int modeMassIndex = Array.IndexOf(intensities, max);
+            return masses[modeMassIndex];
         }
 
         #endregion Public Method

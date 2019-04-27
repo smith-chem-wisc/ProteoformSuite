@@ -138,10 +138,11 @@ namespace ProteoformSuiteGUI
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
+            var relations_within = relations.Where(r => r.DeltaMass >= peak.DeltaMass - peak_width_base
+                                                        && r.DeltaMass <= peak.DeltaMass + peak_width_base).Select(r => r.nearby_relations_count).ToList();
             ct.ChartAreas[0].AxisY.Maximum = 1 + Math.Max(
                 Convert.ToInt32(peak.peak_relation_group_count * 1.2),
-                Convert.ToInt32(relations.Where(r => r.DeltaMass >= peak.DeltaMass - peak_width_base
-                    && r.DeltaMass <= peak.DeltaMass + peak_width_base).Select(r => r.nearby_relations_count).Max())
+                Convert.ToInt32(relations_within.Count > 0 ? relations_within.Max() : 0)
             ); //this automatically scales the vertical axis to the peak height plus 20%, also accounting for the nearby trace of unadjusted relation group counts
 
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
@@ -195,17 +196,6 @@ namespace ProteoformSuiteGUI
 
             return dt;
         }
-
-        public static bool CheckForProteinFastas(ComboBox cmb, IEnumerable<string> files)
-        {
-            if (Lollipop.file_filters[cmb.SelectedIndex].Contains(".fasta") && files.Any(x => x.Contains(".fasta")))
-            {
-                MessageBox.Show("Usage of protein fasta files is not yet enabled. Please use a protein XML file for now, e.g. from UniProt. (See this site for more information, and let us know there if this is an issue for you: https://github.com/smith-chem-wisc/ProteoformSuite/issues/477.)", "Load Files Message");
-                return true;
-            }
-            return false;
-        }
-
         #endregion Public Methods
     }
 }

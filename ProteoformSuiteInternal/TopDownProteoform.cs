@@ -81,7 +81,6 @@ namespace ProteoformSuiteInternal
             this.agg_intensity = t.agg_intensity;
             this.topdown_id = t.topdown_id;
             this.agg_mass = t.agg_mass;
-            this.mass_shifted = t.mass_shifted;
             this.is_target = t.is_target;
             this.topdown_end = t.topdown_end;
             this.topdown_begin = t.topdown_begin;

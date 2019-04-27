@@ -37,7 +37,7 @@ namespace Test
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms[0].topdown_hits.Count());  //higher scoring topdown hit should be root.
 
             //Test no aggregation outside retention time range
-            tdhList[1].ms2_retention_time += Convert.ToDouble(Sweet.lollipop.retention_time_tolerance + 1);
+            tdhList[1].ms2_retention_time += Convert.ToDouble(Sweet.lollipop.td_retention_time_tolerance + 1);
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms.Count());
@@ -334,7 +334,6 @@ namespace Test
             Assert.AreEqual(td1.topdown_id, td2.topdown_id);
             Assert.AreEqual(td1.agg_mass, td2.agg_mass);
             Assert.AreEqual(td1.is_target, td2.is_target);
-            Assert.AreEqual(td1.mass_shifted, td2.mass_shifted);
         }
 
         [Test]
@@ -415,9 +414,6 @@ namespace Test
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.methionine_cleavage = true;
-            Sweet.lollipop.natural_lysine_isotope_abundance = true;
-            Sweet.lollipop.neucode_light_lysine = false;
-            Sweet.lollipop.neucode_heavy_lysine = false;
             Sweet.lollipop.combine_identical_sequences = false;
             Sweet.lollipop.combine_theoretical_proteoforms_byMass = false;
             Sweet.lollipop.max_ptms = 3;
@@ -444,8 +440,8 @@ namespace Test
             List<TheoreticalProteoform> td_theoreticals = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.topdown_theoretical).OrderBy(p => p.accession).ToList();
             Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => !p.topdown_theoretical && p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_set.ptm_combination.Count == 0));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_set.ptm_combination.Count == 0));
-            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_description == "Acetylation"));
-            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_description == "Acetylation"));
+            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_set.ptm_description == "Acetylation"));
+            Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_set.ptm_description == "Acetylation"));
             Assert.AreEqual(31, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => p.ExpandedProteinList.Any(e => e.topdown_protein)));
         }

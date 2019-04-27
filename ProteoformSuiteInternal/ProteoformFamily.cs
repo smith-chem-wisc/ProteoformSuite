@@ -86,7 +86,7 @@ namespace ProteoformSuiteInternal
             foreach (TheoreticalProteoform t in theoretical_proteoforms)
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals())
                     {
                         identified_experimentals.Add(e);
                     }
@@ -102,7 +102,7 @@ namespace ProteoformSuiteInternal
                 foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals)
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals())
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);
@@ -134,7 +134,6 @@ namespace ProteoformSuiteInternal
                             == 0
                         );
                 if (e as TopDownProteoform != null) { (e as TopDownProteoform).set_correct_id(); }
-                if (e.linked_proteoform_references != null) { e.mass_error = e.calculate_mass_error(); }
             });
         }
 
