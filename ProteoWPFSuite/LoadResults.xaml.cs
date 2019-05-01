@@ -11,35 +11,15 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.ComponentModel;
 
-/// <Problems>
-/// - Should convert window to proteoform sweet?
-/// - Currently keeping main window but not sure if still keeping it in the future
-/// - Split Container not addressed (What is this for? What should be used instead?)
-/// </Problems>
-/// <remarks>
-/// - Dragevents are using forms version in order to be consistent with datagridview
-/// - Comments with three slashes are for future implementation
-/// - Controls are default to be WPF except for data Grid view
-/// - WPF window close takes care of all dispose things
-/// - selection changed doesnot change the text of combo box in the first place
-/// </remarks>
-/// <TODO>
-/// - Implement ProteoFormSweat
-/// - Remove the three-slash comments 
-/// </TODO>
-
 namespace ProteoWPFSuite
 {
-    /// <summary>
-    /// Interaction logic for loadResults.xaml
-    /// </summary>
     public partial class LoadResults : UserControl, ITabbedMDI, ISweetForm, INotifyPropertyChanged
     {
         public LoadResults()
         {
             InitializeComponent();
             this.DataContext = this;
-            this.PropertyChanged += tb_filter1_TextChanged;
+            
             populate_file_lists();
         }
 
@@ -58,14 +38,55 @@ namespace ProteoWPFSuite
                 if (_labeltxt==value)
                     return;
                 _labeltxt = value;
+
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LabelTxt"));
+                
+                //moved tb_filter1 to here
+                int selected_index = Lollipop.file_lists.ToList().IndexOf(value);
+                DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
+                DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
+                
             }
         }
-        #endregion
+        //for checked radio
+        public bool CK_rbneucode
+        {
+            get
+            {
+                return ck_rbneucode;
+            }
+            set
+            {   
+                if (ck_rbneucode == value)
+                    return;
+                ck_rbneucode = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbneucode"));
+                rb_neucode_CheckedChanged(this.rb_neucode, new RoutedEventArgs());
+            }
+        }
+        public int CB_select
+        {
+            get
+            {
+                return cb_select;
+            }
+            set
+            {
+                if (value < 0)
+                    return;
+                cb_select = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CB_select"));
+                LabelTxt = cmb_loadTable1.Items[value].ToString();
+            }
+        }
+        #endregion Public Property
 
-        #region Private Property
+        #region Private Field
         private String _labeltxt;
-        #endregion Private Property
+        private bool ck_rbneucode;
+        private int cb_select;
+        //private string[] cb_src;
+        #endregion Private Field
 
         #region Public Methods
         public void InitializeParameterSet()
@@ -75,10 +96,9 @@ namespace ProteoWPFSuite
             rb_unlabeled.IsChecked = !rb_neucode.IsChecked;
             cb_calibrate_td_files.IsChecked = Sweet.lollipop.calibrate_td_files;
             cb_calibrate_raw_files.IsChecked = Sweet.lollipop.calibrate_raw_files;
-            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
-            ///parMDI.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
-            ///parMDI.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
-            ///parMDI.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
+            this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+            this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
         }
         public List<DataTable> SetTables()
         {
@@ -106,13 +126,11 @@ namespace ProteoWPFSuite
             Sweet.loaded_actions.Clear();
             Sweet.lollipop.results_folder = "";
             //tb_resultsFolder.Text = "";
-
-            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
             if (clear_following)
             {
-                for (int i = parMDI.forms.IndexOf(this) + 1; i < parMDI.forms.Count; i++)
+                for (int i = this.MDIParent.forms.IndexOf(this) + 1; i < this.MDIParent.forms.Count; i++)
                 {
-                    ISweetForm sweet = parMDI.forms[i];
+                    ISweetForm sweet = this.MDIParent.forms[i];
                     sweet.ClearListsTablesFigures(false);
                     sweet.FillTablesAndCharts();
                 }
@@ -137,18 +155,18 @@ namespace ProteoWPFSuite
         #region GENERAL TABLE OPTIONS Private Methods
         private void rb_neucode_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            
-            /*MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
+
+            this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)rb_neucode.IsChecked);
             Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
             Sweet.lollipop.neucode_light_lysine = (bool)rb_neucode.IsChecked;
-            Sweet.lollipop.natural_lysine_isotope_abundance = !(bool)rb_neucode.IsChecked;
+            Sweet.lollipop.natural_lysine_isotope_abundance = (bool)!rb_neucode.IsChecked;
 
             foreach (InputFile f in Sweet.lollipop.input_files)
             {
                 if ((bool)rb_neucode.IsChecked) f.label = Labeling.NeuCode;
                 if ((bool)rb_unlabeled.IsChecked) f.label = Labeling.Unlabeled;
             }
-            populate_file_lists();*/
+            populate_file_lists();
         }
         private void rb_unlabeled_CheckedChanged(object sender, RoutedEventArgs e)
         { }
@@ -170,109 +188,104 @@ namespace ProteoWPFSuite
         {
             populate_file_lists();
         }
+        //Using property notification instead
         private void cmb_loadTable1_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
         {
-            LabelTxt = (sender as ComboBox).SelectedItem.ToString();
+            
+            CB_select = cmb_loadTable1.SelectedIndex;
         }
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
-
             if ((bool)rb_standardOptions.IsChecked)
             {
-                for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-
-                cmb_loadTable1.SelectedIndex = 0;
-
                 cmb_loadTable1.IsEnabled = true;
-
-
+                for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                
                 bt_calibrate.Visibility = Visibility.Collapsed;
                 cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
                 cb_calibrate_td_files.Visibility = Visibility.Collapsed;
+                bdcb.Visibility = Visibility.Collapsed;
                 bt_deconvolute.Visibility = Visibility.Collapsed;
                 bt_stepthru.Visibility = Visibility.Visible;
                 bt_fullrun.Visibility = Visibility.Visible;
                 bt_calibrate.Visibility = Visibility.Collapsed;
                 panel_deconv_calib.Visibility = Visibility.Collapsed;
                 panel_step.Visibility = Visibility.Visible;
-                nud_maxcharge.Visibility = Visibility.Collapsed;
-                nud_mincharge.Visibility = Visibility.Collapsed;
-                label_maxcharge.Visibility = Visibility.Collapsed;
-                label_mincharge.Visibility = Visibility.Collapsed;
-                label_maxRT.Visibility = Visibility.Collapsed;
-                label_minRT.Visibility = Visibility.Collapsed;
+                nmds.Visibility = Visibility.Collapsed;
+                nud_maxcharge.Visible = false;
+                nud_mincharge.Visible = false;
+                label_maxcharge.Visibility = Visibility.Visible;
+                label_mincharge.Visibility = Visibility.Visible;
+                //label_maxRT.Visibility = Visibility.Collapsed;
+                //label_minRT.Visibility = Visibility.Collapsed;
                 rb_neucode.Visibility = Visibility.Visible;
                 rb_unlabeled.Visibility = Visibility.Visible;
                 calib_stand_splitContainer.Visibility = Visibility.Visible;
                 fullrun_groupbox.Visibility = Visibility.Visible;
-
             }
 
             else if ((bool)rb_chemicalCalibration.IsChecked)
             {
+                cmb_loadTable1.IsEnabled = true;
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                
                 bt_calibrate.Visibility = Visibility.Visible;
                 cb_calibrate_td_files.Visibility = Visibility.Visible;
                 cb_calibrate_raw_files.Visibility = Visibility.Visible;
+                bdcb.Visibility = Visibility.Visible;
                 bt_deconvolute.Visibility = Visibility.Collapsed;
                 bt_stepthru.Visibility = Visibility.Collapsed;
                 bt_fullrun.Visibility = Visibility.Collapsed;
                 bt_calibrate.Visibility = Visibility.Visible;
                 panel_deconv_calib.Visibility = Visibility.Visible;
                 panel_step.Visibility = Visibility.Collapsed;
-                nud_maxcharge.Visibility = Visibility.Collapsed;
-                nud_mincharge.Visibility = Visibility.Collapsed;
-                label_maxcharge.Visibility = Visibility.Collapsed;
-                label_mincharge.Visibility = Visibility.Collapsed;
-                label_maxRT.Visibility = Visibility.Collapsed;
-                label_minRT.Visibility = Visibility.Collapsed;
+                nmds.Visibility = Visibility.Collapsed;
+                nud_maxcharge.Visible = false;
+                nud_mincharge.Visible = false;
+                label_maxcharge.Visibility = Visibility.Visible;
+                label_mincharge.Visibility = Visibility.Visible;
+                //label_maxRT.Visibility = Visibility.Collapsed;
+                //label_minRT.Visibility = Visibility.Collapsed;
                 rb_neucode.Visibility = Visibility.Visible;
                 rb_unlabeled.Visibility = Visibility.Visible;
                 calib_stand_splitContainer.Visibility = Visibility.Visible;
                 fullrun_groupbox.Visibility = Visibility.Collapsed;
-
-                cmb_loadTable1.SelectedIndex = 0;
-
-                cmb_loadTable1.IsEnabled = true;
             }
 
             else if ((bool)rb_deconvolution.IsChecked)
             {
-
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
-
-                cmb_loadTable1.SelectedIndex = 0;
-
                 cmb_loadTable1.IsEnabled = false;
-
                 bt_calibrate.Visibility = Visibility.Collapsed;
                 cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
                 cb_calibrate_td_files.Visibility = Visibility.Collapsed;
+                bdcb.Visibility = Visibility.Collapsed;
                 bt_stepthru.Visibility = Visibility.Collapsed;
                 bt_fullrun.Visibility = Visibility.Collapsed;
                 bt_calibrate.Visibility = Visibility.Collapsed;
                 bt_deconvolute.Visibility = Visibility.Visible;
                 panel_deconv_calib.Visibility = Visibility.Visible;
                 panel_step.Visibility = Visibility.Collapsed;
-                nud_maxcharge.Visibility = Visibility.Visible;
-                nud_mincharge.Visibility = Visibility.Visible;
+                nmds.Visibility = Visibility.Visible;
+                nud_maxcharge.Visible =true;
+                nud_mincharge.Visible=true;
                 label_maxcharge.Visibility = Visibility.Visible;
                 label_mincharge.Visibility = Visibility.Visible;
-                label_maxRT.Visibility = Visibility.Visible;
-                label_minRT.Visibility = Visibility.Visible;
+                //label_maxRT.Visibility = Visibility.Visible;
+                //label_minRT.Visibility = Visibility.Visible;
                 rb_neucode.Visibility = Visibility.Collapsed;
                 rb_unlabeled.Visibility = Visibility.Collapsed;
                 calib_stand_splitContainer.Visibility = Visibility.Collapsed;
                 fullrun_groupbox.Visibility = Visibility.Collapsed;
-
-                cmb_loadTable1.SelectedIndex = 0;
-
                 cmb_loadTable1.IsEnabled = false;
             }
-            LabelTxt = cmb_loadTable1.SelectedItem.ToString();
-
+            CB_select = 0;
+            cmb_loadTable1.SelectedItem = cmb_loadTable1.Items[cb_select];
+            LabelTxt = cmb_loadTable1.Items[cb_select].ToString();
+            //MessageBox.Show(LabelTxt + " , " + Lollipop.file_lists.Count());
             reload_dgvs();
+            
             refresh_dgvs();
         }
         #endregion GENERAL TABLE OPTIONS Private Methods
@@ -283,7 +296,7 @@ namespace ProteoWPFSuite
         {
             drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
         }
-
+        //this one is not called
         private void dgv_quantResults_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
@@ -328,18 +341,17 @@ namespace ProteoWPFSuite
             {
                 dgv.Refresh();
             }
-            //ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
-            /*if (parMDI != null) //doesn't work first time
+            if (this.MDIParent != null) //doesn't work first time
             {
-                ///parMDI.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
-                ///parMDI.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
-            }*/
+                this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
+                this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            }
         }
 
         private void reload_dgvs()
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]);
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]);
         }
 
         #endregion DGV DRAG AND DROP Private Methods
@@ -455,12 +467,11 @@ namespace ProteoWPFSuite
 
         private void btn_fullRun_Click(object sender, RoutedEventArgs e)
         {
-            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
-            ///Stopwatch successful_run = parMDI.full_run();
-            ///if (successful_run != null) MessageBox.Show("Successfully ran method in "
-            ///    + String.Format("{0:00}:{1:00}:{2:00}.{3:00}", successful_run.Elapsed.Hours, successful_run.Elapsed.Minutes, successful_run.Elapsed.Seconds, successful_run.Elapsed.Milliseconds / 10)
-            ///    + ". Feel free to explore using the Results menu.", "Full Run");
-            ///else MessageBox.Show("Method did not successfully run.", "Full Run");
+            Stopwatch successful_run = this.MDIParent.full_run();
+            if (successful_run != null) MessageBox.Show("Successfully ran method in "
+                + String.Format("{0:00}:{1:00}:{2:00}.{3:00}", successful_run.Elapsed.Hours, successful_run.Elapsed.Minutes, successful_run.Elapsed.Seconds, successful_run.Elapsed.Milliseconds / 10)
+                + ". Feel free to explore using the Results menu.", "Full Run");
+            else MessageBox.Show("Method did not successfully run.", "Full Run");
         }
         private void bt_clearResults_Click(object sender, RoutedEventArgs e)
         {
@@ -470,8 +481,7 @@ namespace ProteoWPFSuite
 
         private void bt_stepthru_Click(object sender, RoutedEventArgs e)
         {
-            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl; //get the parent control of the form;
-            ///parMDI.resultsToolStripMenuItem.ShowDropDown();
+            this.MDIParent.resultsToolStripMenuItem.IsSubmenuOpen=true;
             MessageBox.Show("Use the Results menu to step through processing results.\n\n" +
                 "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
         }
@@ -493,13 +503,13 @@ namespace ProteoWPFSuite
         #endregion FULL RUN & STEP THROUGH Private Methods
 
         #region FILTERS Private Methods
-        private void tb_filter1_TextChanged(object sender, PropertyChangedEventArgs e)
+        //function moved to property get
+        /*private void tb_filter1_TextChanged(object sender, PropertyChangedEventArgs e)
         {
             int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.SelectedItem.ToString());
-            //problem here!!!!!!!!!
             DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
-        }
+        }*/
         #endregion FILTERS Private Methods
 
         #region CHANGED TABLE SELECTION Private Methods
@@ -590,7 +600,13 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.calibrate_td_files = (bool)cb_calibrate_td_files.IsChecked;
         }
-        
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            CB_select = 0;
+            //MessageBox.Show(cmb_loadTable1.SelectedItem.ToString()+cmb_loadTable1.SelectedIndex + "," + cb_select);
+        }
+
         /*private void topbar_splitcontainer_SplitterMoved(object sender, SplitterEventArgs e)
 {
 

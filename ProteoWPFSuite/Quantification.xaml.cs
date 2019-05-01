@@ -19,7 +19,7 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for Quantification.xaml
     /// </summary>
-    public partial class Quantification : UserControl,ISweetForm
+    public partial class Quantification : UserControl,ISweetForm, ITabbedMDI
     {
         public Quantification()
         {
@@ -33,6 +33,8 @@ namespace ProteoWPFSuite
 
         }
         public List<DataTable> DataTables => throw new NotImplementedException();
+
+        public ProteoformSweet MDIParent { get; set; }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {

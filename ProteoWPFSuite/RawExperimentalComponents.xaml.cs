@@ -13,22 +13,67 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for RawExperimentalComponents.xaml
     /// </summary>
-    public partial class RawExperimentalComponents : UserControl, ISweetForm
+    public partial class RawExperimentalComponents : UserControl, ISweetForm, ITabbedMDI, System.ComponentModel.INotifyPropertyChanged
     {
         #region Public Constructor
         public RawExperimentalComponents()
         {
             InitializeComponent();
-            //Our layout is responsive and no needs for autoscroll
+            this.DataContext = this;
+            CK_rb_displayIdentificationComponents = true;
+            CK_rb_displayQuantificationComponents = false;
         }
         #endregion Public Constructor
 
+        #region Private fields
+        private bool? ck_Identi;
+        private bool? ck_Quanti;
+        #endregion
+        
         #region Public Property
+        public bool? CK_rb_displayIdentificationComponents
+        {
+            get
+            {
+                return ck_Identi;
+            }
+            set
+            {
+                
+                if (ck_Identi == value || MDIParent==null)
+                {
+                    return;
+                }
+                FillTablesAndCharts();
+                dgv_chargeStates.DataSource = null;
+                ck_Identi = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
+            }
+        }
+        public bool? CK_rb_displayQuantificationComponents
+        {
+            get
+            {
+                return ck_Quanti;
+            }
+            set
+            {
+                if (ck_Quanti == value)
+                {
+                    return;
+                }
+                //nothing changes here
 
+                ck_Quanti = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
+            }
+        }
         public List<DataTable> DataTables { get; private set; }
+        public ProteoformSweet MDIParent { get; set; }
+
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
         #endregion Public Property
-
 
         #region Public Methods
 
@@ -42,9 +87,9 @@ namespace ProteoWPFSuite
             ClearListsTablesFigures(true);
             Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
 
-            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
-            parMDI.quantification.InitializeConditionsParameters();
-            parMDI.aggregatedProteoforms.InitializeParameterSet();
+            
+            this.MDIParent.quantification.InitializeConditionsParameters();
+            this.MDIParent.aggregatedProteoforms.InitializeParameterSet();
             Parallel.Invoke
             (
                 () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
@@ -52,7 +97,7 @@ namespace ProteoWPFSuite
             );
             if (ComponentReader.components_with_errors.Count > 0)
             {
-                MessageBox.Show("Error in Deconvolution Results File: " + string.Join(", ", ComponentReader.components_with_errors));
+                MessageBox.Show("Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors));
                 ClearListsTablesFigures(true);
                 return;
             }
@@ -63,9 +108,9 @@ namespace ProteoWPFSuite
         public void InitializeParameterSet()
         {
             rb_displayQuantificationComponents.IsEnabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
-            nUD_mass_tolerance.Value = (int)Sweet.lollipop.raw_component_mass_tolerance;
-            nUD_min_liklihood_ratio.Value = (int)Sweet.lollipop.min_likelihood_ratio;
+            nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
             nUD_max_fit.Value = (decimal)Sweet.lollipop.max_fit;
+            nUD_min_liklihood_ratio.Value = (decimal)Sweet.lollipop.min_likelihood_ratio;
             FillTablesAndCharts();
         }
 
@@ -80,10 +125,10 @@ namespace ProteoWPFSuite
 
             if (clear_following_forms)
             {
-                ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
-                for (int i = parMDI.forms.IndexOf(this) + 1; i < (parMDI).forms.Count; i++)
+               
+                for (int i = this.MDIParent.forms.IndexOf(this) + 1; i < (this.MDIParent).forms.Count; i++)
                 {
-                    ISweetForm sweet = (parMDI).forms[i];
+                    ISweetForm sweet = (this.MDIParent).forms[i];
                     if (sweet as TopDown == null)
                         sweet.ClearListsTablesFigures(false);
                 }
@@ -123,9 +168,8 @@ namespace ProteoWPFSuite
             DisplayComponent.FormatComponentsTable(dgv_rawComponents);
 
             rtb_raw_components_counts.Text = ResultsSummaryGenerator.raw_components_report();
-
-            ProteoformSweet parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
-            NeuCodePairs pairs_form = parMDI.neuCodePairs;
+            
+            NeuCodePairs pairs_form = this.MDIParent.neuCodePairs;
             if (Sweet.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
                 pairs_form.RunTheGamut(false);
         }
@@ -138,7 +182,7 @@ namespace ProteoWPFSuite
         {
             if (e.RowIndex >= 0)
             {
-                Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
+                ProteoformSuiteInternal.Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
                 DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
                 DisplayChargeState.FormatChargeStateTable(dgv_chargeStates);
             }
@@ -158,10 +202,10 @@ namespace ProteoWPFSuite
         private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)
         {
             FillTablesAndCharts();
-            dgv_chargeStates.DataSource = null;
+            dgv_chargeStates.DataSource = null; 
         }
 
-        private void bt_recalculate_Click(object sender, EventArgs e)
+        private void bt_recalculate_Click(object sender, RoutedEventArgs e)
         {
             //Cursor = Cursors.Wait; only works for this particular page, so suggested to be replaced by override
             Mouse.OverrideCursor = Cursors.Wait;
@@ -185,5 +229,6 @@ namespace ProteoWPFSuite
         }
 
         #endregion Private Methods
+        
     }
 }

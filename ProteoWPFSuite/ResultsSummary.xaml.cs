@@ -22,7 +22,7 @@ namespace ProteoWPFSuite
     /// <TODO>
     /// Implement all methods
     /// </TODO>
-    public partial class ResultsSummary : UserControl,ISweetForm
+    public partial class ResultsSummary : UserControl,ISweetForm, ITabbedMDI
     {
         public ResultsSummary()
         {
@@ -43,6 +43,8 @@ namespace ProteoWPFSuite
             //return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as TusherAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as TusherAnalysis : null;
         }
         public List<DataTable> DataTables => throw new NotImplementedException();
+
+        public ProteoformSweet MDIParent { get; set; }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {

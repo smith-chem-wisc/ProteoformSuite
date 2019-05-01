@@ -19,7 +19,7 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for IdentifiedProteoforms.xaml
     /// </summary>
-    public partial class IdentifiedProteoforms : UserControl,ISweetForm
+    public partial class IdentifiedProteoforms : UserControl,ISweetForm, ITabbedMDI
     {
         public IdentifiedProteoforms()
         {
@@ -27,6 +27,8 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables => throw new NotImplementedException();
+
+        public ProteoformSweet MDIParent { get; set; }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {

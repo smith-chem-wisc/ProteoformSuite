@@ -11,15 +11,13 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for TopDown.xaml
     /// </summary>
-    public partial class TopDown : UserControl, ISweetForm
+    public partial class TopDown : UserControl, ISweetForm, ITabbedMDI
     {
         private static Color[] colors = new Color[20];
         private static List<string> mods = new List<string>();
-        private ProteoformSweet parMDI;
         public TopDown()
         {
             InitializeComponent();
-            //this.parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
         }
 
         public void InitializeParameterSet()
@@ -35,6 +33,8 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables { get; private set; }
+        public ProteoformSweet MDIParent { get; set; }
+
         public List<DataTable> SetTables()
         {
             DataTables = new List<DataTable>
@@ -48,7 +48,7 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(t => new DisplayTopDownProteoform(t)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
-            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.OriginalId).Distinct().ToList();
+            mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.id).Distinct().ToList();
             tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
@@ -86,21 +86,21 @@ namespace ProteoWPFSuite
                 if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                    warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
                 }
                 if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+                    warning_methods.Add(String.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
                 }
                 if (warning_methods.Count > 1)
                 {
-                    MessageBox.Show(string.Join("\n\n", warning_methods));
+                    MessageBox.Show(String.Join("\n\n", warning_methods));
                 }
             }
             //need to refill theo database --> added theoreticsl
             
-            parMDI.theoreticalDatabase.FillTablesAndCharts();
+            MDIParent.theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
         }
         public void ClearListsTablesFigures(bool clear_following)
@@ -119,9 +119,9 @@ namespace ProteoWPFSuite
             rtb_sequence.Clear();
             if (clear_following)
             {
-                for (int i = parMDI.forms.IndexOf(this) + 1; i < parMDI.forms.Count; i++)
+                for (int i = MDIParent.forms.IndexOf(this) + 1; i < MDIParent.forms.Count; i++)
                 {
-                    ISweetForm sweet = parMDI.forms[i];
+                    ISweetForm sweet = MDIParent.forms[i];
                     if (sweet as RawExperimentalComponents == null)
                         sweet.ClearListsTablesFigures(false);
                 }
@@ -181,7 +181,7 @@ namespace ProteoWPFSuite
                 Color color;
                 try
                 {
-                    i = mods.IndexOf(ptm.modification.OriginalId);
+                    i = mods.IndexOf(ptm.modification.id);
                     color = colors[i];
                 }
                 catch
@@ -194,11 +194,11 @@ namespace ProteoWPFSuite
                 rtb_sequence.SelectionLength = 1;
                 rtb_sequence.SelectionColor = color;
 
-                rtb_sequence.AppendText("\n" + ptm.modification.OriginalId);
+                rtb_sequence.AppendText("\n" + ptm.modification.id);
                 rtb_sequence.SelectionStart = length;
-                rtb_sequence.SelectionLength = ptm.modification.OriginalId.Length + 1;
+                rtb_sequence.SelectionLength = ptm.modification.id.Length + 1;
                 rtb_sequence.SelectionColor = colors[i];
-                length += ptm.modification.OriginalId.Length + 1;
+                length += ptm.modification.id.Length + 1;
             }
         }
 
