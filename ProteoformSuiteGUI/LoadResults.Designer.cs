@@ -273,7 +273,7 @@
             // 
             this.cb_calibrate_td_files.AutoSize = true;
             this.cb_calibrate_td_files.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_calibrate_td_files.Location = new System.Drawing.Point(3, 31);
+            this.cb_calibrate_td_files.Location = new System.Drawing.Point(3, 54);
             this.cb_calibrate_td_files.Name = "cb_calibrate_td_files";
             this.cb_calibrate_td_files.Size = new System.Drawing.Size(144, 17);
             this.cb_calibrate_td_files.TabIndex = 61;
@@ -286,7 +286,7 @@
             // 
             this.cb_calibrate_raw_files.AutoSize = true;
             this.cb_calibrate_raw_files.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_calibrate_raw_files.Location = new System.Drawing.Point(3, 8);
+            this.cb_calibrate_raw_files.Location = new System.Drawing.Point(3, 31);
             this.cb_calibrate_raw_files.Name = "cb_calibrate_raw_files";
             this.cb_calibrate_raw_files.Size = new System.Drawing.Size(150, 17);
             this.cb_calibrate_raw_files.TabIndex = 60;

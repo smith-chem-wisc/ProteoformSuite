@@ -81,6 +81,7 @@ namespace Test
             Sweet.lollipop.calibrate_raw_files = false; //shouldn't cali raw files!
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.neucode_labeled = false;
+
             int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.SpectraFile)).First());
             int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
             int cali_td_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationTopDown)).First());
@@ -146,11 +147,8 @@ namespace Test
             foreach (Component c in calibrated_components)
             {
                 Assert.True(Sweet.lollipop.component_correction.Values.Contains(System.Math.Round(c.weighted_monoisotopic_mass, 5)));
+                Assert.IsFalse(uncalibrated_components.Any(c2 => c2.reported_monoisotopic_mass == c.reported_monoisotopic_mass));
             }
-
-            Assert.IsFalse(uncalibrated_components.All(c2 =>
-                calibrated_components.Select(c => c.reported_monoisotopic_mass)
-                    .Contains(c2.reported_monoisotopic_mass)));
         }
     }
 }

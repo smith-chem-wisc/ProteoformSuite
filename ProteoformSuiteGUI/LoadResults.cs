@@ -107,6 +107,9 @@ namespace ProteoformSuiteGUI
         {
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
             Sweet.lollipop.neucode_labeled = rb_neucode.Checked;
+            Sweet.lollipop.neucode_light_lysine = rb_neucode.Checked;
+            Sweet.lollipop.natural_lysine_isotope_abundance = !rb_neucode.Checked;
+
             foreach (InputFile f in Sweet.lollipop.input_files)
             {
                 if (rb_neucode.Checked) f.label = Labeling.NeuCode;
@@ -280,6 +283,7 @@ namespace ProteoformSuiteGUI
             int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
 
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
             refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
@@ -354,6 +358,7 @@ namespace ProteoformSuiteGUI
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
+                if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
                 refresh_dgvs();
                 if (openFileDialog.FileNames.Any(f => Path.GetExtension(f) == ".raw")) ValidateThermoMsFileReaderVersion();

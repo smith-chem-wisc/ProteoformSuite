@@ -48,7 +48,7 @@
       <HintPath>..\packages\Accord.Math.3.8.0\lib\net46\Accord.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Chemistry, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\Chemistry.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\Chemistry.dll</HintPath>
     </Reference>
     <Reference Include="Chromatography, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\mzLib.0.0.1\lib\net471\Chromatography.dll</HintPath>
@@ -69,43 +69,43 @@
       <HintPath>..\packages\FastMember.Signed.1.4.1\lib\net461\FastMember.Signed.dll</HintPath>
     </Reference>
     <Reference Include="FlashLFQ, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\FlashLFQ.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\FlashLFQ.dll</HintPath>
     </Reference>
-    <Reference Include="ManagedThermoHelperLayer, Version=1.0.396.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\ManagedThermoHelperLayer.dll</HintPath>
+    <Reference Include="ManagedThermoHelperLayer, Version=1.0.357.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\ManagedThermoHelperLayer.dll</HintPath>
     </Reference>
     <Reference Include="MassSpectrometry, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\MassSpectrometry.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\MassSpectrometry.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=4.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MathNet.Numerics.4.5.1\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Mgf, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\Mgf.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\Mgf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="MzIdentML, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\MzIdentML.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\MzIdentML.dll</HintPath>
     </Reference>
     <Reference Include="MzLibUtil, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\MzLibUtil.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\MzLibUtil.dll</HintPath>
     </Reference>
     <Reference Include="MzML, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\MzML.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\MzML.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="PepXML, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\PepXML.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\PepXML.dll</HintPath>
     </Reference>
     <Reference Include="Proteomics, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\Proteomics.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\Proteomics.dll</HintPath>
     </Reference>
     <Reference Include="Spectra, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\Spectra.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\Spectra.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -127,11 +127,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Thermo, Version=1.0.396.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\Thermo.dll</HintPath>
+    <Reference Include="Thermo, Version=1.0.357.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\Thermo.dll</HintPath>
     </Reference>
     <Reference Include="UsefulProteomicsDatabases, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\mzLib.1.0.396\lib\net471\UsefulProteomicsDatabases.dll</HintPath>
+      <HintPath>..\packages\mzLib.1.0.357\lib\net471\UsefulProteomicsDatabases.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -173,15 +173,6 @@
     <Content Include="05-26-17_B7A_yeast_td_fract5_rep1_bad2.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="05-26-17_B7A_yeast_td_fract5_rep1_3columns.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="05-26-17_B7A_yeast_td_fract5_rep1_bad1_3columns.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="05-26-17_B7A_yeast_td_fract5_rep1_bad2_3columns.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="app.config" />
     <None Include="badValues1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -282,10 +273,10 @@
     <Error Condition="!Exists('..\packages\NUnit.3.10.1\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.10.1\build\NUnit.props'))" />
     <Error Condition="!Exists('..\packages\NUnit3TestAdapter.3.10.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit3TestAdapter.3.10.0\build\net35\NUnit3TestAdapter.props'))" />
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
-    <Error Condition="!Exists('..\packages\mzLib.1.0.396\build\net471\mzLib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mzLib.1.0.396\build\net471\mzLib.targets'))" />
+    <Error Condition="!Exists('..\packages\mzLib.1.0.357\build\net471\mzLib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mzLib.1.0.357\build\net471\mzLib.targets'))" />
   </Target>
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
-  <Import Project="..\packages\mzLib.1.0.396\build\net471\mzLib.targets" Condition="Exists('..\packages\mzLib.1.0.396\build\net471\mzLib.targets')" />
+  <Import Project="..\packages\mzLib.1.0.357\build\net471\mzLib.targets" Condition="Exists('..\packages\mzLib.1.0.357\build\net471\mzLib.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

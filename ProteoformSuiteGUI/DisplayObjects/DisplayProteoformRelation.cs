@@ -243,7 +243,7 @@ namespace ProteoformSuiteGUI
             get
             {
                 return connected_proteoforms[1] as TheoreticalProteoform != null ?
-                    ((TheoreticalProteoform)connected_proteoforms[1]).ptm_set.ptm_description :
+                    ((TheoreticalProteoform)connected_proteoforms[1]).ptm_description :
                     "";
             }
         }

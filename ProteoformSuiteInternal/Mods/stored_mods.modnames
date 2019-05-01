@@ -71,7 +71,6 @@ Alanine amide	Amide	1	False
 Allysine	Allysine	1	False
 Aminomalonic acid (Ser)	Aminomalonic acid (Ser)	1	False
 Arginine amide	Amide	1	False
-Acetylation	Acetyl	1	False
 Asparagine amide	Amide	1	False
 Aspartic acid 1-[(3-aminopropyl)(5'-adenosyl)phosphono]amide	Aspartic acid 1-[(3-aminopropyl)(5'-adenosyl)phosphono]amide	1	False
 Aspartic acid 1-amide	Amide	1	False
@@ -79,7 +78,6 @@ Aspartyl aldehyde	Aspartyl aldehyde	1	False
 Asymmetric dimethylarginine	Methyl, Methyl	2	False
 Beta-decarboxylated aspartate	Beta-decarboxylated aspartate	1	False
 Bromohistidine	Bromohistidine	1	False
-Carboxylation	Carbox	1	False
 Cholesterol glycine ester	Cholesterol glycine ester	1	False
 Cis-14-hydroxy-10,13-dioxo-7-heptadecenoic acid aspartate ester	Cis-14-hydroxy-10,13-dioxo-7-heptadecenoic acid aspartate ester	1	False
 Citrulline	Citrulline	1	False
@@ -98,7 +96,6 @@ Deamidated glutamine	Deamidated glutamine	1	False
 Decarboxylated threonine	Decarboxylated threonine	1	False
 Diiodotyrosine	Diiodotyrosine	1	False
 Dimethylated arginine	Methyl, Methyl	2	False
-Dimethylation	Methyl, Methyl	2	False
 Diphthamide	Diphthamide	1	False
 D-serine (Cys)	D-serine (Cys)	1	False
 FMN phosphoryl serine	FMN phosphoryl serine	1	False
@@ -182,7 +179,6 @@ N-carbamoylalanine	N-carbamoylalanine	1	False
 N-D-glucuronoyl glycine	N-D-glucuronoyl glycine	1	False
 N-formylglycine	Formyl	1	False
 N-formylmethionine	Formyl	1	False
-Formylation	Formyl	1	False
 Nitrated tyrosine	Nitrated tyrosine	1	False
 N-methylalanine	Methyl	1	False
 N-methylglycine	Methyl	1	False
@@ -226,7 +222,6 @@ Phosphatidylethanolamine amidated glycine	Phosphatidylethanolamine amidated glyc
 Phosphoarginine	Phospho	1	False
 Phosphocysteine	Phospho	1	False
 Phosphohistidine	Phospho	1	False
-Phosphorylation	Phospho	1	False
 Phosphoserine	Phospho	1	False
 Phosphothreonine	Phospho	1	False
 Phosphotyrosine	Phospho	1	False
@@ -274,7 +269,6 @@ Threonine amide	Amide	1	False
 Threonine methyl ester	Methyl	1	False
 Thyroxine	Thyroxine	1	False
 Triiodothyronine	Triiodothyronine	1	False
-Trimethylation	Methyl, Methyl, Methyl	3	False
 Tryptophan amide	Amide	1	False
 Tryptophylquinone	Tryptophylquinone	1	False
 Tyrosine amide	Amide	1	False
@@ -383,7 +377,6 @@ Methyl on Q	Methyl	1	False
 Methyl on N	Methyl	1	False
 Methyl on S	Methyl	1	False
 Methyl on D	Methy	1	False
-Methylation	Methy	1	False
 Phospho on S	Phospho	1	False
 Phospho on T	Phospho	1	False
 Phospho on Y	Phospho	1	False
@@ -415,4 +408,3 @@ Missing Alanine (A)	Missing Alanine (A)	1	False
 Missing Glycine (G)	Missing Glycine (G)	1	False
 Oxidation of M	Ox	1	False
 Unmodified	Unmodified	0	False
-Succinylation	Succinyl	1	False

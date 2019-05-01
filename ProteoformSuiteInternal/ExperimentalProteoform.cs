@@ -46,6 +46,8 @@ namespace ProteoformSuiteInternal
 
         public double agg_rt { get; set; } = 0;
 
+        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once.
+
         public string manual_validation_id { get; set; } = "";
 
         public string manual_validation_verification { get; set; } = "";
@@ -57,6 +59,8 @@ namespace ProteoformSuiteInternal
         public bool adduct { get; set; }
 
         public bool ambiguous { get; set; }
+
+        public double mass_error { get; set; } = double.NaN;
 
         public string uniprot_mods { get; set; }
 
@@ -136,6 +140,7 @@ namespace ProteoformSuiteInternal
             agg_rt = e.agg_rt;
             lysine_count = e.lysine_count;
             accepted = e.accepted;
+            mass_shifted = e.mass_shifted;
             is_target = e.is_target;
             family = e.family;
             aggregated = new List<IAggregatable>(e.aggregated);
@@ -168,15 +173,14 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public double calculate_mass_error(TheoreticalProteoform t, PtmSet ptm_set, int begin, int end)
+        public double calculate_mass_error()
         {
-            string sequence = t.sequence
-                     .Substring(begin < t.begin ? 0 : begin - t.begin,
-                     1 + end - (begin < t.begin ? t.begin : begin));
-            if (begin < t.begin) sequence = "M" + sequence;
-            double theoretical_mass =
-                TheoreticalProteoform.CalculateProteoformMass(sequence, ptm_set.ptm_combination);
-            return Math.Round(agg_mass - theoretical_mass, 4 );
+            string sequence = (linked_proteoform_references.First() as TheoreticalProteoform).sequence
+                     .Substring(begin < linked_proteoform_references.First().begin ? 0 : begin - linked_proteoform_references.First().begin,
+                     1 + end - (begin < linked_proteoform_references.First().begin ? linked_proteoform_references.First().begin : begin));
+            if (begin < linked_proteoform_references.First().begin) sequence = "M" + sequence;
+            double theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, Sweet.lollipop.theoretical_database.aaIsotopeMassList) + ptm_set.mass;
+            return agg_mass - theoretical_mass;
         }
 
         #endregion Public Methods
@@ -348,17 +352,17 @@ namespace ProteoformSuiteInternal
                 {
                     if (neucode_labeled)
                     {
-                        if ((c as NeuCodePair).neuCodeLight.manual_mass_shift != 0) continue;
                         (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     }
                     else
                     {
-                        if ((c as Component).manual_mass_shift != 0) continue;
                         (c as Component).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     }
                 }
             }
+
+            mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
 
         #endregion Public Methods

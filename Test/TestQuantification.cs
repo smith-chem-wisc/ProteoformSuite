@@ -980,7 +980,7 @@ namespace Test
         public void test_get_repressed_or_induced_proteins()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.natural_lysine_isotope_abundance, Sweet.lollipop.neucode_light_lysine, Sweet.lollipop.neucode_heavy_lysine).AA_Masses;
             Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange = 10;

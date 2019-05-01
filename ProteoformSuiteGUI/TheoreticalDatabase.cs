@@ -127,7 +127,8 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            cb_mostAbundantMass.Checked = Sweet.lollipop.most_abundant_mass;
+            btn_NeuCode_Lt.Checked = Sweet.lollipop.neucode_labeled;
+            btn_NaturalIsotopes.Checked = !Sweet.lollipop.neucode_labeled;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -246,6 +247,21 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.methionine_cleavage = ckbx_Meth_Cleaved.Checked;
         }
 
+        private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.natural_lysine_isotope_abundance = btn_NaturalIsotopes.Checked;
+        }
+
+        private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.neucode_light_lysine = btn_NeuCode_Lt.Checked;
+        }
+
+        private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.neucode_heavy_lysine = btn_NeuCode_Hv.Checked;
+        }
+
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.max_ptms = Convert.ToInt32(nUD_MaxPTMs.Value);
@@ -287,6 +303,7 @@ namespace ProteoformSuiteGUI
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
@@ -348,6 +365,7 @@ namespace ProteoformSuiteGUI
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
+                if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Sweet.lollipop.input_files, true);
             }
 
@@ -425,11 +443,6 @@ namespace ProteoformSuiteGUI
         private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
-        }
-        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.most_abundant_mass = cb_mostAbundantMass.Checked;
-
         }
     }
 }

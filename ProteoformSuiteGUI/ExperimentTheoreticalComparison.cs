@@ -53,14 +53,10 @@ namespace ProteoformSuiteGUI
         {
             shift_masses();  //check for shifts from GUI
             ClearListsTablesFigures(true);
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, Sweet.lollipop.et_bestETRelationOnly);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
-            if (full_run)
-            {
-                shift_masses(); //check for shifts from presets (need to have peaks formed first)
-                RunTheGamut(false);
-            }
+            shift_masses(); //check for shifts from presets (need to have peaks formed first)
             FillTablesAndCharts();
         }
 
@@ -154,7 +150,7 @@ namespace ProteoformSuiteGUI
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             nUD_PeakWidthBase.Minimum = 0.001m;
-            nUD_PeakWidthBase.Maximum = 10;
+            nUD_PeakWidthBase.Maximum = 0.5000m;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(Sweet.lollipop.peak_width_base_et); // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
             nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;
@@ -171,14 +167,7 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
-            cb_use_ppm_notch.Checked = Sweet.lollipop.et_use_notch;
-            rb_ppm.Checked = Sweet.lollipop.et_notch_ppm;
-            rb_daltons.Checked = !Sweet.lollipop.et_notch_ppm;
-            cb_bestETPairOnly.Checked = Sweet.lollipop.et_bestETRelationOnly;
-
-            nUD_notch_tolerance.Minimum = 0;
-            nUD_notch_tolerance.Maximum = 30;
-            nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_et);
+            cb_et_peak_accept_rank.Checked = Sweet.lollipop.et_accept_peaks_based_on_rank;
         }
 
         #endregion Public Methods
@@ -224,7 +213,6 @@ namespace ProteoformSuiteGUI
                 {
                     int int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
                     peak.shift_experimental_masses(int_mass_shifter, Sweet.lollipop.neucode_labeled);
-                    Sweet.shift_peak_action(peak);
                 }
 
                 ((ProteoformSweet)MdiParent).rawExperimentalComponents.FillTablesAndCharts();
@@ -235,6 +223,7 @@ namespace ProteoformSuiteGUI
                     ((ProteoformSweet)MdiParent).neuCodePairs.FillTablesAndCharts();
                 }
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.RunTheGamut(false);
+                RunTheGamut(false); //will need to rerun the Gamut if peaks shifted from preset.
             }
         }
 
@@ -461,7 +450,7 @@ namespace ProteoformSuiteGUI
         {
             Parallel.ForEach(Sweet.lollipop.et_peaks, p =>
             {
-                p.Accepted = p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_et;
+                p.Accepted = p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_et && (!Sweet.lollipop.et_accept_peaks_based_on_rank || (p.possiblePeakAssignments.Count > 0 && p.possiblePeakAssignments.Any(a => a.ptm_rank_sum < Sweet.lollipop.mod_rank_first_quartile)));
                 Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
             });
             Parallel.ForEach(Sweet.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
@@ -499,33 +488,8 @@ namespace ProteoformSuiteGUI
 
         private void cb_et_peak_accept_rank_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.et_use_notch = cb_use_ppm_notch.Checked;
-            label10.Visible = cb_use_ppm_notch.Checked;
-            nUD_notch_tolerance.Visible = cb_use_ppm_notch.Checked;
-            rb_daltons.Visible = cb_use_ppm_notch.Checked;
-            rb_ppm.Visible = cb_use_ppm_notch.Checked;
-        }
-
-        private void nUD_ppm_tolerance_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.notch_tolerance_et = Convert.ToDouble(nUD_notch_tolerance.Value);
-        }
-
-        private void cb_bestETPairOnly_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.et_bestETRelationOnly = cb_bestETPairOnly.Checked;
-        }
-
-        private void rb_daltons_CheckedChanged(object sender, EventArgs e)
-        {
-            rb_ppm.Checked = !rb_daltons.Checked;
-            Sweet.lollipop.et_notch_ppm = !rb_daltons.Checked;
-        }
-
-        private void rb_ppm_CheckedChanged(object sender, EventArgs e)
-        {
-            rb_daltons.Checked = !rb_ppm.Checked;
-            Sweet.lollipop.et_notch_ppm = rb_ppm.Checked;
+            Sweet.lollipop.et_accept_peaks_based_on_rank = cb_et_peak_accept_rank.Checked;
+            change_peak_acceptance();
         }
     }
 }

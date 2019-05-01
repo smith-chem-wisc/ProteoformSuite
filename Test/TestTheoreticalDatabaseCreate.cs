@@ -60,6 +60,9 @@ namespace Test
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = true;
             Sweet.lollipop.methionine_cleavage = true;
+            Sweet.lollipop.natural_lysine_isotope_abundance = false;
+            Sweet.lollipop.neucode_light_lysine = true;
+            Sweet.lollipop.neucode_heavy_lysine = false;
             Sweet.lollipop.max_ptms = 3;
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.min_peptide_length = 7;
@@ -96,6 +99,9 @@ namespace Test
             Sweet.lollipop.methionine_oxidation = false;
             Sweet.lollipop.carbamidomethylation = true;
             Sweet.lollipop.methionine_cleavage = true;
+            Sweet.lollipop.natural_lysine_isotope_abundance = false;
+            Sweet.lollipop.neucode_light_lysine = true;
+            Sweet.lollipop.neucode_heavy_lysine = false;
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.min_peptide_length = 7;
@@ -293,7 +299,7 @@ namespace Test
 
             TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
             tpd.ready_to_make_database(TestContext.CurrentContext.TestDirectory);
-            List<Modification> mods = PtmListLoader.ReadModsFromFile(uniprotPtmlist, out List<(Modification, string)> filteredModificationsWithWarnings).ToList();
+            List<Modification> mods = PtmListLoader.ReadModsFromFile(uniprotPtmlist).ToList();
             foreach (Modification m in mods)
             {
                 if (!Sweet.lollipop.modification_ranks.TryGetValue((double)m.MonoisotopicMass, out int x))
@@ -308,81 +314,10 @@ namespace Test
             Assert.AreNotEqual(firstAcetyl.OriginalId, tpd.unlocalized_lookup[firstAcetyl].id);
 
             //Test amending
-            mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt"), out filteredModificationsWithWarnings).OfType<Modification>());
+            mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt")).OfType<Modification>());
             Sweet.lollipop.modification_ranks = mods.DistinctBy(m => m.MonoisotopicMass).ToDictionary(m => (double)m.MonoisotopicMass, m => -1);
             tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods.OfType<Modification>());
             tpd.amend_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
-        }
-
-        [Test]
-        public void test_enter_theoretical_proteoform_family()
-        {
-            Sweet.lollipop = new Lollipop();
-            List<TheoreticalProteoform> theoreticals = new List<TheoreticalProteoform>();
-            Sweet.lollipop.theoretical_database.populate_aa_mass_dictionary();
-
-            //bad sequence
-            Sweet.lollipop.theoretical_database.EnterTheoreticalProteformFamily("BADSEQ", null, null, "asdf",
-                theoreticals, -1, null);
-            Assert.AreEqual(0, theoreticals.Count);
-
-            //too large of proteoform
-            string sequence = "K";
-            for (int i = 0; i < 3000; i++)
-            {
-                sequence += "K";
-            }
-            Sweet.lollipop.theoretical_database.EnterTheoreticalProteformFamily(sequence, null, null, "asdf",
-                theoreticals, -1, null);
-            Assert.AreEqual(0, theoreticals.Count);
-        }
-
-        [Test]
-        [TestCase("uniprot_yeast_test_12entries.xml")]
-        public void most_abundant_mass(string database)
-        {
-            Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.methionine_oxidation = false;
-            Sweet.lollipop.carbamidomethylation = true;
-            Sweet.lollipop.methionine_cleavage = true;
-            Sweet.lollipop.max_ptms = 3;
-            Sweet.lollipop.decoy_databases = 1;
-            Sweet.lollipop.min_peptide_length = 7;
-            Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
-            Sweet.lollipop.combine_identical_sequences = true;
-            Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
-            Sweet.lollipop.most_abundant_mass = true;
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, database) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-
-            Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
-            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-            Assert.AreEqual(54, Sweet.lollipop.theoretical_database.theoretical_proteins.SelectMany(kv => kv.Value).Sum(p => p.DatabaseReferences.Where(dbRef => dbRef.Type == "GO").Count()));
-            Assert.AreEqual(20, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.SelectMany(t => t.goTerms.Select(go => go.Id)).Distinct().Count());
-
-            List<TheoreticalProteoform> peptides = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
-            List<TheoreticalProteoform> chains = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "chain").ToList();
-            List<TheoreticalProteoform> fulls = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "full-met-cleaved").ToList();
-            List<TheoreticalProteoform> propeps = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "propeptide").ToList();
-            List<TheoreticalProteoform> signalpeps = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "signal-peptide").ToList();
-
-            Assert.AreEqual(8, chains.Count);
-            Assert.AreEqual(12, fulls.Count);
-            Assert.AreEqual(2, peptides.Count);
-            Assert.AreEqual(3, propeps.Count);
-            Assert.AreEqual(3, signalpeps.Count);
-
-            Assert.AreEqual(28, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
-
-            var unmodified = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms
-                .Where(t => t.ptm_set.ptm_combination.Count == 0).OrderBy(t => t.modified_mass).First();
-            Assert.AreEqual(1682.84, Math.Round(unmodified.modified_mass, 2));
-            Assert.AreEqual(1682.84, Math.Round(unmodified.unmodified_mass, 2));
-
-            var modified = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms
-                .Where(t => t.ptm_set.ptm_combination.Count > 0).OrderBy(t => t.modified_mass).First();
-            Assert.AreEqual(29358.0, Math.Round(modified.modified_mass, 2));
-            Assert.AreEqual(29278.03, Math.Round(modified.unmodified_mass, 2));
         }
 
         //[Test]

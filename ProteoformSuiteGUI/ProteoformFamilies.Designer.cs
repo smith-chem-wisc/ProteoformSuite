@@ -50,7 +50,6 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
-            this.cb_only_assign_common_known_mods = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
@@ -68,7 +67,7 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_scale_nodes = new System.Windows.Forms.CheckBox();
+            this.cb_only_assign_common_known_mods = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -331,7 +330,6 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
-            this.splitContainer3.Panel2.Controls.Add(this.cb_scale_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -364,17 +362,6 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
-            // cb_only_assign_common_known_mods
-            // 
-            this.cb_only_assign_common_known_mods.Checked = true;
-            this.cb_only_assign_common_known_mods.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_only_assign_common_known_mods.Location = new System.Drawing.Point(300, 38);
-            this.cb_only_assign_common_known_mods.Name = "cb_only_assign_common_known_mods";
-            this.cb_only_assign_common_known_mods.Size = new System.Drawing.Size(272, 24);
-            this.cb_only_assign_common_known_mods.TabIndex = 64;
-            this.cb_only_assign_common_known_mods.Text = "Only Assign Common/Known Mods";
-            this.cb_only_assign_common_known_mods.CheckedChanged += new System.EventHandler(this.cb_only_assign_common_known_mods_CheckedChanged);
-            // 
             // rtb_proteoformFamilyResults
             // 
             this.rtb_proteoformFamilyResults.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -390,7 +377,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(301, 86);
+            this.cb_geneCentric.Location = new System.Drawing.Point(302, 100);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 61;
@@ -400,7 +387,7 @@
             // 
             // cb_count_adducts_as_id
             // 
-            this.cb_count_adducts_as_id.Location = new System.Drawing.Point(300, 59);
+            this.cb_count_adducts_as_id.Location = new System.Drawing.Point(301, 73);
             this.cb_count_adducts_as_id.Name = "cb_count_adducts_as_id";
             this.cb_count_adducts_as_id.Size = new System.Drawing.Size(180, 24);
             this.cb_count_adducts_as_id.TabIndex = 0;
@@ -410,7 +397,7 @@
             // cb_buildAsQuantitative
             // 
             this.cb_buildAsQuantitative.AutoSize = true;
-            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(301, 109);
+            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(302, 123);
             this.cb_buildAsQuantitative.Name = "cb_buildAsQuantitative";
             this.cb_buildAsQuantitative.Size = new System.Drawing.Size(163, 17);
             this.cb_buildAsQuantitative.TabIndex = 58;
@@ -549,15 +536,16 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // cb_scale_nodes
+            // cb_only_assign_common_known_mods
             // 
-            this.cb_scale_nodes.AutoSize = true;
-            this.cb_scale_nodes.Location = new System.Drawing.Point(301, 132);
-            this.cb_scale_nodes.Name = "cb_scale_nodes";
-            this.cb_scale_nodes.Size = new System.Drawing.Size(217, 17);
-            this.cb_scale_nodes.TabIndex = 65;
-            this.cb_scale_nodes.Text = "Scale Selected Families to Largest Node";
-            this.cb_scale_nodes.UseVisualStyleBackColor = true;
+            this.cb_only_assign_common_known_mods.Checked = true;
+            this.cb_only_assign_common_known_mods.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_only_assign_common_known_mods.Location = new System.Drawing.Point(301, 46);
+            this.cb_only_assign_common_known_mods.Name = "cb_only_assign_common_known_mods";
+            this.cb_only_assign_common_known_mods.Size = new System.Drawing.Size(272, 24);
+            this.cb_only_assign_common_known_mods.TabIndex = 64;
+            this.cb_only_assign_common_known_mods.Text = "Only Assign Common/Known Mods";
+            this.cb_only_assign_common_known_mods.CheckedChanged += new System.EventHandler(this.cb_only_assign_common_known_mods_CheckedChanged);
             // 
             // ProteoformFamilies
             // 
@@ -633,6 +621,5 @@
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
-        private System.Windows.Forms.CheckBox cb_scale_nodes;
     }
 }
