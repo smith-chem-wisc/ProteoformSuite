@@ -57,6 +57,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
+            this.nud_minLog2Intensity = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -75,6 +77,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_minLog2Intensity)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_AggregatedProteoforms
@@ -122,6 +125,8 @@
             // 
             // param_splitcontainer.Panel1
             // 
+            this.param_splitcontainer.Panel1.Controls.Add(this.nud_minLog2Intensity);
+            this.param_splitcontainer.Panel1.Controls.Add(this.label6);
             this.param_splitcontainer.Panel1.Controls.Add(this.cb_add_td_proteoforms);
             this.param_splitcontainer.Panel1.Controls.Add(this.groupBox2);
             this.param_splitcontainer.Panel1.Controls.Add(this.groupBox1);
@@ -169,16 +174,16 @@
             this.groupBox2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox2.Controls.Add(this.nud_minObservations);
             this.groupBox2.Controls.Add(this.cmbx_observationsTypeRequired);
-            this.groupBox2.Location = new System.Drawing.Point(3, 136);
+            this.groupBox2.Location = new System.Drawing.Point(3, 149);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(484, 63);
+            this.groupBox2.Size = new System.Drawing.Size(484, 58);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Minimum Required Observations";
             // 
             // nud_minObservations
             // 
-            this.nud_minObservations.Location = new System.Drawing.Point(18, 19);
+            this.nud_minObservations.Location = new System.Drawing.Point(18, 31);
             this.nud_minObservations.Minimum = new decimal(new int[] {
             1,
             0,
@@ -198,7 +203,7 @@
             // 
             this.cmbx_observationsTypeRequired.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_observationsTypeRequired.FormattingEnabled = true;
-            this.cmbx_observationsTypeRequired.Location = new System.Drawing.Point(77, 19);
+            this.cmbx_observationsTypeRequired.Location = new System.Drawing.Point(77, 31);
             this.cmbx_observationsTypeRequired.Name = "cmbx_observationsTypeRequired";
             this.cmbx_observationsTypeRequired.Size = new System.Drawing.Size(401, 21);
             this.cmbx_observationsTypeRequired.TabIndex = 0;
@@ -287,7 +292,7 @@
             // 
             // nUD_min_num_CS
             // 
-            this.nUD_min_num_CS.Location = new System.Drawing.Point(188, 115);
+            this.nUD_min_num_CS.Location = new System.Drawing.Point(188, 104);
             this.nUD_min_num_CS.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_num_CS.Minimum = new decimal(new int[] {
             1,
@@ -307,7 +312,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 116);
+            this.label8.Location = new System.Drawing.Point(6, 105);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(169, 13);
@@ -346,7 +351,7 @@
             // 
             // nUD_Missed_Ks
             // 
-            this.nUD_Missed_Ks.Location = new System.Drawing.Point(188, 92);
+            this.nUD_Missed_Ks.Location = new System.Drawing.Point(188, 81);
             this.nUD_Missed_Ks.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_Missed_Ks.Maximum = new decimal(new int[] {
             3,
@@ -361,7 +366,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(27, 93);
+            this.label4.Location = new System.Drawing.Point(27, 82);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(138, 13);
@@ -370,7 +375,7 @@
             // 
             // nUD_Missed_Monos
             // 
-            this.nUD_Missed_Monos.Location = new System.Drawing.Point(188, 67);
+            this.nUD_Missed_Monos.Location = new System.Drawing.Point(188, 56);
             this.nUD_Missed_Monos.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_Missed_Monos.Maximum = new decimal(new int[] {
             5,
@@ -390,7 +395,7 @@
             0,
             0,
             131072});
-            this.nUD_RetTimeToleranace.Location = new System.Drawing.Point(188, 44);
+            this.nUD_RetTimeToleranace.Location = new System.Drawing.Point(188, 33);
             this.nUD_RetTimeToleranace.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_RetTimeToleranace.Maximum = new decimal(new int[] {
             200,
@@ -404,7 +409,7 @@
             // 
             // nUP_mass_tolerance
             // 
-            this.nUP_mass_tolerance.Location = new System.Drawing.Point(188, 20);
+            this.nUP_mass_tolerance.Location = new System.Drawing.Point(188, 9);
             this.nUP_mass_tolerance.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUP_mass_tolerance.Maximum = new decimal(new int[] {
             10,
@@ -419,7 +424,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(25, 68);
+            this.label3.Location = new System.Drawing.Point(25, 57);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(140, 13);
@@ -429,7 +434,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(39, 45);
+            this.label2.Location = new System.Drawing.Point(39, 34);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(129, 13);
@@ -439,7 +444,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(55, 20);
+            this.label1.Location = new System.Drawing.Point(55, 9);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(112, 13);
@@ -457,6 +462,36 @@
             this.dgv_AcceptNeuCdLtProteoforms.RowTemplate.Height = 28;
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1273, 411);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
+            // 
+            // nud_minLog2Intensity
+            // 
+            this.nud_minLog2Intensity.DecimalPlaces = 2;
+            this.nud_minLog2Intensity.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.nud_minLog2Intensity.Location = new System.Drawing.Point(189, 127);
+            this.nud_minLog2Intensity.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.nud_minLog2Intensity.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+            this.nud_minLog2Intensity.Name = "nud_minLog2Intensity";
+            this.nud_minLog2Intensity.Size = new System.Drawing.Size(80, 20);
+            this.nud_minLog2Intensity.TabIndex = 53;
+            this.nud_minLog2Intensity.ValueChanged += new System.EventHandler(this.nud_minLog2Intensity_ValueChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(40, 128);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(93, 13);
+            this.label6.TabIndex = 52;
+            this.label6.Text = "Min Log2 Intensity";
             // 
             // AggregatedProteoforms
             // 
@@ -489,6 +524,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_minLog2Intensity)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -523,5 +559,7 @@
         private System.Windows.Forms.NumericUpDown nud_minObservations;
         private System.Windows.Forms.ComboBox cmbx_observationsTypeRequired;
         private System.Windows.Forms.CheckBox cb_add_td_proteoforms;
+        private System.Windows.Forms.NumericUpDown nud_minLog2Intensity;
+        private System.Windows.Forms.Label label6;
     }
 }
