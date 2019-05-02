@@ -139,7 +139,7 @@ namespace ProteoformSuiteGUI
             xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
 
             nUD_PeakWidthBase.Minimum = 0.001m;
-            nUD_PeakWidthBase.Maximum = 1;
+            nUD_PeakWidthBase.Maximum = 20;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(Sweet.lollipop.peak_width_base_ee);
 
             nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;

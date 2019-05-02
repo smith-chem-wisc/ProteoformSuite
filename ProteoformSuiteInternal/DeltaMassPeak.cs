@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
             DeltaMass = base_relation.DeltaMass;
             InstanceId = instance_counter;
 
-            if (RelationType == ProteoformComparison.ExperimentalExperimental || !Sweet.lollipop.et_use_ppm_notch)
+            if (RelationType == ProteoformComparison.ExperimentalExperimental || !Sweet.lollipop.et_use_notch)
             {
                 grouped_relations = find_nearby_relations(relations_to_group);
 
@@ -83,9 +83,9 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                possiblePeakAssignments = new List<PtmSet>() {base_relation.candidate_ptmset};
-                DeltaMass = base_relation.candidate_ptmset.mass;
-                grouped_relations = relations_to_group.Where(r => r.candidate_ptmset.mass == DeltaMass).ToList();
+                grouped_relations = relations_to_group.Where(r => r.candidate_ptmset.mass == base_relation.candidate_ptmset.mass).ToList();
+                possiblePeakAssignments = grouped_relations.Select(r => r.candidate_ptmset).ToList();
+                DeltaMass = possiblePeakAssignments.First().mass;
             }
 
             foreach (ProteoformRelation mass_difference in grouped_relations)
@@ -142,7 +142,7 @@ namespace ProteoformSuiteInternal
 
             List<ProteoformRelation> decoys_in_peaks = new List<ProteoformRelation>();
             if (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy &&
-                Sweet.lollipop.et_use_ppm_notch)
+                Sweet.lollipop.et_use_notch)
             {
                 decoys_in_peaks = all_relations
                     .Where(r => r.candidate_ptmset != null && r.candidate_ptmset.mass == DeltaMass).ToList();

@@ -82,14 +82,14 @@ namespace ProteoformSuiteInternal
                 folder_path, file_prefix, time_stamp,
                 quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
-                gene_centric_families, prefered_gene_label);
+                gene_centric_families, prefered_gene_label, false);
         }
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
             IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string prefered_gene_label)
+            bool gene_centric_families, string prefered_gene_label, bool scale_node_size)
         {
             List<ProteoformFamily> families = stuff.OfType<ProteoformFamily>().ToList();
 
@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                 folder_path, file_prefix, time_stamp,
                 quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
-                gene_centric_families, prefered_gene_label);
+                gene_centric_families, prefered_gene_label, scale_node_size);
         }
 
         #endregion CYTOSCAPE SCRIPT Public Methods
@@ -119,7 +119,7 @@ namespace ProteoformSuiteInternal
             string folder_path, string file_prefix, string time_stamp,
             IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string preferred_gene_label)
+            bool gene_centric_families, string preferred_gene_label, bool scale_node_size)
         {
             //Check if valid folder
             if (folder_path == "" || !Directory.Exists(folder_path))
@@ -150,7 +150,7 @@ namespace ProteoformSuiteInternal
             File.WriteAllText(edges_path, edge_table);
             File.WriteAllText(nodes_path, node_table);
             File.WriteAllText(script_path, script);
-            write_styles(all_families, styles_path, style_name, time_stamp,
+            write_styles(scale_node_size ? families : all_families, styles_path, style_name, time_stamp,
                 edge_label, node_label, node_label_position, color_scheme, quantitative, quantitative_redBorder, quantitative_boldFace);
 
             string selected_family_string = "Finished building selected famil";
@@ -326,7 +326,7 @@ namespace ProteoformSuiteInternal
             {
                 if (p as TheoreticalProteoform != null)
                 {
-                    string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
+                    string node_type = String.Equals(p.ptm_set.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                     node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
                 }
 
@@ -437,7 +437,7 @@ namespace ProteoformSuiteInternal
             }
             else if (p as TheoreticalProteoform != null)
             {
-                return p.accession + " " + p.ptm_description;
+                return p.accession + " " + p.ptm_set.ptm_description;
             }
             else
             {

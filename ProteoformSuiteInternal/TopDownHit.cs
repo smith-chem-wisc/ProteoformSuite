@@ -30,7 +30,6 @@ namespace ProteoformSuiteInternal
 
         //for mass calibration
         public string biological_replicate { get; set; } = "";
-
         public string technical_replicate { get; set; } = "";
         public string fraction { get; set; } = "";
         public string condition { get; set; } = "";

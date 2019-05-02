@@ -191,7 +191,7 @@ namespace ProteoformSuiteInternal
         {
             int successfully_deconvoluted_files = 0;
             string dir = Directory.GetCurrentDirectory();
-            Loaders.LoadElements(dir + @"\elements.dat");
+            Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 Process proc = new Process();
@@ -839,14 +839,14 @@ namespace ProteoformSuiteInternal
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public bool ee_accept_peaks_based_on_rank = true;
-        public bool et_use_ppm_notch = false;
-        public double ppm_tolerance_et = 1;
+        public bool et_use_notch = false;
+        public bool et_notch_ppm = true;
+        public bool et_bestETRelationOnly = true;
+        public double notch_tolerance_et = 1;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
         public double et_high_mass_difference = 350;
-        public double no_mans_land_lowerBound = 0.22;
-        public double no_mans_land_upperBound = 0.88;
         public double peak_width_base_et = .02; //need to be separate so you can change one and not other.
         public double peak_width_base_ee = .02;
         public double min_peak_count_et = 50;
@@ -865,7 +865,7 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
+                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, et_bestETRelationOnly));
                 if (i == 0)
                     ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
@@ -1398,6 +1398,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1425,6 +1426,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
