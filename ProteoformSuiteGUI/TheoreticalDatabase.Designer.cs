@@ -42,7 +42,7 @@
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.cb_mostAbundantMass = new System.Windows.Forms.CheckBox();
+            this.cb_average_mass = new System.Windows.Forms.CheckBox();
             this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
@@ -312,7 +312,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.cb_mostAbundantMass);
+            this.groupBox3.Controls.Add(this.cb_average_mass);
             this.groupBox3.Controls.Add(this.nud_randomSeed);
             this.groupBox3.Controls.Add(this.cb_limitLargePtmSets);
             this.groupBox3.Controls.Add(this.cb_useRandomSeed);
@@ -338,19 +338,19 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
             // 
-            // cb_mostAbundantMass
+            // cb_average_mass
             // 
-            this.cb_mostAbundantMass.AutoSize = true;
-            this.cb_mostAbundantMass.Checked = true;
-            this.cb_mostAbundantMass.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_mostAbundantMass.Location = new System.Drawing.Point(9, 25);
-            this.cb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
-            this.cb_mostAbundantMass.Name = "cb_mostAbundantMass";
-            this.cb_mostAbundantMass.Size = new System.Drawing.Size(126, 17);
-            this.cb_mostAbundantMass.TabIndex = 52;
-            this.cb_mostAbundantMass.Text = "Most Abundant Mass";
-            this.cb_mostAbundantMass.UseVisualStyleBackColor = true;
-            this.cb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
+            this.cb_average_mass.AutoSize = true;
+            this.cb_average_mass.Checked = true;
+            this.cb_average_mass.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_average_mass.Location = new System.Drawing.Point(9, 25);
+            this.cb_average_mass.Margin = new System.Windows.Forms.Padding(2);
+            this.cb_average_mass.Name = "cb_average_mass";
+            this.cb_average_mass.Size = new System.Drawing.Size(94, 17);
+            this.cb_average_mass.TabIndex = 52;
+            this.cb_average_mass.Text = "Average Mass";
+            this.cb_average_mass.UseVisualStyleBackColor = true;
+            this.cb_average_mass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
             // 
             // nud_randomSeed
             // 
@@ -875,6 +875,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
-        private System.Windows.Forms.CheckBox cb_mostAbundantMass;
+        private System.Windows.Forms.CheckBox cb_average_mass;
     }
 }

@@ -127,7 +127,7 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            cb_mostAbundantMass.Checked = Sweet.lollipop.most_abundant_mass;
+            cb_average_mass.Checked = Sweet.lollipop.use_average_mass;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -428,7 +428,7 @@ namespace ProteoformSuiteGUI
         }
         private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.most_abundant_mass = cb_mostAbundantMass.Checked;
+            Sweet.lollipop.use_average_mass = cb_average_mass.Checked;
 
         }
     }

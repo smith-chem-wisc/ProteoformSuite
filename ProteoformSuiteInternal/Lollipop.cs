@@ -789,7 +789,7 @@ namespace ProteoformSuiteInternal
         public bool methionine_oxidation = false;
         public bool carbamidomethylation = false;
         public bool methionine_cleavage = true;
-        public bool most_abundant_mass = false;
+        public bool use_average_mass = false;
         public int max_ptms = 2;
         public int decoy_databases = 10;
         public int min_peptide_length = 7;
