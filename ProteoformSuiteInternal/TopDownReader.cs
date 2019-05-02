@@ -14,7 +14,7 @@ namespace ProteoformSuiteInternal
 
         #endregion Private Fields
 
-        public List<string> topdown_ptms = new List<string>(); //PTMs not in theoretical database added to warning file.
+        public List<string> bad_topdown_ptms = new List<string>(); //PTMs not in theoretical database added to warning file.
 
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
@@ -64,9 +64,9 @@ namespace ProteoformSuiteInternal
                                     if (mod != null) ptm_list.Add(new Ptm(position, mod));
                                     else
                                     {
-                                        lock (topdown_ptms)
+                                        lock (bad_topdown_ptms)
                                         {
-                                            topdown_ptms.Add("PSI-MOD:" + psimod + " at " + position);
+                                            bad_topdown_ptms.Add("PSI-MOD:" + psimod + " at " + position);
                                         }
                                         add_topdown_hit = false;
                                     }
@@ -133,9 +133,9 @@ namespace ProteoformSuiteInternal
                                 }
                                 else
                                 {
-                                    lock (topdown_ptms)
+                                    lock (bad_topdown_ptms)
                                     {
-                                        topdown_ptms.Add(id + " at " + cellStrings[4][position_after_begin - 1]);
+                                        bad_topdown_ptms.Add(id + " at " + cellStrings[4][position_after_begin - 1]);
                                     }
                                     add_topdown_hit = false;
                                 }

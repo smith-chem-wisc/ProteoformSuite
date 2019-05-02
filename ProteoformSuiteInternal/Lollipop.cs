@@ -407,6 +407,7 @@ namespace ProteoformSuiteInternal
         public List<TopDownHit> top_down_hits = new List<TopDownHit>();
         public List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
         public TopDownReader topdownReader = new TopDownReader();
+        public MetamopheusReader metamopheusReader = new MetamopheusReader();
         //C-score > 40: proteoform is both identified and fully characterized;
         //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized;
         //C-score < 3: proteoform is neither identified nor characterized.
@@ -414,11 +415,35 @@ namespace ProteoformSuiteInternal
         public void read_in_td_hits()
         {
             Sweet.lollipop.top_down_hits.Clear();
-            topdownReader.topdown_ptms.Clear();
-            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
-            {
+            topdownReader.bad_topdown_ptms.Clear();
+            metamopheusReader.bad_topdown_ptms.Clear();
+          
+                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
+                 {
+                if (cellStrings(file) == 55)
+                {
+                    top_down_hits.AddRange(metamopheusReader.ReadMetamopheusFile(file));
+                 }
+                    else
+                    {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
             }
+        }
+        }
+
+        public int cellStrings(InputFile file)
+        {
+            int cellStringCount = 0;
+            List<List<string>> cells = ExcelReader.get_cell_strings(file, true);
+            //gets sheet except header
+
+            Parallel.ForEach(cells, cellStrings =>
+            {
+                cellStringCount = cellStrings.Count;
+                // number of columnns
+            });
+
+            return cellStringCount;
         }
 
         public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits, double min_score_td, bool biomarker, bool tight_abs_mass)
@@ -1204,6 +1229,7 @@ namespace ProteoformSuiteInternal
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
                 td_hits_calibration.AddRange(topdownReader.ReadTDFile(file));
+                td_hits_calibration.AddRange(metamopheusReader.ReadMetamopheusFile(file));
             }
         }
 
