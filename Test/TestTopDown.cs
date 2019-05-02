@@ -97,13 +97,21 @@ namespace Test
             Sweet.lollipop.carbamidomethylation = false;
             Sweet.lollipop.clear_td();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestAllPSMS.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "cRAP_database.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.decoy_databases = 1;
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
-            Assert.AreEqual(6, Sweet.lollipop.top_down_hits.Count);
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            using (var writer = new StreamWriter("C:\\users\\ellen\\desktop\\test.txt"))
+            {
+                foreach(TopDownHit hit in Sweet.lollipop.top_down_hits)
+                {
+                    writer.WriteLine(hit.sequence + "\t" + hit.pfr_accession);
+                }
+            }
+
+                Assert.AreEqual(5, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
             Assert.AreEqual("[UniProt:N-acetylserine on S]", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(6, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
 

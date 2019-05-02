@@ -40,7 +40,6 @@ namespace ProteoformSuiteInternal
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 if (cellStrings.Count == 55)
                 {
-                    int position = Int32.TryParse(startindex(), out int i) ? i : 0;
                     List<Ptm> new_ptm_list = new List<Ptm>();
                     //if bad mod itll catch it to add to bad_topdown_ptms
                     try
@@ -58,16 +57,17 @@ namespace ProteoformSuiteInternal
                             if (mod != null)
                             {
                                 new_ptm_list.Add(new Ptm(entry.Key, entry.Value));
-                                //return new_ptm_list;
+                                
                             }
                             else
                             {
                                 lock (bad_topdown_ptms)
                                 {
                                     //error is somewahre in sequece
-                                    bad_topdown_ptms.Add("Mod Name:" + entry.Value.IdWithMotif + " at " + position);
+                                    bad_topdown_ptms.Add("Mod Name:" + entry.Value.IdWithMotif + " at " + entry.Key);
+                                    add_topdown_hit = false;
                                 }
-                                add_topdown_hit = false;
+                                
                             }
 
                         }
@@ -77,9 +77,9 @@ namespace ProteoformSuiteInternal
                         lock (bad_topdown_ptms)
                         {
                             //error is somewahre in sequece
-                            bad_topdown_ptms.Add("Fake Mod at " + position);
+                            bad_topdown_ptms.Add("Bad mod at " + cellStrings[0] + " scan " + cellStrings[1]);
+                            add_topdown_hit = false;
                         }
-                        add_topdown_hit = false;
                     }
 
                     //This is the excel file header:
@@ -141,32 +141,13 @@ namespace ProteoformSuiteInternal
                     //cellStrings[55]=eValue
                     //cellStrings[56]=eScore     
 
-                    //this is to split the start and end indexes
-                    string startindex()
-                    {
-                        string startresidues = "";
-                        if (cellStrings[35].Length > 0)
-                        {
-                            string[] ptmss = cellStrings[35].Split('|');
-                            foreach (string ptm in ptmss)
-                            {
-                                //splits the string to get the value of starting index
-                                string[] index = ptmss[0].Split(' ');
-
-                                string[] startindexvalue = index[0].Split('[');
-                                startresidues = startindexvalue[1];
-                            }
-                        }
-                        return startresidues;
-                    }
+                  
 
                     if (cellStrings[35].Length > 0)
                     {
-                        string[] ptmss = cellStrings[35].Split('|');
-                        foreach (string ptm in ptmss)
-                        {
+                            string[] ids = cellStrings[35].Split('|');
                             //splits the string to get the value of starting index
-                            string[] index = ptmss[0].Split(' ');
+                            string[] index = ids[0].Split(' ');
 
                             string[] startIndexValue = index[0].Split('[');
                             string startResidues = startIndexValue[1];
@@ -178,8 +159,9 @@ namespace ProteoformSuiteInternal
 
                             if (add_topdown_hit)
                             {
+                                //if bad mod u want td hit to be false
                                 TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, TopDownResultType.TightAbsoluteMass, cellStrings[25], cellStrings[14], cellStrings[25], cellStrings[26], cellStrings[13],
-                                Int32.TryParse(startindex(), out int j) ? j : 0, Int32.TryParse(endResidues, out i) ? i : 0, new_ptm_list, Double.TryParse(cellStrings[8], out double d) ? d : 0, Double.TryParse(cellStrings[22], out d) ? d : 0,
+                                Int32.TryParse(startResidues, out int j) ? j : 0, Int32.TryParse(endResidues, out int i) ? i : 0, new_ptm_list, Double.TryParse(cellStrings[8], out double d) ? d : 0, Double.TryParse(cellStrings[22], out d) ? d : 0,
                                 Int32.TryParse(cellStrings[1], out i) ? i : 0, Double.TryParse(cellStrings[2], out d) ? d : 0, cellStrings[0].Split('.')[0], Double.TryParse(cellStrings[8], out d) ? d : 0, Sweet.lollipop.min_score_td + 1);
                                 
 
@@ -189,8 +171,8 @@ namespace ProteoformSuiteInternal
                                     lock (td_hits) td_hits.Add(td_hit);
                                 }
                             }
-                        }
-                    }
+                     }
+                    
                   
                 }
             });
