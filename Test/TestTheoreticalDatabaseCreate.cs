@@ -339,7 +339,7 @@ namespace Test
 
         [Test]
         [TestCase("uniprot_yeast_test_12entries.xml")]
-        public void most_abundant_mass(string database)
+        public void average_mass(string database)
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.methionine_oxidation = false;
@@ -351,7 +351,7 @@ namespace Test
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
             Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
-            Sweet.lollipop.most_abundant_mass = true;
+            Sweet.lollipop.use_average_mass = true;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, database) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
 
@@ -376,13 +376,13 @@ namespace Test
 
             var unmodified = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms
                 .Where(t => t.ptm_set.ptm_combination.Count == 0).OrderBy(t => t.modified_mass).First();
-            Assert.AreEqual(1682.84, Math.Round(unmodified.modified_mass, 2));
-            Assert.AreEqual(1682.84, Math.Round(unmodified.unmodified_mass, 2));
+            Assert.AreEqual(1683.97, Math.Round(unmodified.modified_mass, 2));
+            Assert.AreEqual(1683.97, Math.Round(unmodified.unmodified_mass, 2));
 
             var modified = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms
                 .Where(t => t.ptm_set.ptm_combination.Count > 0).OrderBy(t => t.modified_mass).First();
-            Assert.AreEqual(29358.0, Math.Round(modified.modified_mass, 2));
-            Assert.AreEqual(29278.03, Math.Round(modified.unmodified_mass, 2));
+            Assert.AreEqual(29358.61, Math.Round(modified.modified_mass, 2));
+            Assert.AreEqual(29278.63, Math.Round(modified.unmodified_mass, 2));
         }
 
         //[Test]
