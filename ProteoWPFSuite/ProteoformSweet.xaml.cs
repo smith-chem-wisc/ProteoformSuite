@@ -376,10 +376,10 @@ namespace ProteoWPFSuite
                 warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
                 warning_methods.Add(string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
-            if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+            if (Sweet.lollipop.topdownReader.bad_topdown_ptms.Count > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_topdown_ptms.Distinct()));
             }
             if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
             {

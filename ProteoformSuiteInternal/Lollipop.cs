@@ -46,7 +46,7 @@ namespace ProteoformSuiteInternal
             "Deconvolution Results for Identification (.xlsx, .tsv)",
             "Deconvolution Results for Quantification (.xlsx, .tsv)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
+            "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
@@ -57,7 +57,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx", ".csv" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
-            new List<string> { ".xlsx" },
+            new List<string> { ".xlsx" , ".psmtsv"},
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx" },
@@ -68,7 +68,7 @@ namespace ProteoformSuiteInternal
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
-            "Excel Files (*.xlsx) | *.xlsx",
+            "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
@@ -414,7 +414,7 @@ namespace ProteoformSuiteInternal
         public void read_in_td_hits()
         {
             Sweet.lollipop.top_down_hits.Clear();
-            topdownReader.topdown_ptms.Clear();
+            topdownReader.bad_topdown_ptms.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
