@@ -38,7 +38,6 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.btn_addFiles = new System.Windows.Forms.Button();
             this.splitContainer7 = new System.Windows.Forms.SplitContainer();
-            this.btn_downloadUniProtPtmList = new System.Windows.Forms.Button();
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -99,7 +98,6 @@
             this.splitContainer6.Panel2.SuspendLayout();
             this.splitContainer6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer7)).BeginInit();
-            this.splitContainer7.Panel1.SuspendLayout();
             this.splitContainer7.Panel2.SuspendLayout();
             this.splitContainer7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).BeginInit();
@@ -257,27 +255,12 @@
             this.splitContainer7.Location = new System.Drawing.Point(0, 0);
             this.splitContainer7.Name = "splitContainer7";
             // 
-            // splitContainer7.Panel1
-            // 
-            this.splitContainer7.Panel1.Controls.Add(this.btn_downloadUniProtPtmList);
-            // 
             // splitContainer7.Panel2
             // 
             this.splitContainer7.Panel2.Controls.Add(this.btn_clearFiles);
             this.splitContainer7.Size = new System.Drawing.Size(349, 57);
             this.splitContainer7.SplitterDistance = 183;
             this.splitContainer7.TabIndex = 0;
-            // 
-            // btn_downloadUniProtPtmList
-            // 
-            this.btn_downloadUniProtPtmList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_downloadUniProtPtmList.Location = new System.Drawing.Point(0, 0);
-            this.btn_downloadUniProtPtmList.Name = "btn_downloadUniProtPtmList";
-            this.btn_downloadUniProtPtmList.Size = new System.Drawing.Size(183, 57);
-            this.btn_downloadUniProtPtmList.TabIndex = 52;
-            this.btn_downloadUniProtPtmList.Text = "Download UniProt PTM List";
-            this.btn_downloadUniProtPtmList.UseVisualStyleBackColor = true;
-            this.btn_downloadUniProtPtmList.Click += new System.EventHandler(this.btn_downloadUniProtPtmList_Click);
             // 
             // btn_clearFiles
             // 
@@ -798,7 +781,6 @@
             this.splitContainer6.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).EndInit();
             this.splitContainer6.ResumeLayout(false);
-            this.splitContainer7.Panel1.ResumeLayout(false);
             this.splitContainer7.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer7)).EndInit();
             this.splitContainer7.ResumeLayout(false);
@@ -855,7 +837,6 @@
         private System.Windows.Forms.TextBox tb_totalTheoreticalProteoforms;
         private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
         private System.Windows.Forms.Splitter splitter1;
-        private System.Windows.Forms.Button btn_downloadUniProtPtmList;
         private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.DataGridView dgv_Database;
         private System.Windows.Forms.DataGridView dgv_unlocalizedModifications;

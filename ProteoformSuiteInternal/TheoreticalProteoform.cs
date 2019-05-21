@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
                 }
 
                 return proteoformMass + aaMasses.Sum() +
-                       ptm_combination.Sum(p => (double)p.modification.MonoisotopicMass);
+                       ptm_combination.Sum(p => Math.Round((double)p.modification.MonoisotopicMass, 5));
             }
 
             //if most abundant mass, calculate iso distrubution, set modified/unmodified masses to most abundant.

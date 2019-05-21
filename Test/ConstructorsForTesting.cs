@@ -162,8 +162,8 @@ namespace Test
 
         public static Dictionary<string, List<Modification>> read_mods()
         {
-            Loaders.LoadElements();
-            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path, out List<(Modification, string)> filteredModificationsWithWarnings)).ToList();
+            var all_modifications =
+                Sweet.lollipop.theoretical_database.get_mods(TestContext.CurrentContext.TestDirectory);
             return Sweet.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }

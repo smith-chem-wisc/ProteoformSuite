@@ -290,7 +290,7 @@ namespace ProteoformSuiteInternal
             int index_retention_time = header.IndexOf("Scan Retention Time");
             int index_precursor_mass = header.IndexOf("Precursor Mass");
             int index_peptide_monoisotopic_mass = header.IndexOf("Peptide Monoisotopic Mass");
-
+            bool glycan = header.Contains("GlycanIDs");
             //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
             Parallel.ForEach(cells.Skip(1), row =>
             {
@@ -326,7 +326,30 @@ namespace ProteoformSuiteInternal
                                 .FirstOrDefault();
                             if (mod != null)
                             {
-                                new_ptm_list.Add(new Ptm(entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), entry.Value));
+                                if (glycan)
+                                {
+                                    string glycanFormula = entry.Value.OriginalId;
+                                    int H = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('H') + 1, glycanFormula.IndexOf('N') - glycanFormula.IndexOf('H') - 1));
+                                    int N = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('N') + 1, glycanFormula.IndexOf('A') - glycanFormula.IndexOf('N') - 1));
+                                    int A = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('A') + 1, glycanFormula.IndexOf('G') - glycanFormula.IndexOf('A') - 1));
+                                    int G = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('G') + 1, glycanFormula.IndexOf('F') - glycanFormula.IndexOf('G') - 1));
+                                    int F = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('F') + 1, glycanFormula.Length - glycanFormula.IndexOf('F') - 1));
+
+                                    var H_added = add_glycans(H, "H", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                    var N_added = add_glycans(N, "N", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                    var A_added = add_glycans(A, "A", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                    var G_added = add_glycans(G, "G", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                    var F_added = add_glycans(F, "F", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+
+                                    add_topdown_hit = H_added && N_added && A_added && G_added && F_added;
+                                }
+                                else
+                                {
+
+
+                                    new_ptm_list.Add(new Ptm(entry.Key + startResidue - (entry.Key == 1 ? 1 : 2),
+                                        entry.Value));
+                                }
                             }
                             else
                             {
@@ -337,9 +360,7 @@ namespace ProteoformSuiteInternal
                                         "Mod Name:" + entry.Value.IdWithMotif + " at " + entry.Key);
                                     add_topdown_hit = false;
                                 }
-
                             }
-
                         }
                     }
                     catch (MzLibUtil.MzLibException)
@@ -380,5 +401,28 @@ namespace ProteoformSuiteInternal
             });
             return td_hits;
         }
+
+        private bool add_glycans(int num_to_add, string glycan_id, int location, List<Ptm> ptm_list)
+        {
+            var mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values
+                .SelectMany(m => m).Where(m => m.OriginalId == glycan_id)
+                .FirstOrDefault();
+            if (mod == null)
+            {
+                bad_topdown_ptms.Add(glycan_id);
+                return false;
+            }
+            else
+            {
+                for (int count = 0; count < num_to_add; count++)
+                {
+                    ptm_list.Add(new Ptm(location, mod));
+                }
+            }
+
+            return true;
+        }
     }
+
+
 }

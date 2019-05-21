@@ -11,18 +11,6 @@ PP   Anywhere.
 MT   Mod
 CF   C1
 //
-ID   Amidation
-TG   X
-PP   Peptide C-terminal.
-MT   PeptideTermMod
-CF   H1 N1 O-1
-//
-ID   Ammonia loss
-TG   C
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   H-3 N-1
-//
 ID   Ammonia loss
 TG   N
 PP   Anywhere.
@@ -34,18 +22,6 @@ TG   C or K
 PP   Anywhere.
 MT   Mod
 CF   H5 C3 N1 O1
-//
-ID   Propionamide
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   H5 C3 N1 O1
-//
-ID   Carboxymethylation
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   H2 C2 O2
 //
 ID   Carboxymethylation
 TG   C or K or W
@@ -81,12 +57,6 @@ ID   Carbamidomethyl
 TG   K or H or D or E or S or T or Y
 PP   Anywhere.
 MT   Mod
-CF   H3 C2 N1 O1
-//
-ID   Carbamidomethyl of peptide N term
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
 CF   H3 C2 N1 O1
 //
 ID   Carboxylation
@@ -130,122 +100,11 @@ NL   ETD:45.0204
 DI   HCD:C7 H11 N1 O1
 CF   H2 C2 O1
 //
-ID   Biotin
-TG   K
-PP   Anywhere.
-CF   C10 H14 N2 O2 S1
-MM   226.077599
-DI   HCD:309.151123533
-//
-ID   Butyryl
-TG   K
-PP   Anywhere.
-DI   HCD:153.115323533
-CF   C4 H6 O1
-MM   70.041865
-//
-ID   Crotonyl
-TG   K
-PP   Anywhere.
-DI   HCD:151.099723533
-CF   C4 H4 O1
-MM   68.026215
-//
-ID   Glutaryl
-TG   K
-PP   Anywhere.
-DI   HCD:181.110323533
-NL   ETD:115.0395
-CF   C5 H6 O3
-MM   114.031694
-//
-ID   Hydroxybutyryl
-TG   K
-PP   Anywhere.
-DI   HCD:169.110323533
-CF   C4 H7 O2
-MM   87.044604
-//
-ID   Malonyl
-TG   K
-PP   Anywhere.
-DI   HCD:C7 H11 N1 O1
-DI   HCD:169.073923533
-NL   HCD:43.9898
-NL   ETD:87.0082
-CF   C3 H2 O3
-MM   86.000394
-//
-ID   Propionyl
-TG   K
-PP   Anywhere.
-DI   HCD:139.099823533
-CF   C3 H4 O1
-MM   56.026215
-//
-ID   Citrulline
-TG   R
-PP   Anywhere.
-DI   HCD:129.090223533
-NL   HCD:43.0058
-CF   H-1 N-1 O1
-MM   0.984016
-//
-ID   Hydroxy
-TG   P
-PP   Anywhere.
-CF   O1
-MM   15.994915
-DI   HCD:170.060123533
-//
-ID   Nitro
-TG   Y
-PP   Anywhere.
-CF   H-1 N1 O2
-MM   44.985078
-DI   HCD:180.053523533
-//
-ID   Lysine not cleaved at C-term
-TG   Xk
-PP   Peptide C-terminal.
-MT   PeptideTermMod
-CF   C6 H12 N2 O1
-//
-ID   Lysine not cleaved at N-term
-TG   kX
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   C6 H12 N2 O1
-//
-ID   Arginine not cleaved at N-term
-TG   rX
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   C6 H12 N4 O1
-//
-ID   Arginine not cleaved at C-term
-TG   Xr
-PP   Peptide C-terminal.
-MT   PeptideTermMod
-CF   C6 H12 N4 O1
-//
 ID   Calcium
 TG   D or E
 PP   Anywhere.
 MT   Metal
 CF   H-2 Ca1
-//
-ID   H-2 on pep term M
-TG   M
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   H-2
-//
-ID   Water loss on pep term E
-TG   E
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   H-2 O-1
 //
 ID   Water loss
 TG   D
@@ -258,13 +117,6 @@ TG   L or I or P or W or S
 PP   Anywhere.
 MT   Mod
 CF   H-2 O1
-//
-ID   Oxidation of W to Kynurenine
-TG   W
-PP   Anywhere.
-MT   Mod
-DI   HCD:C9 H10 N2 O3
-CF   C-1 O1
 //
 ID   Dehydroalanine from Cysteine
 TG   C
@@ -291,12 +143,6 @@ MT   Mod
 CF   H-2
 //
 ID   Formylation
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   C1 O1
-//
-ID   Formylation
 TG   S or T
 PP   Anywhere.
 MT   Mod
@@ -314,12 +160,6 @@ TG   D or E
 PP   Anywhere.
 MT   Metal
 CF   H-2 Zn1
-//
-ID   Carbamyl
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   H1 C1 N1 O1
 //
 ID   Carbamyl
 TG   K or R or C or M
@@ -361,12 +201,6 @@ ID   Ethyl
 TG   K or E or D
 PP   Anywhere.
 MT   Mod
-CF   H4 C2
-//
-ID   Ethyl
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
 CF   H4 C2
 //
 ID   Oxidation and then loss of oxidized M side chain
@@ -420,31 +254,6 @@ PP   Anywhere.
 NL   O3 S1
 MT   Mod
 CF   O3 S1
-//
-ID   GG of K (Ubiquitination Site)
-TG   Lysine
-PP   Anywhere.
-MT   TrypsinDigestedMod
-DI   HCD:114.042923533
-CF   H6 C4 N2 O2
-//
-ID   DVIEVYQEQTGG of D (SUMO-1 Site human)
-TG   Lysine
-PP   Anywhere.
-MT   AnpN_DigestedMod
-CF   C57 H86 N14 O22
-//
-ID   DVFQQQTGG of D (SUMO-2/3 Site human)
-TG   Lysine
-PP   Anywhere.
-MT   AnpN_DigestedMod
-CF   C41 H60 N12 O15
-//
-ID   EQIGG of k (sumoylation (SMT-3) Site yeast)
-TG   Lysine
-PP   Anywhere.
-MT   TrypsinDigestedMod
-CF   C20 H32 N6 O8
 //
 ID   Farnesylation
 TG   Cysteine
@@ -507,12 +316,6 @@ TG   Y or W
 MT   Mod
 PP   Anywhere.
 CF   H-2 O2 
-//
-ID   Carbon Adduct
-TG   X
-PP   Peptide N-terminal.
-MT   PeptideTermMod
-CF   C1
 //
 ID   Decarboxylation
 TG   D or E

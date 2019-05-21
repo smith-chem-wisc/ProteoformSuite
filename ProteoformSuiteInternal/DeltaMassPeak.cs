@@ -83,7 +83,7 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                grouped_relations = relations_to_group.Where(r => r.candidate_ptmset.mass == base_relation.candidate_ptmset.mass).ToList();
+                grouped_relations = relations_to_group.Where(r => Math.Round(r.candidate_ptmset.mass, 5) == Math.Round(base_relation.candidate_ptmset.mass, 5)).ToList();
                 possiblePeakAssignments = grouped_relations.Select(r => r.candidate_ptmset).ToList();
                 DeltaMass = possiblePeakAssignments.First().mass;
             }
