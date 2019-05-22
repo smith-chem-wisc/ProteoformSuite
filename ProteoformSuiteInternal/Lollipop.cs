@@ -45,7 +45,7 @@ namespace ProteoformSuiteInternal
         {
             "Deconvolution Results for Identification (.xlsx, .tsv)",
             "Deconvolution Results for Quantification (.xlsx, .tsv)",
-            "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta)",
+            "Protein Databases (.xml, .xml.gz, .fasta)",
             "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
@@ -67,7 +67,7 @@ namespace ProteoformSuiteInternal
         {
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
-            "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
+            "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",

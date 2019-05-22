@@ -32,6 +32,7 @@
             this.base_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.topbar_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.box_loadoptions = new System.Windows.Forms.GroupBox();
+            this.rb_topdown_search = new System.Windows.Forms.RadioButton();
             this.rb_deconvolution = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
@@ -155,12 +156,13 @@
             // 
             this.topbar_splitcontainer.Panel2.Controls.Add(this.box_parameters);
             this.topbar_splitcontainer.Size = new System.Drawing.Size(1395, 116);
-            this.topbar_splitcontainer.SplitterDistance = 140;
+            this.topbar_splitcontainer.SplitterDistance = 201;
             this.topbar_splitcontainer.TabIndex = 0;
             this.topbar_splitcontainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.topbar_splitcontainer_SplitterMoved);
             // 
             // box_loadoptions
             // 
+            this.box_loadoptions.Controls.Add(this.rb_topdown_search);
             this.box_loadoptions.Controls.Add(this.rb_deconvolution);
             this.box_loadoptions.Controls.Add(this.rb_standardOptions);
             this.box_loadoptions.Controls.Add(this.rb_chemicalCalibration);
@@ -168,16 +170,29 @@
             this.box_loadoptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.box_loadoptions.Location = new System.Drawing.Point(0, 0);
             this.box_loadoptions.Name = "box_loadoptions";
-            this.box_loadoptions.Size = new System.Drawing.Size(140, 116);
+            this.box_loadoptions.Size = new System.Drawing.Size(201, 116);
             this.box_loadoptions.TabIndex = 52;
             this.box_loadoptions.TabStop = false;
             this.box_loadoptions.Text = "1. Choose Analysis";
+            // 
+            // rb_topdown_search
+            // 
+            this.rb_topdown_search.AutoSize = true;
+            this.rb_topdown_search.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_topdown_search.Location = new System.Drawing.Point(18, 77);
+            this.rb_topdown_search.Name = "rb_topdown_search";
+            this.rb_topdown_search.Size = new System.Drawing.Size(186, 17);
+            this.rb_topdown_search.TabIndex = 59;
+            this.rb_topdown_search.TabStop = true;
+            this.rb_topdown_search.Text = "MetaMorpheus Top-Down Search";
+            this.rb_topdown_search.UseVisualStyleBackColor = true;
+            this.rb_topdown_search.CheckedChanged += new System.EventHandler(this.rb_topdown_search_CheckedChanged);
             // 
             // rb_deconvolution
             // 
             this.rb_deconvolution.AutoSize = true;
             this.rb_deconvolution.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_deconvolution.Location = new System.Drawing.Point(18, 58);
+            this.rb_deconvolution.Location = new System.Drawing.Point(18, 59);
             this.rb_deconvolution.Name = "rb_deconvolution";
             this.rb_deconvolution.Size = new System.Drawing.Size(94, 17);
             this.rb_deconvolution.TabIndex = 58;
@@ -204,7 +219,7 @@
             // 
             this.rb_chemicalCalibration.AutoSize = true;
             this.rb_chemicalCalibration.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_chemicalCalibration.Location = new System.Drawing.Point(18, 40);
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(18, 41);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
             this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
             this.rb_chemicalCalibration.TabIndex = 57;
@@ -220,7 +235,7 @@
             this.box_parameters.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.box_parameters.Location = new System.Drawing.Point(0, 0);
             this.box_parameters.Name = "box_parameters";
-            this.box_parameters.Size = new System.Drawing.Size(1251, 116);
+            this.box_parameters.Size = new System.Drawing.Size(1190, 116);
             this.box_parameters.TabIndex = 48;
             this.box_parameters.TabStop = false;
             this.box_parameters.Text = "2. Set Parameters";
@@ -313,8 +328,8 @@
             // param_splitcontainer.Panel2
             // 
             this.param_splitcontainer.Panel2.Controls.Add(this.fullrun_groupbox);
-            this.param_splitcontainer.Size = new System.Drawing.Size(1245, 98);
-            this.param_splitcontainer.SplitterDistance = 648;
+            this.param_splitcontainer.Size = new System.Drawing.Size(1184, 98);
+            this.param_splitcontainer.SplitterDistance = 616;
             this.param_splitcontainer.TabIndex = 1;
             // 
             // label_minRT
@@ -402,7 +417,7 @@
             this.fullrun_groupbox.Controls.Add(this.fullrun_splitContainer);
             this.fullrun_groupbox.Dock = System.Windows.Forms.DockStyle.Right;
             this.fullrun_groupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fullrun_groupbox.Location = new System.Drawing.Point(4, 0);
+            this.fullrun_groupbox.Location = new System.Drawing.Point(-25, 0);
             this.fullrun_groupbox.Name = "fullrun_groupbox";
             this.fullrun_groupbox.Size = new System.Drawing.Size(589, 98);
             this.fullrun_groupbox.TabIndex = 62;
@@ -820,5 +835,6 @@
         private System.Windows.Forms.SplitContainer fullrun_splitContainer;
         private System.Windows.Forms.TextBox tb_resultsFolder;
         private System.Windows.Forms.Button btn_browseSummarySaveFolder;
+        private System.Windows.Forms.RadioButton rb_topdown_search;
     }
 }

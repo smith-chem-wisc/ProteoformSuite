@@ -126,11 +126,6 @@ namespace ProteoformSuiteGUI
             populate_file_lists();
         }
 
-        private void rb_advanced_user_CheckedChanged(object sender, EventArgs e)
-        {
-            populate_file_lists();
-        }
-
         private void rb_deconvolution_CheckedChanged(object sender, EventArgs e)
         {
             populate_file_lists();
@@ -139,6 +134,11 @@ namespace ProteoformSuiteGUI
         private void cmb_loadTable1_SelectedIndexChanged(object sender, EventArgs e)
         {
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
+        }
+
+        private void rb_topdown_search_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
         }
 
         private void populate_file_lists()
@@ -231,6 +231,36 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.SelectedIndex = 0;
 
                 cmb_loadTable1.Enabled = false;
+            }
+            else if (rb_topdown_search.Checked)
+            {
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[2]);
+
+                cmb_loadTable1.SelectedIndex = 0;
+
+
+                bt_calibrate.Visible = false;
+                cb_calibrate_raw_files.Visible = false;
+                cb_calibrate_td_files.Visible = false;
+                bt_stepthru.Visible = false;
+                bt_fullrun.Visible = false;
+                bt_calibrate.Visible = false;
+                bt_deconvolute.Visible = true;
+                panel_deconv_calib.Visible = true;
+                panel_step.Visible = false;
+                nud_maxcharge.Visible = true;
+                nud_mincharge.Visible = true;
+                label_maxcharge.Visible = true;
+                label_mincharge.Visible = true;
+                label_maxRT.Visible = true;
+                label_minRT.Visible = true;
+                rb_neucode.Visible = false;
+                rb_unlabeled.Visible = false;
+                calib_stand_splitContainer.Visible = false;
+                fullrun_groupbox.Visible = false;
+
+                cmb_loadTable1.SelectedIndex = 0;
             }
 
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
