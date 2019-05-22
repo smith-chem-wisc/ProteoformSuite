@@ -224,7 +224,7 @@ namespace Test
             // carbamidomethylated is labeled in MM output - should have same result as without it 
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
-            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.carbamidomethylation = true;
             Sweet.lollipop.clear_td();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
@@ -245,7 +245,7 @@ namespace Test
             // carbamidomethylated and neucode labeled
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
-            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.carbamidomethylation = true;
             Sweet.lollipop.clear_td();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
@@ -262,7 +262,6 @@ namespace Test
             Assert.AreEqual(8, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
-
         }
 
         [Test]
@@ -287,7 +286,12 @@ namespace Test
             Assert.AreEqual(5, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
-            }
+
+            //remove glycan from db... should be bad
+            Sweet.lollipop.theoretical_database.uniprotModifications.Remove("H");
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(0, Sweet.lollipop.top_down_hits.Count);
+        }
 
 
         [Test]

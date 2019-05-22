@@ -58,22 +58,20 @@ namespace ProteoformSuiteGUI
         {
             if (!full_run)
             {
-                if (Sweet.lollipop.top_down_hits.Count == 0)
+                ClearListsTablesFigures(true);
+                if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
                 {
-                    ClearListsTablesFigures(true);
-                    if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
-                    {
-                        MessageBox.Show("Go back and load in top-down results.");
-                        return;
-                    }
-                    if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-                    {
-                        MessageBox.Show("Go back and construct a theoretical database.");
-                        return;
-                    }
-                    Sweet.lollipop.read_in_td_hits();
-                    tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
+                    MessageBox.Show("Go back and load in top-down results.");
+                    return;
                 }
+                if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                {
+                    MessageBox.Show("Go back and construct a theoretical database.");
+                    return;
+                }
+                Sweet.lollipop.read_in_td_hits();
+                tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
+
             }
             else
             {

@@ -42,7 +42,7 @@ namespace ProteoformSuiteInternal
         {
             //if neucode labeled, calculate neucode light theoretical AND observed mass! --> better for matching up
             //if carbamidomethylated, add 57 to theoretical mass (already in observed mass...)
-            aaIsotopeMassList = new AminoAcidMasses(false, Sweet.lollipop.neucode_labeled)
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled)
                 .AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>();
             List<List<string>>
@@ -270,7 +270,7 @@ namespace ProteoformSuiteInternal
 
             //if neucode labeled, calculate neucode light theoretical AND observed mass! --> better for matching up
             //if carbamidomethylated, add 57 to theoretical mass (already in observed mass...)
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled)
+            aaIsotopeMassList = new AminoAcidMasses(false, Sweet.lollipop.neucode_labeled)
                 .AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>(); //for one line in excel file
 
