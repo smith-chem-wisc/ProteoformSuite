@@ -157,6 +157,7 @@ namespace Test
             Sweet.lollipop.methionine_cleavage = true;
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.input_files.Clear();
+            Sweet.lollipop.mod_types_to_exclude = Sweet.lollipop.mod_types_to_exclude.Concat(new string[] { "UniProt", "Mod" }).ToArray();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped_plus2M.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
@@ -167,20 +168,20 @@ namespace Test
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-            Assert.AreEqual(10, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
 
             Sweet.lollipop.max_ptms = 2;
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-            Assert.AreEqual(48, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
 
             Sweet.lollipop.max_ptms = 3;
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-            Assert.AreEqual(51, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
-            Assert.AreEqual(12, new HashSet<Modification>(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.SelectMany(t => t.ptm_set.ptm_combination.Select(ptm => ptm.modification))).Count); //Only the variable modification is in there; no sign of the fake oxidation of K I added
+            Assert.AreEqual(4, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
+            Assert.AreEqual(1, new HashSet<Modification>(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.SelectMany(t => t.ptm_set.ptm_combination.Select(ptm => ptm.modification))).Count); //Only the variable modification is in there; no sign of the fake oxidation of K I added
         }
 
         [Test]

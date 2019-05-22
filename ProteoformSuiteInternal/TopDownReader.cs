@@ -1,11 +1,13 @@
 ﻿using Proteomics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Accord.Math;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Proteomics.ProteolyticDigestion;
+using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteInternal
 {
@@ -40,7 +42,7 @@ namespace ProteoformSuiteInternal
         {
             //if neucode labeled, calculate neucode light theoretical AND observed mass! --> better for matching up
             //if carbamidomethylated, add 57 to theoretical mass (already in observed mass...)
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled)
+            aaIsotopeMassList = new AminoAcidMasses(false, Sweet.lollipop.neucode_labeled)
                 .AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>();
             List<List<string>>
@@ -272,9 +274,7 @@ namespace ProteoformSuiteInternal
                 .AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>(); //for one line in excel file
 
-            //creates dictionary to find mods
-            Dictionary<string, Modification> mods =
-                Sweet.lollipop.theoretical_database.all_mods_with_mass.ToDictionary(kv => kv.IdWithMotif, kv => kv);
+ 
             string[] cells = Enumerable.ToArray(System.IO.File.ReadAllLines(file.complete_path));
             string[] header = cells[0].Split('\t');
 
@@ -291,74 +291,92 @@ namespace ProteoformSuiteInternal
             int index_precursor_mass = header.IndexOf("Precursor Mass");
             int index_peptide_monoisotopic_mass = header.IndexOf("Peptide Monoisotopic Mass");
             bool glycan = header.Contains("GlycanIDs");
-            //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
+
+            //creates dictionary to find mods
+            Dictionary<string, Modification> mods = new Dictionary<string, Modification>();
+            foreach (var mod in Sweet.lollipop.theoretical_database.all_mods_with_mass)
+            {
+                if (!mods.ContainsKey(mod.IdWithMotif))
+                {
+                    mods.Add(mod.IdWithMotif, mod);
+                }
+            }
+
+            if (glycan)
+            {
+                foreach (var mod in Sweet.lollipop.theoretical_database.glycan_mods)
+                {
+                    if (!mods.ContainsKey(mod.IdWithMotif))
+                    {
+                        mods.Add(mod.IdWithMotif, mod);
+                    }
+                }
+            }
+
             Parallel.ForEach(cells.Skip(1), row =>
             {
                 var cellStrings = row.Split('\t').ToList();
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
-                double qValue = Convert.ToDouble(cellStrings[index_q_value]);
-                string decoy = cellStrings[index_decoy];
-                if (//qValue < 0.01 && 
-                    decoy == "N")
+                double qValue = Convert.ToDouble(cellStrings[index_q_value].Split('|')[0]);
+                string decoy = cellStrings[index_decoy].Split('|')[0];
+                if (qValue < 0.01 && decoy == "N")
                 {
-                    string start_and_end_residue = cellStrings[index_begin_end];
-                    string[] ids = start_and_end_residue.Split('|');
+                    string start_and_end_residue = cellStrings[index_begin_end].Split('|')[0];
                     //splits the string to get the value of starting index
-                    string[] index = ids[0].Trim(new char[] { '[', ']' }).Split(' ');
+                    string[] index = start_and_end_residue.Trim(new char[] { '[', ']' }).Split(' ');
                     int startResidue = Int32.TryParse(index[0], out int j) ? j : 0;
                     int endResidue = Int32.TryParse(index[2], out int i) ? i : 0;
 
                     List<Ptm> new_ptm_list = new List<Ptm>();
-                    string full_sequence = cellStrings[index_full_sequence];
+                    string full_sequence = cellStrings[index_full_sequence].Split('|')[0];
                     //if bad mod itll catch it to add to bad_topdown_ptms
                     try
                     {
                         PeptideWithSetModifications modsIdentifier =
-                            new PeptideWithSetModifications(full_sequence.Split('|')[0], mods);
+                            new PeptideWithSetModifications(full_sequence, mods);
 
                         var ptm_list = modsIdentifier.AllModsOneIsNterminus;
 
                         //for each  entry in ptm_list make a new Ptm and add it to the new_ptm_list 
                         foreach (KeyValuePair<int, Proteomics.Modification> entry in ptm_list)
                         {
-                            Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values
-                                .SelectMany(m => m).Where(m => m.IdWithMotif == entry.Value.IdWithMotif)
-                                .FirstOrDefault();
-                            if (mod != null)
+                            if (glycan && entry.Value.ModificationType == "N-Glycosylation")
                             {
-                                if (glycan)
+                                string glycanFormula = entry.Value.OriginalId;
+                                int H = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('H') + 1, glycanFormula.IndexOf('N') - glycanFormula.IndexOf('H') - 1));
+                                int N = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('N') + 1, glycanFormula.IndexOf('A') - glycanFormula.IndexOf('N') - 1));
+                                int A = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('A') + 1, glycanFormula.IndexOf('G') - glycanFormula.IndexOf('A') - 1));
+                                int G = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('G') + 1, glycanFormula.IndexOf('F') - glycanFormula.IndexOf('G') - 1));
+                                int F = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('F') + 1, glycanFormula.Length - glycanFormula.IndexOf('F') - 1));
+
+                                var H_added = add_glycans(H, "H", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                var N_added = add_glycans(N, "N", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                var A_added = add_glycans(A, "A", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                var G_added = add_glycans(G, "G", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+                                var F_added = add_glycans(F, "F", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
+
+                                add_topdown_hit = H_added && N_added && A_added && G_added && F_added;
+                            }
+                            else
+                            {
+                                Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values
+                                    .SelectMany(m => m).Where(m => m.IdWithMotif == entry.Value.IdWithMotif)
+                                    .FirstOrDefault();
+                                if (mod != null)
                                 {
-                                    string glycanFormula = entry.Value.OriginalId;
-                                    int H = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('H') + 1, glycanFormula.IndexOf('N') - glycanFormula.IndexOf('H') - 1));
-                                    int N = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('N') + 1, glycanFormula.IndexOf('A') - glycanFormula.IndexOf('N') - 1));
-                                    int A = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('A') + 1, glycanFormula.IndexOf('G') - glycanFormula.IndexOf('A') - 1));
-                                    int G = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('G') + 1, glycanFormula.IndexOf('F') - glycanFormula.IndexOf('G') - 1));
-                                    int F = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('F') + 1, glycanFormula.Length - glycanFormula.IndexOf('F') - 1));
-
-                                    var H_added = add_glycans(H, "H", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
-                                    var N_added = add_glycans(N, "N", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
-                                    var A_added = add_glycans(A, "A", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
-                                    var G_added = add_glycans(G, "G", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
-                                    var F_added = add_glycans(F, "F", entry.Key + startResidue - (entry.Key == 1 ? 1 : 2), new_ptm_list);
-
-                                    add_topdown_hit = H_added && N_added && A_added && G_added && F_added;
-                                }
-                                else
-                                {
-
 
                                     new_ptm_list.Add(new Ptm(entry.Key + startResidue - (entry.Key == 1 ? 1 : 2),
                                         entry.Value));
                                 }
-                            }
-                            else
-                            {
-                                lock (bad_topdown_ptms)
+                                else
                                 {
-                                    //error is somewahre in sequece
-                                    bad_topdown_ptms.Add(
-                                        "Mod Name:" + entry.Value.IdWithMotif + " at " + entry.Key);
-                                    add_topdown_hit = false;
+                                    lock (bad_topdown_ptms)
+                                    {
+                                        //error is somewahre in sequece
+                                        bad_topdown_ptms.Add(
+                                            "Mod Name:" + entry.Value.IdWithMotif + " at " + entry.Key);
+                                        add_topdown_hit = false;
+                                    }
                                 }
                             }
                         }
@@ -376,8 +394,8 @@ namespace ProteoformSuiteInternal
                     if (add_topdown_hit)
                     {
                         TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file,
-                            TopDownResultType.TightAbsoluteMass, cellStrings[index_protein_accession], full_sequence,
-                            cellStrings[index_protein_accession], cellStrings[index_protein_name], cellStrings[index_base_sequence],
+                            TopDownResultType.TightAbsoluteMass, cellStrings[index_protein_accession].Split('|')[0], full_sequence,
+                            cellStrings[index_protein_accession].Split('|')[0], cellStrings[index_protein_name].Split('|')[0], cellStrings[index_base_sequence].Split('|')[0],
                             startResidue, endResidue, new_ptm_list,
                             Double.TryParse(cellStrings[index_precursor_mass], out double d) ? d : 0,
                             Double.TryParse(cellStrings[index_peptide_monoisotopic_mass], out d) ? d : 0,

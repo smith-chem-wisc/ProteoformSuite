@@ -23,6 +23,7 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
 
         public List<Modification> variableModifications = new List<Modification>();
+        public List<Modification> glycan_mods = new List<Modification>();
         public List<Modification> all_mods_with_mass = new List<Modification>();
         public Dictionary<Modification, UnlocalizedModification> unlocalized_lookup = new Dictionary<Modification, UnlocalizedModification>();
 
@@ -104,6 +105,12 @@ namespace ProteoformSuiteInternal
                     new List<Modification>(); // Empty variable modifications if not selected
                 if (filename.EndsWith("variable.txt"))
                     variableModifications = new_mods;
+                if (filename.EndsWith("UniprotGlycanDatabase.txt"))
+                {
+                    glycan_mods = new_mods;
+                    continue;
+                }
+
                 all_known_modifications.AddRange(new_mods);
             }
             all_known_modifications = new HashSet<Modification>(all_known_modifications).ToList();

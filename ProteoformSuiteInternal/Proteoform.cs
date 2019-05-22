@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using Chemistry;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -281,19 +282,24 @@ namespace ProteoformSuiteInternal
                     e.begin--;
                     remove.Add(mod);
                 }
+
+
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "Missing"))
                 {
-                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() == mod.modification.Target.ToString())
+                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() ==
+                        mod.modification.Target.ToString())
                     {
                         e.begin++;
                         remove.Add(mod); //dont have in ptmset --> change the begin & end
                     }
-                    else if (theoretical_base.sequence[this.end - this.begin].ToString() == mod.modification.Target.ToString())
+                    else if (theoretical_base.sequence[this.end - this.begin].ToString() ==
+                             mod.modification.Target.ToString())
                     {
                         e.end--;
                         remove.Add(mod);
                     }
                 }
+
                 foreach (var ptm in remove)
                 {
                     e.ptm_set.ptm_combination.Remove(ptm);

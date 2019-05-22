@@ -264,6 +264,9 @@
     <Content Include="Mods\surfactants.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Mods\UniprotGlycanDatabase.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Mods\variable.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -198,10 +198,16 @@
     <None Include="example_corrections.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="glyco_fdr_fullSeqWithMod.psmtsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="noisy.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="testHits.psmtsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="test_directory\one.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
