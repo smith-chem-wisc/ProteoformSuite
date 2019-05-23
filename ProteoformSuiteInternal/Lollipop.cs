@@ -168,19 +168,11 @@ namespace ProteoformSuiteInternal
 
         #endregion RAW EXPERIMENTAL COMPONENTS
 
-        #region DECONVOLUTION Public Fields
-
-        public int min_assumed_cs = 5;
-        public int max_assumed_cs = 50;
-
-        #endregion DECONVOLUTION Public Fields
-
         #region DECONVOLUTION
 
         public string promex_deconvolute(int maxcharge, int mincharge, string directory)
         {
             int successfully_deconvoluted_files = 0;
-            string dir = Directory.GetCurrentDirectory();
             Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
@@ -300,6 +292,66 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion DECONVOLUTION
+
+        #region METAMORPHEUS TOPDOWN SEARCH
+
+        public string metamorpheus_topdown(string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
+        {
+            //set toml with new parameters
+            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            toml_params[42] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
+                : "ListOfModsFixed = \"\"";
+            toml_params[50] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
+            toml_params[51] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
+            toml_params[66] = "DissociationType = \"" + dissocation_type + "\"";
+            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"), toml_params);
+
+            Loaders.LoadElements();
+            Process proc = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+
+            string metaMorpheusBuild = directory + @"\MetaMorpheusDotNetFrameworkAppveyor";
+
+            if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+            {
+                startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+            }
+            else
+            {
+                return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+            }
+
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardInput = true;
+            startInfo.RedirectStandardOutput = false;
+            startInfo.CreateNoWindow = true;
+            proc.StartInfo = startInfo;
+
+            proc.Start();
+
+            proc.StandardInput.WriteLine("cd " + metaMorpheusBuild);
+
+            string command = "CMD.exe -t TopDownSearchSettingsMetaMorpheus0.0.300.toml -s ";
+            foreach (var file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
+            {
+                command += file.complete_path + " ";
+            }
+            command += "-d ";
+            foreach (var file in input_files.Where(f => f.purpose == Purpose.ProteinDatabase))
+            {
+                command += file.complete_path + " ";
+            }
+
+            proc.StandardInput.WriteLine(command);
+
+
+            proc.StandardInput.Close();
+            proc.WaitForExit();
+            proc.Close();
+            return "Successfully ran MetaMorpheus top-down search.";
+        }
+
+        #endregion METAMORPHEUS TOPDOWN SEARCH
 
         #region NEUCODE PAIRS Public Fields
 

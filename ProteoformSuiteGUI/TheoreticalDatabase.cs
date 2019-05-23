@@ -159,13 +159,21 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut(bool full_run)
         {
-            ClearListsTablesFigures(true);
-            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
-            FillTablesAndCharts();
-            if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            if (ReadyToRunTheGamut())
             {
-                MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                ClearListsTablesFigures(true);
+                Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
+                FillTablesAndCharts();
+                if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+                {
+                    MessageBox.Show(
+                        "Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
+                        string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please list at least one protein database.");
             }
         }
 

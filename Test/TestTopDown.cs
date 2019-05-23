@@ -293,6 +293,24 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.top_down_hits.Count);
         }
 
+        [Test]
+        public void BadTDFile()
+        {
+
+            // unlabeled
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.clear_td();
+            InputFile file = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml"), Purpose.TopDown);
+            Sweet.lollipop.input_files.Add(file);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(1, Sweet.lollipop.input_files.Count(f => f.purpose == Purpose.TopDown));
+            Assert.AreEqual(0, Sweet.lollipop.top_down_hits.Count);
+        }
 
         [Test]
         public void TestRelateTD()
