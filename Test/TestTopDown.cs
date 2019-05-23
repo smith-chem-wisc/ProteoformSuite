@@ -5,12 +5,45 @@ using System.Linq;
 using ProteoformSuiteInternal;
 using Proteomics;
 using System.IO;
+using MassSpectrometry;
 
 namespace Test
 {
     [TestFixture]
     class TestTopDown
     {
+
+        [Test]
+        public void TestTopDownMetaMorpheusCommandLine()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            string result = Sweet.lollipop.metamorpheus_topdown(TestContext.CurrentContext.TestDirectory, true, 10, 10,
+                DissociationType.HCD);
+            Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
+
+            //set toml with new parameters
+            string[] toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            Assert.AreEqual("ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\"", toml_params[42]);
+            Assert.AreEqual("ProductMassTolerance = \"±10 PPM\"", toml_params[50]);
+            Assert.AreEqual("PrecursorMassTolerance = \"±10 PPM\"", toml_params[51]);
+            Assert.AreEqual("DissociationType = \"HCD\"", toml_params[66]);
+
+
+            result = Sweet.lollipop.metamorpheus_topdown(TestContext.CurrentContext.TestDirectory, false, 5, 25,
+                DissociationType.CID);
+            Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
+
+            //set toml with new parameters
+            toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            Assert.AreEqual("ListOfModsFixed = \"\"", toml_params[42]);
+            Assert.AreEqual("ProductMassTolerance = \"±25 PPM\"", toml_params[50]);
+            Assert.AreEqual("PrecursorMassTolerance = \"±5 PPM\"", toml_params[51]);
+            Assert.AreEqual("DissociationType = \"CID\"", toml_params[66]);
+        }
+
+
         [Test]
         public void TestSimpleAggregation()
         {
