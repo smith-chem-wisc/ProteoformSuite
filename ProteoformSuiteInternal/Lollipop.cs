@@ -45,8 +45,8 @@ namespace ProteoformSuiteInternal
         {
             "Deconvolution Results for Identification (.xlsx, .tsv)",
             "Deconvolution Results for Quantification (.xlsx, .tsv)",
-            "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
+            "Protein Databases (.xml, .xml.gz, .fasta)",
+            "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
@@ -56,8 +56,8 @@ namespace ProteoformSuiteInternal
         {
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx", ".csv" },
-            new List<string> { ".xml", ".gz", ".fasta", ".txt" },
-            new List<string> { ".xlsx" },
+            new List<string> { ".xml", ".gz", ".fasta" },
+            new List<string> { ".xlsx" , ".psmtsv"},
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx" },
@@ -67,8 +67,8 @@ namespace ProteoformSuiteInternal
         {
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
-            "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
-            "Excel Files (*.xlsx) | *.xlsx",
+            "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
+            "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
@@ -78,7 +78,7 @@ namespace ProteoformSuiteInternal
         {
             new List<Purpose> { Purpose.Identification },
             new List<Purpose> { Purpose.Quantification },
-            new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
+            new List<Purpose> { Purpose.ProteinDatabase },
             new List<Purpose> { Purpose.TopDown },
             new List<Purpose> { Purpose.SpectraFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
@@ -108,10 +108,6 @@ namespace ProteoformSuiteInternal
                     {
                         file = new InputFile(complete_path, label, purposes.FirstOrDefault());
                     }
-                    else if (extension == ".txt")
-                    {
-                        file = new InputFile(complete_path, Purpose.PtmList);
-                    }
                     else
                     {
                         file = new InputFile(complete_path, Purpose.ProteinDatabase);
@@ -126,12 +122,6 @@ namespace ProteoformSuiteInternal
             }
 
             Sweet.update_files_from_presets(destination);
-        }
-
-        public static void enter_uniprot_ptmlist(string current_directory)
-        {
-            Loaders.LoadUniprot(Path.Combine(current_directory, "ptmlist.txt"), Loaders.GetFormalChargesDictionary(Loaders.LoadPsiMod(Path.Combine(current_directory, "PSI-MOD.obo2.xml"))));
-            Sweet.lollipop.enter_input_files(new[] { Path.Combine(current_directory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
         }
 
         #endregion Input Files
@@ -178,19 +168,11 @@ namespace ProteoformSuiteInternal
 
         #endregion RAW EXPERIMENTAL COMPONENTS
 
-        #region DECONVOLUTION Public Fields
-
-        public int min_assumed_cs = 5;
-        public int max_assumed_cs = 50;
-
-        #endregion DECONVOLUTION Public Fields
-
         #region DECONVOLUTION
 
         public string promex_deconvolute(int maxcharge, int mincharge, string directory)
         {
             int successfully_deconvoluted_files = 0;
-            string dir = Directory.GetCurrentDirectory();
             Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
@@ -311,6 +293,66 @@ namespace ProteoformSuiteInternal
 
         #endregion DECONVOLUTION
 
+        #region METAMORPHEUS TOPDOWN SEARCH
+
+        public string metamorpheus_topdown(string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
+        {
+            //set toml with new parameters
+            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            toml_params[42] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
+                : "ListOfModsFixed = \"\"";
+            toml_params[50] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
+            toml_params[51] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
+            toml_params[66] = "DissociationType = \"" + dissocation_type + "\"";
+            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"), toml_params);
+
+            Loaders.LoadElements();
+            Process proc = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+
+            string metaMorpheusBuild = directory + @"\MetaMorpheusDotNetFrameworkAppveyor";
+
+            if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+            {
+                startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+            }
+            else
+            {
+                return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+            }
+
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardInput = true;
+            startInfo.RedirectStandardOutput = false;
+            startInfo.CreateNoWindow = true;
+            proc.StartInfo = startInfo;
+
+            proc.Start();
+
+            proc.StandardInput.WriteLine("cd " + metaMorpheusBuild);
+
+            string command = "CMD.exe -t TopDownSearchSettingsMetaMorpheus0.0.300.toml -s ";
+            foreach (var file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
+            {
+                command += file.complete_path + " ";
+            }
+            command += "-d ";
+            foreach (var file in input_files.Where(f => f.purpose == Purpose.ProteinDatabase))
+            {
+                command += file.complete_path + " ";
+            }
+
+            proc.StandardInput.WriteLine(command);
+
+
+            proc.StandardInput.Close();
+            proc.WaitForExit();
+            proc.Close();
+            return "Successfully ran MetaMorpheus top-down search.";
+        }
+
+        #endregion METAMORPHEUS TOPDOWN SEARCH
+
         #region NEUCODE PAIRS Public Fields
 
         public List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -414,7 +456,7 @@ namespace ProteoformSuiteInternal
         public void read_in_td_hits()
         {
             Sweet.lollipop.top_down_hits.Clear();
-            topdownReader.topdown_ptms.Clear();
+            topdownReader.bad_topdown_ptms.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
