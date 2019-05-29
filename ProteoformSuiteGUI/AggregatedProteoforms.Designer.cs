@@ -57,8 +57,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
-            this.nud_minLog2Intensity = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -77,7 +75,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_minLog2Intensity)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_AggregatedProteoforms
@@ -125,8 +122,6 @@
             // 
             // param_splitcontainer.Panel1
             // 
-            this.param_splitcontainer.Panel1.Controls.Add(this.nud_minLog2Intensity);
-            this.param_splitcontainer.Panel1.Controls.Add(this.label6);
             this.param_splitcontainer.Panel1.Controls.Add(this.cb_add_td_proteoforms);
             this.param_splitcontainer.Panel1.Controls.Add(this.groupBox2);
             this.param_splitcontainer.Panel1.Controls.Add(this.groupBox1);
@@ -463,36 +458,6 @@
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1273, 411);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             // 
-            // nud_minLog2Intensity
-            // 
-            this.nud_minLog2Intensity.DecimalPlaces = 2;
-            this.nud_minLog2Intensity.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.nud_minLog2Intensity.Location = new System.Drawing.Point(189, 127);
-            this.nud_minLog2Intensity.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.nud_minLog2Intensity.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.nud_minLog2Intensity.Name = "nud_minLog2Intensity";
-            this.nud_minLog2Intensity.Size = new System.Drawing.Size(80, 20);
-            this.nud_minLog2Intensity.TabIndex = 53;
-            this.nud_minLog2Intensity.ValueChanged += new System.EventHandler(this.nud_minLog2Intensity_ValueChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(40, 128);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(93, 13);
-            this.label6.TabIndex = 52;
-            this.label6.Text = "Min Log2 Intensity";
-            // 
             // AggregatedProteoforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -524,7 +489,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_minLog2Intensity)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -559,7 +523,5 @@
         private System.Windows.Forms.NumericUpDown nud_minObservations;
         private System.Windows.Forms.ComboBox cmbx_observationsTypeRequired;
         private System.Windows.Forms.CheckBox cb_add_td_proteoforms;
-        private System.Windows.Forms.NumericUpDown nud_minLog2Intensity;
-        private System.Windows.Forms.Label label6;
     }
 }

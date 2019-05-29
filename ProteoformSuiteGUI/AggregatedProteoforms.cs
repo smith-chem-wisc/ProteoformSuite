@@ -189,7 +189,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
-            Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, Sweet.lollipop.min_num_CS, Sweet.lollipop.min_log2_intensity);
+            Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, Sweet.lollipop.min_num_CS);
             Sweet.lollipop.assign_best_components_for_manual_validation(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
             FillTablesAndCharts();
             updateFiguresOfMerit();
@@ -218,7 +218,6 @@ namespace ProteoformSuiteGUI
             nUD_Missed_Monos.Value = Sweet.lollipop.maximum_missed_monos;
             nUD_Missed_Ks.Value = Sweet.lollipop.maximum_missed_lysines;
             nUD_min_num_CS.Value = Sweet.lollipop.min_num_CS;
-            nud_minLog2Intensity.Value = (decimal)Sweet.lollipop.min_log2_intensity;
 
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
@@ -307,11 +306,6 @@ namespace ProteoformSuiteGUI
         private void cb_add_td_proteoforms_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.add_td_proteoforms = cb_add_td_proteoforms.Checked;
-        }
-
-        private void nud_minLog2Intensity_ValueChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.min_log2_intensity = Convert.ToDouble(nud_minLog2Intensity.Value);
         }
     }
 }

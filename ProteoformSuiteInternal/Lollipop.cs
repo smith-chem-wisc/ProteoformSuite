@@ -527,7 +527,6 @@ namespace ProteoformSuiteInternal
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
         public int min_num_CS = 3;
-        public double min_log2_intensity = 0;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
         public bool add_td_proteoforms = true;
@@ -544,10 +543,10 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS
 
-        public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS, double min_log2_intensity)
+        public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
             set_missed_monoisotopic_range();
-            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS, min_log2_intensity);
+            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
@@ -645,12 +644,12 @@ namespace ProteoformSuiteInternal
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
         //Uses an ordered list, so that the proteoform with max intensity is always chosen first
         //raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
-        public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS, double min_log2_intensity)
+        public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
-            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && consecutive_charge_states(min_num_CS, p.charge_states) && Math.Log(p.intensity_sum, 2) >= Sweet.lollipop.min_log2_intensity).ToArray();
+            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && consecutive_charge_states(min_num_CS, p.charge_states)).ToArray();
             remaining_to_aggregate = new List<IAggregatable>(ordered_to_aggregate);
 
             IAggregatable root = ordered_to_aggregate.FirstOrDefault();
@@ -1393,7 +1392,7 @@ namespace ProteoformSuiteInternal
             if (calibrate_td_files)
             {
                 foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown &&
-                                                                  td_hits_calibration.Any(h =>
+                                                                  (td_hits_calibration.Any(h =>
                                                                       h.file == f &&
                                                                       td_hit_RT_correction.ContainsKey(
                                                                           new Tuple<string, double, double>(
@@ -1402,7 +1401,7 @@ namespace ProteoformSuiteInternal
                                                                       td_hit_mz_correction.ContainsKey(
                                                                           new Tuple<string, double, double>(
                                                                               h.filename, h.ms2ScanNumber,
-                                                                              h.reported_mass)))))
+                                                                              h.reported_mass))))))
                 {
                     Calibration.calibrate_td_hits_file(file);
                 }

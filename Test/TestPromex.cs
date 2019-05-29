@@ -80,6 +80,7 @@ namespace Test
             Sweet.lollipop.calibrate_td_files = true;
             Sweet.lollipop.calibrate_raw_files = false; //shouldn't cali raw files!
             Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.retention_time_calibration = false;
             Sweet.lollipop.neucode_labeled = false;
             int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.SpectraFile)).First());
             int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
@@ -111,6 +112,8 @@ namespace Test
             if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")))
                 File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx"));
             Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML"));
             Sweet.lollipop.read_in_calibration_td_hits();
             Assert.AreEqual(6, Sweet.lollipop.td_hits_calibration.Count);
             Assert.AreEqual(5, Sweet.lollipop.td_hits_calibration.Count(h => h.score > 40));
