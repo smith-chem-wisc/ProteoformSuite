@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using Chemistry;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -187,7 +188,7 @@ namespace ProteoformSuiteInternal
                 int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m.modification, out UnlocalizedModification x) ? x.ptm_count : 1) - 1); // penalize additional PTMs
                 foreach (Modification m in mods_in_set)
                 {
-                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue((double)m.MonoisotopicMass, out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
+                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks.TryGetValue(Math.Round((double)m.MonoisotopicMass, 5), out int x) ? x : Sweet.lollipop.mod_rank_sum_threshold;
 
                     bool could_be_m_retention = m.ModificationType == "AminoAcid" && m.Target.ToString() == "M" && theoretical_base.begin == 2 && begin == 2 && !ptm_set.ptm_combination.Any(p => p.modification.Equals(m));
                     bool motif_matches_n_terminus = begin - theoretical_base.begin >= 0 && begin - theoretical_base.begin < theoretical_base.sequence.Length && m.Target.ToString() == theoretical_base.sequence[begin - theoretical_base.begin].ToString() && !mods_in_set.Any(mod => mod.ModificationType == "AminoAcid" && mod.Target.ToString() == "M");
@@ -281,19 +282,24 @@ namespace ProteoformSuiteInternal
                     e.begin--;
                     remove.Add(mod);
                 }
+
+
                 foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "Missing"))
                 {
-                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() == mod.modification.Target.ToString())
+                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() ==
+                        mod.modification.Target.ToString())
                     {
                         e.begin++;
                         remove.Add(mod); //dont have in ptmset --> change the begin & end
                     }
-                    else if (theoretical_base.sequence[this.end - this.begin].ToString() == mod.modification.Target.ToString())
+                    else if (theoretical_base.sequence[this.end - this.begin].ToString() ==
+                             mod.modification.Target.ToString())
                     {
                         e.end--;
                         remove.Add(mod);
                     }
                 }
+
                 foreach (var ptm in remove)
                 {
                     e.ptm_set.ptm_combination.Remove(ptm);

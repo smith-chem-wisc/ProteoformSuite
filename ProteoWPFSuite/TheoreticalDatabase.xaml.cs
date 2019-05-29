@@ -42,14 +42,7 @@ namespace ProteoWPFSuite
             InitializeParameterSet();
             initial_load = false;
         }
-
-        private bool SetMakeDatabaseButton()
-        {
-            bool ready_to_run = ReadyToRunTheGamut();
-            btn_downloadUniProtPtmList.IsEnabled = !ready_to_run && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() == 0;
-            btn_Make_Databases.IsEnabled = ready_to_run;
-            return ready_to_run;
-        }
+    
         //new trick in wpf
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
@@ -177,7 +170,7 @@ namespace ProteoWPFSuite
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory);
+            return Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -283,10 +276,6 @@ namespace ProteoWPFSuite
         private void dgv_loadFiles_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
         }
 
         private void dgv_loadFiles_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
@@ -311,10 +300,7 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             initialize_table_bindinglist();
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
+
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
@@ -337,11 +323,7 @@ namespace ProteoWPFSuite
 
         private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
         {
-            Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            btn_downloadUniProtPtmList.IsEnabled = false;
-            SetMakeDatabaseButton();
+            //DELETE THIS BUTTON
         }
 
         #endregion LOAD DATABASES GRID VIEW Private Methods
@@ -363,10 +345,7 @@ namespace ProteoWPFSuite
 
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
+ 
         }
 
         private void btn_clearFiles_Click(object sender, EventArgs e)
@@ -376,7 +355,6 @@ namespace ProteoWPFSuite
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            SetMakeDatabaseButton();
         }
 
         #endregion ADD/CLEAR Private Methods

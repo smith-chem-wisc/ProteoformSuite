@@ -5,12 +5,45 @@ using System.Linq;
 using ProteoformSuiteInternal;
 using Proteomics;
 using System.IO;
+using MassSpectrometry;
 
 namespace Test
 {
     [TestFixture]
     class TestTopDown
     {
+
+        [Test]
+        public void TestTopDownMetaMorpheusCommandLine()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            string result = Sweet.lollipop.metamorpheus_topdown(TestContext.CurrentContext.TestDirectory, true, 10, 10,
+                DissociationType.HCD);
+            Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
+
+            //set toml with new parameters
+            string[] toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            Assert.AreEqual("ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\"", toml_params[42]);
+            Assert.AreEqual("ProductMassTolerance = \"±10 PPM\"", toml_params[50]);
+            Assert.AreEqual("PrecursorMassTolerance = \"±10 PPM\"", toml_params[51]);
+            Assert.AreEqual("DissociationType = \"HCD\"", toml_params[66]);
+
+
+            result = Sweet.lollipop.metamorpheus_topdown(TestContext.CurrentContext.TestDirectory, false, 5, 25,
+                DissociationType.CID);
+            Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
+
+            //set toml with new parameters
+            toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            Assert.AreEqual("ListOfModsFixed = \"\"", toml_params[42]);
+            Assert.AreEqual("ProductMassTolerance = \"±25 PPM\"", toml_params[50]);
+            Assert.AreEqual("PrecursorMassTolerance = \"±5 PPM\"", toml_params[51]);
+            Assert.AreEqual("DissociationType = \"CID\"", toml_params[66]);
+        }
+
+
         [Test]
         public void TestSimpleAggregation()
         {
@@ -89,7 +122,7 @@ namespace Test
         }
 
         [Test]
-        public void TestTopdownReader()
+        public void TestTopdownReaderTDPortal()
         {
             // unlabeled
             Sweet.lollipop = new Lollipop();
@@ -103,8 +136,8 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Count);
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
-            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10894.157, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(10894.130, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
@@ -125,8 +158,8 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Count);
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
-            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10934.228, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(10934.201, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
@@ -147,8 +180,8 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Count);
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
-            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10951.178, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
@@ -167,13 +200,149 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Count);
-            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
-            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("RESID:AA929292 at S", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(7, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10991.249, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(4, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(10991.249, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+        }
+
+        [Test]
+        public void TestTopdownReaderMetaMorpheus()
+        {
+            // unlabeled
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(3, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+            Assert.AreEqual(8, Sweet.lollipop.topdown_proteoforms.Count());
+            Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().agg_mass, 3));
+
+            // neucode labeled
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(3, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+            Assert.AreEqual(8, Sweet.lollipop.topdown_proteoforms.Count());
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
+
+            // carbamidomethylated is labeled in MM output - should have same result as without it 
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.carbamidomethylation = true;
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(3, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+            Assert.AreEqual(8, Sweet.lollipop.topdown_proteoforms.Count());
+            Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().agg_mass, 3));
+
+            // carbamidomethylated and neucode labeled
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.carbamidomethylation = true;
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_topdown_ptms.Count);
+            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_topdown_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(3, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+            Assert.AreEqual(8, Sweet.lollipop.topdown_proteoforms.Count());
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
+        }
+
+        [Test]
+        public void TestGlycanMetaMorpheus()
+        {
+            // unlabeled
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "glyco_fdr_fullSeqWithMod.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Assert.AreEqual(1670, Sweet.lollipop.theoretical_database.glycan_mods.Count);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(6, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(68, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+            Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+            Assert.AreEqual(5, Sweet.lollipop.topdown_proteoforms.Count());
+            Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
+            Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
+
+            //remove glycan from db... should be bad
+            Sweet.lollipop.theoretical_database.uniprotModifications.Remove("H");
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(0, Sweet.lollipop.top_down_hits.Count);
+        }
+
+        [Test]
+        public void BadTDFile()
+        {
+
+            // unlabeled
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.clear_td();
+            InputFile file = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml"), Purpose.TopDown);
+            Sweet.lollipop.input_files.Add(file);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(1, Sweet.lollipop.input_files.Count(f => f.purpose == Purpose.TopDown));
+            Assert.AreEqual(0, Sweet.lollipop.top_down_hits.Count);
         }
 
         [Test]

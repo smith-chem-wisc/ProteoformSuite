@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
                 Sweet.lollipop.theoretical_database.populate_aa_mass_dictionary();
             }
 
-            if (!Sweet.lollipop.most_abundant_mass)
+            if (!Sweet.lollipop.use_average_mass)
             {
                 double proteoformMass = 18.010565; // start with water
                 char[] aminoAcids = sequence.ToCharArray();
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
                 }
 
                 return proteoformMass + aaMasses.Sum() +
-                       ptm_combination.Sum(p => (double)p.modification.MonoisotopicMass);
+                       ptm_combination.Sum(p => Math.Round((double)p.modification.MonoisotopicMass, 5));
             }
 
             //if most abundant mass, calculate iso distrubution, set modified/unmodified masses to most abundant.
@@ -91,14 +91,15 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            // Calculate isotopic distribution of the full peptide
-            var dist = IsotopicDistribution.GetDistribution(formula, 0.1, 1e-12);
+            //Calculate isotopic distribution of the full peptide
+            //var dist = IsotopicDistribution.GetDistribution(formula, 0.1, 1e-12);
 
-            double[] masses = dist.Masses.ToArray();
-            double[] intensities = dist.Intensities.ToArray();
-            double max = intensities.Max();
-            int modeMassIndex = Array.IndexOf(intensities, max);
-            return masses[modeMassIndex];
+            //double[] masses = dist.Masses.ToArray();
+            //double[] intensities = dist.Intensities.ToArray();
+            //double max = intensities.Max();
+            //int modeMassIndex = Array.IndexOf(intensities, max);
+            //return masses[modeMassIndex];
+            return formula.AverageMass;
         }
 
         #endregion Public Method

@@ -5,26 +5,29 @@ Software for constructing, quantifying, and visualizing proteoform families.
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/932cdbf7f3694271bb03abb5dbba036c)](https://www.codacy.com/app/acesnik/ProteoformSuite?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=smith-chem-wisc/ProteoformSuite&amp;utm_campaign=Badge_Grade)
 
 ## Papers and Software Releases
+The most current release can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases).
 
 Proteoform Suite: Software for Constructing, Quantifying, and Visualizing Proteoform Families. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/10.1021/acs.jproteome.7b00685)
-
 * The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.2.8).
+
+Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Constructing Proteoform Families [(2017, _Anal. Chem._)](http://pubs.acs.org/doi/abs/10.1021/acs.analchem.7b04221)
+* The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.0).
+
+Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
+* The release for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.1.12).
+
+Identification and Quantification of Murine Mitochondrial Proteoforms Using an Integrated Top-Down and Intact-Mass Strategy. [(2018, _J. Proteome Res._)](https://pubs.acs.org/doi/abs/10.1021/acs.jproteome.8b00469)
+* The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.3).
+
+Vignettes are housed in releases and also at [this repository](https://github.com/smith-chem-wisc/ProteoformSuiteVignettes).
 
 Video tutorial on how to use Proteoform Suite:
 [![Proteoform Suite Tutorial](https://img.youtube.com/vi/P17Y_aNYbAM/0.jpg)](https://youtu.be/P17Y_aNYbAM)
 
-Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Constructing Proteoform Families [(2017, _Anal. Chem._)](http://pubs.acs.org/doi/abs/10.1021/acs.analchem.7b04221)
-* The release and vignette for top-down analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.0).
-
-Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
-* The version used for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.1.12).
-
-Vignettes are housed in releases and also at [this repository](https://github.com/smith-chem-wisc/ProteoformSuiteVignettes).
-
 ## Functionality
-* Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
+* Proteoform Identification: Proteoform are identified from measurements of intact mass and optionally lysine count.
 * Custom Database: PTMs archived and UniProt and discovered using [G-PTM-D](https://github.com/smith-chem-wisc/gptmd) or [MetaMopheus](https://github.com/smith-chem-wisc/MetaMorpheus) are used in the construction of theoretical proteoforms.
-* Quantification: NeuCode-labeled proteoform intensity ratios are calculated from separate analysis files following proteoform identification.
+* Quantification: NeuCode-labeled or unlabeled proteoform intensity ratios are calculated from separate analysis files following proteoform identification.
 * Gene Ontology Analysis: Performed alongside quantification based on proteoforms that are significantly induced or repressed. GO terms are obtained from UniProt protein annotations.
 * Visualization: ProteoformSuite facilitates the visualization of the relationships between proteoforms by creating scripts to load in the network visualization program Cytoscape. 
 

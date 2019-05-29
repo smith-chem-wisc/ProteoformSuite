@@ -290,25 +290,13 @@ namespace ProteoformSuiteGUI
             }
 
             // Check that theoretical database(s) are present
-            if (!Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
+
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
             {
-                if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
-                {
-                    MessageBox.Show("Please list at least one protein database.", "Full Run");
-                    return null;
-                }
-                else
-                {
-                    DialogResult d1 = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
-                    if (d1 == DialogResult.OK)
-                    {
-                        Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
-                        if (loadResults.ReadyToRunTheGamut())
-                            loadResults.RunTheGamut(true); // updates the dgvs
-                    }
-                    else return null;
-                }
+                MessageBox.Show("Please list at least one protein database.", "Full Run");
+                return null;
             }
+
 
             // Option to choose a result folder
             if (Sweet.lollipop.results_folder == "")
@@ -363,10 +351,10 @@ namespace ProteoformSuiteGUI
                 warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
                 warning_methods.Add(string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
-            if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+            if (Sweet.lollipop.topdownReader.bad_topdown_ptms.Count > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_topdown_ptms.Distinct()));
             }
             if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
             {
