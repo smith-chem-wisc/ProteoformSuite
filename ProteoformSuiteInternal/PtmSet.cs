@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace ProteoformSuiteInternal
 {
@@ -8,6 +9,8 @@ namespace ProteoformSuiteInternal
         #region Public Properties
 
         public double mass { get; private set; }
+
+        public string ptm_description { get; set; } 
 
         public List<Ptm> ptm_combination { get; private set; }
 
@@ -20,7 +23,13 @@ namespace ProteoformSuiteInternal
         public PtmSet(List<Ptm> unique_ptm_combination)
         {
             ptm_combination = unique_ptm_combination;
-            mass = ptm_combination.Select(ptm => ptm.modification).Sum(m => (double)m.MonoisotopicMass);
+            mass = ptm_combination == null ? 0 : ptm_combination.Select(ptm => ptm.modification).Sum(m => Math.Round((double)m.MonoisotopicMass, 5));
+            ptm_description = ptm_combination == null ?
+                "Unknown" :
+                ptm_combination.Count == 0 ?
+                    "Unmodified" :
+                    string.Join("; ", ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
+
         }
 
         public PtmSet(List<Ptm> unique_ptm_combination, Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)
@@ -35,7 +44,7 @@ namespace ProteoformSuiteInternal
 
         public void compute_ptm_rank_sum(Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)
         {
-            ptm_rank_sum = ptm_combination.Sum(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks.TryGetValue((double)ptm.modification.MonoisotopicMass, out int rank) ? rank : Sweet.lollipop.mod_rank_sum_threshold)
+            ptm_rank_sum = ptm_combination.Sum(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks.TryGetValue(Math.Round((double)ptm.modification.MonoisotopicMass, 5), out int rank) ? rank : Sweet.lollipop.mod_rank_sum_threshold)
                 + additional_ptm_penalization_factor * (ptm_combination.Count - 1) // penalize additional PTMs
                 - ptm_combination.Count(ptm => Sweet.lollipop.theoretical_database.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
         }

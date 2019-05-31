@@ -15,7 +15,7 @@ CF   C6 H10 O1
 ID   Hydrogen Dodecyl Sulfate
 TG   X
 PP   Anywhere.
-MM   266.15516
+MM   266.15181
 MT   Common
 CF   H26 C12 S1 O4
 //

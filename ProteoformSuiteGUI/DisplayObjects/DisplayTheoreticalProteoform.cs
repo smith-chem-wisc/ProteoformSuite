@@ -108,7 +108,7 @@ namespace ProteoformSuiteGUI
 
         public string ptm_description
         {
-            get { return t.ptm_description; }
+            get { return t.ptm_set.ptm_description; }
         }
 
         public string goTerm_IDs

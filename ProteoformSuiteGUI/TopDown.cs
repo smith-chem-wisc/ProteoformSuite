@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Proteomics.RetentionTimePrediction;
 
 namespace ProteoformSuiteGUI
 {
@@ -47,31 +49,29 @@ namespace ProteoformSuiteGUI
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
             mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.OriginalId).Distinct().ToList();
-            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
+            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count(td => td.accepted).ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
-            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
+            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Where(td => td.accepted).Select(p => p.pfr_accession).Distinct().Count().ToString();
         }
 
         public void RunTheGamut(bool full_run)
         {
             if (!full_run)
             {
-                if (Sweet.lollipop.top_down_hits.Count == 0)
+                ClearListsTablesFigures(true);
+                if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
                 {
-                    ClearListsTablesFigures(true);
-                    if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
-                    {
-                        MessageBox.Show("Go back and load in top-down results.");
-                        return;
-                    }
-                    if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-                    {
-                        MessageBox.Show("Go back and construct a theoretical database.");
-                        return;
-                    }
-                    Sweet.lollipop.read_in_td_hits();
-                    tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
+                    MessageBox.Show("Go back and load in top-down results.");
+                    return;
                 }
+                if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                {
+                    MessageBox.Show("Go back and construct a theoretical database.");
+                    return;
+                }
+                Sweet.lollipop.read_in_td_hits();
+                tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
+
             }
             else
             {
@@ -82,10 +82,10 @@ namespace ProteoformSuiteGUI
             if (!full_run)
             {
                 List<string> warning_methods = new List<string>() { "Warning:" };
-                if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+                if (Sweet.lollipop.topdownReader.bad_topdown_ptms.Count > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_topdown_ptms.Distinct()));
                 }
                 if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
                 {
@@ -100,6 +100,7 @@ namespace ProteoformSuiteGUI
             //need to refill theo database --> added theoreticsl
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
+          
         }
 
         public void ClearListsTablesFigures(bool clear_following)

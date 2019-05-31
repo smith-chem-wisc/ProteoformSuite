@@ -16,15 +16,13 @@ namespace Test
             List<InputFile> files = new List<InputFile> {
                 new InputFile("fake.txt", Purpose.Identification),
                 new InputFile("fake.txt", Purpose.Identification),
-                new InputFile("fake.txt", Purpose.PtmList),
-                new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.ProteinDatabase),
                 new InputFile("fake.txt", Purpose.SpectraFile),
                 new InputFile("fake.txt", Purpose.SpectraFile),
                 new InputFile("fake.txt", Purpose.Quantification),
                 new InputFile("fake.txt", Purpose.Quantification),
             };
-            Assert.AreEqual(3, Sweet.lollipop.get_files(files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Count());
+            Assert.AreEqual(1, Sweet.lollipop.get_files(files, new List<Purpose> { Purpose.ProteinDatabase }).Count());
         }
 
         [Test]

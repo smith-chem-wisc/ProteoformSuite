@@ -1,4 +1,5 @@
-﻿using Proteomics;
+﻿using System;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -14,17 +15,17 @@ namespace ProteoformSuiteInternal
         public UnlocalizedModification(Modification m)
         {
             original_modification = m;
-            mass = (double)m.MonoisotopicMass;
+            mass = Math.Round((double)m.MonoisotopicMass, 5);
             id = m.OriginalId;
             ptm_count = 1;
             require_proteoform_without_mod = false;
 
             if (m.ModificationType == "Common")
-                ptm_rank = Sweet.lollipop.mod_rank_first_quartile / 2;
+                ptm_rank = 2;
             else if (m.ModificationType == "Deconvolution Error")
-                ptm_rank = Sweet.lollipop.mod_rank_first_quartile;
+                ptm_rank = 1;
             else
-                ptm_rank = Sweet.lollipop.modification_ranks[(double)m.MonoisotopicMass];
+                ptm_rank = Sweet.lollipop.modification_ranks[Math.Round((double)m.MonoisotopicMass, 5)];
         }
 
         public static string LookUpId(Modification m)

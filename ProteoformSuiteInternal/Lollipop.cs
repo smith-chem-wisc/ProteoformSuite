@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using System.Text;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -43,8 +45,8 @@ namespace ProteoformSuiteInternal
         {
             "Deconvolution Results for Identification (.xlsx, .tsv)",
             "Deconvolution Results for Quantification (.xlsx, .tsv)",
-            "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
+            "Protein Databases (.xml, .xml.gz, .fasta)",
+            "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
@@ -54,8 +56,8 @@ namespace ProteoformSuiteInternal
         {
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx", ".csv" },
-            new List<string> { ".xml", ".gz", ".fasta", ".txt" },
-            new List<string> { ".xlsx" },
+            new List<string> { ".xml", ".gz", ".fasta" },
+            new List<string> { ".xlsx" , ".psmtsv"},
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx" },
@@ -65,8 +67,8 @@ namespace ProteoformSuiteInternal
         {
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
-            "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
-            "Excel Files (*.xlsx) | *.xlsx",
+            "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
+            "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
@@ -76,7 +78,7 @@ namespace ProteoformSuiteInternal
         {
             new List<Purpose> { Purpose.Identification },
             new List<Purpose> { Purpose.Quantification },
-            new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
+            new List<Purpose> { Purpose.ProteinDatabase },
             new List<Purpose> { Purpose.TopDown },
             new List<Purpose> { Purpose.SpectraFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
@@ -106,10 +108,6 @@ namespace ProteoformSuiteInternal
                     {
                         file = new InputFile(complete_path, label, purposes.FirstOrDefault());
                     }
-                    else if (extension == ".txt")
-                    {
-                        file = new InputFile(complete_path, Purpose.PtmList);
-                    }
                     else
                     {
                         file = new InputFile(complete_path, Purpose.ProteinDatabase);
@@ -126,12 +124,6 @@ namespace ProteoformSuiteInternal
             Sweet.update_files_from_presets(destination);
         }
 
-        public static void enter_uniprot_ptmlist(string current_directory)
-        {
-            Loaders.LoadUniprot(Path.Combine(current_directory, "ptmlist.txt"), Loaders.GetFormalChargesDictionary(Loaders.LoadPsiMod(Path.Combine(current_directory, "PSI-MOD.obo2.xml"))));
-            Sweet.lollipop.enter_input_files(new[] { Path.Combine(current_directory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
-        }
-
         #endregion Input Files
 
         #region RAW EXPERIMENTAL COMPONENTS Public Fields
@@ -139,7 +131,7 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
-        public double raw_component_mass_tolerance = 10;
+        public double raw_component_mass_tolerance = 5;
         public double min_likelihood_ratio = 0;
         public double max_fit = 0.2;
 
@@ -176,20 +168,12 @@ namespace ProteoformSuiteInternal
 
         #endregion RAW EXPERIMENTAL COMPONENTS
 
-        #region DECONVOLUTION Public Fields
-
-        public int min_assumed_cs = 5;
-        public int max_assumed_cs = 50;
-
-        #endregion DECONVOLUTION Public Fields
-
         #region DECONVOLUTION
 
         public string promex_deconvolute(int maxcharge, int mincharge, string directory)
         {
             int successfully_deconvoluted_files = 0;
-            string dir = Directory.GetCurrentDirectory();
-            Loaders.LoadElements(dir + @"\elements.dat");
+            Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 Process proc = new Process();
@@ -309,6 +293,66 @@ namespace ProteoformSuiteInternal
 
         #endregion DECONVOLUTION
 
+        #region METAMORPHEUS TOPDOWN SEARCH
+
+        public string metamorpheus_topdown(string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
+        {
+            //set toml with new parameters
+            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            toml_params[42] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
+                : "ListOfModsFixed = \"\"";
+            toml_params[50] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
+            toml_params[51] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
+            toml_params[66] = "DissociationType = \"" + dissocation_type + "\"";
+            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"), toml_params);
+
+            Loaders.LoadElements();
+            Process proc = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+
+            string metaMorpheusBuild = directory + @"\MetaMorpheusDotNetFrameworkAppveyor";
+
+            if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+            {
+                startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+            }
+            else
+            {
+                return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+            }
+
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardInput = true;
+            startInfo.RedirectStandardOutput = false;
+            startInfo.CreateNoWindow = true;
+            proc.StartInfo = startInfo;
+
+            proc.Start();
+
+            proc.StandardInput.WriteLine("cd " + metaMorpheusBuild);
+
+            string command = "CMD.exe -t TopDownSearchSettingsMetaMorpheus0.0.300.toml -s ";
+            foreach (var file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
+            {
+                command += file.complete_path + " ";
+            }
+            command += "-d ";
+            foreach (var file in input_files.Where(f => f.purpose == Purpose.ProteinDatabase))
+            {
+                command += file.complete_path + " ";
+            }
+
+            proc.StandardInput.WriteLine(command);
+
+
+            proc.StandardInput.Close();
+            proc.WaitForExit();
+            proc.Close();
+            return "Successfully ran MetaMorpheus top-down search.";
+        }
+
+        #endregion METAMORPHEUS TOPDOWN SEARCH
+
         #region NEUCODE PAIRS Public Fields
 
         public List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -412,7 +456,7 @@ namespace ProteoformSuiteInternal
         public void read_in_td_hits()
         {
             Sweet.lollipop.top_down_hits.Clear();
-            topdownReader.topdown_ptms.Clear();
+            topdownReader.bad_topdown_ptms.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
@@ -477,12 +521,12 @@ namespace ProteoformSuiteInternal
         public HashSet<Component> remaining_verification_components = new HashSet<Component>();
         public HashSet<Component> remaining_quantification_components = new HashSet<Component>();
         public bool validate_proteoforms = true;
-        public double mass_tolerance = 10; //ppm
-        public double retention_time_tolerance = 5; //min
+        public double mass_tolerance = 5; //ppm
+        public double retention_time_tolerance = 2.5; //min
         public int maximum_missed_monos = 3;
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
-        public int min_num_CS = 1;
+        public int min_num_CS = 3;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
         public bool add_td_proteoforms = true;
@@ -784,13 +828,11 @@ namespace ProteoformSuiteInternal
 
         #region THEORETICAL DATABASE Public Fields
 
-        public bool methionine_oxidation = true;
-        public bool carbamidomethylation = true;
+        public bool methionine_oxidation = false;
+        public bool carbamidomethylation = false;
         public bool methionine_cleavage = true;
-        public bool natural_lysine_isotope_abundance = false;
-        public bool neucode_light_lysine = true;
-        public bool neucode_heavy_lysine = false;
-        public int max_ptms = 4;
+        public bool use_average_mass = false;
+        public int max_ptms = 2;
         public int decoy_databases = 10;
         public int min_peptide_length = 7;
         public double ptmset_mass_tolerance = 0.00001;
@@ -805,7 +847,7 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
 
         //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
-        public bool useRandomSeed_decoys = false;
+        public bool useRandomSeed_decoys = true;
 
         public int randomSeed_decoys = 1;
 
@@ -814,17 +856,18 @@ namespace ProteoformSuiteInternal
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public bool ee_accept_peaks_based_on_rank = true;
-        public bool et_accept_peaks_based_on_rank = true;
+        public bool et_use_notch = false;
+        public bool et_notch_ppm = true;
+        public bool et_bestETRelationOnly = true;
+        public double notch_tolerance_et = 1;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
         public double et_high_mass_difference = 350;
-        public double no_mans_land_lowerBound = 0.22;
-        public double no_mans_land_upperBound = 0.88;
-        public double peak_width_base_et = 0.03; //need to be separate so you can change one and not other.
-        public double peak_width_base_ee = 0.03;
-        public double min_peak_count_et = 10;
-        public double min_peak_count_ee = 10;
+        public double peak_width_base_et = .02; //need to be separate so you can change one and not other.
+        public double peak_width_base_ee = .02;
+        public double min_peak_count_et = 50;
+        public double min_peak_count_ee = 50;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -839,7 +882,7 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
+                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, et_bestETRelationOnly));
                 if (i == 0)
                     ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
@@ -1371,6 +1414,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1398,6 +1442,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
+                    p.ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;

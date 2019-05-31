@@ -81,7 +81,6 @@ namespace ProteoformSuiteInternal
             this.agg_intensity = t.agg_intensity;
             this.topdown_id = t.topdown_id;
             this.agg_mass = t.agg_mass;
-            this.mass_shifted = t.mass_shifted;
             this.is_target = t.is_target;
             this.topdown_end = t.topdown_end;
             this.topdown_begin = t.topdown_begin;
@@ -91,7 +90,7 @@ namespace ProteoformSuiteInternal
         public void calculate_td_properties()
         {
             //correct here for missed monoisotopic mass...
-            this.agg_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            this.agg_mass = topdown_hits.Select(h => (h.reported_mass- Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.agg_mass;
             this.agg_rt = topdown_hits.Select(h => h.ms2_retention_time).Average();
         }

@@ -79,7 +79,7 @@ namespace ProteoformSuiteInternal
                     directory, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_").Replace(@"\", "_").Replace(@"/", "_") + "_", timestamp,
                     go_analysis as IGoAnalysis, true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label, false);
                 message += Environment.NewLine;
             }
             message += "Remember to install the package \"enhancedGraphics\" under App -> App Manager to view piechart nodes for quantitative data";
@@ -236,22 +236,17 @@ namespace ProteoformSuiteInternal
             report += Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references == null) + "\tTop-Down Proteoforms Unidentified by Intact-Mass Analysis" + Environment.NewLine;
             report += Environment.NewLine;
 
-            int identified_exp_proteoforms_intact = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
-            report += identified_exp_proteoforms_intact.ToString() + "\tIdentified Intact-Mass Experimental Proteoforms" + Environment.NewLine;
-            int ambiguous_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.ambiguous);
-            report += ambiguous_exp_proteoforms.ToString() + "\tIdentified Intact-Mass Experimental Proteoforms That Are Possibly Ambiguous" + Environment.NewLine;
-            report += Environment.NewLine;
-
             List<string> td_proteins = Sweet.lollipop.topdown_proteoforms.Select(t => t.accession.Split('_')[0].Split('-')[0]).Distinct().ToList();
             report += td_proteins.Count() + "\tUnique Top-Down Protein Identifications (TDPortal)" + Environment.NewLine;
-            List<string> intact_mass_proteins = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(p => p.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0]).Distinct().ToList();
+            List<string> intact_mass_proteins = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => e.ambiguous_identifications.Count == 0 && !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(p => p.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0]).Distinct().ToList();
             report += td_proteins.Concat(intact_mass_proteins).Distinct().Count() + "\tTotal Unique Protein Identifications" + Environment.NewLine;
             report += Environment.NewLine;
 
             //get list of experimental accession, begin, end, and PTMs
-            List<string> experimental_ids = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
-                .Select(p => string.Join(",", (p.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(e => e.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + "_" + p.begin + "_" + p.end + "_" + string.Join(", ", p.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m))).ToList();
-            report += experimental_ids.Distinct().Count() + "\tUnique Intact-Mass Experimental Proteoforms Identifications" + Environment.NewLine;
+            List<string> experimental_ids = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => e.ambiguous_identifications.Count == 0 && !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))
+                .Select(p => string.Join(",", (p.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(e => e.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + "_" + p.begin + "_" + p.end + "_" + string.Join(", ", p.ptm_set.ptm_combination.Where(m => m.modification.ModificationType != "Deconvolution Error" ).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m))).ToList();
+            report += experimental_ids.Distinct().Count() + "\tUnique Intact-Mass Experimental Proteoform Identifications" + Environment.NewLine;
+            report += Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.ambiguous_identifications.Count > 0) + "\tAmbiguous Intact-Mass Experimental Proteoform Identifications" + Environment.NewLine;
             int unique_td = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count();
             report += unique_td + "\tUnique Top-Down Proteoforms Identifications (TDPortal)" + Environment.NewLine;
             List<string> topdown_ids = Sweet.lollipop.topdown_proteoforms
@@ -409,7 +404,6 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Proteoform ID", typeof(string));
             results.Columns.Add("Proteoform Description", typeof(string));
             results.Columns.Add("Aggregated Observation ID", typeof(string));
-            results.Columns.Add("SGD ID", typeof(string));
             results.Columns.Add("Gene Name", typeof(string));
             results.Columns.Add("GeneID", typeof(string));
             results.Columns.Add("Accessions", typeof(string));
@@ -417,7 +411,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Begin and End", typeof(string));
             results.Columns.Add("UniProt-Annotated Modifications");
             results.Columns.Add("Potentially Novel Modifications");
-            results.Columns.Add("Mass Error", typeof(double));
+            results.Columns.Add("Mass Error", typeof(string));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
@@ -432,6 +426,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("M/z values", typeof(string));
             results.Columns.Add("Charges values", typeof(string));
             results.Columns.Add("Statistically Significant", typeof(bool));
+            results.Columns.Add("Abundant Component for Manual Validation of Identification", typeof(string));
+            results.Columns.Add("Family", typeof(string));
 
             foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null)
@@ -440,20 +436,30 @@ namespace ProteoformSuiteInternal
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
                 results.Rows.Add(
-                    (e.linked_proteoform_references.First() as TheoreticalProteoform).accession,
-                    (e.linked_proteoform_references.First() as TheoreticalProteoform).description,
+                    (e.linked_proteoform_references.First() as TheoreticalProteoform).accession + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item1.accession))
+                        : ""),
+                    (e.linked_proteoform_references.First() as TheoreticalProteoform).description + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).description))
+                        : ""),
                     e.accession,
-                    e.linked_proteoform_references.Last().gene_name.ordered_locus,
-                    e.linked_proteoform_references.Last().gene_name.primary,
-                    string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()),
-                    string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()),
-                    e.ptm_set.ptm_combination.Count == 0 ?
-                        "Unmodified" :
-                        string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)),
-                    e.begin + " to " + e.end,
+                    e.linked_proteoform_references.Last().gene_name.primary + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).gene_name.primary))
+                        : ""),
+                    string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()) + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
+                        : ""),
+                    string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())))
+                        : ""),
+                    e.ptm_set.ptm_description  + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item4.ptm_description)) : ""),
+                    e.begin + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item2 + " to " + p.Item3)) : ""),
                     e.uniprot_mods,
                     e.novel_mods,
-                    e.mass_error,
+                    e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString()
+                    + (e.ambiguous_identifications.Count > 0
+                    ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.Item1 as TheoreticalProteoform, i.Item4, i.Item2, i.Item3).ToString()))
+                    : ""),
                     e.modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
@@ -467,8 +473,10 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.denominatorIntensitySum : get_tusher_values(e.quant, analysis).denominatorIntensitySum,
                     e.aggregated.Count > 0 ? string.Join(", ", e.aggregated.OrderByDescending(c => c.intensity_sum).First().charge_states.Select(cs => Math.Round(cs.mz_centroid, 2))) : "",
                     e.aggregated.Count > 0 ? string.Join(", ", e.aggregated.OrderByDescending(c => c.intensity_sum).First().charge_states.Select(cs => cs.charge_count)) : "",
-                    Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant
-                );
+                    Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant,
+                    e.manual_validation_id,
+                    e.family != null ? e.family.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() > 1 ? "Ambiguous": "Identified" : ""
+                    );
             }
 
             StringBuilder result_string = new StringBuilder();
@@ -514,7 +522,7 @@ namespace ProteoformSuiteInternal
                 array[2] = e.linked_proteoform_references == null ? "N/A" : e.linked_proteoform_references.Last().gene_name.primary;
                 array[3] = e.linked_proteoform_references == null ? "N/A" : string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
                 array[4] = e.linked_proteoform_references == null ? "N/A" : string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct());
-                array[5] = e.linked_proteoform_references == null ? "N/A" : e.ptm_description;
+                array[5] = e.linked_proteoform_references == null ? "N/A" : e.ptm_set.ptm_description;
                 array[6] = e.linked_proteoform_references == null ? "N/A" : e.begin + " to " + e.end;
                 array[7] = e.agg_mass;
                 array[8] = e.agg_rt;
@@ -581,7 +589,6 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Best Scoring Hit", typeof(string));
-            results.Columns.Add("Theoretical SGD ID", typeof(string));
             results.Columns.Add("Theoretical Gene Name", typeof(string));
             results.Columns.Add("Top-Down Gene Name", typeof(string));
             results.Columns.Add("Family ID", typeof(string));
@@ -592,26 +599,35 @@ namespace ProteoformSuiteInternal
             {
                 results.Rows.Add(
                     td.pfr_accession,
-                    td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).accession,
+                    td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).accession + (td.ambiguous_identifications.Count > 0
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.Item1.accession))
+                                                                          : ""),
                     td.accession,
                     td.accession.Split('_')[0],
-                    td.linked_proteoform_references == null ? "N/A" : string.Join("; ", (td.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()),
+                    td.linked_proteoform_references == null ? "N/A" : string.Join("; ", (td.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()) + (td.ambiguous_identifications.Count > 0
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
+                                                                          : ""),
                     td.geneID,
-                    td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).description,
+                    td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).description + (td.ambiguous_identifications.Count > 0
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).description))
+                                                                          : ""),
                     td.name,
-                    td.linked_proteoform_references == null ? "N/A" : td.begin + " to " + td.end,
+                    td.linked_proteoform_references == null ? "N/A" : td.begin + " to " + td.end + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.Item2 + " to " + p.Item3)) : ""),
                     td.topdown_begin + " to " + td.topdown_end,
-                    td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join("; ", td.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)),
+                    td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_description + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.Item4.ptm_description)) : ""),
                     td.topdown_ptm_description,
-                    td.topdown_ptm_set.ptm_combination.Count == 0 ?
-                        "Unmodified" : string.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)),
-                    td.linked_proteoform_references == null ? "N/A" : td.mass_error.ToString(),
+                    td.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)),
+                    td.linked_proteoform_references == null ? "N/A" : td.calculate_mass_error(td.linked_proteoform_references.First() as TheoreticalProteoform, td.ptm_set, td.begin, td.end).ToString()
+                                                                      + (td.ambiguous_identifications.Count > 0
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.calculate_mass_error(i.Item1 as TheoreticalProteoform, i.Item4, i.Item2, i.Item3).ToString()))
+                                                                          : ""),
                     td.modified_mass - td.theoretical_mass,
                     td.modified_mass,
                     td.agg_rt,
                     td.manual_validation_id,
-                    td.linked_proteoform_references == null ? "N/A" : td.linked_proteoform_references.Last().gene_name.ordered_locus,
-                    td.linked_proteoform_references == null ? "N/A" : td.linked_proteoform_references.Last().gene_name.primary,
+                    td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).gene_name.primary + (td.ambiguous_identifications.Count > 0
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).gene_name.primary))
+                                                                          : ""),
                     td.gene_name != null ? td.gene_name.primary : "",
                     td.family == null ? "N/A" : td.family.family_id.ToString(),
                     td.correct_id,

@@ -65,11 +65,11 @@ namespace ProteoWPFSuite
                     return;
                 cb_et_peak_accept_rank_check = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_Auto"));
-                Sweet.lollipop.et_accept_peaks_based_on_rank = (bool) cb_et_peak_accept_rank.IsChecked;
-                if (this.MDIParent != null)
-                {
-                    change_peak_acceptance();
-                }                
+                /*Sweet.lollipop.et_use_notch = (bool)cb_use_ppm_notch.IsChecked;
+                label10.Visible = cb_use_ppm_notch.Checked;
+                nUD_notch_tolerance.Visible = cb_use_ppm_notch.Checked;
+                rb_daltons.Visible = cb_use_ppm_notch.Checked;
+                rb_ppm.Visible = cb_use_ppm_notch.Checked;*/
             }
         }
 

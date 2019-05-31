@@ -675,7 +675,7 @@ namespace ProteoWPFSuite
 
         #region Quantification Private Methods
 
-        private void btn_refreshCalculation_Click(object sender, EventArgs e)
+        private void btn_refreshCalculation_Click(object sender, RoutedEventArgs e)
         {
             if (ReadyToRunTheGamut())
             {
@@ -1446,7 +1446,7 @@ namespace ProteoWPFSuite
                 if ((bool)rb_customBackgroundSet.IsChecked)
                 {
                     backgroundUpdated = false;
-                    goTermBackgroundChanged(new object(), new EventArgs());
+                    goTermBackgroundChanged();
                 }
             }
         }
@@ -1470,16 +1470,7 @@ namespace ProteoWPFSuite
                 tb_familyBuildFolder.Text = temp_folder_path; //triggers TextChanged method
             }
         }
-
-        private void tb_familyBuildFolder_TextChanged(object sender, EventArgs e)
-        {
-            string path = tb_familyBuildFolder.Text;
-            Sweet.lollipop.family_build_folder_path = path;
-            got_cyto_temp_folder = true;
-            enable_buildAllFamilies_button();
-            enable_buildSelectedFamilies_button();
-        }
-
+        
         private void enable_buildAllFamilies_button()
         {
             if (got_cyto_temp_folder)
@@ -1605,6 +1596,14 @@ namespace ProteoWPFSuite
 
         
         public ProteoformSweet MDIParent { get; set; }
-       
+
+        private void tb_familyBuildFolder_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string path = tb_familyBuildFolder.Text;
+            Sweet.lollipop.family_build_folder_path = path;
+            got_cyto_temp_folder = true;
+            enable_buildAllFamilies_button();
+            enable_buildSelectedFamilies_button();
+        }
     }
 }

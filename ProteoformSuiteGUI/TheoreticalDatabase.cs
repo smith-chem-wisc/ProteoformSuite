@@ -44,14 +44,6 @@ namespace ProteoformSuiteGUI
             initial_load = false;
         }
 
-        private bool SetMakeDatabaseButton()
-        {
-            bool ready_to_run = ReadyToRunTheGamut();
-            btn_downloadUniProtPtmList.Enabled = !ready_to_run && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() == 0;
-            btn_Make_Databases.Enabled = ready_to_run;
-            return ready_to_run;
-        }
-
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
@@ -127,8 +119,7 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            btn_NeuCode_Lt.Checked = Sweet.lollipop.neucode_labeled;
-            btn_NaturalIsotopes.Checked = !Sweet.lollipop.neucode_labeled;
+            cb_average_mass.Checked = Sweet.lollipop.use_average_mass;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -168,19 +159,27 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut(bool full_run)
         {
-            ClearListsTablesFigures(true);
-            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
-            FillTablesAndCharts();
-            if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            if (ReadyToRunTheGamut())
             {
-                MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                ClearListsTablesFigures(true);
+                Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
+                FillTablesAndCharts();
+                if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+                {
+                    MessageBox.Show(
+                        "Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
+                        string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please list at least one protein database.");
             }
         }
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory);
+            return Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -247,21 +246,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.methionine_cleavage = ckbx_Meth_Cleaved.Checked;
         }
 
-        private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.natural_lysine_isotope_abundance = btn_NaturalIsotopes.Checked;
-        }
-
-        private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.neucode_light_lysine = btn_NeuCode_Lt.Checked;
-        }
-
-        private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.neucode_heavy_lysine = btn_NeuCode_Hv.Checked;
-        }
-
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.max_ptms = Convert.ToInt32(nUD_MaxPTMs.Value);
@@ -289,10 +273,6 @@ namespace ProteoformSuiteGUI
         private void dgv_loadFiles_DragDrop(object sender, DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
         }
 
         private void dgv_loadFiles_DragEnter(object sender, DragEventArgs e)
@@ -303,7 +283,6 @@ namespace ProteoformSuiteGUI
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
@@ -317,10 +296,6 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             initialize_table_bindinglist();
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
@@ -342,15 +317,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
 
-        private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
-        {
-            Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            btn_downloadUniProtPtmList.Enabled = false;
-            SetMakeDatabaseButton();
-        }
-
         #endregion LOAD DATABASES GRID VIEW Private Methods
 
         #region ADD/CLEAR Private Methods
@@ -365,16 +331,11 @@ namespace ProteoformSuiteGUI
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Sweet.lollipop.input_files, true);
             }
 
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
         }
 
         private void btn_clearFiles_Click(object sender, EventArgs e)
@@ -384,7 +345,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            SetMakeDatabaseButton();
         }
 
         #endregion ADD/CLEAR Private Methods
@@ -443,6 +403,11 @@ namespace ProteoformSuiteGUI
         private void nud_randomSeed_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
+        }
+        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.use_average_mass = cb_average_mass.Checked;
+
         }
     }
 }
