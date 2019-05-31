@@ -222,6 +222,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="MetaMorpheusDotNetFrameworkAppveyor\CMD.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheusDotNetFrameworkAppveyor\Contaminants\MPI_Contaminants.fasta">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheusDotNetFrameworkAppveyor\Data\elements.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheusDotNetFrameworkAppveyor\ProteolyticDigestion\proteases.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheusDotNetFrameworkAppveyor\settings.toml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheusDotNetFrameworkAppveyor\TopDownSearchSettingsMetaMorpheus0.0.300.toml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Mods\stored_mods.modnames">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -231,10 +249,175 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Chemistry.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\CMD.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\combos.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\PSI-MOD.obo.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\ptmlist.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\unimod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\EngineLayer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\FlashLFQ.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\FluentCommandLineParser.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\ManagedThermoHelperLayer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MassSpectrometry.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MathNet.Numerics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mgf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\aListOfmods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\glyco.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\Mods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\substitutions.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\surfactants.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\tmt.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MzIdentML.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MzLibUtil.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MzML.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\NetSerializer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Nett.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\PepXML.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Proteomics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Common.Interfaces.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Containers.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.CrossValidation.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.DecisionTrees.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.GradientBoost.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.InputOutput.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Metrics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Optimization.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.RandomForest.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Spectra.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Data.Common.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Diagnostics.StackTrace.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Diagnostics.Tracing.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Globalization.Extensions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.IO.Compression.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Net.Http.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Net.Sockets.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Runtime.Serialization.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Security.Cryptography.Algorithms.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Security.SecureString.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Threading.Overlapped.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Xml.XPath.XDocument.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\TaskLayer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Thermo.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\UnmanagedThermoHelperLayer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\UsefulProteomicsDatabases.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\aListOfmods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Mods\amino_acids.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\custom_mods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\glyco.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\intact_mods.txt">
@@ -243,7 +426,22 @@
     <Content Include="Mods\missing.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Mods\Mods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Mods\PSI-MOD.obo.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\ptmlist.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\SugarDatabase.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\surfactants.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\UniprotGlycanDatabase.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\variable.txt">

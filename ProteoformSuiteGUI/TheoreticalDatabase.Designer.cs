@@ -38,11 +38,10 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.btn_addFiles = new System.Windows.Forms.Button();
             this.splitContainer7 = new System.Windows.Forms.SplitContainer();
-            this.btn_downloadUniProtPtmList = new System.Windows.Forms.Button();
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.cb_mostAbundantMass = new System.Windows.Forms.CheckBox();
+            this.cb_average_mass = new System.Windows.Forms.CheckBox();
             this.nud_randomSeed = new System.Windows.Forms.NumericUpDown();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.cb_useRandomSeed = new System.Windows.Forms.CheckBox();
@@ -99,7 +98,6 @@
             this.splitContainer6.Panel2.SuspendLayout();
             this.splitContainer6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer7)).BeginInit();
-            this.splitContainer7.Panel1.SuspendLayout();
             this.splitContainer7.Panel2.SuspendLayout();
             this.splitContainer7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).BeginInit();
@@ -257,27 +255,12 @@
             this.splitContainer7.Location = new System.Drawing.Point(0, 0);
             this.splitContainer7.Name = "splitContainer7";
             // 
-            // splitContainer7.Panel1
-            // 
-            this.splitContainer7.Panel1.Controls.Add(this.btn_downloadUniProtPtmList);
-            // 
             // splitContainer7.Panel2
             // 
             this.splitContainer7.Panel2.Controls.Add(this.btn_clearFiles);
             this.splitContainer7.Size = new System.Drawing.Size(349, 57);
             this.splitContainer7.SplitterDistance = 183;
             this.splitContainer7.TabIndex = 0;
-            // 
-            // btn_downloadUniProtPtmList
-            // 
-            this.btn_downloadUniProtPtmList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_downloadUniProtPtmList.Location = new System.Drawing.Point(0, 0);
-            this.btn_downloadUniProtPtmList.Name = "btn_downloadUniProtPtmList";
-            this.btn_downloadUniProtPtmList.Size = new System.Drawing.Size(183, 57);
-            this.btn_downloadUniProtPtmList.TabIndex = 52;
-            this.btn_downloadUniProtPtmList.Text = "Download UniProt PTM List";
-            this.btn_downloadUniProtPtmList.UseVisualStyleBackColor = true;
-            this.btn_downloadUniProtPtmList.Click += new System.EventHandler(this.btn_downloadUniProtPtmList_Click);
             // 
             // btn_clearFiles
             // 
@@ -312,7 +295,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.cb_mostAbundantMass);
+            this.groupBox3.Controls.Add(this.cb_average_mass);
             this.groupBox3.Controls.Add(this.nud_randomSeed);
             this.groupBox3.Controls.Add(this.cb_limitLargePtmSets);
             this.groupBox3.Controls.Add(this.cb_useRandomSeed);
@@ -338,19 +321,19 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theoretical Database Creation";
             // 
-            // cb_mostAbundantMass
+            // cb_average_mass
             // 
-            this.cb_mostAbundantMass.AutoSize = true;
-            this.cb_mostAbundantMass.Checked = true;
-            this.cb_mostAbundantMass.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_mostAbundantMass.Location = new System.Drawing.Point(9, 25);
-            this.cb_mostAbundantMass.Margin = new System.Windows.Forms.Padding(2);
-            this.cb_mostAbundantMass.Name = "cb_mostAbundantMass";
-            this.cb_mostAbundantMass.Size = new System.Drawing.Size(126, 17);
-            this.cb_mostAbundantMass.TabIndex = 52;
-            this.cb_mostAbundantMass.Text = "Most Abundant Mass";
-            this.cb_mostAbundantMass.UseVisualStyleBackColor = true;
-            this.cb_mostAbundantMass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
+            this.cb_average_mass.AutoSize = true;
+            this.cb_average_mass.Checked = true;
+            this.cb_average_mass.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_average_mass.Location = new System.Drawing.Point(9, 25);
+            this.cb_average_mass.Margin = new System.Windows.Forms.Padding(2);
+            this.cb_average_mass.Name = "cb_average_mass";
+            this.cb_average_mass.Size = new System.Drawing.Size(94, 17);
+            this.cb_average_mass.TabIndex = 52;
+            this.cb_average_mass.Text = "Average Mass";
+            this.cb_average_mass.UseVisualStyleBackColor = true;
+            this.cb_average_mass.CheckedChanged += new System.EventHandler(this.cb_mostAbundantMass_CheckedChanged);
             // 
             // nud_randomSeed
             // 
@@ -798,7 +781,6 @@
             this.splitContainer6.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).EndInit();
             this.splitContainer6.ResumeLayout(false);
-            this.splitContainer7.Panel1.ResumeLayout(false);
             this.splitContainer7.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer7)).EndInit();
             this.splitContainer7.ResumeLayout(false);
@@ -855,7 +837,6 @@
         private System.Windows.Forms.TextBox tb_totalTheoreticalProteoforms;
         private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
         private System.Windows.Forms.Splitter splitter1;
-        private System.Windows.Forms.Button btn_downloadUniProtPtmList;
         private System.Windows.Forms.SplitContainer param_splitcontainer;
         private System.Windows.Forms.DataGridView dgv_Database;
         private System.Windows.Forms.DataGridView dgv_unlocalizedModifications;
@@ -875,6 +856,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.NumericUpDown nud_randomSeed;
         private System.Windows.Forms.CheckBox cb_useRandomSeed;
-        private System.Windows.Forms.CheckBox cb_mostAbundantMass;
+        private System.Windows.Forms.CheckBox cb_average_mass;
     }
 }

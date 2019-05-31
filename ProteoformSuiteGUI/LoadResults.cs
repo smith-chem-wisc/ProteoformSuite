@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using MassSpectrometry;
 
 namespace ProteoformSuiteGUI
 {
@@ -43,6 +44,9 @@ namespace ProteoformSuiteGUI
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             ((ProteoformSweet)MdiParent).enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             ((ProteoformSweet)MdiParent).enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            cmbx_dissociation_types.Items.Clear();
+            cmbx_dissociation_types.Items.AddRange(new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD });
+            cmbx_dissociation_types.SelectedIndex = 0;
         }
 
         public List<DataTable> SetTables()
@@ -60,8 +64,6 @@ namespace ProteoformSuiteGUI
                 DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.BottomUp).Select(x => new DisplayInputFile(x)).ToList(), "BottomUp", new List<Purpose> { Purpose.BottomUp }));
             if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
                 DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(x => new DisplayInputFile(x)).ToList(), "QuantificationFiles", new List<Purpose> { Purpose.Quantification }));
-            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Count() > 0)
-                DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Select(x => new DisplayInputFile(x)).ToList(), "ProteinDatabases", new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList }));
             return DataTables;
         }
 
@@ -128,11 +130,6 @@ namespace ProteoformSuiteGUI
             populate_file_lists();
         }
 
-        private void rb_advanced_user_CheckedChanged(object sender, EventArgs e)
-        {
-            populate_file_lists();
-        }
-
         private void rb_deconvolution_CheckedChanged(object sender, EventArgs e)
         {
             populate_file_lists();
@@ -143,6 +140,11 @@ namespace ProteoformSuiteGUI
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
+        private void rb_topdown_search_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
+
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
@@ -150,20 +152,13 @@ namespace ProteoformSuiteGUI
             if (rb_standardOptions.Checked)
             {
                 for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-
+                topdownSearch_panel.Visible = false;
                 cmb_loadTable1.SelectedIndex = 0;
-
                 cmb_loadTable1.Enabled = true;
-
-                bt_calibrate.Visible = false;
+                bt_action.Text = "Step Through Processing";
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                bt_deconvolute.Visible = false;
-                bt_stepthru.Visible = true;
                 bt_fullrun.Visible = true;
-                bt_calibrate.Visible = false;
-                panel_deconv_calib.Visible = false;
-                panel_step.Visible = true;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
                 label_maxcharge.Visible = false;
@@ -177,16 +172,12 @@ namespace ProteoformSuiteGUI
             }
             else if (rb_chemicalCalibration.Checked)
             {
+                topdownSearch_panel.Visible = false;
                 for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                bt_calibrate.Visible = true;
                 cb_calibrate_td_files.Visible = true;
                 cb_calibrate_raw_files.Visible = true;
-                bt_deconvolute.Visible = false;
-                bt_stepthru.Visible = false;
+                bt_action.Text = "Calibrate";
                 bt_fullrun.Visible = false;
-                bt_calibrate.Visible = true;
-                panel_deconv_calib.Visible = true;
-                panel_step.Visible = false;
                 nud_maxcharge.Visible = false;
                 nud_mincharge.Visible = false;
                 label_maxcharge.Visible = false;
@@ -204,21 +195,14 @@ namespace ProteoformSuiteGUI
             }
             else if (rb_deconvolution.Checked)
             {
+                topdownSearch_panel.Visible = false;
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
-
                 cmb_loadTable1.SelectedIndex = 0;
-
                 cmb_loadTable1.Enabled = false;
-
-                bt_calibrate.Visible = false;
+                bt_action.Text = "Deconvolute";
                 cb_calibrate_raw_files.Visible = false;
                 cb_calibrate_td_files.Visible = false;
-                bt_stepthru.Visible = false;
                 bt_fullrun.Visible = false;
-                bt_calibrate.Visible = false;
-                bt_deconvolute.Visible = true;
-                panel_deconv_calib.Visible = true;
-                panel_step.Visible = false;
                 nud_maxcharge.Visible = true;
                 nud_mincharge.Visible = true;
                 label_maxcharge.Visible = true;
@@ -233,6 +217,29 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.SelectedIndex = 0;
 
                 cmb_loadTable1.Enabled = false;
+            }
+            else if (rb_topdown_search.Checked)
+            {
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[2]);
+                topdownSearch_panel.Visible = true;
+                cmb_loadTable1.SelectedIndex = 0;
+                bt_action.Text = "MetaMorpheus Top-Down Search";
+                cb_calibrate_raw_files.Visible = false;
+                cb_calibrate_td_files.Visible = false;
+                bt_fullrun.Visible = false;
+                nud_maxcharge.Visible = true;
+                nud_mincharge.Visible = true;
+                label_maxcharge.Visible = true;
+                label_mincharge.Visible = true;
+                label_maxRT.Visible = true;
+                label_minRT.Visible = true;
+                rb_neucode.Visible = false;
+                rb_unlabeled.Visible = false;
+                calib_stand_splitContainer.Visible = false;
+                fullrun_groupbox.Visible = false;
+
+                cmb_loadTable1.SelectedIndex = 0;
             }
 
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
@@ -434,9 +441,18 @@ namespace ProteoformSuiteGUI
 
         private void bt_stepthru_Click(object sender, EventArgs e)
         {
+            if (rb_standardOptions.Checked) stepthru();
+            if (rb_chemicalCalibration.Checked) calibrate();
+            if (rb_deconvolution.Checked) deconvolute();
+            if(rb_topdown_search.Checked) metamorpheus_topdown_search();
+        }
+
+        private void stepthru()
+        {
             (MdiParent as ProteoformSweet).resultsToolStripMenuItem.ShowDropDown();
             MessageBox.Show("Use the Results menu to step through processing results.\n\n" +
-                "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+                            "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+
         }
 
         private FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
@@ -467,7 +483,7 @@ namespace ProteoformSuiteGUI
 
         #region CHANGED TABLE SELECTION Private Methods
 
-        private void bt_calibrate_Click(object sender, EventArgs e)
+        private void calibrate()
         {
             //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             //{
@@ -482,7 +498,7 @@ namespace ProteoformSuiteGUI
             MessageBox.Show(Sweet.lollipop.calibrate_files());
         }
 
-        private void bt_deconvolute_Click(object sender, EventArgs e)
+        private void deconvolute()
         {
             if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
@@ -604,6 +620,21 @@ namespace ProteoformSuiteGUI
 
         private void topbar_splitcontainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
+        }
+
+        private void metamorpheus_topdown_search()
+        {
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
+            {
+                MessageBox.Show("Please enter at least one raw file to search."); return;
+            }
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.ProteinDatabase).Count() == 0)
+            {
+                MessageBox.Show("Please enter at least one database files to search."); return;
+            }
+            MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Environment.CurrentDirectory, cb_carbamidomethylate.Checked, 
+                (double)nud_precursor_mass_tol.Value,
+                (double)nUD_product_mass_tol.Value,  (DissociationType)cmbx_dissociation_types.SelectedItem));
         }
     }
 }

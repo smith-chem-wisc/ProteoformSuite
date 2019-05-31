@@ -74,7 +74,7 @@ namespace ProteoWPFSuite
 
         public string PS_ptm_description
         {
-            get { return t.ptm_set.ptm_description; }
+            get { return t.ptm_description; }
         }
 
         public string uniprot_mods
@@ -138,9 +138,9 @@ namespace ProteoWPFSuite
             get { return t.manual_validation_id; }
         }
 
-        public string mass_error
+        public double mass_error
         {
-            get { return t.linked_proteoform_references != null ? t.calculate_mass_error(t.linked_proteoform_references.First() as TheoreticalProteoform, t.ptm_set, t.begin, t.end).ToString() : "N/A"; }
+            get { return t.mass_error; }
         }
 
         #endregion Public Properties

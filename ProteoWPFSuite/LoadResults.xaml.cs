@@ -197,12 +197,12 @@ namespace ProteoWPFSuite
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
-            if ((bool)rb_standardOptions.IsChecked)
+            if ((bool)rb_standardOptions.IsChecked) 
             {
                 cmb_loadTable1.IsEnabled = true;
                 for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
                 
-                bt_calibrate.Visibility = Visibility.Collapsed;
+                bt_calibrate.Visibility = Visibility.Collapsed;//hide all
                 cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
                 cb_calibrate_td_files.Visibility = Visibility.Collapsed;
                 bdcb.Visibility = Visibility.Collapsed;

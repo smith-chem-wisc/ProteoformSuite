@@ -7,6 +7,7 @@ namespace ProteoformSuiteInternal
 {
     public class ProteinWithGoTerms : Protein
     {
+    
         public List<string> AccessionList { get; set; }
         public List<GoTerm> GoTerms { get; set; }
         public bool topdown_protein { get; set; }

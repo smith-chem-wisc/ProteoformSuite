@@ -1,0 +1,35 @@
+ID   H
+MT   Common
+TG   N
+PP   Anywhere.
+MM   162.05282
+CF   C6O5H10
+//
+ID   N
+MT   Common
+TG   N
+PP   Anywhere.
+MM   203.07937
+CF   C8O5NH13
+//
+ID   A
+MT   Common
+TG   N
+PP   Anywhere.
+MM   291.09542
+CF   C11O8NH17
+//
+ID   G
+MT   Common
+TG   N
+PP   Anywhere.
+MM   307.09033
+CF   C11H17NO9
+//
+ID   F
+MT   Common
+TG   N
+PP   Anywhere.
+MM   146.05791
+CF   C6O4H10
+//

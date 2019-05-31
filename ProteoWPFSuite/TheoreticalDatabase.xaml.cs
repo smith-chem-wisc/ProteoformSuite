@@ -42,14 +42,7 @@ namespace ProteoWPFSuite
             InitializeParameterSet();
             initial_load = false;
         }
-
-        private bool SetMakeDatabaseButton()
-        {
-            bool ready_to_run = ReadyToRunTheGamut();
-            btn_downloadUniProtPtmList.IsEnabled = !ready_to_run && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).Count() == 0;
-            btn_Make_Databases.IsEnabled = ready_to_run;
-            return ready_to_run;
-        }
+        
         //new trick in wpf
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
@@ -124,8 +117,8 @@ namespace ProteoWPFSuite
 
         public void InitializeParameterSet()
         {
-            btn_NeuCode_Lt.IsChecked = Sweet.lollipop.neucode_labeled;
-            btn_NaturalIsotopes.IsChecked = !Sweet.lollipop.neucode_labeled;
+            //btn_NeuCode_Lt.IsChecked = Sweet.lollipop.neucode_labeled;
+            //btn_NaturalIsotopes.IsChecked = !Sweet.lollipop.neucode_labeled;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -171,13 +164,13 @@ namespace ProteoWPFSuite
             if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
         }
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory);
+            return Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -243,19 +236,22 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.methionine_cleavage = (bool)ckbx_Meth_Cleaved.IsChecked;
         }
-
+        /*
         private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
         {
+            Sweet.lollipop.natural_lysine_isotope_abundance = (bool)btn_NaturalIsotopes.IsChecked;
         }
 
         private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
         {
+            Sweet.lollipop.neucode_light_lysine = (bool)btn_NeuCode_Lt.IsChecked;
         }
 
         private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
         {
+            Sweet.lollipop.neucode_heavy_lysine = (bool)btn_NeuCode_Hv.IsChecked;
         }
-
+        */
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.max_ptms = Convert.ToInt32(nUD_MaxPTMs.Value);
@@ -283,10 +279,7 @@ namespace ProteoWPFSuite
         private void dgv_loadFiles_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
+         
         }
 
         private void dgv_loadFiles_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
@@ -311,10 +304,6 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             initialize_table_bindinglist();
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
@@ -334,7 +323,7 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
-
+        /*
         private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
         {
             Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
@@ -342,7 +331,7 @@ namespace ProteoWPFSuite
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             btn_downloadUniProtPtmList.IsEnabled = false;
             SetMakeDatabaseButton();
-        }
+        }*/
 
         #endregion LOAD DATABASES GRID VIEW Private Methods
 
@@ -363,10 +352,7 @@ namespace ProteoWPFSuite
 
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            if (!SetMakeDatabaseButton() && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0)
-            {
-                MessageBox.Show("You still need a PTM list. Please use the \"Donwload UniProt PTM List\" button.", "Enabling Make Database Button");
-            }
+           
         }
 
         private void btn_clearFiles_Click(object sender, EventArgs e)
@@ -376,7 +362,7 @@ namespace ProteoWPFSuite
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            SetMakeDatabaseButton();
+            //SetMakeDatabaseButton();
         }
 
         #endregion ADD/CLEAR Private Methods

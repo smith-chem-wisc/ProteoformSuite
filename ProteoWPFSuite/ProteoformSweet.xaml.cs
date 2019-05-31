@@ -27,9 +27,9 @@ namespace ProteoWPFSuite
         public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Finished
         public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Finished
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Finished
-        public Quantification quantification = new Quantification();//Not
-        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms(); //Not
-        public ResultsSummary resultsSummary = new ResultsSummary();//Not
+        public Quantification quantification = new Quantification();//Finished
+        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms(); //Finished
+        public ResultsSummary resultsSummary = new ResultsSummary();//No
         public List<ISweetForm> forms = new List<ISweetForm>(); //contains a list of user controls
         #endregion Public Fields
 

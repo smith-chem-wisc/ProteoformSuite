@@ -7,16 +7,368 @@
              xmlns:winformchart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="900" d:DesignWidth="1500" MinHeight="900" MinWidth="1500" >
     <Grid>
-        <WindowsFormsHost>
-            <winformchart:Chart x:Name="ct_proteoformIntensities"></winformchart:Chart>
-        </WindowsFormsHost>
-        <WindowsFormsHost>
-            <winformchart:Chart x:Name="ct_volcano_logFold_logP"></winformchart:Chart>
-        </WindowsFormsHost>
-        <WindowsFormsHost>
-            <winformchart:Chart x:Name="ct_relativeDifference"></winformchart:Chart>
-        </WindowsFormsHost>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <WindowsFormsHost>
+                <winform:DataGridView ColumnHeadersHeight="20" x:Name="dgv_quantification_results">
+
+                </winform:DataGridView>
+            </WindowsFormsHost>
+            <GridSplitter Grid.Row="0" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+
+            <GroupBox Grid.Row="2" Header="Minimum Required Observations">
+
+                <StackPanel>
+                    <DockPanel LastChildFill="True">
+                        <WindowsFormsHost Width="52" Height="20" DockPanel.Dock="Left" Margin="0 0 2 0">
+                            <winform:NumericUpDown Dock="Fill" x:Name="nud_minObservations" Minimum="1" Maximum="100" Increment="1" ValueChanged="nud_minObservations_ValueChanged">
+
+                            </winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <WindowsFormsHost>
+                            <winform:ComboBox DropDownStyle="DropDownList" x:Name="cmbx_observationsTypeRequired" FormattingEnabled="True" SelectedIndexChanged="cmbx_observationsTypeRequired_SelectedIndexChanged" TextChanged="cmbx_empty_TextChanged">
+
+                            </winform:ComboBox>
+                        </WindowsFormsHost>
+                    </DockPanel>
+                    <Label>
+                        Quantitative Values Table Selection
+                    </Label>
+                    <WindowsFormsHost Height="22" HorizontalAlignment="Stretch">
+                        <winform:ComboBox Dock="Fill" x:Name="cmbx_quantitativeValuesTableSelection" DropDownStyle="DropDownList" SelectedIndexChanged="cmbx_quantitativeValuesTableSelection_SelectedIndexChanged" >
+
+                        </winform:ComboBox>
+                    </WindowsFormsHost>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="3" >
+                <GroupBox.Header>
+                    <TextBlock>
+                        Imputation from Background.<LineBreak/>
+                        (Shift and width are multiples of observed log2 intensity std. dev.)
+                    </TextBlock>
+
+                </GroupBox.Header>
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="135">Average Log2 Intensity</Label>
+                            <TextBox x:Name="tb_avgIntensity" Width="80" IsReadOnly="True"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="135">Std. Dev. Log2 Intensity</Label>
+                            <TextBox x:Name="tb_stdevIntensity" Width="80" IsReadOnly="True"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="135">Bkgd Width</Label>
+                            <WindowsFormsHost Height="28" Width="60">
+                                <winform:NumericUpDown Dock="Fill" x:Name="nud_bkgdWidth" Value="0.5" DecimalPlaces="1" Increment="0.1" Minimum="0.1" Maximum="1" ValueChanged="nud_bkgdWidth_ValueChanged"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="135">Std. Dev. Log2 Intensity</Label>
+                            <WindowsFormsHost Height="28" Width="60">
+                                <winform:NumericUpDown Dock="Fill" x:Name="nud_bkgdShift" DecimalPlaces="1" Value="-1.8" Increment="0.1" Maximum="0" Minimum="-4" ValueChanged="nud_bkgdShift_ValueChanged"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Stretch">
+                        <Label>
+                            Intensity Distribution Chart Selection
+                        </Label>
+                        <WindowsFormsHost Height="28" Margin="2 0 0 2">
+                            <winform:ComboBox x:Name="cmbx_intensityDistributionChartSelection" FormattingEnabled="True" Dock="Fill" DropDownStyle="DropDownList" SelectedIndexChanged="cmbx_intensityDistributionChartSelection_SelectedIndexChanged" TextChanged="cmbx_empty_TextChanged" ></winform:ComboBox>
+                        </WindowsFormsHost>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Margin="4" x:Name="cb_useRandomSeed" DockPanel.Dock="Left" IsChecked="{Binding Path=USERANDOMSEED,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Use Random Seed:</CheckBox>
+                            <WindowsFormsHost Height="28" Width="70">
+                                <winform:NumericUpDown x:Name="nud_randomSeed" Dock="Fill" Maximum="1000" Minimum="1" Increment="1" Value="1" ValueChanged="nud_randomSeed_ValueChanged"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </GroupBox>
+            <GridSplitter Grid.Row="4" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+            <WindowsFormsHost Grid.Row="5">
+                <winformchart:Chart x:Name="ct_proteoformIntensities" Dock="Fill" Text="log2_intensity" MouseClick="ct_proteoformIntensities_MouseClick" >
+                    <winformchart:Chart.Series>
+                        <winformchart:Series ChartType="Point" ChartArea="ChartArea1" Legend="Legend1" Name="Series1"/>
+                        <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Legend="Legend1" Name="Series2"/>
+                    </winformchart:Chart.Series>
+                    <winformchart:Chart.Legends>
+                        <winformchart:Legend Name="Legend1"/>
+                    </winformchart:Chart.Legends>
+                    <winformchart:Chart.ChartAreas>
+                        <winformchart:ChartArea Name="ChartArea1"/>
+                    </winformchart:Chart.ChartAreas>
+
+
+                </winformchart:Chart>
+            </WindowsFormsHost>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <WindowsFormsHost>
+                <winformchart:Chart Text="Volcano" x:Name="ct_volcano_logFold_logP" Dock="Fill" MouseClick="ct_volcano_logFold_logP_MouseClick">
+                    <winformchart:Chart.Legends>
+                        <winformchart:Legend Name="Legend2"/>
+                    </winformchart:Chart.Legends>
+                    <winformchart:Chart.Series>
+                        <winformchart:Series ChartType="Point" ChartArea="ChartArea2" Legend="Legend2" Name="Series3"/>
+                    </winformchart:Chart.Series>
+                    <winformchart:Chart.ChartAreas>
+                        <winformchart:ChartArea Name="ChartArea2"/>
+                    </winformchart:Chart.ChartAreas>
+
+                </winformchart:Chart>
+            </WindowsFormsHost>
+            <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+            <StackPanel Grid.Row="2">
+                <Button x:Name="btn_refreshCalculation" Content="Refresh Calculations" Margin="2" Click="btn_refreshCalculation_Click"></Button>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="rb_significanceByFoldChange" Margin="0 0 5 0" IsChecked="{Binding Path=SIGNIFICANCEBYFOLDCHANGE,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Significance by Fold Change Analysis</RadioButton>
+                    <RadioButton x:Name="rb_signficanceByPermutation" IsChecked="{Binding Path=SIGNFICANCEBYPERMUTATION,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Significance by Permutation Analysis</RadioButton>
+                </StackPanel>
+                <GroupBox Header="Volcano Plot">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <WindowsFormsHost Height="28">
+                                <winform:ComboBox x:Name="cmbx_ratioNumerator" DropDownStyle="DropDownList" Dock="Fill"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <Label Grid.Column="1">divided by</Label>
+                            <WindowsFormsHost Grid.Column="2" Height="28">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_ratioDenominator" DropDownStyle="DropDownList"></winform:ComboBox>
+                            </WindowsFormsHost>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <WindowsFormsHost Height="28" Width="60">
+                                <winform:NumericUpDown x:Name="nUD_min_fold_change" Dock="Fill" Value="0" DecimalPlaces="2" Increment="0.01" Maximum="10" Minimum="0" ValueChanged="nUD_min_fold_change_ValueChanged"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <Label Margin="0 0 5 0">Minimum Fold Change</Label>
+                            <WindowsFormsHost Height="28" Width="60">
+                                <winform:NumericUpDown x:Name="nud_benjiHochFDR" Value="0" DecimalPlaces="2" Maximum="1" Minimum="0" Increment="0.01" ValueChanged="nud_benjiHochFDR_ValueChanged"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <Label>Significance FDR</Label>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Significance FDR Via Permutation">
+                    <DockPanel LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Left">
+                            <Label>Relative Difference Chart Selection</Label>
+                            <WindowsFormsHost Height="28">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_relativeDifferenceChartSelection" DropDownStyle="DropDownList" SelectedIndexChanged="cmbx_relativeDifferenceChartSelection_SelectedIndexChanged" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <StackPanel Orientation="Horizontal">
+                                <Label>Relative Difference Offset</Label>
+                                <WindowsFormsHost Height="28" Width="75" Margin="0 2 0 0">
+                                    <winform:NumericUpDown x:Name="nud_Offset" Minimum="0" Maximum="5" Increment="0.1" DecimalPlaces="1" Value="0" InterceptArrowKeys="False" ValueChanged="nud_Offset_ValueChanged"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                            </StackPanel>
+                            <DockPanel Margin="0 2 0 0" LastChildFill="True">
+                                <WindowsFormsHost Height="28" Width="60" DockPanel.Dock="Left">
+                                    <winform:ComboBox x:Name="cmbx_foldChangeConjunction" DropDownStyle="DropDownList" Dock="Fill" SelectedIndexChanged="cmbx_foldChangeConjunction_SelectedIndexChanged">
+
+                                    </winform:ComboBox>
+                                </WindowsFormsHost>
+                                <CheckBox Content="Fold Change:" x:Name="cb_useFoldChangeCutoff" DockPanel.Dock="Left" IsChecked="{Binding Path=USEFOLDCHANGECUTOFF,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"></CheckBox>
+                                <WindowsFormsHost Margin="2 0 0 0">
+                                    <winform:NumericUpDown x:Name="nud_foldChangeCutoff" DecimalPlaces="1" Increment="0.1" Maximum="10" Minimum="1" Value="1" Dock="Fill" ValueChanged="nud_permutationFoldChangeCutoff_ValueChanged"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                            </DockPanel>
+                            <DockPanel LastChildFill="True">
+                                <Label>Significance FDR</Label>
+                                <TextBox x:Name="tb_FDR" IsReadOnly="True"></TextBox>
+                            </DockPanel>
+                        </StackPanel>
+                        <StackPanel Margin="2 0 0 0">
+                            <Label>Induced Condition</Label>
+                            <WindowsFormsHost Height="28">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_inducedCondition" FormattingEnabled="True" DropDownStyle="DropDownList" SelectedIndexChanged="cmbx_inducedCondition_SelectedIndexChanged" >
+
+                                </winform:ComboBox>
+                            </WindowsFormsHost>
+                            <CheckBox Margin="0 2 0 0" x:Name="cb_useAveragePermutationFoldChange" IsChecked="{Binding Path=USEAVERAGEPERMUTATIONFOLDCHANGE,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Average</CheckBox>
+                            <DockPanel LastChildFill="True" Margin="0 2 0 0">
+                                <CheckBox DockPanel.Dock="Left" x:Name="cb_useBiorepPermutationFoldChange" Margin="0 5 0 0" IsChecked="{Binding Path=USEBIOREPPERMUTATIONFOLDCHANGE,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">in</CheckBox>
+                                <WindowsFormsHost DockPanel.Dock="Left" Height="28" Width="60" Margin="2 0 0 0">
+                                    <winform:NumericUpDown  Dock="Fill" x:Name="nud_foldChangeObservations" Minimum="1" Maximum="1000" Increment="1" DecimalPlaces="0" Value="1" ValueChanged="nud_foldChangeObservations_ValueChanged"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                                <Label>biological replicates</Label>
+                            </DockPanel>
+                            <CheckBox x:Name="cb_useLocalFdrCutoff" IsChecked="{Binding Path=USELOCALFDRCUTOFF,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Use Rough Local FDR Cutoff:</CheckBox>
+                            <WindowsFormsHost HorizontalAlignment="Center" Height="25" Width="80">
+                                <winform:NumericUpDown Dock="Fill" x:Name="nud_localFdrCutoff" DecimalPlaces="3" Increment="0.001" Maximum="2" Minimum="0" ValueChanged="nud_localFdrCutoff_ValueChanged" ></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                    </DockPanel>
+                </GroupBox>
+            </StackPanel>
+            <GridSplitter Grid.Row="3" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+            <Grid Grid.Row="4">
+                <WindowsFormsHost Margin="2">
+                    <winformchart:Chart x:Name="ct_relativeDifference" Dock="Fill" Text="Observed vs. Expected Relative Difference" MouseClick="ct_relativeDifference_MouseClick" >
+                        <winformchart:Chart.Series>
+                            <winformchart:Series ChartType="Point" ChartArea="ChartArea1" Legend="Legend1" Name="obsVSexp"/>
+                            <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Legend="Legend1" Name="positiveOffset"/>
+                            <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Legend="Legend1" Name="negativeOffset"/>
+                        </winformchart:Chart.Series>
+                        <winformchart:Chart.Legends>
+                            <winformchart:Legend Name="Legend1"/>
+                        </winformchart:Chart.Legends>
+                        <winformchart:Chart.ChartAreas>
+                            <winformchart:ChartArea Name="ChartArea1"/>
+                        </winformchart:Chart.ChartAreas>
+
+                    </winformchart:Chart>
+                </WindowsFormsHost>
+            </Grid>
+
+        </Grid>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="25"></RowDefinition>
+                </Grid.RowDefinitions>
+                <WindowsFormsHost Margin="1">
+                    <winform:DataGridView x:Name="dgv_goAnalysis" Dock="Fill" ColumnHeadersHeightSizeMode="AutoSize">
+                        <winform:DataGridView.RowTemplate>
+                            <winform:DataGridViewRow Height="28" ReadOnly="False"/>
+                        </winform:DataGridView.RowTemplate>
+
+                    </winform:DataGridView>
+                </WindowsFormsHost>
+                <WindowsFormsHost Grid.Row="1" Margin="1">
+                    <winform:ComboBox x:Name="cmbx_goAspect" DropDownStyle="DropDownList" Dock="Fill" FormattingEnabled="True" SelectedIndexChanged="cmbx_goAspect_SelectedIndexChanged" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                </WindowsFormsHost>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <GroupBox Grid.Column="0" Header="GO Term Thresholds" x:Name="gb_goThresholds">
+                    <StackPanel Margin="2">
+                        <StackPanel Orientation="Horizontal" Height="Auto">
+                            <Label Width="120">Corrected p-value &lt;</Label>
+                            <WindowsFormsHost Height="25" Width="108">
+                                <winform:NumericUpDown Dock="Fill" DecimalPlaces="2" Increment="0.01" Maximum="1" Minimum="0" x:Name="nud_FDR"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0 1 0 1">
+                            <Label Width="120">|Ratio| &gt;</Label>
+                            <WindowsFormsHost Height="25" Width="108">
+                                <winform:NumericUpDown Dock="Fill" DecimalPlaces="1" Increment="0.1" Maximum="50" Minimum="-50" x:Name="nud_ratio"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0 1 0 1">
+                            <Label Width="120">Intensity&gt;</Label>
+                            <WindowsFormsHost Height="25" Width="108">
+                                <winform:NumericUpDown Dock="Fill" DecimalPlaces="0" Increment="1000" Maximum="1000000000000" Minimum="0" x:Name="nud_intensity"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Column="1" Header="Background Go Terms" Margin="3 0 0 0">
+                    <StackPanel Margin="2">
+                        <RadioButton x:Name="rb_quantifiedSampleSet" Margin="1"  IsChecked="{Binding Path=QUANTIFIEDSAMPLESET, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="Quantified Sample Set"/>
+                        <RadioButton Margin="1" x:Name="rb_detectedSampleSet" Content="Detected Sample Set" IsChecked="{Binding Path=DETECTEDSAMPLESET, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <RadioButton Margin="1" x:Name="rb_customBackgroundSet" Content="Protein List (Text File)"  IsChecked="{Binding Path=CUSTOMBACKGROUNDSET, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <StackPanel Orientation="Horizontal" Margin="3">
+                            <TextBox Margin="0 0 3 0" Width="160" Height="22" x:Name="tb_goTermCustomBackground"/>
+                            <Button x:Name="btn_customBackgroundBrowse" Content="Browse" Click="btn_customBackgroundBrowse_Click"/>
+                        </StackPanel>
+                        <RadioButton Margin="1" x:Name="rb_allTheoreticalProteins" Content="Theoretical Set" IsChecked="{Binding Path=ALLTHEORETICALPROTEINS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+            <Grid Grid.Row="2">
+                <GroupBox Header="Quantified Family Display with Cytoscape">
+                    <DockPanel LastChildFill="True">
+                        <StackPanel Margin="0 2 0 0">
+                            <DockPanel LastChildFill="True" FlowDirection="LeftToRight" Margin="1">
+                                <Label>Folder for Family Build</Label>
+                                <TextBox Width="100" x:Name="tb_familyBuildFolder" TextChanged="tb_familyBuildFolder_TextChanged" ></TextBox>
+                                <Button Margin="1 0 0 0" x:Name="btn_browseTempFolder" Click="btn_browseTempFolder_Click" >Browse</Button>
+                            </DockPanel>
+                            <DockPanel LastChildFill="True" Margin="1">
+                                <Label x:Name="lb_timeStamp">Most Recent Time Stamp
+                                </Label>
+                                <TextBox IsReadOnly="True" x:Name="tb_recentTimeStamp"></TextBox>
+                            </DockPanel>
+                            <CheckBox Margin="1" x:Name="cb_geneCentric" IsChecked="True">Build Gene-Centric Families</CheckBox>
+                            <Button Margin="1" x:Name="btn_buildAllFamilies" Click="btn_buildAllQuantifiedFamilies_Click">Build All Quantified Families</Button>
+                            <Button Margin="1" x:Name="btn_buildFamiliesWithSignificantChange" Click="btn_buildFamiliesWithSignificantChange_Click">Build All Quantified Families w/ Significant Change</Button>
+                            <Button Margin="1" x:Name="btn_buildSelectedQuantFamilies" Click="btn_buildSelectedQuantFamilies_Click">Build Selected Quantified Families</Button>
+                            <Button Margin="1" x:Name="btn_buildFamiliesAllGO" Click="btn_buildFamiliesAllGO_Click">Build Families with All GO Terms Above Thresholds</Button>
+                            <Button Margin="1" x:Name="btn_buildFromSelectedGoTerms" Click="btn_buildFromSelectedGoTerms_Click">Build Families with Selected GO Terms</Button>
+                            <GroupBox Padding="2" Header="Highlights for Significant Differences">
+                                <StackPanel>
+                                    <CheckBox x:Name="cb_redBorder" Margin="1" IsChecked="{Binding Path=REDBORDER,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Red Node Border</CheckBox>
+                                    <CheckBox x:Name="cb_boldLabel" Margin="1" IsChecked="{Binding Path=BOLDLABEL,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Bold Label</CheckBox>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                        <StackPanel Margin="1">
+                            <Label>Node Color Scheme</Label>
+                            <WindowsFormsHost Height="25">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_colorScheme" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <Label>Node Layout</Label>
+                            <WindowsFormsHost Height="25">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_nodeLayout" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <Label>Node Label Positioning</Label>
+                            <WindowsFormsHost Height="25">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_nodeLabelPositioning" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <Label>Node Label Information</Label>
+                            <WindowsFormsHost Height="25">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_nodeLabel" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <Label>Edge Label Information</Label>
+                            <WindowsFormsHost Height="25">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_edgeLabel" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                            <Label>Gene Label</Label>
+                            <WindowsFormsHost Height="25">
+                                <winform:ComboBox Dock="Fill" x:Name="cmbx_geneLabel" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>
