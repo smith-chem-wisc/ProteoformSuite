@@ -29,14 +29,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(is_cb_ee_peak_accept_rank == value)
+                if(is_cb_ee_peak_accept_rank == value || MDIParent==null)
                 {
                     return;
                 }
                 MessageBox.Show("Auto Works");
                 is_cb_ee_peak_accept_rank = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_Auto"));
-                if (MDIParent == null)
+                if (is_cb_ee_peak_accept_rank==value || MDIParent == null)
                 {
                     return;
                 }
@@ -52,7 +52,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(is_cb_view_decoy_histogram == value)
+                if(is_cb_view_decoy_histogram == value || MDIParent==null)
                 {
                     return;
                 }
@@ -71,7 +71,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(is_cb_Graph_lowerThreshold == value)
+                if(is_cb_Graph_lowerThreshold == value || MDIParent==null)
                 {
                     return;
                 }

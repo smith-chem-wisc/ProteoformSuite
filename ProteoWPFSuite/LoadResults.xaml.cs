@@ -35,7 +35,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (_labeltxt==value)
+                if (_labeltxt==value || MDIParent==null)
                     return;
                 _labeltxt = value;
 
@@ -57,7 +57,7 @@ namespace ProteoWPFSuite
             }
             set
             {   
-                if (ck_rbneucode == value)
+                if (ck_rbneucode == value || MDIParent == null)
                     return;
                 ck_rbneucode = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbneucode"));
@@ -72,7 +72,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (value < 0)
+                if (value < 0 || MDIParent == null)
                     return;
                 cb_select = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CB_select"));
