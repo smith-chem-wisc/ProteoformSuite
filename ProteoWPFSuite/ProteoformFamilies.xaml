@@ -127,6 +127,7 @@
                         <CheckBox Margin="0 5 5 0" x:Name="cb_count_adducts_as_id" IsChecked="{Binding Path=CK_cb_count_adducts_as_id,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Count Adducts as Identifications</CheckBox>
                         <CheckBox Margin="0 5 5 0" x:Name="cb_geneCentric" IsChecked="{Binding Path=CK_cb_geneCentric,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Build Gene-Centric Families</CheckBox>
                         <CheckBox Margin="0 5 5 0" x:Name="cb_buildAsQuantitative" IsChecked="{Binding Path=CK_cb_buildAsQuantitative,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Build as Quantitative Families</CheckBox>
+                        <CheckBox Margin="0 5 5 0" x:Name="cb_scale_nodes" IsChecked="{Binding Path=CK_cb_scale_nodes,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Scale Selected Families to Largest Node</CheckBox>
                         <GroupBox Header="Highlights for Significant Differences" Margin="0 5 5 5">
                             <StackPanel>
                                 <CheckBox Margin="0 5 5 0" x:Name="cb_redBorder" IsEnabled="False">Red Node Border</CheckBox>
