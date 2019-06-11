@@ -247,7 +247,7 @@ namespace ProteoWPFSuite
             foreach (ISweetForm form in forms) form.InitializeParameterSet();
             return method_file_success;
         }
-
+        /*
         public Stopwatch full_run()
         {
             forms[1].ClearListsTablesFigures(true); // clear forms following load deconvolution results
@@ -372,7 +372,7 @@ namespace ProteoWPFSuite
             stopwatch.Stop();
             Mouse.OverrideCursor = null;
             return stopwatch;
-        }
+        }*/
 
         #endregion METHOD TOOL STRIP Private Methods
 
