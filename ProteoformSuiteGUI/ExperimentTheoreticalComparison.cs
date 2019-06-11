@@ -527,5 +527,10 @@ namespace ProteoformSuiteGUI
             rb_daltons.Checked = !rb_ppm.Checked;
             Sweet.lollipop.et_notch_ppm = rb_ppm.Checked;
         }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

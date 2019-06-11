@@ -857,9 +857,12 @@ namespace ProteoformSuiteInternal
 
         public bool ee_accept_peaks_based_on_rank = true;
         public bool et_use_notch = false;
+        public bool ee_use_notch = false;
         public bool et_notch_ppm = true;
         public bool et_bestETRelationOnly = true;
         public double notch_tolerance_et = 1;
+        public bool ee_notch_ppm = true;
+        public double notch_tolerance_ee = 1;
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;

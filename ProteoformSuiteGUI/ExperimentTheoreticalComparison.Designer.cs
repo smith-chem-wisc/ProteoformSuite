@@ -58,6 +58,9 @@
             this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rb_ppm = new System.Windows.Forms.RadioButton();
+            this.rb_daltons = new System.Windows.Forms.RadioButton();
+            this.cb_bestETPairOnly = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
             this.nUD_notch_tolerance = new System.Windows.Forms.NumericUpDown();
             this.cb_use_ppm_notch = new System.Windows.Forms.CheckBox();
@@ -85,9 +88,6 @@
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Relations = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.cb_bestETPairOnly = new System.Windows.Forms.CheckBox();
-            this.rb_ppm = new System.Windows.Forms.RadioButton();
-            this.rb_daltons = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -305,7 +305,7 @@
             this.groupBox6.Controls.Add(this.cb_discoveryHistogram);
             this.groupBox6.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox6.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox6.Location = new System.Drawing.Point(486, 202);
+            this.groupBox6.Location = new System.Drawing.Point(486, 203);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(263, 93);
             this.groupBox6.TabIndex = 36;
@@ -355,7 +355,7 @@
             this.groupBox5.Controls.Add(this.tb_relationTableFilter);
             this.groupBox5.Controls.Add(this.label13);
             this.groupBox5.Controls.Add(this.tb_peakTableFilter);
-            this.groupBox5.Location = new System.Drawing.Point(486, 59);
+            this.groupBox5.Location = new System.Drawing.Point(486, 60);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(263, 100);
             this.groupBox5.TabIndex = 35;
@@ -423,7 +423,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(29, 2);
+            this.groupBox4.Location = new System.Drawing.Point(29, 3);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -431,6 +431,45 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
+            // 
+            // rb_ppm
+            // 
+            this.rb_ppm.AutoSize = true;
+            this.rb_ppm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_ppm.Location = new System.Drawing.Point(22, 139);
+            this.rb_ppm.Name = "rb_ppm";
+            this.rb_ppm.Size = new System.Drawing.Size(45, 17);
+            this.rb_ppm.TabIndex = 58;
+            this.rb_ppm.Text = "ppm";
+            this.rb_ppm.UseVisualStyleBackColor = true;
+            this.rb_ppm.CheckedChanged += new System.EventHandler(this.rb_ppm_CheckedChanged);
+            // 
+            // rb_daltons
+            // 
+            this.rb_daltons.AutoSize = true;
+            this.rb_daltons.Checked = true;
+            this.rb_daltons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_daltons.Location = new System.Drawing.Point(22, 116);
+            this.rb_daltons.Name = "rb_daltons";
+            this.rb_daltons.Size = new System.Drawing.Size(61, 17);
+            this.rb_daltons.TabIndex = 59;
+            this.rb_daltons.TabStop = true;
+            this.rb_daltons.Text = "Daltons";
+            this.rb_daltons.UseVisualStyleBackColor = true;
+            this.rb_daltons.CheckedChanged += new System.EventHandler(this.rb_daltons_CheckedChanged);
+            // 
+            // cb_bestETPairOnly
+            // 
+            this.cb_bestETPairOnly.AutoSize = true;
+            this.cb_bestETPairOnly.Checked = true;
+            this.cb_bestETPairOnly.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_bestETPairOnly.Location = new System.Drawing.Point(101, 18);
+            this.cb_bestETPairOnly.Name = "cb_bestETPairOnly";
+            this.cb_bestETPairOnly.Size = new System.Drawing.Size(140, 17);
+            this.cb_bestETPairOnly.TabIndex = 36;
+            this.cb_bestETPairOnly.Text = "Report best ET pair only";
+            this.cb_bestETPairOnly.UseVisualStyleBackColor = true;
+            this.cb_bestETPairOnly.CheckedChanged += new System.EventHandler(this.cb_bestETPairOnly_CheckedChanged);
             // 
             // label10
             // 
@@ -442,6 +481,7 @@
             this.label10.Size = new System.Drawing.Size(87, 13);
             this.label10.TabIndex = 34;
             this.label10.Text = "Notch Tolerance";
+            this.label10.Click += new System.EventHandler(this.label10_Click);
             // 
             // nUD_notch_tolerance
             // 
@@ -567,7 +607,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(278, 53);
+            this.groupBox3.Location = new System.Drawing.Point(278, 54);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -640,7 +680,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(278, 202);
+            this.groupBox2.Location = new System.Drawing.Point(278, 203);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -728,7 +768,7 @@
             this.groupBox1.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(32, 202);
+            this.groupBox1.Location = new System.Drawing.Point(32, 203);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -831,45 +871,6 @@
             this.ct_ET_Histogram.Size = new System.Drawing.Size(710, 308);
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
-            // 
-            // cb_bestETPairOnly
-            // 
-            this.cb_bestETPairOnly.AutoSize = true;
-            this.cb_bestETPairOnly.Checked = true;
-            this.cb_bestETPairOnly.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_bestETPairOnly.Location = new System.Drawing.Point(101, 18);
-            this.cb_bestETPairOnly.Name = "cb_bestETPairOnly";
-            this.cb_bestETPairOnly.Size = new System.Drawing.Size(140, 17);
-            this.cb_bestETPairOnly.TabIndex = 36;
-            this.cb_bestETPairOnly.Text = "Report best ET pair only";
-            this.cb_bestETPairOnly.UseVisualStyleBackColor = true;
-            this.cb_bestETPairOnly.CheckedChanged += new System.EventHandler(this.cb_bestETPairOnly_CheckedChanged);
-            // 
-            // rb_ppm
-            // 
-            this.rb_ppm.AutoSize = true;
-            this.rb_ppm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_ppm.Location = new System.Drawing.Point(22, 139);
-            this.rb_ppm.Name = "rb_ppm";
-            this.rb_ppm.Size = new System.Drawing.Size(45, 17);
-            this.rb_ppm.TabIndex = 58;
-            this.rb_ppm.Text = "ppm";
-            this.rb_ppm.UseVisualStyleBackColor = true;
-            this.rb_ppm.CheckedChanged += new System.EventHandler(this.rb_ppm_CheckedChanged);
-            // 
-            // rb_daltons
-            // 
-            this.rb_daltons.AutoSize = true;
-            this.rb_daltons.Checked = true;
-            this.rb_daltons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_daltons.Location = new System.Drawing.Point(22, 116);
-            this.rb_daltons.Name = "rb_daltons";
-            this.rb_daltons.Size = new System.Drawing.Size(61, 17);
-            this.rb_daltons.TabIndex = 59;
-            this.rb_daltons.TabStop = true;
-            this.rb_daltons.Text = "Daltons";
-            this.rb_daltons.UseVisualStyleBackColor = true;
-            this.rb_daltons.CheckedChanged += new System.EventHandler(this.rb_daltons_CheckedChanged);
             // 
             // ExperimentTheoreticalComparison
             // 

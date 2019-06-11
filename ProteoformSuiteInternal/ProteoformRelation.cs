@@ -156,8 +156,11 @@ namespace ProteoformSuiteInternal
 
             outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound
                 || high_decimal_bound <= low_decimal_bound;
-            if (Sweet.lollipop.et_use_notch)
+            if (Sweet.lollipop.et_use_notch && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
                 outside_no_mans_land = true;
+            if (Sweet.lollipop.ee_use_notch && (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse))
+                outside_no_mans_land = true;
+
         }
 
         #endregion Public Constructors

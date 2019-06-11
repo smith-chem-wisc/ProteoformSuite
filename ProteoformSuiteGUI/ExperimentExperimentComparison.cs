@@ -161,6 +161,14 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
             cb_ee_peak_accept_rank.Checked = Sweet.lollipop.ee_accept_peaks_based_on_rank;
+
+            cb_use_ppm_notch.Checked = Sweet.lollipop.ee_use_notch;
+            rb_ppm.Checked = Sweet.lollipop.ee_notch_ppm;
+            rb_daltons.Checked = !Sweet.lollipop.ee_notch_ppm;
+
+            nUD_notch_tolerance.Minimum = 0;
+            nUD_notch_tolerance.Maximum = 30;
+            nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_ee);
         }
 
         #endregion Public Methods
@@ -358,6 +366,32 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.ee_accept_peaks_based_on_rank = cb_ee_peak_accept_rank.Checked;
             change_peak_acceptance();
+        }
+
+        private void cb_use_ppm_notch_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.ee_use_notch = cb_use_ppm_notch.Checked;
+            label10.Visible = cb_use_ppm_notch.Checked;
+            nUD_notch_tolerance.Visible = cb_use_ppm_notch.Checked;
+            rb_daltons.Visible = cb_use_ppm_notch.Checked;
+            rb_ppm.Visible = cb_use_ppm_notch.Checked;
+        }
+
+        private void nUD_notch_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.notch_tolerance_ee = Convert.ToDouble(nUD_notch_tolerance.Value);
+        }
+
+        private void rb_daltons_CheckedChanged(object sender, EventArgs e)
+        {
+            rb_ppm.Checked = !rb_daltons.Checked;
+            Sweet.lollipop.et_notch_ppm = !rb_daltons.Checked;
+        }
+
+        private void rb_ppm_CheckedChanged(object sender, EventArgs e)
+        {
+            rb_ppm.Checked = !rb_daltons.Checked;
+            Sweet.lollipop.ee_notch_ppm = !rb_daltons.Checked;
         }
     }
 }

@@ -55,15 +55,23 @@ namespace ProteoformSuiteInternal
             {
                 lock (pf1)
                 {
-                    if (Sweet.lollipop.neucode_labeled && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy || relation_type == ProteoformComparison.ExperimentalExperimental))
+                    if (Sweet.lollipop.neucode_labeled &&
+                        (relation_type == ProteoformComparison.ExperimentalTheoretical ||
+                         relation_type == ProteoformComparison.ExperimentalDecoy ||
+                         relation_type == ProteoformComparison.ExperimentalExperimental))
                     {
                         pfs2_lysine_lookup.TryGetValue(pf1.lysine_count, out List<Proteoform> pfs2_same_lysine_count);
-                        pf1.candidate_relatives = pfs2_same_lysine_count != null ? pfs2_same_lysine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList() : new List<Proteoform>();
+                        pf1.candidate_relatives = pfs2_same_lysine_count != null
+                            ? pfs2_same_lysine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList()
+                            : new List<Proteoform>();
                     }
                     else if (Sweet.lollipop.neucode_labeled && relation_type == ProteoformComparison.ExperimentalFalse)
                     {
-                        List<Proteoform> pfs2_lysines_outside_tolerance = pfs2_lysine_lookup.Where(kv => Math.Abs(pf1.lysine_count - kv.Key) > Sweet.lollipop.maximum_missed_lysines).SelectMany(kv => kv.Value).ToList();
-                        pf1.candidate_relatives = pfs2_lysines_outside_tolerance.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
+                        List<Proteoform> pfs2_lysines_outside_tolerance = pfs2_lysine_lookup
+                            .Where(kv => Math.Abs(pf1.lysine_count - kv.Key) > Sweet.lollipop.maximum_missed_lysines)
+                            .SelectMany(kv => kv.Value).ToList();
+                        pf1.candidate_relatives = pfs2_lysines_outside_tolerance
+                            .Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }
                     else if (!Sweet.lollipop.neucode_labeled)
                     {
@@ -78,7 +86,8 @@ namespace ProteoformSuiteInternal
                         if (pf1 as TopDownProteoform == null) pf1.gene_name = null;
                     }
 
-                    if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+                    if (relation_type == ProteoformComparison.ExperimentalTheoretical ||
+                        relation_type == ProteoformComparison.ExperimentalDecoy)
                     {
                         if (limit_et_relations)
                         {
@@ -93,28 +102,44 @@ namespace ProteoformSuiteInternal
                                 .FirstOrDefault();
 
                             pf1.candidate_relatives = best_relation != null
-                                ? new List<Proteoform> { best_relation.connected_proteoforms[1] }
+                                ? new List<Proteoform> {best_relation.connected_proteoforms[1]}
                                 : new List<Proteoform>();
                         }
                         else //candidate relatives will be best T from each gene (won't get -42, etc)
                         {
                             List<ProteoformRelation> best_relatives_for_each_gene_name = new List<ProteoformRelation>();
                             var gene_names = pf1.candidate_relatives.Select(r =>
-                                    (r as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop.preferred_gene_label)).Distinct();
+                                    (r as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop
+                                        .preferred_gene_label))
+                                .Distinct();
                             foreach (var gene_name in gene_names)
                             {
-                                best_relatives_for_each_gene_name.Add(pf1.candidate_relatives.Where(p => (p as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop.preferred_gene_label) == gene_name)
-                                    .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, current_directory))
-                                    .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
-                                    .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6) // get the best explanation for the experimental observation
+                                best_relatives_for_each_gene_name.Add(pf1.candidate_relatives
+                                    .Where(p =>
+                                        (p as TheoreticalProteoform).gene_name.get_prefered_name(
+                                            Lollipop.preferred_gene_label) == gene_name)
+                                    .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type,
+                                        pf1.modified_mass - pf2.modified_mass, current_directory))
+                                    .Where(r => r.candidate_ptmset !=
+                                                null) // don't consider unassignable relations for ET
+                                    .OrderBy(r =>
+                                        r.candidate_ptmset.ptm_rank_sum +
+                                        Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) *
+                                        10E-6) // get the best explanation for the experimental observation
                                     .FirstOrDefault());
                             }
 
-                            pf1.candidate_relatives = best_relatives_for_each_gene_name != null ?
-                                best_relatives_for_each_gene_name.Where(r => r != null).Select(r => r.connected_proteoforms[1]).ToList() : new List<Proteoform>();
+                            pf1.candidate_relatives = best_relatives_for_each_gene_name != null
+                                ? best_relatives_for_each_gene_name.Where(r => r != null)
+                                    .Select(r => r.connected_proteoforms[1]).ToList()
+                                : new List<Proteoform>();
                         }
                     }
-                }
+                    else if (Sweet.lollipop.ee_use_notch)
+                    {
+
+                    }
+            }
             });
 
             List<ProteoformRelation> relations =
