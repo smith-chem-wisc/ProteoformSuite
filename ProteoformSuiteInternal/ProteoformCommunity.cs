@@ -135,18 +135,21 @@ namespace ProteoformSuiteInternal
                                 : new List<Proteoform>();
                         }
                     }
-                    else if (Sweet.lollipop.ee_use_notch)
-                    {
-
-                    }
-            }
+                }
             });
 
             List<ProteoformRelation> relations =
                 (from pf1 in pfs1
                  from pf2 in pf1.candidate_relatives
                  select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, current_directory)).ToList();
-
+            if (relation_type == ProteoformComparison.ExperimentalExperimental ||
+                relation_type == ProteoformComparison.ExperimentalFalse)
+            {
+                if (Sweet.lollipop.ee_use_notch)
+                {
+                    relations = relations.Where(r => r.candidate_ptmset != null).ToList();
+                }
+            }
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }
 

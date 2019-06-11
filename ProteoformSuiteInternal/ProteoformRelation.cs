@@ -81,12 +81,15 @@ namespace ProteoformSuiteInternal
             }
 
 
-            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
-                && pf2 as TheoreticalProteoform != null)
+            if (((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+                && pf2 as TheoreticalProteoform != null) || Sweet.lollipop.ee_use_notch)
             {
                 List<PtmSet> candidate_sets = new List<PtmSet>();
 
-                if (Sweet.lollipop.et_use_notch || Sweet.lollipop.peak_width_base_et > 0.09)
+                if (((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) &&
+                    (Sweet.lollipop.et_use_notch || Sweet.lollipop.peak_width_base_et > 0.09))
+                    || ((relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse) &&
+                        (Sweet.lollipop.ee_use_notch || Sweet.lollipop.peak_width_base_ee > 0.09)))
                 {
                     double mass = delta_mass - (Sweet.lollipop.et_use_notch
                         ? Sweet.lollipop.notch_tolerance_et
@@ -114,10 +117,8 @@ namespace ProteoformSuiteInternal
 
                 if (candidate_sets != null && candidate_sets.Count > 0)
                 {
-                    TheoreticalProteoform t = pf2 as TheoreticalProteoform;
-                    double mass_tolerance = t.modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                     List<PtmSet> narrower_range_of_candidates = new List<PtmSet>();
-                    if (Sweet.lollipop.et_use_notch)
+                    if ((Sweet.lollipop.et_use_notch && pf2 as TheoreticalProteoform != null) || (Sweet.lollipop.ee_use_notch && pf2 as TheoreticalProteoform == null))
                     {
                         var sets_in_notches = candidate_sets.Where(s => s.ptm_combination.Count < 2 ||
                                                                                  (s.ptm_combination.Count < 3 &&
@@ -136,13 +137,22 @@ namespace ProteoformSuiteInternal
                         narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < Sweet.lollipop.peak_width_base_et).ToList();
                     }
 
-                    candidate_ptmset = Proteoform.generate_possible_added_ptmsets(narrower_range_of_candidates,
-                            Sweet.lollipop.theoretical_database.all_mods_with_mass, t, pf2.begin, pf2.end, pf2.ptm_set,
-                            Sweet.lollipop.mod_rank_first_quartile, false).OrderBy(x =>
-                            x.ptm_rank_sum +
-                            Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) *
-                            10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
-                        .FirstOrDefault();
+                    if (pf2 as TheoreticalProteoform != null)
+                    {
+                        TheoreticalProteoform t = pf2 as TheoreticalProteoform;
+                        candidate_ptmset = Proteoform.generate_possible_added_ptmsets(narrower_range_of_candidates,
+                                Sweet.lollipop.theoretical_database.all_mods_with_mass, t, pf2.begin, pf2.end,
+                                pf2.ptm_set,
+                                Sweet.lollipop.mod_rank_first_quartile, false).OrderBy(x =>
+                                x.ptm_rank_sum +
+                                Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) *
+                                10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                            .FirstOrDefault();
+                    }
+                    else //ee notch
+                    {
+                        candidate_ptmset = narrower_range_of_candidates.OrderBy(m => Math.Abs(m.mass - delta_mass)).FirstOrDefault();
+                    }
                 }
             }
 
