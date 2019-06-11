@@ -43,8 +43,8 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Deconvolution Results for Identification (.xlsx, .tsv)",
-            "Deconvolution Results for Quantification (.xlsx, .tsv)",
+            "Deconvolution Results for Identification (.xlsx, .tsv, .txt, .ms1ft)",
+            "Deconvolution Results for Quantification (.xlsx, .tsv. txt, .ms1ft)",
             "Protein Databases (.xml, .xml.gz, .fasta)",
             "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
@@ -54,8 +54,8 @@ namespace ProteoformSuiteInternal
 
         public static readonly List<string>[] acceptable_extensions = new[]
         {
-            new List<string> { ".xlsx", ".tsv" },
-            new List<string> { ".xlsx", ".csv" },
+            new List<string> { ".xlsx", ".tsv", ".txt", ".ms1ft" },
+            new List<string> { ".xlsx", ".tsv", ".txt", ".ms1ft"  },
             new List<string> { ".xml", ".gz", ".fasta" },
             new List<string> { ".xlsx" , ".psmtsv"},
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
@@ -65,8 +65,8 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_filters = new[]
         {
-            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
-            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt, *.ms1ft) | *.xlsx;*.tsv;*.txt;*.ms1ft",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt, *.ms1ft) | *.xlsx;*.tsv;*.txt;*.ms1ft",
             "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
@@ -1287,6 +1287,7 @@ namespace ProteoformSuiteInternal
                         hit.biological_replicate = raw_file.biological_replicate;
                         hit.fraction = raw_file.fraction;
                         hit.condition = raw_file.lt_condition;
+                        hit.calibrated_retention_time = hit.ms2_retention_time;
                     });
                 }
             }
@@ -1312,7 +1313,7 @@ namespace ProteoformSuiteInternal
                 foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration)
                 {
                     Tuple<string, double, double> key = new Tuple<string, double, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
-                    if (!Sweet.lollipop.td_hit_RT_correction.ContainsKey(key)) Sweet.lollipop.td_hit_RT_correction.Add(key, Math.Round(hit.ms2_retention_time, 8));
+                    if (!Sweet.lollipop.td_hit_RT_correction.ContainsKey(key)) Sweet.lollipop.td_hit_RT_correction.Add(key, Math.Round(hit.calibrated_retention_time, 8));
                 }
             }
 

@@ -109,7 +109,10 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                if (myMs1DataPoints.Count < 10) return false;
+                if (myMs1DataPoints.Count < 10)
+                {
+                    return false;
+                }
 
                 var ms1Model = GetRandomForestModel(myMs1DataPoints);
 
@@ -118,7 +121,6 @@ namespace ProteoformSuiteInternal
                     c.rt_apex = c.rt_apex - ms1Model.Predict(new double[] { c.rt_apex });
                 }
             }
-
             return true;
         }
 
@@ -126,12 +128,12 @@ namespace ProteoformSuiteInternal
         {
             all_topdown_hits = topdown_hits.Where(h => h.score > 0).ToList();
             high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
-            List<string> filenames_orderbydescendingUniquePFRs = high_scoring_topdown_hits.Select(h => h.filename).Distinct().OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count()).ToList();
+            List<string> filenames_orderbydescendingUniquePFRs = high_scoring_topdown_hits.Select(h => h.filename).Distinct().OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count()).ThenByDescending(f => high_scoring_topdown_hits.Count(h => h.filename == f)).ToList();
             if (filenames_orderbydescendingUniquePFRs.Count == 1) return; //only if more than 1 file.
 
             //calibrate everything to file with most unique hits.
             List<TopDownHit> calibrated_RT_topdown_hits =
-                all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs.First()).ToList();
+                high_scoring_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs.First()).ToList();
 
             for (int i = 1; i < filenames_orderbydescendingUniquePFRs.Count; i++)
             {
@@ -146,14 +148,18 @@ namespace ProteoformSuiteInternal
                         .Where(h => h.pfr_accession == PFR);
                     if (calibratedRTs.Count() == 0) continue;
 
-                    var calibratedminRT = calibratedRTs.Min(h => h.ms2_retention_time);
+                    var calibratedminRT = calibratedRTs.Min(h => h.calibrated_retention_time);
 
                     myMs1DataPoints.Add((new double[] { minRTNewFile }, minRTNewFile - calibratedminRT));
                 }
                 var ms1Model = GetRandomForestModel(myMs1DataPoints);
                 foreach (TopDownHit hit in all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]))
                 {
-                    hit.ms2_retention_time = hit.ms2_retention_time - ms1Model.Predict(new double[] { hit.ms2_retention_time });
+                    hit.calibrated_retention_time = hit.ms2_retention_time - ms1Model.Predict(new double[] { hit.ms2_retention_time });
+                    if (hit.score > 40)
+                    {
+                        calibrated_RT_topdown_hits.Add(hit); //use for subsequent rounds
+                    }
                 }
             }
         }

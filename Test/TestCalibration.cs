@@ -378,10 +378,11 @@ namespace Test
             int cali_td_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationTopDown)).First());
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[raw_file_index], Lollipop.file_types[raw_file_index], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw") }, Lollipop.acceptable_extensions[raw_file_index], Lollipop.file_types[raw_file_index], Sweet.lollipop.input_files, false);
-            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().fraction = "5";
-            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().biological_replicate = "1";
-            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().technical_replicate = "1";
-            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().lt_condition = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[0].fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[0].biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[0].technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[0].lt_condition = "1";
+
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].fraction = "6";
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].biological_replicate = "1";
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].technical_replicate = "1";
@@ -438,11 +439,8 @@ namespace Test
                 fraction_6_original_times =
                     reader.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
             }
-            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract5"))
-                .All(h => fraction_5_original_times.Contains(Math.Round(h.ms2_retention_time, 2))));
-            Assert.IsTrue(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract6"))
-                .All(h => fraction_6_original_times.Contains(Math.Round(h.ms2_retention_time, 2))));
-
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract5")).Any(h => h.calibrated_retention_time == h.ms2_retention_time));
+            Assert.IsTrue(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract6")).All(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx")));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
             Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")));

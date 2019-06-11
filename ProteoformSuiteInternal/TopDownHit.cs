@@ -28,12 +28,13 @@ namespace ProteoformSuiteInternal
         public InputFile file { get; set; }
         public string pfr_accession { get; set; }
 
-        //for mass calibration
+        //for calibration
         public string biological_replicate { get; set; } = "";
         public string technical_replicate { get; set; } = "";
         public string fraction { get; set; } = "";
         public string condition { get; set; } = "";
         public double mz { get; set; }
+        public double calibrated_retention_time { get; set; }
         public int charge { get; set; }
         public MsDataScan ms1_scan { get; set; }
 
