@@ -11,12 +11,17 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="15*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
         <Menu Grid.Row="0" Width="Auto" HorizontalContentAlignment="Left" VerticalAlignment="Stretch">
             <MenuItem Header="File">
                 <MenuItem Header="Export Table" x:Name="exportTablesToolStripMenuItem" Click="exportAllTablesToolStripMenuItem_Click"/>
                 <MenuItem Header="Export All Tables" x:Name="exportAllTablesToolStripMenuItem" Click="exportAllTablesToolStripMenuItem_Click"/>
                 <MenuItem Header="Print" x:Name="printToolStripMenuItem" Click="printToolStripMenuItem_Click"/>
                 <MenuItem Header="Close" x:Name="closeToolStripMenuItem" Click="closeToolStripMenuItem_Click"/>
+                
             </MenuItem>
             <MenuItem Header="Results" x:Name="resultsToolStripMenuItem">
                 <MenuItem Header="Load Results" x:Name="loadResultsToolStripMenuItem" Click="LoadResultsToolStripMenuItem_Click"/>
@@ -38,8 +43,36 @@
                 <MenuItem Header="Save Method" Click="saveMethodToolStripMenuItem1_Click"/>
                 <MenuItem Header="Load Method" Click="loadSettingsToolStripMenuItem_Click"/>
             </MenuItem>
+            
         </Menu>
-        <TabControl x:Name="MDIContainer" Grid.Row="1" Width="Auto" Height="Auto">
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Click="Button_Click_1" Height="50" Width="25" HorizontalAlignment="Right">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Polygon Points= "10,0 0,8 10,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
+                                <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Click="Button_Click_1" Height="50" Width="25">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
+                                <Polygon Points= "0,0 10,8 0,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+        
+        <TabControl x:Name="MDIContainer" Grid.Row="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
                     <Setter Property="Height" Value="Auto" />
