@@ -371,7 +371,7 @@ namespace ProteoformSuiteInternal
                             {
                                 peaksAddedHashSet.Add(theTuple);
                                 highestKnownChargeForThisPeptide = Math.Max(highestKnownChargeForThisPeptide, chargeToLookAt);
-                                trainingPointsToAverage.Add(new LabeledMs1DataPoint((double)closestPeakMZ, double.NaN, double.NaN, double.NaN, (double)closestPeakMZ - theMZ, (double)fullMS1scan.RetentionTime - identification.ms2_retention_time, null));
+                                trainingPointsToAverage.Add(new LabeledMs1DataPoint((double)closestPeakMZ, double.NaN, double.NaN, double.NaN, (double)closestPeakMZ - theMZ, (double)fullMS1scan.RetentionTime - identification.calibrated_retention_time, null));
                             }
                             else
                             {
