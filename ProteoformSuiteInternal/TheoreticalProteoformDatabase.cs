@@ -31,6 +31,7 @@ namespace ProteoformSuiteInternal
         public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
 
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
+        public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary_notches = new Dictionary<double, List<PtmSet>>();
 
         //Settings
         public bool limit_triples_and_greater = true;
@@ -166,7 +167,25 @@ namespace ProteoformSuiteInternal
                     double midpoint = Math.Round(Math.Round(set.mass, 1) - 0.5 + i * 0.1, 1);
                     if (possible_ptmsets.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
                     else possible_ptmsets.Add(midpoint, new List<PtmSet> { set });
+
                 }
+                if (set.ptm_combination.Count < 2 || (set.ptm_combination.Count < 3 &&
+                                                      set.ptm_combination.Count -
+                                                      set.ptm_combination.Count(p =>
+                                                          p.modification.ModificationType ==
+                                                          "Deconvolution Error") <=
+                                                      1))
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        double midpoint = Math.Round(Math.Round(set.mass, 1) - 0.5 + i * 0.1, 1);
+                        if (possible_ptmset_dictionary_notches.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
+                        else possible_ptmset_dictionary_notches.Add(midpoint, new List<PtmSet> { set });
+
+                    }
+
+                }
+
             }
             return possible_ptmsets;
         }
