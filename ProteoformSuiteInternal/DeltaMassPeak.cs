@@ -47,7 +47,8 @@ namespace ProteoformSuiteInternal
             DeltaMass = base_relation.DeltaMass;
             InstanceId = instance_counter;
 
-            if ((RelationType == ProteoformComparison.ExperimentalExperimental && !Sweet.lollipop.ee_use_notch) || (RelationType == ProteoformComparison.ExperimentalTheoretical && !Sweet.lollipop.et_use_notch))
+            if ((RelationType == ProteoformComparison.ExperimentalExperimental && !Sweet.lollipop.ee_use_notch)
+                || (RelationType == ProteoformComparison.ExperimentalTheoretical && !Sweet.lollipop.et_use_notch))
             {
                 grouped_relations = find_nearby_relations(relations_to_group);
 
@@ -85,7 +86,8 @@ namespace ProteoformSuiteInternal
             {
                 grouped_relations = relations_to_group.Where(r => Math.Round(r.candidate_ptmset.mass, 4) == Math.Round(base_relation.candidate_ptmset.mass, 4)).ToList();
                 possiblePeakAssignments = grouped_relations.Select(r => r.candidate_ptmset).ToList();
-                DeltaMass = Math.Round(possiblePeakAssignments.First().mass, 4);
+                //DeltaMass = Math.Round(possiblePeakAssignments.First().mass, 4);
+                DeltaMass = possiblePeakAssignments.First().mass;
             }
 
             foreach (ProteoformRelation mass_difference in grouped_relations)
