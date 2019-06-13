@@ -312,10 +312,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsTrue(e2.ambiguous); //could be +42 from e3
-            Assert.IsTrue(e1.ambiguous); //could be +42 from e3
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(1, e2.ambiguous_identifications.Count);
             Assert.AreEqual(1, e1.ambiguous_identifications.Count);
@@ -430,10 +426,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(3, fam.gene_names.Count);
-            Assert.IsTrue(e2.ambiguous); //could be +42 from e3
-            Assert.IsTrue(e1.ambiguous); //could be +42 from e3
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(1, e2.ambiguous_identifications.Count);
             Assert.AreEqual(1, e1.ambiguous_identifications.Count);
@@ -551,11 +543,7 @@ namespace Test
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
-            Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous);
-            Assert.IsTrue(e1.ambiguous);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
+            Assert.AreEqual(2, fam.gene_names.Count);;
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(0, e2.ambiguous_identifications.Count);
             Assert.AreEqual(1, e1.ambiguous_identifications.Count);
@@ -660,10 +648,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous);
-            Assert.IsTrue(e1.ambiguous);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsFalse(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(0, e2.ambiguous_identifications.Count);
             Assert.AreEqual(1, e1.ambiguous_identifications.Count);
@@ -761,10 +745,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsTrue(e2.ambiguous); //could be +42 from e3
-            Assert.IsTrue(e1.ambiguous); //could be +42 from e3
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(1, e2.ambiguous_identifications.Count);
             Assert.AreEqual(1, e1.ambiguous_identifications.Count);
@@ -869,10 +849,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous); 
-            Assert.IsFalse(e1.ambiguous);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(0, e2.ambiguous_identifications.Count);
             Assert.AreEqual(0, e1.ambiguous_identifications.Count);
@@ -971,10 +947,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous);
-            Assert.IsFalse(e1.ambiguous);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(0, e2.ambiguous_identifications.Count);
             Assert.AreEqual(0, e1.ambiguous_identifications.Count);
@@ -1083,15 +1055,11 @@ namespace Test
             fam.identify_experimentals();
             Assert.AreEqual(5, fam.experimental_proteoforms.Count);
             Assert.AreEqual(3, fam.theoretical_proteoforms.Count);
-            Assert.AreEqual(3, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous);
-            Assert.IsFalse(e1.ambiguous);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsFalse(e4.ambiguous); //not ambiguous cause oen couldn't lose another serine
+            Assert.AreEqual(3, fam.gene_names.Count); 
             Assert.AreEqual(1, e3.ambiguous_identifications.Count); //e5 to e3 doesn't lead to ID: no serine to lose...
             Assert.AreEqual(0, e2.ambiguous_identifications.Count);
             Assert.AreEqual(0, e1.ambiguous_identifications.Count);
-            Assert.AreEqual(0, e4.ambiguous_identifications.Count);
+            Assert.AreEqual(0, e4.ambiguous_identifications.Count);//not ambiguous cause oen couldn't lose another serine
 
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual("gene1", e3.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
@@ -1179,10 +1147,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsFalse(e2.ambiguous);
-            Assert.IsFalse(e1.ambiguous);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(0, e2.ambiguous_identifications.Count);
             Assert.AreEqual(0, e1.ambiguous_identifications.Count);
@@ -1279,8 +1243,6 @@ namespace Test
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
             Assert.AreEqual(2, fam.gene_names.Count);
-            Assert.IsTrue(e3.ambiguous);
-            Assert.IsTrue(e4.ambiguous);
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
 

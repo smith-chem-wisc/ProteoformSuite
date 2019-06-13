@@ -192,7 +192,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return e.ambiguous;
+                return e.ambiguous_identifications.Count > 0;
             }
         }
 

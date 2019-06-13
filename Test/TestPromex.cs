@@ -80,6 +80,7 @@ namespace Test
             Sweet.lollipop.calibrate_td_files = true;
             Sweet.lollipop.calibrate_raw_files = false; //shouldn't cali raw files!
             Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.retention_time_calibration = false;
             Sweet.lollipop.neucode_labeled = false;
             int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.SpectraFile)).First());
             int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
@@ -111,14 +112,16 @@ namespace Test
             if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")))
                 File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx"));
             Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML"));
             Sweet.lollipop.read_in_calibration_td_hits();
             Assert.AreEqual(6, Sweet.lollipop.td_hits_calibration.Count);
             Assert.AreEqual(5, Sweet.lollipop.td_hits_calibration.Count(h => h.score > 40));
             Assert.AreEqual("Successfully calibrated files.", Sweet.lollipop.calibrate_files());
-            Assert.AreEqual(204, Sweet.lollipop.component_correction.Count);
-            Assert.AreEqual(6, Sweet.lollipop.td_hit_correction.Count);
-            Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
-            Assert.IsFalse(Sweet.lollipop.component_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
+            Assert.AreEqual(204, Sweet.lollipop.component_mz_correction.Count);
+            Assert.AreEqual(6, Sweet.lollipop.td_hit_mz_correction.Count);
+            Assert.IsFalse(Sweet.lollipop.component_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
+            Assert.IsFalse(Sweet.lollipop.component_mz_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
             Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx")));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.tsv")));
@@ -140,12 +143,12 @@ namespace Test
             Assert.AreEqual(6, calibrated_td_hits.Count);
             foreach (TopDownHit h in calibrated_td_hits)
             {
-                Assert.IsTrue(Sweet.lollipop.td_hit_correction.ContainsValue(h.reported_mass));
+                Assert.IsTrue(Sweet.lollipop.td_hit_mz_correction.ContainsValue(h.reported_mass));
                 Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(p => p.reported_mass == h.reported_mass));
             }
             foreach (Component c in calibrated_components)
             {
-                Assert.True(Sweet.lollipop.component_correction.Values.Contains(System.Math.Round(c.weighted_monoisotopic_mass, 5)));
+                Assert.True(Sweet.lollipop.component_mz_correction.Values.Contains(System.Math.Round(c.weighted_monoisotopic_mass, 5)));
             }
 
             Assert.IsFalse(uncalibrated_components.All(c2 =>

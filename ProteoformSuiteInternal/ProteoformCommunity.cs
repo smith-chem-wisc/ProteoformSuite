@@ -412,7 +412,6 @@ namespace ProteoformSuiteInternal
                 p.linked_proteoform_references = null;
                 p.ambiguous_identifications.Clear();
                 if (p as TopDownProteoform == null) { p.gene_name = null; }
-                p.ambiguous = false;
                 p.novel_mods = false;
                 p.uniprot_mods = "";
             }
