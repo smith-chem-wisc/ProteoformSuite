@@ -158,7 +158,7 @@ namespace ProteoformSuiteInternal
                         Math.Round(delta_mass, 1), out candidate_sets);
                 }
 
-                if (pf1 as TheoreticalProteoform != null && candidate_sets != null && candidate_sets.Count > 0)
+                if (pf2 as TheoreticalProteoform != null && candidate_sets != null && candidate_sets.Count > 0)
                 {
                     List<PtmSet> narrower_range_of_candidates = new List<PtmSet>();
                     if (Sweet.lollipop.et_use_notch)

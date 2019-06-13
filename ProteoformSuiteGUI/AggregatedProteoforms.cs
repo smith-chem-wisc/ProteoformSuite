@@ -194,18 +194,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.assign_best_components_for_manual_validation(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
             FillTablesAndCharts();
             updateFiguresOfMerit();
-
-            var exp = Sweet.lollipop.target_proteoform_community.experimental_proteoforms
-                .Where(a => a.aggregated.Select(f => f.input_file.filename).Distinct().Count() == 2).ToList();
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\asdfasdf.txt"))
-                foreach (var proteoform in exp)
-                {
-                    double i1 = proteoform.aggregated.Where(a => a.input_file.technical_replicate == "1")
-                        .Sum(a => a.intensity_sum);
-                    double i2 = proteoform.aggregated.Where(a => a.input_file.technical_replicate == "2")
-                        .Sum(a => a.intensity_sum);
-                    writer.WriteLine(proteoform.accession + "\t" + proteoform.agg_mass + "\t" + i1 + "\t" + i2);
-                }
         }
 
         public List<DataTable> SetTables()

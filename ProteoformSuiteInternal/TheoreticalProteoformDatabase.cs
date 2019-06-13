@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
             //Read the UniProt-XML and ptmlist
             List<Modification> all_known_modifications = get_mods(current_directory);
           
-            Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
+            foreach(var database in Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList())
             {
                 if(database.extension == ".xml")
                 {
@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
                         theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                    ProteinDbLoader.UniprotOrganismRegex, out var dbErrors).ToArray());
                 }
-            });
+            }
 
             Sweet.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
