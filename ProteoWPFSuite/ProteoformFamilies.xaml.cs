@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using ProteoformSuiteInternal;
 using System.Linq;
 using System.Windows;
+using System.ComponentModel;
 
 namespace ProteoWPFSuite
 {
@@ -12,8 +13,7 @@ namespace ProteoWPFSuite
     /// Interaction logic for ProteoformFamilies.xaml
     /// </summary>
     public partial class ProteoformFamilies : UserControl,
-    ITabbedMDI,
-    ISweetForm
+    ITabbedMDI, ISweetForm, INotifyPropertyChanged
     {
 
         #region data binding
@@ -21,6 +21,7 @@ namespace ProteoWPFSuite
         private bool? ck_cb_count_adducts_as_id;
         private bool? ck_cb_geneCentric;
         private bool? ck_cb_buildAsQuantitative;
+        private bool? ck_cb_scale_nodes;
         public bool? CK_cb_only_assign_common_known_mods
         {
             get
@@ -30,11 +31,12 @@ namespace ProteoWPFSuite
             set
             {
                 
-                if (ck_cb_only_assign_common_known_mods == value)
+                if (ck_cb_only_assign_common_known_mods == value || this.MDIParent==null)
                 {
                     return;
                 }
                 ck_cb_only_assign_common_known_mods = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_only_assign_common_known_mods"));
                 //implement prev function
                 Sweet.lollipop.only_assign_common_or_known_mods = (bool)value;
             }
@@ -48,11 +50,12 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_count_adducts_as_id == value)
+                if (ck_cb_count_adducts_as_id == value || this.MDIParent == null)
                 {
                     return;
                 }
                 ck_cb_count_adducts_as_id = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_count_adducts_as_id"));
                 Sweet.lollipop.count_adducts_as_identifications = (bool) value; //data binding
                 update_figures_of_merit();
             }
@@ -65,11 +68,12 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_geneCentric == value)
+                if (ck_cb_geneCentric == value || this.MDIParent == null)
                 {
                     return;
                 }
                 ck_cb_geneCentric = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_geneCentric"));
                 Lollipop.gene_centric_families = (bool)value; //data binding
             }
         }
@@ -81,14 +85,31 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_buildAsQuantitative== value){
+                if (ck_cb_buildAsQuantitative== value || this.MDIParent == null)
+                {
                     return;
                 }
                 ck_cb_buildAsQuantitative =value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_buildAsQuantitative"));
                 cb_redBorder.IsEnabled = (bool)value;//data binding
                 cb_boldLabel.IsEnabled = (bool)value;//data binding
                 cb_redBorder.IsChecked = true;
                 cb_boldLabel.IsChecked=true;
+            }
+        }
+        public bool? CK_cb_scale_nodes
+        {
+            get
+            {
+                return ck_cb_scale_nodes;
+            }
+            set
+            {
+                if (ck_cb_scale_nodes == value || this.MDIParent == null)
+                {
+                    return;
+                }
+
             }
         }
         #endregion
@@ -155,7 +176,7 @@ namespace ProteoWPFSuite
         public void InitializeParameterSet()
         {
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Lollipop.gene_centric_families = (bool)ck_cb_geneCentric; //data binding
+            Lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked; //data binding
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
             cmbx_tableSelector.SelectedIndexChanged += cmbx_tableSelector_SelectedIndexChanged;
@@ -393,6 +414,8 @@ namespace ProteoWPFSuite
         private readonly System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
         private bool got_cyto_temp_folder;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         #endregion Cytoscape Visualization Private Fields
 
         #region Cytoscape Visualization Private Methods
@@ -445,7 +468,11 @@ namespace ProteoWPFSuite
             string time_stamp = Sweet.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             object[] selected = DisplayUtility.get_selected_objects(dgv_main);
-            string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.family_build_folder_path, "", time_stamp, (bool)ck_cb_buildAsQuantitative? MDIParent.resultsSummary.get_go_analysis() : null, (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding, (bool)ck_cb_geneCentric, cmbx_geneLabel.SelectedItem.ToString());//data binding
+            string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families,
+            Sweet.lollipop.family_build_folder_path, "", time_stamp,
+            (bool)cb_buildAsQuantitative.IsChecked ? (this.MDIParent as ProteoformSweet).resultsSummary.get_go_analysis() : null, (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
+                cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString(), (bool)ck_cb_scale_nodes);
             MessageBox.Show(message, "Cytoscape Build");
         }
 

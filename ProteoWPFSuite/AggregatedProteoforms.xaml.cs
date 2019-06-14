@@ -38,7 +38,7 @@ namespace ProteoWPFSuite
             set
             {
                 //to avoid setting twice
-                if (value < 0 || (cmbx_observationsTypeRequired.SelectedItem!=null && Sweet.lollipop.agg_observation_requirement == cmbx_observationsTypeRequired.SelectedItem.ToString()))
+                if (value < 0 || MDIParent==null || (cmbx_observationsTypeRequired.SelectedItem!=null && Sweet.lollipop.agg_observation_requirement == cmbx_observationsTypeRequired.SelectedItem.ToString()))
                     return;
                 cb_select = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CB_SELECT"));
@@ -56,7 +56,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck1 == (bool)value)
+                if (ck1 == (bool)value || MDIParent==null)
                     return;
                 ck1 = (bool)value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK1"));
@@ -71,7 +71,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck2 == (bool)value)
+                if (ck2 == (bool)value || MDIParent == null)
                     return;
                 ck2 = (bool)value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK2"));
@@ -86,7 +86,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ra==(bool)value)
+                if (ra==(bool)value || MDIParent == null)
                     return;
                 ra = (bool)value;
                 PropertyChanged?.Invoke(this,new PropertyChangedEventArgs("RA"));
@@ -105,7 +105,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (value == null || rb == value)
+                if (value == null || rb == value || MDIParent == null)
                     return;
                 rb = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RB"));
@@ -124,7 +124,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (value == null || rc == value)
+                if (value == null || rc == value || MDIParent == null)
                     return;
                 rc = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RC"));

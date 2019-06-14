@@ -229,6 +229,19 @@ namespace ProteoformSuiteInternal
                 "N/A\tProteoform FDR" + Environment.NewLine;
             report += Environment.NewLine;
 
+             identified_exp_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.ambiguous_identifications.Count == 0 && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct));
+             avg_identified_decoy_proteoforms = Sweet.lollipop.decoy_proteoform_communities.Count > 0 ?
+                Sweet.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.ambiguous_identifications.Count == 0 && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct))) :
+                -1;
+            report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms (no Ambiguous)" + Environment.NewLine;
+            report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")
+                      + "\tAverage Identified Experimental Proteoforms by Decoys (no Ambiguous)" + Environment.NewLine;
+            report += Sweet.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0 && identified_exp_proteoforms > 0 ?
+                Math.Round(avg_identified_decoy_proteoforms / identified_exp_proteoforms, 4).ToString() + "\tProteoform FDR" + Environment.NewLine :
+                "N/A\tProteoform FDR (no Ambiguous)" + Environment.NewLine;
+            report += Environment.NewLine;
+
+
             int correct_td = Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references != null && p.correct_id);
             int incorrect_td = Sweet.lollipop.topdown_proteoforms.Count(p => p.linked_proteoform_references != null && !p.correct_id);
             report += correct_td + "\tTop-Down Proteoforms Assigned Same Identification by Intact-Mass Analysis" + Environment.NewLine;
@@ -465,7 +478,7 @@ namespace ProteoformSuiteInternal
                     e.agg_intensity,
                     e.topdown_id,
                     e.topdown_id ? (e as TopDownProteoform).correct_id.ToString() : "N/A",
-                    e.ambiguous,
+                    e.ambiguous_identifications.Count > 0 ? "TRUE" : "FALSE",
                     e.adduct,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant,
                     e.family != null ? e.family.family_id.ToString() : "",

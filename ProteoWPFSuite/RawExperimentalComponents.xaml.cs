@@ -44,6 +44,7 @@ namespace ProteoWPFSuite
                 {
                     return;
                 }
+
                 FillTablesAndCharts();
                 dgv_chargeStates.DataSource = null;
                 ck_Identi = value;

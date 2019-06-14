@@ -80,12 +80,12 @@
             this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
             this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cb_ee_peak_accept_rank = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.cb_ee_peak_accept_rank = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -150,7 +150,7 @@
             this.dgv_EE_Peaks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Peaks.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Peaks.Name = "dgv_EE_Peaks";
-            this.dgv_EE_Peaks.Size = new System.Drawing.Size(360, 303);
+            this.dgv_EE_Peaks.Size = new System.Drawing.Size(372, 303);
             this.dgv_EE_Peaks.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
@@ -364,7 +364,7 @@
             series2.Name = "decoys";
             this.ct_EE_Histogram.Series.Add(series1);
             this.ct_EE_Histogram.Series.Add(series2);
-            this.ct_EE_Histogram.Size = new System.Drawing.Size(808, 263);
+            this.ct_EE_Histogram.Size = new System.Drawing.Size(832, 263);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
             this.ct_EE_Histogram.Text = "eeHistogram";
@@ -375,7 +375,7 @@
             this.dgv_EE_Relations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Relations.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Relations.Name = "dgv_EE_Relations";
-            this.dgv_EE_Relations.Size = new System.Drawing.Size(808, 436);
+            this.dgv_EE_Relations.Size = new System.Drawing.Size(832, 436);
             this.dgv_EE_Relations.TabIndex = 2;
             this.dgv_EE_Relations.TabStop = false;
             // 
@@ -407,7 +407,7 @@
             this.ct_EE_peakList.Series.Add(series3);
             this.ct_EE_peakList.Series.Add(series4);
             this.ct_EE_peakList.Series.Add(series5);
-            this.ct_EE_peakList.Size = new System.Drawing.Size(412, 303);
+            this.ct_EE_peakList.Size = new System.Drawing.Size(424, 303);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
@@ -426,8 +426,8 @@
             // param_splitcontainer.Panel2
             // 
             this.param_splitcontainer.Panel2.Controls.Add(this.splitContainer3);
-            this.param_splitcontainer.Size = new System.Drawing.Size(1604, 711);
-            this.param_splitcontainer.SplitterDistance = 788;
+            this.param_splitcontainer.Size = new System.Drawing.Size(1652, 711);
+            this.param_splitcontainer.SplitterDistance = 812;
             this.param_splitcontainer.TabIndex = 28;
             // 
             // splitContainer6
@@ -448,7 +448,7 @@
             // splitContainer6.Panel2
             // 
             this.splitContainer6.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer6.Size = new System.Drawing.Size(784, 707);
+            this.splitContainer6.Size = new System.Drawing.Size(808, 707);
             this.splitContainer6.SplitterDistance = 31;
             this.splitContainer6.TabIndex = 21;
             // 
@@ -483,7 +483,7 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Panel2MinSize = 100;
-            this.splitContainer5.Size = new System.Drawing.Size(784, 672);
+            this.splitContainer5.Size = new System.Drawing.Size(808, 672);
             this.splitContainer5.SplitterDistance = 307;
             this.splitContainer5.TabIndex = 2;
             // 
@@ -502,8 +502,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(784, 307);
-            this.splitContainer4.SplitterDistance = 364;
+            this.splitContainer4.Size = new System.Drawing.Size(808, 307);
+            this.splitContainer4.SplitterDistance = 376;
             this.splitContainer4.TabIndex = 18;
             // 
             // groupBox6
@@ -583,7 +583,7 @@
             this.bt_compare_EE.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bt_compare_EE.Location = new System.Drawing.Point(0, 334);
             this.bt_compare_EE.Name = "bt_compare_EE";
-            this.bt_compare_EE.Size = new System.Drawing.Size(780, 23);
+            this.bt_compare_EE.Size = new System.Drawing.Size(804, 23);
             this.bt_compare_EE.TabIndex = 31;
             this.bt_compare_EE.Text = "Compare Experimental Proteoforms with Each Other";
             this.bt_compare_EE.UseMnemonic = false;
@@ -667,19 +667,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "EE Peak List Parameters";
             // 
-            // cb_ee_peak_accept_rank
-            // 
-            this.cb_ee_peak_accept_rank.AutoSize = true;
-            this.cb_ee_peak_accept_rank.Checked = true;
-            this.cb_ee_peak_accept_rank.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_ee_peak_accept_rank.Location = new System.Drawing.Point(6, 98);
-            this.cb_ee_peak_accept_rank.Name = "cb_ee_peak_accept_rank";
-            this.cb_ee_peak_accept_rank.Size = new System.Drawing.Size(222, 17);
-            this.cb_ee_peak_accept_rank.TabIndex = 32;
-            this.cb_ee_peak_accept_rank.Text = "Auto-Accept Peaks Based on Delta Mass";
-            this.cb_ee_peak_accept_rank.UseVisualStyleBackColor = true;
-            this.cb_ee_peak_accept_rank.CheckedChanged += new System.EventHandler(this.cb_ee_peak_accept_rank_CheckedChanged);
-            // 
             // tb_max_accepted_fdr
             // 
             this.tb_max_accepted_fdr.Location = new System.Drawing.Point(52, 135);
@@ -746,15 +733,28 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.ct_EE_Histogram);
             this.splitContainer3.Panel2MinSize = 100;
-            this.splitContainer3.Size = new System.Drawing.Size(812, 711);
+            this.splitContainer3.Size = new System.Drawing.Size(836, 711);
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
+            // 
+            // cb_ee_peak_accept_rank
+            // 
+            this.cb_ee_peak_accept_rank.AutoSize = true;
+            this.cb_ee_peak_accept_rank.Checked = true;
+            this.cb_ee_peak_accept_rank.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_ee_peak_accept_rank.Location = new System.Drawing.Point(6, 98);
+            this.cb_ee_peak_accept_rank.Name = "cb_ee_peak_accept_rank";
+            this.cb_ee_peak_accept_rank.Size = new System.Drawing.Size(222, 17);
+            this.cb_ee_peak_accept_rank.TabIndex = 32;
+            this.cb_ee_peak_accept_rank.Text = "Auto-Accept Peaks Based on Delta Mass";
+            this.cb_ee_peak_accept_rank.UseVisualStyleBackColor = true;
+            this.cb_ee_peak_accept_rank.CheckedChanged += new System.EventHandler(this.cb_ee_peak_accept_rank_CheckedChanged);
             // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1604, 711);
+            this.ClientSize = new System.Drawing.Size(1652, 711);
             this.ControlBox = false;
             this.Controls.Add(this.param_splitcontainer);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
