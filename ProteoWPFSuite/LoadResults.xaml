@@ -16,12 +16,13 @@
 
             <!--Missing checked even handlers!!!!!!!!!!!!!!!!!-->
             <StackPanel Margin="0 10" Width="Auto">
-                <RadioButton IsChecked="True" x:Name="rb_standardOptions" Click="rb_standardOptions_CheckedChanged" HorizontalAlignment="Left" Width="68" Height="17" Content="Standard" />
+                <RadioButton x:Name="rb_standardOptions" Click="rb_standardOptions_CheckedChanged" HorizontalAlignment="Left" Width="68" Height="17" Content="Standard" />
                 <RadioButton x:Name="rb_chemicalCalibration" HorizontalAlignment="Left" Width="Auto" Height="17" Content="Chemical Calibration" Click="rb_chemicalCalibration_CheckedChanged" />
-                <RadioButton x:Name="rb_deconvolution" HorizontalAlignment="Left" Height="17" Content="Deconvolution" Click="rb_deconvolution_CheckedChanged"/>
+                <RadioButton IsChecked="True" x:Name="rb_deconvolution" HorizontalAlignment="Left" Height="17" Content="Deconvolution" Click="rb_deconvolution_CheckedChanged"/>
+                <RadioButton x:Name="rb_topdown_search" HorizontalAlignment="Left" Height="17" Content="MetaMorpheus Top-Down Search" Click="rb_topdown_search_CheckedChanged"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="box_parameters" HorizontalAlignment="Stretch" Height="116" VerticalAlignment="Top"  FontSize="12" Margin="10,0,0,0" Padding="0,2,0,3" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="2">
+        <GroupBox x:Name="box_parameters" HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Top"  FontSize="12" Margin="10,0,0,0" Padding="0,2,0,3" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="2">
             <GroupBox.Header>
                 <TextBlock FontWeight="Bold">2. Set Parameters</TextBlock>
             </GroupBox.Header>
@@ -57,6 +58,16 @@
                         <Grid>
                             <CheckBox x:Name="cb_calibrate_raw_files" Content="Write Calibrated Raw Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="cb_calibrate_raw_files_CheckedChanged" />
                             <CheckBox x:Name="cb_calibrate_td_files" Content="Calibrate Top-Down Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,31,0,0" Click="cb_calibrate_td_files_CheckedChanged" />
+                            <CheckBox x:Name="cb_mass_cali" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,52,0,0" Click="cb_mass_cali_CheckedChanged">
+                                <TextBlock>
+                                    Calibrate Masses - <Run FontWeight="Bold">Mass Tol. (ppm)</Run>
+                                </TextBlock>
+                            </CheckBox>
+                            <CheckBox x:Name="cb_rt_cali" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,73,0,10" Click="cb_rt_cali_CheckedChanged">
+                                <TextBlock>
+                                    Calibrate Retention Times - <Run FontWeight="Bold">RT Tol. (min)</Run>
+                                </TextBlock>
+                            </CheckBox>
                         </Grid>
                     </Border>
                     <GroupBox x:Name="fullrun_groupbox" Grid.Column="2" Header="Full Run Save Options">
@@ -71,6 +82,13 @@
                             <Button Grid.Column="1" Height="30" Padding="10 0 10 0" Click="btn_browseSummarySaveFolder_Click"> Browse Results Folder</Button>
                         </Grid>
                     </GroupBox>
+                    <Grid x:Name="panel_topdown_search" Grid.Row="0" Grid.Column="0" Width="Auto" Background="White" Panel.ZIndex="1" Visibility="Collapsed">
+                        <CheckBox x:Name="cb_carbamidomethylate" Content="Fixed Carbamidomethyl Mod" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="cb_calibrate_raw_files_CheckedChanged" />
+                        <!--<Label x:Name="label_mincharge" Width="Auto" Padding="5,0,5,5">Precursor Mass Tolerance (ppm)</Label>
+                        <WindowsFormsHost Height="20" Width="49" VerticalAlignment="Top">
+                            <winform:NumericUpDown x:Name="nud_mincharge"  Dock="Fill" Value="1" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
+                        </WindowsFormsHost>-->
+                    </Grid>
                     
                 </Grid>
             </Border>
@@ -138,10 +156,13 @@
                             <Button x:Name="bt_calibrate" Margin="2 0 2 0" Content="Calibrate" Click="bt_calibrate_Click"/>
                         </Grid>
                         <Grid x:Name="panel_step" Grid.Column="0">
-                            <Button x:Name="bt_stepthru" Margin="2 0 2 0" Content="Step Through Progress" Click="bt_stepthru_Click"/>
+                            <Button x:Name="bt_stepthru" Margin="0,0,4.4,0" Content="Step Through Processing" Click="bt_stepthru_Click"/>
                         </Grid>
                         <Grid x:Name="panel_fullrun" Grid.Column="1">
                             <Button x:Name="bt_fullrun" Content="Full Run" Margin="2 0 2 0" Click="btn_fullRun_Click"/>
+                        </Grid>
+                        <Grid x:Name="panel_bt_topdown_search" Grid.Column="0" Visibility="Collapsed">
+                            <Button x:Name="bt_topdown_search" Margin="0,0,4.4,0" Content="MetaMorpheus Top-Down Search" Click="bt_topdown_search_Click"/>
                         </Grid>
                     </Grid>
                 </GroupBox>
