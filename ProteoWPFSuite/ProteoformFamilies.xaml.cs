@@ -176,7 +176,7 @@ namespace ProteoWPFSuite
         public void InitializeParameterSet()
         {
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Lollipop.gene_centric_families = (bool)ck_cb_geneCentric; //data binding
+            Lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked; //data binding
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
             cmbx_tableSelector.SelectedIndexChanged += cmbx_tableSelector_SelectedIndexChanged;

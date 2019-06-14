@@ -247,7 +247,7 @@ namespace ProteoWPFSuite
             foreach (ISweetForm form in forms) form.InitializeParameterSet();
             return method_file_success;
         }
-        /*
+
         public Stopwatch full_run()
         {
             forms[1].ClearListsTablesFigures(true); // clear forms following load deconvolution results
@@ -273,7 +273,7 @@ namespace ProteoWPFSuite
 
             loadResults.FillTablesAndCharts(); // updates the filelists in form
 
-            // Check that there are input files
+          //  Check that there are input files
             if (Sweet.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
@@ -281,25 +281,13 @@ namespace ProteoWPFSuite
             }
 
             // Check that theoretical database(s) are present
-            if (!Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
+
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
             {
-                if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
-                {
-                    MessageBox.Show("Please list at least one protein database.", "Full Run");
-                    return null;
-                }
-                else
-                {
-                    MessageBoxResult d1 = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButton.OKCancel);
-                    if (d1 == MessageBoxResult.OK)
-                    {
-                        Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
-                        if (loadResults.ReadyToRunTheGamut())
-                            loadResults.RunTheGamut(true); // updates the dgvs
-                    }
-                    else return null;
-                }
+                MessageBox.Show("Please list at least one protein database.", "Full Run");
+                return null;
             }
+
 
             // Option to choose a result folder
             if (Sweet.lollipop.results_folder == "")
@@ -328,7 +316,7 @@ namespace ProteoWPFSuite
                     return null;
             }
 
-            // Run the program
+            //Run the program
             Mouse.OverrideCursor = Cursors.Wait;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -338,7 +326,7 @@ namespace ProteoWPFSuite
                     sweet.RunTheGamut(true);
             }
 
-            // Save the results
+          //  Save the results
             resultsSummary.InitializeParameterSet();
             if (Sweet.lollipop.results_folder != "")
             {
@@ -354,10 +342,10 @@ namespace ProteoWPFSuite
                 warning_methods.Add("The following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: ");
                 warning_methods.Add(String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
             }
-            if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
+            if (Sweet.lollipop.topdownReader.bad_topdown_ptms.Count > 0)
             {
                 warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
+                warning_methods.Add(String.Join(", ", Sweet.lollipop.topdownReader.bad_topdown_ptms.Distinct()));
             }
             if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
             {
@@ -368,11 +356,11 @@ namespace ProteoWPFSuite
             {
                 MessageBox.Show(String.Join("\n\n", warning_methods));
             }
-            //Program ran successfully
+          //  Program ran successfully
             stopwatch.Stop();
             Mouse.OverrideCursor = null;
             return stopwatch;
-        }*/
+        }
 
         #endregion METHOD TOOL STRIP Private Methods
 
@@ -449,5 +437,15 @@ namespace ProteoWPFSuite
             curr.Show();
         }
         #endregion Others
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

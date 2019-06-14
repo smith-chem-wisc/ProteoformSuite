@@ -115,8 +115,8 @@ namespace ProteoWPFSuite
                 DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.BottomUp).Select(x => new DisplayInputFile(x)).ToList(), "BottomUp", new List<Purpose> { Purpose.BottomUp }));
             if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
                 DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(x => new DisplayInputFile(x)).ToList(), "QuantificationFiles", new List<Purpose> { Purpose.Quantification }));
-            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Count() > 0)
-                DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Select(x => new DisplayInputFile(x)).ToList(), "ProteinDatabases", new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList }));
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> {Purpose.ProteinDatabase }).Count() > 0)
+                DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> {Purpose.ProteinDatabase }).Select(x => new DisplayInputFile(x)).ToList(), "ProteinDatabases", new List<Purpose> { Purpose.ProteinDatabase}));
             return DataTables;
         }
         public void ClearListsTablesFigures(bool clear_following)
@@ -158,8 +158,6 @@ namespace ProteoWPFSuite
 
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)rb_neucode.IsChecked);
             Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
-            Sweet.lollipop.neucode_light_lysine = (bool)rb_neucode.IsChecked;
-            Sweet.lollipop.natural_lysine_isotope_abundance = (bool)!rb_neucode.IsChecked;
 
             foreach (InputFile f in Sweet.lollipop.input_files)
             {
@@ -350,8 +348,10 @@ namespace ProteoWPFSuite
 
         private void reload_dgvs()
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]);
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.Text)]);
+            //DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]).Select(f => new DisplayInputFile(f)));
+            //DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.selected)]);
         }
 
         #endregion DGV DRAG AND DROP Private Methods

@@ -58,7 +58,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button Click="Button_Click_1" Height="50" Width="25">
+            <Button Click="Button_Click_2" Height="50" Width="25">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Grid>

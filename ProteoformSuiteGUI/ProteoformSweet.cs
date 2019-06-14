@@ -394,11 +394,15 @@ namespace ProteoformSuiteGUI
         {
             ExcelWriter writer = new ExcelWriter();
             if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButtons.OKCancel) == DialogResult.Cancel) return;
+            Cursor = Cursors.WaitCursor;
             Parallel.ForEach(forms, form => form.SetTables());
             writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<string, List<DataTable>>((sweet as Form).Name, sweet.DataTables)).ToList());
             Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as Form).Name));
+            Cursor = Cursors.Default;
             if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButtons.OKCancel) == DialogResult.Cancel) return;
+            Cursor = Cursors.WaitCursor;
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
+            Cursor = Cursors.Default;
         }
 
         private void SaveExcelFile(ExcelWriter writer, string filename)
@@ -407,7 +411,9 @@ namespace ProteoformSuiteGUI
             DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
+                Cursor = Cursors.WaitCursor;
                 MessageBox.Show(writer.SaveToExcel(saveExcelDialog.FileName));
+                Cursor = Cursors.Default;
             }
             else return;
         }
