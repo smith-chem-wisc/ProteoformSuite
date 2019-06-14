@@ -92,12 +92,30 @@ namespace ProteoWPFSuite
         }
         private void showForm(UserControl form)
         {
-            ClosingTabItem temp = new ClosingTabItem();
+            /*UClosingTabItem temp = new ClosingTabItem();
             temp.Title = form.GetType().Name;
             temp.Content = form;
             MDIContainer.Items.Add(temp);
             MDIContainer.SelectedItem = temp;
-            current_form = form as ISweetForm;
+            current_form = form as ISweetForm;*/
+            MDIContainer.SelectedIndex = ClosingTabItem.tabTable[form.GetType().Name];
+        }
+        //Initial all tabs
+        private void showTabs(List<ISweetForm> forms)
+        {
+            foreach (UserControl uc in forms)
+            {
+                ClosingTabItem temp = new ClosingTabItem();
+                temp.Title = uc.GetType().Name;
+                temp.Content = uc;
+                if (!uc.IsEnabled)
+                {
+                    temp.Focusable = false;//cannot be selected
+                }
+                MDIContainer.Items.Add(temp);
+                ClosingTabItem.tabTable.Add(uc.GetType().Name, MDIContainer.Items.Count - 1);//keep a record
+                current_form = uc as ISweetForm;
+            }
         }
         #endregion Private Setup Methods
 
@@ -440,12 +458,30 @@ namespace ProteoWPFSuite
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
+            int prev = MDIContainer.SelectedIndex-1;
+            
+            while(prev>=0 && !(MDIContainer.Items[prev] as TabItem).Focusable)
+            {
+                --prev;
+            }
+            if (prev > 0)
+            {
+                MDIContainer.SelectedIndex = prev;
+            }
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            int nxt = MDIContainer.SelectedIndex - 1;
 
+            while (nxt < MDIContainer.Items.Count && !(MDIContainer.Items[nxt] as TabItem).Focusable)
+            {
+                ++nxt;
+            }
+            if (nxt < MDIContainer.Items.Count)
+            {
+                MDIContainer.SelectedIndex = nxt;
+            }
         }
     }
 }

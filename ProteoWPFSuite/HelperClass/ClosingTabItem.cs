@@ -14,6 +14,7 @@ namespace ProteoWPFSuite
 
     class ClosingTabItem: TabItem
     {
+        public static Dictionary<string, int> tabTable=new Dictionary<string, int>();
         public ClosingTabItem()
         {
             header = new ClosingTabHeader();
