@@ -52,6 +52,7 @@ namespace ProteoWPFSuite
             
             InitializeForms();
             loadResults.InitializeParameterSet();
+            showTabs(forms);
             showForm(loadResults);
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
@@ -464,7 +465,7 @@ namespace ProteoWPFSuite
             {
                 --prev;
             }
-            if (prev > 0)
+            if (prev >= 0)
             {
                 MDIContainer.SelectedIndex = prev;
             }
@@ -472,7 +473,7 @@ namespace ProteoWPFSuite
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            int nxt = MDIContainer.SelectedIndex - 1;
+            int nxt = MDIContainer.SelectedIndex + 1;
 
             while (nxt < MDIContainer.Items.Count && !(MDIContainer.Items[nxt] as TabItem).Focusable)
             {
