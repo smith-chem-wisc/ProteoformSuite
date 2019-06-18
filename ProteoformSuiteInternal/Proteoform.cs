@@ -89,11 +89,11 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
                 if (e == null) { continue; }// Looking at an ET pair, expecting an EE pair
 
-                   TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
-                    this as TheoreticalProteoform : //Theoretical starting point
-                    (linked_proteoform_references.First() as TheoreticalProteoform != null ?
-                        linked_proteoform_references.First() as TheoreticalProteoform : //Experimental with theoretical reference
-                        null); //Experimental without theoretical reference
+                TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
+                 this as TheoreticalProteoform : //Theoretical starting point
+                 (linked_proteoform_references.First() as TheoreticalProteoform != null ?
+                     linked_proteoform_references.First() as TheoreticalProteoform : //Experimental with theoretical reference
+                     null); //Experimental without theoretical reference
 
                 double mass_tolerance = modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                 PtmSet with_mod_change = determine_mod_change(e, this, theoretical_base, r, this.ptm_set);
@@ -116,26 +116,50 @@ namespace ProteoformSuiteInternal
             return identified;
         }
 
-        private static PtmSet determine_mod_change(ExperimentalProteoform e, Proteoform p, TheoreticalProteoform theoretical_base, ProteoformRelation r, PtmSet this_ptmset)
+        private static PtmSet determine_mod_change(ExperimentalProteoform e, Proteoform p,
+            TheoreticalProteoform theoretical_base, ProteoformRelation r, PtmSet this_ptmset)
         {
+
             double mass_tolerance = p.modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
             int sign = Math.Sign(e.modified_mass - p.modified_mass);
-            double deltaM = Math.Sign(r.peak.DeltaMass) < 0 ? r.peak.DeltaMass : sign * r.peak.DeltaMass; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
+            double deltaM =
+                Math.Sign(r.peak.DeltaMass) < 0
+                    ? r.peak.DeltaMass
+                    : sign * r.peak
+                          .DeltaMass; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
 
 
-            List<PtmSet> possible_additions = r.peak.possiblePeakAssignments.Where(peak => Math.Abs(peak.mass - deltaM) <= 1).ToList(); // EE relations have PtmSets around both positive and negative deltaM, so remove the ones around the opposite of the deltaM of interest
-            PtmSet best_addition = generate_possible_added_ptmsets(possible_additions, Sweet.lollipop.theoretical_database.all_mods_with_mass, theoretical_base, p.begin, p.end, p.ptm_set, 1, true)
-                .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+            List<PtmSet> possible_additions = r.peak.possiblePeakAssignments
+                .Where(peak => Math.Abs(peak.mass - deltaM) <= 1)
+                .ToList(); // EE relations have PtmSets around both positive and negative deltaM, so remove the ones around the opposite of the deltaM of interest
+            PtmSet best_addition = generate_possible_added_ptmsets(possible_additions,
+                    Sweet.lollipop.theoretical_database.all_mods_with_mass, theoretical_base, p.begin, p.end,
+                    p.ptm_set, 1, true)
+                .OrderBy(x =>
+                    (double)x.ptm_rank_sum +
+                    Math.Abs(x.mass - deltaM) *
+                    10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                 .FirstOrDefault();
+
 
             PtmSet best_loss = null;
             foreach (PtmSet set in Sweet.lollipop.theoretical_database.all_possible_ptmsets)
             {
-                bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
-                List<Modification> these_mods = this_ptmset.ptm_combination.Select(ptm => ptm.modification).ToList();
-                List<Modification> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
-                bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.OriginalId == m1.OriginalId) >= those_mods.Count(m2 => m2.OriginalId == m1.OriginalId)); //# of each mod in current set must be greater than or equal to # in set to remove.
-                bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
+                bool within_loss_tolerance =
+                    deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
+                List<Modification> these_mods =
+                    this_ptmset.ptm_combination.Select(ptm => ptm.modification).ToList();
+                List<Modification>
+                    those_mods =
+                        set.ptm_combination.Select(ptm => ptm.modification)
+                            .ToList(); // all must be in the current set to remove them
+                bool can_be_removed = those_mods.All(m1 =>
+                    these_mods.Count(m2 => m2.OriginalId == m1.OriginalId) >=
+                    those_mods.Count(m2 =>
+                        m2.OriginalId ==
+                        m1.OriginalId)); //# of each mod in current set must be greater than or equal to # in set to remove.
+                bool better_than_current_best_loss =
+                    best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                 if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                 {
                     best_loss = set;
@@ -147,21 +171,27 @@ namespace ProteoformSuiteInternal
                 return null;
             }
 
+
             // Make the new ptmset with ptms removed or added
             PtmSet with_mod_change = null;
             if (best_loss == null)
             {
-                with_mod_change = new PtmSet(new List<Ptm>(this_ptmset.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.MonoisotopicMass != 0).ToList()));
+                with_mod_change = new PtmSet(new List<Ptm>(this_ptmset.ptm_combination
+                    .Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.MonoisotopicMass != 0)
+                    .ToList()));
             }
             else
             {
+
                 List<Ptm> new_combo = new List<Ptm>(this_ptmset.ptm_combination);
                 foreach (Ptm ptm in best_loss.ptm_combination)
                 {
-                    new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification.Equals(ptm.modification)));
+                    new_combo.Remove(new_combo.FirstOrDefault(asdf =>
+                        asdf.modification.OriginalId == ptm.modification.OriginalId));
                 }
                 with_mod_change = new PtmSet(new_combo);
             }
+
 
             if (r.represented_ptmset == null)
             {
@@ -228,7 +258,7 @@ namespace ProteoformSuiteInternal
 
                     rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
-                    if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation )
+                    if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                     {
                         rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
                     }

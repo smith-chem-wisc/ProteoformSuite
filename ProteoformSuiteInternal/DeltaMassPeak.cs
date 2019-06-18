@@ -84,9 +84,8 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                grouped_relations = relations_to_group.Where(r => Math.Round(r.candidate_ptmset.mass, 4) == Math.Round(base_relation.candidate_ptmset.mass, 4)).ToList();
+                grouped_relations = relations_to_group.Where(r => Math.Round(r.candidate_ptmset.mass, 5) == Math.Round(base_relation.candidate_ptmset.mass, 5)).ToList();
                 possiblePeakAssignments = grouped_relations.Select(r => r.candidate_ptmset).ToList();
-                //DeltaMass = Math.Round(possiblePeakAssignments.First().mass, 4);
                 DeltaMass = possiblePeakAssignments.First().mass;
             }
 
@@ -147,13 +146,13 @@ namespace ProteoformSuiteInternal
                 Sweet.lollipop.et_use_notch)
             {
                 decoys_in_peaks = all_relations
-                    .Where(r => r.candidate_ptmset != null && Math.Round(r.candidate_ptmset.mass, 4) == Math.Round(DeltaMass, 4)).ToList();
+                    .Where(r => r.candidate_ptmset != null && Math.Round(r.candidate_ptmset.mass, 5) == Math.Round(DeltaMass, 5)).ToList();
             }
             else if (all_relations[0].RelationType == ProteoformComparison.ExperimentalFalse &&
                      Sweet.lollipop.ee_use_notch)
             {
                 decoys_in_peaks = all_relations
-                    .Where(r => r.candidate_ptmset != null && Math.Round(r.candidate_ptmset.mass, 4) == Math.Round(DeltaMass, 4)).ToList();
+                    .Where(r => r.candidate_ptmset != null && Math.Round(r.candidate_ptmset.mass, 5) == Math.Round(DeltaMass, 5)).ToList();
             }
             else
             {
