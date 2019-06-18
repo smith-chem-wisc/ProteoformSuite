@@ -79,7 +79,7 @@ namespace ProteoformSuiteInternal
                     directory, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_").Replace(@"\", "_").Replace(@"/", "_") + "_", timestamp,
                     go_analysis as IGoAnalysis, true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label, false);
+                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
             }
             message += "Remember to install the package \"enhancedGraphics\" under App -> App Manager to view piechart nodes for quantitative data";

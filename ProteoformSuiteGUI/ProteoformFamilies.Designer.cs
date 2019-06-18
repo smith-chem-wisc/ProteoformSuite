@@ -68,7 +68,6 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_scale_nodes = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -331,7 +330,6 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
-            this.splitContainer3.Panel2.Controls.Add(this.cb_scale_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -549,16 +547,6 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // cb_scale_nodes
-            // 
-            this.cb_scale_nodes.AutoSize = true;
-            this.cb_scale_nodes.Location = new System.Drawing.Point(301, 132);
-            this.cb_scale_nodes.Name = "cb_scale_nodes";
-            this.cb_scale_nodes.Size = new System.Drawing.Size(217, 17);
-            this.cb_scale_nodes.TabIndex = 65;
-            this.cb_scale_nodes.Text = "Scale Selected Families to Largest Node";
-            this.cb_scale_nodes.UseVisualStyleBackColor = true;
-            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -633,6 +621,5 @@
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
-        private System.Windows.Forms.CheckBox cb_scale_nodes;
     }
 }
