@@ -179,6 +179,8 @@ namespace ProteoformSuiteGUI
             nUD_notch_tolerance.Minimum = 0;
             nUD_notch_tolerance.Maximum = 30;
             nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_et);
+
+            cb_rt_limit_with_td_ids.Checked = Sweet.lollipop.et_td_rt_limit_relations;
         }
 
         #endregion Public Methods
@@ -526,6 +528,11 @@ namespace ProteoformSuiteGUI
         {
             rb_daltons.Checked = !rb_ppm.Checked;
             Sweet.lollipop.et_notch_ppm = rb_ppm.Checked;
+        }
+
+        private void cb_rt_limit_with_td_ids_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.et_td_rt_limit_relations = cb_rt_limit_with_td_ids.Checked;
         }
     }
 }

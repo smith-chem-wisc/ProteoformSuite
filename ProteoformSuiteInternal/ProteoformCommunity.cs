@@ -85,7 +85,8 @@ namespace ProteoformSuiteInternal
                             ProteoformRelation best_relation = pf1.candidate_relatives
                                 .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type,
                                     pf1.modified_mass - pf2.modified_mass, current_directory))
-                                .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
+                                .Where(r => r.candidate_ptmset != null && topdown_matching_rt(pf1, r.connected_proteoforms[1] as TheoreticalProteoform)
+                                ) // don't consider unassignable relations for ET
                                 .OrderBy(r =>
                                     r.candidate_ptmset.ptm_rank_sum +
                                     Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) *
@@ -111,7 +112,7 @@ namespace ProteoformSuiteInternal
                             }
 
                             pf1.candidate_relatives = best_relatives_for_each_gene_name != null ?
-                                best_relatives_for_each_gene_name.Where(r => r != null).Select(r => r.connected_proteoforms[1]).ToList() : new List<Proteoform>();
+                                best_relatives_for_each_gene_name.Where(r => r != null && topdown_matching_rt(pf1, r.connected_proteoforms[1] as TheoreticalProteoform)).Select(r => r.connected_proteoforms[1]).ToList() : new List<Proteoform>();
                         }
                     }
                 }
@@ -130,8 +131,10 @@ namespace ProteoformSuiteInternal
             if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
             {
                 return
-                    (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) >= Sweet.lollipop.et_low_mass_difference
-                    && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <= Sweet.lollipop.et_high_mass_difference;
+                    (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) >=
+                    Sweet.lollipop.et_low_mass_difference
+                    && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <=
+                    Sweet.lollipop.et_high_mass_difference;
             }
             else if (relation_type == ProteoformComparison.ExperimentalExperimental)
             {
@@ -155,6 +158,21 @@ namespace ProteoformSuiteInternal
             {
                 return false;
             }
+        }
+
+        public bool topdown_matching_rt(ExperimentalProteoform pf1, TheoreticalProteoform pf2_with_allowed_lysines)
+        {
+            if (!Sweet.lollipop.et_td_rt_limit_relations) return true;
+            if (pf1.topdown_id) return true;
+            List<TopDownProteoform> topdown_proteoforms_same_accession = Sweet.lollipop.topdown_proteoforms.Where(td =>
+                pf2_with_allowed_lysines.ExpandedProteinList.Any(p =>
+                    p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0])
+                        .Contains(td.accession.Split('_')[0].Split('-')[0]))).ToList();
+            if (topdown_proteoforms_same_accession.Count == 0) return true;
+            if (topdown_proteoforms_same_accession.Any(p =>
+                Math.Abs(pf1.agg_rt - p.agg_rt) < Sweet.lollipop.retention_time_tolerance)) return true;
+
+            return false;
         }
 
         public static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)

@@ -158,7 +158,7 @@ namespace ProteoformSuiteInternal
                 List<Ptm> new_combo = new List<Ptm>(this_ptmset.ptm_combination);
                 foreach (Ptm ptm in best_loss.ptm_combination)
                 {
-                    new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification.Equals(ptm.modification)));
+                    new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification.OriginalId == ptm.modification.OriginalId));
                 }
                 with_mod_change = new PtmSet(new_combo);
             }

@@ -243,6 +243,7 @@ namespace Test
         [Test]
         public void TestNeuCodeLabeledProteoformCommunityRelate_ET()
         {
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = true;
 
             // One experimental one theoretical proteoforms; lysine count equal; mass difference < 500 -- return 1
@@ -700,6 +701,29 @@ namespace Test
             Assert.IsNull(rel.peak);
             Assert.True(string.Equals("unmodified", ((TheoreticalProteoform)rel.connected_proteoforms[1]).ptm_set.ptm_description, StringComparison.CurrentCultureIgnoreCase));
             Assert.AreEqual(1, rel.nearby_relations_count);
+        }
+
+        [Test]
+        public void test_topdown_rt_limit_ET()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.retention_time_tolerance = 5;
+            Sweet.lollipop.et_td_rt_limit_relations = true;
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            e1.agg_mass = 1000;
+            e1.agg_rt = 50;
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2");
+            e2.agg_mass = 1000;
+            e2.agg_rt = 80;
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical();
+            t.modified_mass = 1000;
+            TopDownProteoform td = ConstructorsForTesting.TopDownProteoform("T1_1-2", 1000, 50);
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() {td};
+            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(e1, t));
+            Assert.False(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(e2, t));
+            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(td, t));
+            Sweet.lollipop.et_td_rt_limit_relations = false;
+            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(e2, t));
         }
 
         [Test]

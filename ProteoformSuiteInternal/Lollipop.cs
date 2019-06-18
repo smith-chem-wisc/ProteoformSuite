@@ -856,6 +856,7 @@ namespace ProteoformSuiteInternal
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public bool ee_accept_peaks_based_on_rank = true;
+        public bool et_td_rt_limit_relations = false;
         public bool et_use_notch = false;
         public bool et_notch_ppm = true;
         public bool et_bestETRelationOnly = true;
