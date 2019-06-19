@@ -484,5 +484,26 @@ namespace ProteoWPFSuite
                 MDIContainer.SelectedIndex = nxt;
             }
         }
+
+        private void changeColor(object sender, MouseEventArgs e)
+        {
+            (sender as Border).Background=System.Windows.Media.Brushes.Gray;
+        }
+        
+        private void restore(object sender, MouseEventArgs e)
+        {
+            Border temp = (Border)sender;
+            temp.ClearValue(BackgroundProperty);
+        }
+
+        private void pressColor(object sender, MouseButtonEventArgs e)
+        {
+            (sender as Border).Background = System.Windows.Media.Brushes.White;
+        }
+
+        private void restore(object sender, MouseButtonEventArgs e)
+        {
+            (sender as Border).Background = System.Windows.Media.Brushes.Gray;
+        }
     }
 }
