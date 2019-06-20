@@ -213,6 +213,7 @@ namespace ProteoformSuiteInternal
                         }
                     }
 
+
                     //This is the excel file header:
                     //convert into new td hit
                     //cellStrings[0]=PFR
@@ -255,7 +256,7 @@ namespace ProteoformSuiteInternal
 
                         if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 && td_hit.pscore > 0 &&
                             td_hit.reported_mass > 0 && td_hit.score > 0
-                            && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
+                            && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0 && td_hit.sequence.Length == td_hit.end - td_hit.begin + 1)
                         {
                             lock (td_hits) td_hits.Add(td_hit);
                         }

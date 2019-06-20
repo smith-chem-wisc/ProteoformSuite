@@ -454,7 +454,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Abundant Component for Manual Validation of Identification", typeof(string));
             results.Columns.Add("Family", typeof(string));
 
-            foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+            foreach (ExperimentalProteoform e in community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null)
                 .OrderByDescending(e => (Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : get_tusher_values(e.quant, analysis).significant) ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
