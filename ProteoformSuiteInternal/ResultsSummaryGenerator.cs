@@ -24,8 +24,19 @@ namespace ProteoformSuiteInternal
         {
             using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "experimental_results_" + timestamp + ".tsv")))
             {
-                writer.Write(datatable_tostring(experimental_results_dataframe(analysis)));
+                writer.Write(datatable_tostring(experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, analysis)));
             }
+
+            using (StreamWriter writer =
+                new StreamWriter(Path.Combine(directory, "decoy_experimental_results_" + timestamp + ".tsv")))
+            {
+                foreach (var decoy_community in Sweet.lollipop.decoy_proteoform_communities.Values)
+                {
+                    writer.Write(datatable_tostring(
+                        experimental_results_dataframe(decoy_community, analysis)));
+                }
+            }
+
             using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "experimental_intensities_by_file_" + timestamp + ".tsv")))
             {
                 writer.Write(datatable_tostring(experimental_intensities_dataframe()));
@@ -411,9 +422,10 @@ namespace ProteoformSuiteInternal
             return result_string.ToString();
         }
 
-        public static DataTable experimental_results_dataframe(TusherAnalysis analysis)
+        public static DataTable experimental_results_dataframe(ProteoformCommunity community, TusherAnalysis analysis)
         {
             DataTable results = new DataTable();
+            results.Columns.Add("Community", typeof(string));
             results.Columns.Add("Proteoform ID", typeof(string));
             results.Columns.Add("Proteoform Description", typeof(string));
             results.Columns.Add("Aggregated Observation ID", typeof(string));
@@ -449,6 +461,7 @@ namespace ProteoformSuiteInternal
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
                 results.Rows.Add(
+                    community.community_number < 0 ? "Target" : "Decoy_" + community.community_number,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).accession + (e.ambiguous_identifications.Count > 0
                         ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item1.accession))
                         : ""),
