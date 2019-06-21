@@ -18,7 +18,7 @@ namespace ProteoWPFSuite
 
         #region Public Fields
         public LoadResults loadResults = new LoadResults(); //finished
-       
+
         public NeuCodePairs neuCodePairs = new NeuCodePairs(); //finished
         public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents(); //finished
         public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase(); //finished
@@ -51,9 +51,10 @@ namespace ProteoWPFSuite
 
             
             InitializeForms();
-            loadResults.InitializeParameterSet();
             showTabs(forms);
             showForm(loadResults);
+            loadResults.InitializeParameterSet();
+            
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
@@ -63,7 +64,6 @@ namespace ProteoWPFSuite
             saveResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
             saveResults.DefaultExt = ".sweet";
             
-
         }
 
         #endregion Public Constructor
@@ -106,13 +106,14 @@ namespace ProteoWPFSuite
         {
             foreach (UserControl uc in forms)
             {
+                
                 ClosingTabItem temp = new ClosingTabItem();
                 temp.Title = uc.GetType().Name;
                 temp.Content = uc;
-                if (!uc.IsEnabled)
-                {
-                    temp.Focusable = false;//cannot be selected
-                }
+                //if (!uc.IsEnabled)
+                //{
+                    //temp.Focusable = false;//cannot be selected
+                //}
                 MDIContainer.Items.Add(temp);
                 ClosingTabItem.tabTable.Add(uc.GetType().Name, MDIContainer.Items.Count - 1);//keep a record
                 current_form = uc as ISweetForm;
@@ -125,6 +126,10 @@ namespace ProteoWPFSuite
         public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
         {
             neuCodeProteoformPairsToolStripMenuItem.IsEnabled = setting;
+            ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["NeuCodePairs"]];
+            temp.Focusable=false;
+            temp.freeze = true;
+            //(temp.Header as ClosingTabHeader) = System.Windows.Media.Brushes.Gray;
         }
 
         public void enable_quantificationToolStripMenuItem(bool setting)
@@ -292,7 +297,7 @@ namespace ProteoWPFSuite
 
             loadResults.FillTablesAndCharts(); // updates the filelists in form
 
-          //  Check that there are input files
+            //  Check that there are input files
             if (Sweet.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
@@ -345,7 +350,7 @@ namespace ProteoWPFSuite
                     sweet.RunTheGamut(true);
             }
 
-          //  Save the results
+            //  Save the results
             resultsSummary.InitializeParameterSet();
             if (Sweet.lollipop.results_folder != "")
             {
@@ -375,7 +380,7 @@ namespace ProteoWPFSuite
             {
                 MessageBox.Show(String.Join("\n\n", warning_methods));
             }
-          //  Program ran successfully
+            //  Program ran successfully
             stopwatch.Stop();
             Mouse.OverrideCursor = null;
             return stopwatch;
@@ -459,9 +464,9 @@ namespace ProteoWPFSuite
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            int prev = MDIContainer.SelectedIndex-1;
-            
-            while(prev>=0 && !(MDIContainer.Items[prev] as TabItem).Focusable)
+            int prev = MDIContainer.SelectedIndex - 1;
+
+            while (prev >= 0 && !(MDIContainer.Items[prev] as TabItem).Focusable)
             {
                 --prev;
             }
@@ -487,9 +492,9 @@ namespace ProteoWPFSuite
 
         private void changeColor(object sender, MouseEventArgs e)
         {
-            (sender as Border).Background=System.Windows.Media.Brushes.Gray;
+            (sender as Border).Background = System.Windows.Media.Brushes.Gray;
         }
-        
+
         private void restore(object sender, MouseEventArgs e)
         {
             Border temp = (Border)sender;

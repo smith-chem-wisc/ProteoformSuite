@@ -8,7 +8,7 @@
              xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              
              mc:Ignorable="d" 
-             d:DesignHeight="780" d:DesignWidth="1037" Loaded="TopDown_Load">
+             MinHeight="800" MinWidth="1000" Loaded="TopDown_Load">
     <Grid x:Name="splitContainer3">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
