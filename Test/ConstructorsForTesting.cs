@@ -124,14 +124,14 @@ namespace Test
         //TOPDOWN pROTEOFORM
         public static TopDownProteoform TopDownProteoform(string accession, double modified_mass, double retention_time)
         {
-            TopDownHit h = new TopDownHit();
+            SpectrumMatch h = new SpectrumMatch();
             h.reported_mass = modified_mass;
             h.theoretical_mass = modified_mass;
             h.ms2_retention_time = retention_time;
             h.sequence = "MSSSSSSSSSS";
             h.begin = 10;
             h.end = 20;
-            TopDownProteoform td = new TopDownProteoform(accession, new List<TopDownHit>() { h } );
+            TopDownProteoform td = new TopDownProteoform(accession, new List<SpectrumMatch>() { h } );
             (td as ExperimentalProteoform).topdown_id = true;
             td.accepted = true;
             return td;

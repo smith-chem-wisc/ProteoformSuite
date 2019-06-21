@@ -578,7 +578,7 @@ namespace Test
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             Sweet.lollipop.target_proteoform_community.construct_families();
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].construct_families();
-            Sweet.lollipop.top_down_hits = new List<TopDownHit>() { new TopDownHit() };
+            Sweet.lollipop.top_down_hits = new List<SpectrumMatch>() { new SpectrumMatch() };
             Assert.AreEqual(1, Sweet.lollipop.top_down_hits.Count);
             Assert.IsNotEmpty(Sweet.lollipop.topdown_proteoforms);
             Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));

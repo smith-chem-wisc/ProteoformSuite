@@ -126,6 +126,16 @@ namespace ProteoformSuiteGUI
             get { return t.topdown_theoretical; }
         }
 
+        public int bu_PSMs_count
+        {
+            get { return t.bottom_up_PSMs.Count; }
+        }
+
+        public string bu_PSMs_PTMs
+        {
+            get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description))); }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -168,7 +178,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(gene_name)) { return "Gene Name"; }
             if (property_name == nameof(groupedAccessions)) { return "Grouped Accessions"; }
             if (property_name == nameof(topdown_theoretical)) { return "Top-Down Theoretical"; }
-            return null;
+            if (property_name == nameof(bu_PSMs_PTMs)) return "Modified Bottom-Up PSMs";
+            if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count"; return null;
         }
 
         private static bool visible(string property_name, bool current)

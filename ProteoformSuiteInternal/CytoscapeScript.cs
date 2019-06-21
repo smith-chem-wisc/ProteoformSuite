@@ -423,7 +423,15 @@ namespace ProteoformSuiteInternal
 
         public static string get_proteoform_shared_name(Proteoform p, string node_label, int double_rounding)
         {
-            if (p as ExperimentalProteoform != null)
+            if (p as TopDownProteoform != null)
+            {
+                TopDownProteoform e = p as TopDownProteoform;
+                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
+                if (node_label == Lollipop.node_labels[1])
+                    name += " " + e.topdown_begin + "to" + e.topdown_end + " " + e.topdown_ptm_description;
+                return name;
+            }
+            else if (p as ExperimentalProteoform != null)
             {
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;

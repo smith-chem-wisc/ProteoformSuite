@@ -12,7 +12,7 @@ namespace ProteoformSuiteGUI
     {
         #region Public Constructors
 
-        public DisplayTopDownHit(TopDownHit h)
+        public DisplayTopDownHit(SpectrumMatch h)
             : base(h)
         {
             this.h = h;
@@ -22,7 +22,7 @@ namespace ProteoformSuiteGUI
 
         #region Private Fields
 
-        private readonly TopDownHit h;
+        private readonly SpectrumMatch h;
 
         #endregion Private Fields
 

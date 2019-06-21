@@ -12,6 +12,7 @@ namespace ProteoformSuiteInternal
         #region Public Properties
 
         public List<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
+        public List<SpectrumMatch> bottom_up_PSMs = new List<SpectrumMatch>();
         public string name { get; set; }
         public string description { get; set; }
         public string fragment { get; set; }

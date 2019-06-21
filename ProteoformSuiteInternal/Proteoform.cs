@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
         //if ambiguous id's store here
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<Tuple<Proteoform, int, int, PtmSet>> ambiguous_identifications { get; set; } = new List<Tuple<Proteoform, int, int, PtmSet>>();
-
+ 
         #endregion Public Properties
 
         #region Private Fields
@@ -259,6 +259,31 @@ namespace ProteoformSuiteInternal
             }
 
             return possible_ptmsets;
+        }
+
+        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end)
+        {
+            var bottom_up_PSMs = new List<SpectrumMatch>();
+            //add BU PSMs
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession, out var psms);
+            if (psms != null)
+            {
+                bottom_up_PSMs.AddRange(psms.Where(s => s.begin >= begin && s.end <= end && s.ptm_list.All(m1 =>
+                                                           ptm_set.ptm_combination.Count(m2 =>
+                                                               UnlocalizedModification.LookUpId(m1.modification) ==
+                                                                UnlocalizedModification.LookUpId(m2.modification)) >=
+                                                            s.ptm_list.Count(m2 =>
+                                                                UnlocalizedModification.LookUpId(m1.modification) ==
+                                                                UnlocalizedModification.LookUpId(m2.modification)))));
+                //ptm_set.ptm_combination.Count(m2 =>
+                //    m2.modification.OriginalId ==
+                //    m1.modification.OriginalId) >=
+                //s.ptm_list.Count(m2 =>
+                //    m2.modification.OriginalId ==
+                //    m1.modification.OriginalId))));
+            }
+
+            return bottom_up_PSMs.OrderByDescending(p => p.ptm_list.Count).ToList();
         }
 
         #endregion Public Methods

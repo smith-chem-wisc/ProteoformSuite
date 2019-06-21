@@ -40,6 +40,8 @@ namespace ProteoformSuiteInternal
 
         public Dictionary<char, double> aaIsotopeMassList;
 
+        public Dictionary<string, List<SpectrumMatch>> bottom_up_psm_by_accession = new Dictionary<string, List<SpectrumMatch>>();
+
         #endregion Public Fields
 
         #region Public Methods
@@ -89,6 +91,26 @@ namespace ProteoformSuiteInternal
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
             possible_ptmset_dictionary = make_ptmset_dictionary();
+
+            //read in bottom-up PSMs
+            foreach (var file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
+            {
+                var bottom_up_psms = Sweet.lollipop.bottomupReader.ReadTDFile(file);
+                foreach (var psm in bottom_up_psms)
+                {
+                    bottom_up_psm_by_accession.TryGetValue(psm.accession, out var psms);
+                    if (psms == null)
+                    {
+                        bottom_up_psm_by_accession.Add(psm.accession, new List<SpectrumMatch>() { psm });
+                    }
+                    else
+                    {
+                        psms.Add(psm);
+                    }
+                }
+            }
+
+            //make theoreticals
             make_theoretical_proteoforms();
         }
 
@@ -357,6 +379,7 @@ namespace ProteoformSuiteInternal
                     t.topdown_theoretical = prot.topdown_protein;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
+                    t.bottom_up_PSMs = Proteoform.get_possible_PSMs(accession,  t.ptm_set, t.begin, t.end);
                 }
             }
             add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);
@@ -373,7 +396,6 @@ namespace ProteoformSuiteInternal
                 if (candidate_theoreticals.Count > 0)
                 {
                     topdown.gene_name = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
-                    topdown.geneID = string.Join("; ", candidate_theoreticals.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
                         int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);

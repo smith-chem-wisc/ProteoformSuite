@@ -190,7 +190,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
-            List<TopDownHit> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
+            List<SpectrumMatch> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
             List<Component> calibrated_components = new List<Component>();
             List<Component> uncalibrated_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
@@ -199,7 +199,7 @@ namespace Test
             Assert.AreEqual(10, uncalibrated_components.Count());
             Assert.AreEqual(6, calibrated_td_hits.Count);
 
-            foreach (TopDownHit h in calibrated_td_hits)
+            foreach (SpectrumMatch h in calibrated_td_hits)
             {
                 Assert.IsTrue(Sweet.lollipop.td_hit_mz_correction.ContainsValue(h.reported_mass));
                 Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(p => p.reported_mass == h.reported_mass));
@@ -421,7 +421,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration_calibrated.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_3columns_calibrated.tsv") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_3columns.tsv") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
-            List<TopDownHit> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
+            List<SpectrumMatch> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
             List<Component> calibrated_components = new List<Component>();
             List<Component> uncalibrated_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
@@ -430,7 +430,7 @@ namespace Test
             Assert.AreEqual(204, calibrated_components.Count());
             Assert.AreEqual(204, uncalibrated_components.Count());
             Assert.AreEqual(6, calibrated_td_hits.Count);
-            foreach (TopDownHit h in calibrated_td_hits)
+            foreach (SpectrumMatch h in calibrated_td_hits)
             {
                 Assert.IsTrue(Sweet.lollipop.td_hit_mz_correction.ContainsValue(h.reported_mass));
                 Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(p => p.reported_mass == h.reported_mass));
@@ -534,7 +534,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
-            List<TopDownHit> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
+            List<SpectrumMatch> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
             List<Component> calibrated_components = new List<Component>();
             List<Component> uncalibrated_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
@@ -543,7 +543,7 @@ namespace Test
             Assert.AreEqual(10, uncalibrated_components.Count());
             Assert.AreEqual(62, calibrated_td_hits.Count);
 
-            foreach (TopDownHit h in calibrated_td_hits)
+            foreach (SpectrumMatch h in calibrated_td_hits)
             {
                 Assert.IsTrue(Sweet.lollipop.td_hit_RT_correction.ContainsValue(h.ms2_retention_time));
             }
@@ -643,7 +643,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep2_calibrated.tsv") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep2.tsv") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
-            List<TopDownHit> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
+            List<SpectrumMatch> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
             List<Component> calibrated_components = new List<Component>();
             List<Component> uncalibrated_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
@@ -652,7 +652,7 @@ namespace Test
             Assert.AreEqual(204, uncalibrated_components.Count());
             Assert.AreEqual(62, calibrated_td_hits.Count);
 
-            foreach (TopDownHit h in calibrated_td_hits)
+            foreach (SpectrumMatch h in calibrated_td_hits)
             {
                 Assert.IsTrue(Sweet.lollipop.td_hit_RT_correction.ContainsValue(h.ms2_retention_time));
             }
@@ -752,7 +752,7 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_3columns_calibrated.tsv") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_3columns.tsv") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
-            List<TopDownHit> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
+            List<SpectrumMatch> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
             List<Component> calibrated_components = new List<Component>();
             List<Component> uncalibrated_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
@@ -761,7 +761,7 @@ namespace Test
             Assert.AreEqual(204, uncalibrated_components.Count());
             Assert.AreEqual(62, calibrated_td_hits.Count);
 
-            foreach (TopDownHit h in calibrated_td_hits)
+            foreach (SpectrumMatch h in calibrated_td_hits)
             {
                 Assert.IsTrue(Sweet.lollipop.td_hit_RT_correction.ContainsValue(h.ms2_retention_time));
             }
@@ -782,7 +782,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
 
             //make theo database so have ptm's and sequences...
-            TopDownHit hit = new TopDownHit();
+            SpectrumMatch hit = new SpectrumMatch();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>();
             Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).Where(m => m.DatabaseReference != null && m.DatabaseReference.ContainsKey("RESID")).Where(m => m.DatabaseReference["RESID"].Contains("AA0502")).FirstOrDefault();
@@ -803,7 +803,7 @@ namespace Test
 
             //should return null if N term formula wrong or doesn't match mass
             Modification badNtermMod = new Modification("badNtermMod", _locationRestriction : "N-terminal.", _chemicalFormula : null , _monoisotopicMass : -1000);
-            hit = new TopDownHit();
+            hit = new SpectrumMatch();
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badNtermMod) };
             Assert.IsNull(hit.GetChemicalFormula());

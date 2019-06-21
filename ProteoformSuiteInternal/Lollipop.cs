@@ -50,6 +50,8 @@ namespace ProteoformSuiteInternal
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
+            "MetaMorpheus Bottom-Up Unique Peptides (.psmtsv)"
+
         };
 
         public static readonly List<string>[] acceptable_extensions = new[]
@@ -61,6 +63,8 @@ namespace ProteoformSuiteInternal
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx" },
+            new List<string> { ".psmtsv"}
+
         };
 
         public static readonly string[] file_filters = new[]
@@ -72,6 +76,7 @@ namespace ProteoformSuiteInternal
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
+            "MetaMorpheus Bottom-Up Unique Peptides (*.psmtsv) | *.psmtsv",
         };
 
         public static readonly List<Purpose>[] file_types = new[]
@@ -83,6 +88,8 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.SpectraFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> { Purpose.CalibrationTopDown },
+            new List<Purpose> { Purpose.BottomUp }
+
         };
 
         public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination, bool user_directed)
@@ -446,9 +453,9 @@ namespace ProteoformSuiteInternal
         public bool biomarker = true;
         public bool tight_abs_mass = true;
         public double td_retention_time_tolerance = 5; //min
-        public List<TopDownHit> top_down_hits = new List<TopDownHit>();
+        public List<SpectrumMatch> top_down_hits = new List<SpectrumMatch>();
         public List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
-        public TopDownReader topdownReader = new TopDownReader();
+        public TDBUReader topdownReader = new TDBUReader();
         //C-score > 40: proteoform is both identified and fully characterized;
         //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized;
         //C-score < 3: proteoform is neither identified nor characterized.
@@ -456,32 +463,32 @@ namespace ProteoformSuiteInternal
         public void read_in_td_hits()
         {
             Sweet.lollipop.top_down_hits.Clear();
-            topdownReader.bad_topdown_ptms.Clear();
+            topdownReader.bad_ptms.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
             }
         }
 
-        public List<TopDownProteoform> aggregate_td_hits(List<TopDownHit> top_down_hits, double min_score_td, bool biomarker, bool tight_abs_mass)
+        public List<TopDownProteoform> aggregate_td_hits(List<SpectrumMatch> top_down_hits, double min_score_td, bool biomarker, bool tight_abs_mass)
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
-            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
+            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
 
             List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
             {
-                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr_accession == pfr).ToList();
+                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.pfr_accession == pfr).ToList();
                 List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
                 //aggregate to td hit w/ highest c-score as root - 1st average for retention time
                 while (hits_by_pfr.Count > 0)
                 {
-                    TopDownHit root = hits_by_pfr[0];
+                    SpectrumMatch root = hits_by_pfr[0];
                     //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
                     //find topdownhits within RT tol --> first average
                     double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(td_retention_time_tolerance)).Select(h => h.ms2_retention_time).Average();
-                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(td_retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
+                    List<SpectrumMatch> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(td_retention_time_tolerance)).OrderByDescending(h => h.score).ToList();
                     root = hits_to_aggregate[0];
                     //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
                     TopDownProteoform new_pf = new TopDownProteoform(root.accession, hits_to_aggregate);
@@ -602,7 +609,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    TopDownHit best_hit = (pf as TopDownProteoform).topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).First();
+                    SpectrumMatch best_hit = (pf as TopDownProteoform).topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).First();
                     pf.manual_validation_id = "File: " + best_hit.filename
                          + "; Scan: " + best_hit.ms2ScanNumber
                         + "; RT (min): " + best_hit.ms2_retention_time;
@@ -845,6 +852,8 @@ namespace ProteoformSuiteInternal
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
+        public TDBUReader bottomupReader = new TDBUReader();
+
 
         //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         public bool useRandomSeed_decoys = true;
@@ -1230,7 +1239,7 @@ namespace ProteoformSuiteInternal
 
         #region CALIBRATION
 
-        public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
+        public List<SpectrumMatch> td_hits_calibration = new List<SpectrumMatch>();
         public Dictionary<Tuple<string, double, double>, double> component_mz_correction = new Dictionary<Tuple<string, double, double>, double>(); //key is file, intensity, reported mass, value is corrected mz
         public Dictionary<Tuple<string, double, double>, double> component_RT_correction = new Dictionary<Tuple<string, double, double>, double>(); //key is file, intensity, reported mass, value is corrected RT
         public Dictionary<Tuple<string, double, double>, double> td_hit_mz_correction = new Dictionary<Tuple<string, double, double>, double>(); //key is filename, hit scan #, hit reported mass, value is corrected mass
@@ -1311,7 +1320,7 @@ namespace ProteoformSuiteInternal
             {
                 Calibration calibration = new Calibration();
                 calibration.RetentionTimeCalibrateTopDownHits(td_hits_calibration);
-                foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration)
+                foreach (SpectrumMatch hit in Sweet.lollipop.td_hits_calibration)
                 {
                     Tuple<string, double, double> key = new Tuple<string, double, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
                     if (!Sweet.lollipop.td_hit_RT_correction.ContainsKey(key)) Sweet.lollipop.td_hit_RT_correction.Add(key, Math.Round(hit.calibrated_retention_time, 8));
@@ -1470,7 +1479,7 @@ namespace ProteoformSuiteInternal
             if (calibrate_td_files)
             {
                 //get topdown shifts if this SpectraFile is the same name as the topdown hit's file
-                foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
+                foreach (SpectrumMatch hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == raw_file.filename))
                 {
                     Tuple<string, double, double> key = new Tuple<string, double, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
                     if (!Sweet.lollipop.td_hit_mz_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_mz_correction) Sweet.lollipop.td_hit_mz_correction.Add(key, Math.Round(hit.mz.ToMass(hit.charge), 8));

@@ -161,10 +161,10 @@ namespace ProteoWPFSuite
             ClearListsTablesFigures(true);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             FillTablesAndCharts();
-            if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            if (!full_run && Sweet.lollipop.bottomupReader.bad_ptms.Count() > 0)
             {
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                    string.Join(", ", Sweet.lollipop.bottomupReader.bad_ptms.Distinct()));
             }
         }
 
