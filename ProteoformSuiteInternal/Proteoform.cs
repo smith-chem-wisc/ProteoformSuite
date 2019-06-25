@@ -134,7 +134,12 @@ namespace ProteoformSuiteInternal
                 bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
                 List<Modification> these_mods = this_ptmset.ptm_combination.Select(ptm => ptm.modification).ToList();
                 List<Modification> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
-                bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 => m2.OriginalId == m1.OriginalId) >= those_mods.Count(m2 => m2.OriginalId == m1.OriginalId)); //# of each mod in current set must be greater than or equal to # in set to remove.
+                bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 =>
+                                                               UnlocalizedModification.LookUpId(m2) ==
+                                                               UnlocalizedModification.LookUpId(m1)) >=
+                                                           those_mods.Count(m2 =>
+                                                               UnlocalizedModification.LookUpId(m2) ==
+                                                               UnlocalizedModification.LookUpId(m1)));
                 bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                 if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                 {
@@ -158,7 +163,7 @@ namespace ProteoformSuiteInternal
                 List<Ptm> new_combo = new List<Ptm>(this_ptmset.ptm_combination);
                 foreach (Ptm ptm in best_loss.ptm_combination)
                 {
-                    new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification.OriginalId == ptm.modification.OriginalId));
+                    new_combo.Remove(new_combo.FirstOrDefault(asdf => UnlocalizedModification.LookUpId(asdf.modification) == UnlocalizedModification.LookUpId(ptm.modification)));
                 }
                 with_mod_change = new PtmSet(new_combo);
             }
@@ -275,12 +280,6 @@ namespace ProteoformSuiteInternal
                                                             s.ptm_list.Count(m2 =>
                                                                 UnlocalizedModification.LookUpId(m1.modification) ==
                                                                 UnlocalizedModification.LookUpId(m2.modification)))));
-                //ptm_set.ptm_combination.Count(m2 =>
-                //    m2.modification.OriginalId ==
-                //    m1.modification.OriginalId) >=
-                //s.ptm_list.Count(m2 =>
-                //    m2.modification.OriginalId ==
-                //    m1.modification.OriginalId))));
             }
 
             return bottom_up_PSMs.OrderByDescending(p => p.ptm_list.Count).ToList();

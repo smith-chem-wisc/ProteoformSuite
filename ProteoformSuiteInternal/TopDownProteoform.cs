@@ -95,7 +95,7 @@ namespace ProteoformSuiteInternal
             this.agg_rt = topdown_hits.Select(h => h.ms2_retention_time).Average();
             foreach (var ambiguous_id in topdown_hits.SelectMany(h => h.ambiguous_matches))
             {
-                if (ambiguous_topdown_hits.Select(h => h.pfr_accession).Contains(ambiguous_id.pfr_accession))
+                if (this.pfr_accession == ambiguous_id.pfr_accession || ambiguous_topdown_hits.Select(h => h.pfr_accession).Contains(ambiguous_id.pfr_accession))
                 {
                     continue;
                 }
