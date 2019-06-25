@@ -127,19 +127,32 @@ namespace ProteoWPFSuite
         {
             neuCodeProteoformPairsToolStripMenuItem.IsEnabled = setting;
             ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["NeuCodePairs"]];
-            temp.Focusable=false;
-            temp.freeze = true;
+            temp.Focusable=setting;
+            temp.freeze = !setting;
+            if(temp.freeze)
+                temp.Background = System.Windows.Media.Brushes.Gray;
             //(temp.Header as ClosingTabHeader) = System.Windows.Media.Brushes.Gray;
         }
 
         public void enable_quantificationToolStripMenuItem(bool setting)
         {
             quantificationToolStripMenuItem.IsEnabled = setting;
+            ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["Quantification"]];
+            temp.Focusable = setting;
+            temp.freeze = !setting;
+            if (temp.freeze)
+                temp.Background = System.Windows.Media.Brushes.Gray;
         }
 
         public void enable_topDownToolStripMenuItem(bool setting)
         {
             topdownResultsToolStripMenuItem.IsEnabled = setting;
+            quantificationToolStripMenuItem.IsEnabled = setting;
+            ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["TopDown"]];
+            temp.Focusable = setting;
+            temp.freeze = !setting;
+            if (temp.freeze)
+                temp.Background = System.Windows.Media.Brushes.Gray;
         }
 
         #endregion RESULTS TOOL STRIP Public Method

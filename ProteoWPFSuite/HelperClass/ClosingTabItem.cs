@@ -25,7 +25,7 @@ namespace ProteoWPFSuite
             header.tab_close.Click += new RoutedEventHandler(button_close_Click);
             header.tab_title.SizeChanged += new SizeChangedEventHandler(label_TabTitle_SizeChanged);
             this.Header = header;
-
+            ((ClosingTabHeader)this.Header).tab_close.Visibility = Visibility.Hidden;
         }
         private ClosingTabHeader header;
         public string Title
@@ -41,10 +41,6 @@ namespace ProteoWPFSuite
         }
         protected override void OnUnselected(RoutedEventArgs e)
         {
-            if (freeze)
-            {
-                return;
-            }
             base.OnUnselected(e);
             ((ClosingTabHeader)this.Header).tab_close.Visibility = Visibility.Hidden;
         }

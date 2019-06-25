@@ -29,8 +29,8 @@
                 <Grid x:Name="calib_stand_splitContainer">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="6*" />
-                        <ColumnDefinition Width="7*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -53,7 +53,7 @@
                         <Label x:Name="label_maxcharge" Width="Auto" Padding="5,0,5,5">Max Charge</Label>
                     </StackPanel>
                     
-                    <Border x:Name="bdcb" BorderBrush="#FFE0DADA" Panel.ZIndex="1" BorderThickness="1,0,1,0" Grid.Row="0" Grid.Column="1" OpacityMask="White" Background="White">
+                    <Border x:Name="bdcb" BorderBrush="#FFE0DADA" Panel.ZIndex="1" BorderThickness="1,0,1,0" Grid.Row="0" Grid.Column="1" OpacityMask="White" Background="White" Padding="0 0 5 0">
                         <Grid>
                             <CheckBox x:Name="cb_calibrate_raw_files" Content="Write Calibrated Raw Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="cb_calibrate_raw_files_CheckedChanged" />
                             <CheckBox x:Name="cb_calibrate_td_files" Content="Calibrate Top-Down Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,31,0,0" Click="cb_calibrate_td_files_CheckedChanged" />
