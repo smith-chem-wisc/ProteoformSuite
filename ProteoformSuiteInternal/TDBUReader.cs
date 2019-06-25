@@ -371,16 +371,17 @@ namespace ProteoformSuiteInternal
                                     int F = Convert.ToInt32(glycanFormula.Substring(glycanFormula.IndexOf('F') + 1,
                                         glycanFormula.Length - glycanFormula.IndexOf('F') - 1));
 
+                                    int new_ptm_list_index = new_ptm_list.Count > i ? i : 0; 
                                     var H_added = add_glycans(H, "H",
-                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), new_ptm_list[i]);
+                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), list);
                                     var N_added = add_glycans(N, "N",
-                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), new_ptm_list[i]);
+                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), list);
                                     var A_added = add_glycans(A, "A",
-                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), new_ptm_list[i]);
+                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), list);
                                     var G_added = add_glycans(G, "G",
-                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), new_ptm_list[i]);
+                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), list);
                                     var F_added = add_glycans(F, "F",
-                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), new_ptm_list[i]);
+                                        entry.Key + begin.Count > i ? begin[i] : begin[0] - (entry.Key == 1 ? 1 : 2), list);
 
                                     add_topdown_hit = H_added && N_added && A_added && G_added && F_added;
                                 }

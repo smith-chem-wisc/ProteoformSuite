@@ -546,35 +546,34 @@ namespace ProteoformSuiteInternal
             //intact_mass_ids
             foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(p => !p.topdown_id))
             {
-                object[] array = new object[9 + files.Count];
+                object[] array = new object[8 + files.Count];
                 array[0] = e.accession;
                 array[1] = e.linked_proteoform_references == null ? "N/A" : (e.linked_proteoform_references.First() as TheoreticalProteoform).name;
                 array[2] = e.linked_proteoform_references == null ? "N/A" : e.linked_proteoform_references.Last().gene_name.primary;
-                array[3] = e.linked_proteoform_references == null ? "N/A" : string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
-                array[4] = e.linked_proteoform_references == null ? "N/A" : string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct());
-                array[5] = e.linked_proteoform_references == null ? "N/A" : e.ptm_set.ptm_description;
-                array[6] = e.linked_proteoform_references == null ? "N/A" : e.begin + " to " + e.end;
-                array[7] = e.agg_mass;
-                array[8] = e.agg_rt;
+                array[3] = e.linked_proteoform_references == null ? "N/A" : string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct());
+                array[4] = e.linked_proteoform_references == null ? "N/A" : e.ptm_set.ptm_description;
+                array[5] = e.linked_proteoform_references == null ? "N/A" : e.begin + " to " + e.end;
+                array[6] = e.agg_mass;
+                array[7] = e.agg_rt;
                 for (int f = 0; f < files.Count; f++)
                 {
                     string[] file_info = files[f].Split('|');
-                    array[9 + f] = e.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
+                    array[8 + f] = e.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
                 }
                 results.Rows.Add(array);
             }
 
             foreach (TopDownProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(p => p.topdown_id))
             {
-                object[] array = new object[9 + files.Count];
+                object[] array = new object[8 + files.Count];
                 array[0] = e.accession;
                 array[1] = e.name;
                 array[2] = e.gene_name != null ? e.gene_name.primary : "";
-                array[4] = e.accession.Split('_')[0];
-                array[5] = e.topdown_ptm_description;
-                array[6] = e.topdown_begin + " to " + e.topdown_end;
-                array[7] = e.agg_mass;
-                array[8] = e.agg_rt;
+                array[3] = e.accession.Split('_')[0];
+                array[4] = e.topdown_ptm_description;
+                array[5] = e.topdown_begin + " to " + e.topdown_end;
+                array[6] = e.agg_mass;
+                array[7] = e.agg_rt;
                 for (int f = 0; f < files.Count; f++)
                 {
                     string[] file_info = files[f].Split('|');

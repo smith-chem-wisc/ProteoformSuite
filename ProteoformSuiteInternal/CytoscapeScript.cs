@@ -440,7 +440,7 @@ namespace ProteoformSuiteInternal
                           + " " + e.begin + "to" + e.end + " " +
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
-                            string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                            string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))));
                 return name;
             }
             else if (p as TheoreticalProteoform != null)

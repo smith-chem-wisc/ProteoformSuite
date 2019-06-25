@@ -362,7 +362,8 @@ namespace Test
         public void TestUnabeledProteoformCommunityRelate_ET()
         {
             Sweet.lollipop.neucode_labeled = false;
-
+            Sweet.lollipop.et_low_mass_difference = -200;
+            Sweet.lollipop.et_high_mass_difference = 200;
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
@@ -496,8 +497,11 @@ namespace Test
         [Test]
         public void TestUnabeledProteoformCommunityRelateWithNotches_ET()
         {
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.et_use_notch = true;
+            Sweet.lollipop.et_low_mass_difference = -200;
+            Sweet.lollipop.et_high_mass_difference = 200;
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
