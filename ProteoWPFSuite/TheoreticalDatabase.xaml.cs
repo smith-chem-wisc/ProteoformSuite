@@ -522,7 +522,7 @@ namespace ProteoWPFSuite
 
         private void btn_Make_Databases_Click(object sender, RoutedEventArgs e)
         {
-
+            RunTheGamut(false);
         }
 
         private void btn_saveModNames_Click(object sender, RoutedEventArgs e)
