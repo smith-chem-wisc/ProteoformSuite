@@ -160,10 +160,10 @@ namespace ProteoWPFSuite
             DisplayInputFile.FormatInputFileTable(dgv_fileList, new Purpose[] { Purpose.Identification, Purpose.Quantification });
             dgv_fileList.ReadOnly = true;
 
-            if ((bool)rb_displayIdentificationComponents.IsChecked && Sweet.lollipop.raw_experimental_components.Count > 0)
+            if (rb_displayIdentificationComponents.IsChecked.HasValue && (bool)rb_displayIdentificationComponents.IsChecked.Value && Sweet.lollipop.raw_experimental_components.Count > 0)
                 DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
 
-            if ((bool)rb_displayQuantificationComponents.IsChecked && Sweet.lollipop.raw_quantification_components.Count > 0)
+            if (rb_displayQuantificationComponents.IsChecked.HasValue && (bool)rb_displayQuantificationComponents.IsChecked.Value && Sweet.lollipop.raw_quantification_components.Count > 0)
                 DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
 
             DisplayComponent.FormatComponentsTable(dgv_rawComponents);
