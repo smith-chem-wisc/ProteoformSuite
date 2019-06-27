@@ -853,7 +853,7 @@ namespace ProteoformSuiteInternal
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
         public TDBUReader bottomupReader = new TDBUReader();
-
+        public double min_bu_peptides = 0;
 
         //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         public bool useRandomSeed_decoys = true;

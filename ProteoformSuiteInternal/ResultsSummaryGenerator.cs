@@ -577,7 +577,7 @@ namespace ProteoformSuiteInternal
                 for (int f = 0; f < files.Count; f++)
                 {
                     string[] file_info = files[f].Split('|');
-                    array[9 + f] = e.matching_experimental == null ? double.NaN : e.matching_experimental.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
+                    array[8 + f] = e.matching_experimental == null ? double.NaN : e.matching_experimental.aggregated.Where(a => a.input_file.lt_condition == file_info[0] && a.input_file.biological_replicate == file_info[1] && a.input_file.fraction == file_info[2] && a.input_file.technical_replicate == file_info[3]).Sum(a => a.intensity_sum);
                 }
                 results.Rows.Add(array);
             }

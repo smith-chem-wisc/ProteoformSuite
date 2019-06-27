@@ -86,7 +86,7 @@ namespace ProteoformSuiteInternal
             {
                 List<PtmSet> candidate_sets = new List<PtmSet>();
 
-                if (Sweet.lollipop.et_use_notch || Sweet.lollipop.peak_width_base_et > 0.09)
+                if ((Sweet.lollipop.et_use_notch && !Sweet.lollipop.et_notch_ppm) || Sweet.lollipop.peak_width_base_et > 0.09)
                 {
                     double mass = delta_mass - (Sweet.lollipop.et_use_notch
                         ? Sweet.lollipop.notch_tolerance_et

@@ -268,9 +268,9 @@ namespace ProteoformSuiteInternal
 
         public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end)
         {
-            var bottom_up_PSMs = new List<SpectrumMatch>();
+                        var bottom_up_PSMs = new List<SpectrumMatch>();
             //add BU PSMs
-            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession, out var psms);
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0].Split('-')[0], out var psms);
             if (psms != null)
             {
                 bottom_up_PSMs.AddRange(psms.Where(s => s.begin >= begin && s.end <= end && s.ptm_list.All(m1 =>

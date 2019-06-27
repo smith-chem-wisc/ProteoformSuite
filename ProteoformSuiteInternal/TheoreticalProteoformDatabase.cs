@@ -98,10 +98,11 @@ namespace ProteoformSuiteInternal
                 var bottom_up_psms = Sweet.lollipop.bottomupReader.ReadTDFile(file);
                 foreach (var psm in bottom_up_psms)
                 {
-                    bottom_up_psm_by_accession.TryGetValue(psm.accession, out var psms);
+                    string accession = psm.accession.Split('_')[0].Split('-')[0];
+                    bottom_up_psm_by_accession.TryGetValue(accession, out var psms);
                     if (psms == null)
                     {
-                        bottom_up_psm_by_accession.Add(psm.accession, new List<SpectrumMatch>() { psm });
+                        bottom_up_psm_by_accession.Add(accession, new List<SpectrumMatch>() { psm });
                     }
                     else
                     {
@@ -379,7 +380,6 @@ namespace ProteoformSuiteInternal
                     t.topdown_theoretical = prot.topdown_protein;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
-                    t.bottom_up_PSMs = Proteoform.get_possible_PSMs(accession,  t.ptm_set, t.begin, t.end);
                 }
             }
             add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);
