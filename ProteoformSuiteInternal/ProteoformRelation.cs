@@ -105,7 +105,6 @@ namespace ProteoformSuiteInternal
                     }
 
                     candidate_sets = candidate_sets.Distinct().ToList();
-
                 }
                 else
                 {

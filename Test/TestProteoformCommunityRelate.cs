@@ -723,11 +723,11 @@ namespace Test
             t.modified_mass = 1000;
             TopDownProteoform td = ConstructorsForTesting.TopDownProteoform("T1_1-2", 1000, 50);
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() {td};
-            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(e1, t));
-            Assert.False(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(e2, t));
-            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(td, t));
+            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_bottomup_comparison(e1, t));
+            Assert.False(Sweet.lollipop.target_proteoform_community.topdown_bottomup_comparison(e2, t));
+            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_bottomup_comparison(td, t));
             Sweet.lollipop.et_td_rt_limit_relations = false;
-            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_matching_rt(e2, t));
+            Assert.True(Sweet.lollipop.target_proteoform_community.topdown_bottomup_comparison(e2, t));
         }
 
         [Test]

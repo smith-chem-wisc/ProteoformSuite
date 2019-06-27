@@ -43,8 +43,8 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Deconvolution Results for Identification (.xlsx, .tsv, .txt, .ms1ft)",
-            "Deconvolution Results for Quantification (.xlsx, .tsv. txt, .ms1ft)",
+            "Deconvolution Results for Identification (.xlsx, .tsv, .txt)",
+            "Deconvolution Results for Quantification (.xlsx, .tsv. txt)",
             "Protein Databases (.xml, .xml.gz, .fasta)",
             "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
@@ -56,8 +56,8 @@ namespace ProteoformSuiteInternal
 
         public static readonly List<string>[] acceptable_extensions = new[]
         {
-            new List<string> { ".xlsx", ".tsv", ".txt", ".ms1ft" },
-            new List<string> { ".xlsx", ".tsv", ".txt", ".ms1ft"  },
+            new List<string> { ".xlsx", ".tsv", ".txt" },
+            new List<string> { ".xlsx", ".tsv", ".txt"  },
             new List<string> { ".xml", ".gz", ".fasta" },
             new List<string> { ".xlsx" , ".psmtsv"},
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
@@ -69,8 +69,8 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_filters = new[]
         {
-            "Deconvolution Files (*.xlsx, *.tsv, *.txt, *.ms1ft) | *.xlsx;*.tsv;*.txt;*.ms1ft",
-            "Deconvolution Files (*.xlsx, *.tsv, *.txt, *.ms1ft) | *.xlsx;*.tsv;*.txt;*.ms1ft",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
             "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
