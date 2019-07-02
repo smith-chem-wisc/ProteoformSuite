@@ -127,6 +127,30 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string bu_PSMs_count
+        {
+            get
+            {
+                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count.ToString() : "N/A")
+                       + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.Item1.accession.Split('_')[0], i.Item4, i.Item2, i.Item3).Count.ToString()))
+                           : "");
+            }
+        }
+
+        public string bu_PSMs
+        {
+            get
+            {
+                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
+                           String.Join(", ", Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
+                       + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.Item1.accession.Split('_')[0], i.Item4, i.Item2, i.Item3).Count(p => p.ptm_list.Count > 0) == 0 ?
+                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.Item1.accession.Split('_')[0], i.Item4, i.Item2, i.Item3).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
+                           : "");
+            }
+        }
+
         public string GeneID
         {
             get
@@ -309,6 +333,8 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(mz_values)) return "M/z values";
             if (property_name == nameof(uniprot_mods)) return "UniProt-Annotated Modifications";
             if (property_name == nameof(novel_mods)) return "Potentially Novel Mods";
+            if (property_name == nameof(bu_PSMs)) return "Modified Bottom-Up PSMs";
+            if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
             return null;
         }
 

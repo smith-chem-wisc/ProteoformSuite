@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
         //if ambiguous id's store here
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<Tuple<Proteoform, int, int, PtmSet>> ambiguous_identifications { get; set; } = new List<Tuple<Proteoform, int, int, PtmSet>>();
-
+ 
         #endregion Public Properties
 
         #region Private Fields
@@ -145,21 +145,16 @@ namespace ProteoformSuiteInternal
             PtmSet best_loss = null;
             foreach (PtmSet set in Sweet.lollipop.theoretical_database.all_possible_ptmsets)
             {
-                bool within_loss_tolerance =
-                    deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
-                List<Modification> these_mods =
-                    this_ptmset.ptm_combination.Select(ptm => ptm.modification).ToList();
-                List<Modification>
-                    those_mods =
-                        set.ptm_combination.Select(ptm => ptm.modification)
-                            .ToList(); // all must be in the current set to remove them
-                bool can_be_removed = those_mods.All(m1 =>
-                    these_mods.Count(m2 => m2.OriginalId == m1.OriginalId) >=
-                    those_mods.Count(m2 =>
-                        m2.OriginalId ==
-                        m1.OriginalId)); //# of each mod in current set must be greater than or equal to # in set to remove.
-                bool better_than_current_best_loss =
-                    best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
+                bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
+                List<Modification> these_mods = this_ptmset.ptm_combination.Select(ptm => ptm.modification).ToList();
+                List<Modification> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
+                bool can_be_removed = those_mods.All(m1 => these_mods.Count(m2 =>
+                                                               UnlocalizedModification.LookUpId(m2) ==
+                                                               UnlocalizedModification.LookUpId(m1)) >=
+                                                           those_mods.Count(m2 =>
+                                                               UnlocalizedModification.LookUpId(m2) ==
+                                                               UnlocalizedModification.LookUpId(m1)));
+                bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                 if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                 {
                     best_loss = set;
@@ -186,8 +181,7 @@ namespace ProteoformSuiteInternal
                 List<Ptm> new_combo = new List<Ptm>(this_ptmset.ptm_combination);
                 foreach (Ptm ptm in best_loss.ptm_combination)
                 {
-                    new_combo.Remove(new_combo.FirstOrDefault(asdf =>
-                        asdf.modification.OriginalId == ptm.modification.OriginalId));
+                    new_combo.Remove(new_combo.FirstOrDefault(asdf => UnlocalizedModification.LookUpId(asdf.modification) == UnlocalizedModification.LookUpId(ptm.modification)));
                 }
                 with_mod_change = new PtmSet(new_combo);
             }
@@ -289,6 +283,25 @@ namespace ProteoformSuiteInternal
             }
 
             return possible_ptmsets;
+        }
+
+        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end)
+        {
+                        var bottom_up_PSMs = new List<SpectrumMatch>();
+            //add BU PSMs
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0].Split('-')[0], out var psms);
+            if (psms != null)
+            {
+                bottom_up_PSMs.AddRange(psms.Where(s => s.begin >= begin && s.end <= end && s.ptm_list.All(m1 =>
+                                                           ptm_set.ptm_combination.Count(m2 =>
+                                                               UnlocalizedModification.LookUpId(m1.modification) ==
+                                                                UnlocalizedModification.LookUpId(m2.modification)) >=
+                                                            s.ptm_list.Count(m2 =>
+                                                                UnlocalizedModification.LookUpId(m1.modification) ==
+                                                                UnlocalizedModification.LookUpId(m2.modification)))));
+            }
+
+            return bottom_up_PSMs.OrderByDescending(p => p.ptm_list.Count).ToList();
         }
 
         #endregion Public Methods

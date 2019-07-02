@@ -177,6 +177,15 @@ namespace ProteoformSuiteInternal
             return Math.Round(agg_mass - theoretical_mass, 4 );
         }
 
+        public string get_sequence(TheoreticalProteoform t, int begin, int end)
+        {
+            string sequence = t.sequence
+                .Substring(begin < t.begin ? 0 : begin - t.begin,
+                    1 + end - (begin < t.begin ? t.begin : begin));
+            if (begin < t.begin) sequence = "M" + sequence;
+            return sequence;
+        }
+
         #endregion Public Methods
 
         #region Aggregation Public Methods

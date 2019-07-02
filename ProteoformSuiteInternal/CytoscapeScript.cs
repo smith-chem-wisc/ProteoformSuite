@@ -82,14 +82,14 @@ namespace ProteoformSuiteInternal
                 folder_path, file_prefix, time_stamp,
                 quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
-                gene_centric_families, prefered_gene_label, false);
+                gene_centric_families, prefered_gene_label);
         }
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
             IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string prefered_gene_label, bool scale_node_size)
+            bool gene_centric_families, string prefered_gene_label)
         {
             List<ProteoformFamily> families = stuff.OfType<ProteoformFamily>().ToList();
 
@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                 folder_path, file_prefix, time_stamp,
                 quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
-                gene_centric_families, prefered_gene_label, scale_node_size);
+                gene_centric_families, prefered_gene_label);
         }
 
         #endregion CYTOSCAPE SCRIPT Public Methods
@@ -119,7 +119,7 @@ namespace ProteoformSuiteInternal
             string folder_path, string file_prefix, string time_stamp,
             IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string preferred_gene_label, bool scale_node_size)
+            bool gene_centric_families, string preferred_gene_label)
         {
             //Check if valid folder
             if (folder_path == "" || !Directory.Exists(folder_path))
@@ -150,7 +150,7 @@ namespace ProteoformSuiteInternal
             File.WriteAllText(edges_path, edge_table);
             File.WriteAllText(nodes_path, node_table);
             File.WriteAllText(script_path, script);
-            write_styles(scale_node_size ? families : all_families, styles_path, style_name, time_stamp,
+            write_styles(all_families, styles_path, style_name, time_stamp,
                 edge_label, node_label, node_label_position, color_scheme, quantitative, quantitative_redBorder, quantitative_boldFace);
 
             string selected_family_string = "Finished building selected famil";
@@ -423,7 +423,15 @@ namespace ProteoformSuiteInternal
 
         public static string get_proteoform_shared_name(Proteoform p, string node_label, int double_rounding)
         {
-            if (p as ExperimentalProteoform != null)
+            if (p as TopDownProteoform != null)
+            {
+                TopDownProteoform e = p as TopDownProteoform;
+                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
+                if (node_label == Lollipop.node_labels[1])
+                    name += " " + e.topdown_begin + "to" + e.topdown_end + " " + e.topdown_ptm_description;
+                return name;
+            }
+            else if (p as ExperimentalProteoform != null)
             {
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
@@ -432,7 +440,7 @@ namespace ProteoformSuiteInternal
                           + " " + e.begin + "to" + e.end + " " +
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
-                            string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                            string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))));
                 return name;
             }
             else if (p as TheoreticalProteoform != null)

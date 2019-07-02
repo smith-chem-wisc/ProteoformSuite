@@ -13,7 +13,7 @@ namespace ProteoformSuiteInternal
         public int topdown_begin { get; set; } //position one based
         public int topdown_end { get; set; } //position one based
         public double theoretical_mass { get; set; }
-        public List<TopDownHit> topdown_hits;
+        public List<SpectrumMatch> topdown_hits;
         private PtmSet _topdown_ptm_set = new PtmSet(new List<Ptm>());
 
         public PtmSet topdown_ptm_set //the ptmset read in with td data
@@ -37,11 +37,11 @@ namespace ProteoformSuiteInternal
         public string topdown_ptm_description { get; set; }
         public ExperimentalProteoform matching_experimental { get; set; } //corresponding experimental
         public bool correct_id { get; set; } //true if the ID given by ProteoformSuite matches ID from topdown
-        public string geneID { get; set; }
+        public List<SpectrumMatch> ambiguous_topdown_hits = new List<SpectrumMatch>();
 
-        public TopDownProteoform(string accession, List<TopDownHit> hits) : base(accession, null, true)
+        public TopDownProteoform(string accession, List<SpectrumMatch> hits) : base(accession, null, true)
         {
-            TopDownHit root = hits[0];
+            SpectrumMatch root = hits[0];
             this.name = root.name;
             this.pfr_accession = root.pfr_accession;
             this.topdown_ptm_set = new PtmSet(root.ptm_list);
@@ -93,6 +93,14 @@ namespace ProteoformSuiteInternal
             this.agg_mass = topdown_hits.Select(h => (h.reported_mass- Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.agg_mass;
             this.agg_rt = topdown_hits.Select(h => h.ms2_retention_time).Average();
+            foreach (var ambiguous_id in topdown_hits.SelectMany(h => h.ambiguous_matches))
+            {
+                if (this.pfr_accession == ambiguous_id.pfr_accession || ambiguous_topdown_hits.Select(h => h.pfr_accession).Contains(ambiguous_id.pfr_accession))
+                {
+                    continue;
+                }
+                ambiguous_topdown_hits.Add(ambiguous_id);
+            }
         }
 
         public void set_correct_id()

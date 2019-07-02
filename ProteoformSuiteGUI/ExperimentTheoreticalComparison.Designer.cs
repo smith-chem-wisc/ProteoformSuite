@@ -58,6 +58,7 @@
             this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.cb_rt_limit_with_td_ids = new System.Windows.Forms.CheckBox();
             this.rb_ppm = new System.Windows.Forms.RadioButton();
             this.rb_daltons = new System.Windows.Forms.RadioButton();
             this.cb_bestETPairOnly = new System.Windows.Forms.CheckBox();
@@ -88,6 +89,9 @@
             this.param_splitcontainer = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Relations = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label11 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.nUD_minBUpeptides = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -127,6 +131,8 @@
             this.param_splitcontainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Relations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_minBUpeptides)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -305,7 +311,7 @@
             this.groupBox6.Controls.Add(this.cb_discoveryHistogram);
             this.groupBox6.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox6.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox6.Location = new System.Drawing.Point(486, 203);
+            this.groupBox6.Location = new System.Drawing.Point(486, 204);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(263, 93);
             this.groupBox6.TabIndex = 36;
@@ -355,7 +361,9 @@
             this.groupBox5.Controls.Add(this.tb_relationTableFilter);
             this.groupBox5.Controls.Add(this.label13);
             this.groupBox5.Controls.Add(this.tb_peakTableFilter);
-            this.groupBox5.Location = new System.Drawing.Point(486, 60);
+            this.groupBox5.Controls.Add(this.label9);
+            this.groupBox5.Controls.Add(this.tb_max_accepted_fdr);
+            this.groupBox5.Location = new System.Drawing.Point(486, 61);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(263, 100);
             this.groupBox5.TabIndex = 35;
@@ -411,32 +419,47 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.groupBox4.Controls.Add(this.nUD_minBUpeptides);
+            this.groupBox4.Controls.Add(this.label11);
+            this.groupBox4.Controls.Add(this.numericUpDown1);
+            this.groupBox4.Controls.Add(this.cb_rt_limit_with_td_ids);
             this.groupBox4.Controls.Add(this.rb_ppm);
             this.groupBox4.Controls.Add(this.rb_daltons);
             this.groupBox4.Controls.Add(this.cb_bestETPairOnly);
             this.groupBox4.Controls.Add(this.label10);
             this.groupBox4.Controls.Add(this.nUD_notch_tolerance);
             this.groupBox4.Controls.Add(this.cb_use_ppm_notch);
-            this.groupBox4.Controls.Add(this.tb_max_accepted_fdr);
-            this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(29, 3);
+            this.groupBox4.Location = new System.Drawing.Point(11, 4);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(242, 196);
+            this.groupBox4.Size = new System.Drawing.Size(283, 196);
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
+            // 
+            // cb_rt_limit_with_td_ids
+            // 
+            this.cb_rt_limit_with_td_ids.AutoSize = true;
+            this.cb_rt_limit_with_td_ids.Checked = true;
+            this.cb_rt_limit_with_td_ids.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_rt_limit_with_td_ids.Location = new System.Drawing.Point(5, 41);
+            this.cb_rt_limit_with_td_ids.Name = "cb_rt_limit_with_td_ids";
+            this.cb_rt_limit_with_td_ids.Size = new System.Drawing.Size(252, 17);
+            this.cb_rt_limit_with_td_ids.TabIndex = 60;
+            this.cb_rt_limit_with_td_ids.Text = "Use agg. RT tolerance if TD ID from same gene";
+            this.cb_rt_limit_with_td_ids.UseVisualStyleBackColor = true;
+            this.cb_rt_limit_with_td_ids.CheckedChanged += new System.EventHandler(this.cb_rt_limit_with_td_ids_CheckedChanged);
             // 
             // rb_ppm
             // 
             this.rb_ppm.AutoSize = true;
             this.rb_ppm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_ppm.Location = new System.Drawing.Point(22, 139);
+            this.rb_ppm.Location = new System.Drawing.Point(22, 153);
             this.rb_ppm.Name = "rb_ppm";
             this.rb_ppm.Size = new System.Drawing.Size(45, 17);
             this.rb_ppm.TabIndex = 58;
@@ -449,7 +472,7 @@
             this.rb_daltons.AutoSize = true;
             this.rb_daltons.Checked = true;
             this.rb_daltons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rb_daltons.Location = new System.Drawing.Point(22, 116);
+            this.rb_daltons.Location = new System.Drawing.Point(22, 130);
             this.rb_daltons.Name = "rb_daltons";
             this.rb_daltons.Size = new System.Drawing.Size(61, 17);
             this.rb_daltons.TabIndex = 59;
@@ -475,13 +498,12 @@
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(8, 96);
+            this.label10.Location = new System.Drawing.Point(28, 110);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(87, 13);
             this.label10.TabIndex = 34;
             this.label10.Text = "Notch Tolerance";
-            this.label10.Click += new System.EventHandler(this.label10_Click);
             // 
             // nUD_notch_tolerance
             // 
@@ -492,7 +514,7 @@
             0,
             0,
             65536});
-            this.nUD_notch_tolerance.Location = new System.Drawing.Point(133, 117);
+            this.nUD_notch_tolerance.Location = new System.Drawing.Point(153, 131);
             this.nUD_notch_tolerance.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_notch_tolerance.Maximum = new decimal(new int[] {
             15,
@@ -524,7 +546,7 @@
             // 
             // tb_max_accepted_fdr
             // 
-            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(133, 164);
+            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(155, 81);
             this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
             this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
             this.tb_max_accepted_fdr.ReadOnly = true;
@@ -535,7 +557,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(0, 167);
+            this.label9.Location = new System.Drawing.Point(22, 84);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(129, 13);
@@ -546,7 +568,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 48);
+            this.label4.Location = new System.Drawing.Point(28, 62);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(113, 13);
@@ -557,7 +579,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 71);
+            this.label3.Location = new System.Drawing.Point(28, 85);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
@@ -573,7 +595,7 @@
             0,
             0,
             196608});
-            this.nUD_PeakWidthBase.Location = new System.Drawing.Point(133, 46);
+            this.nUD_PeakWidthBase.Location = new System.Drawing.Point(153, 60);
             this.nUD_PeakWidthBase.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakWidthBase.Maximum = new decimal(new int[] {
             1,
@@ -593,7 +615,7 @@
             // nUD_PeakCountMinThreshold
             // 
             this.nUD_PeakCountMinThreshold.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(133, 74);
+            this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(153, 88);
             this.nUD_PeakCountMinThreshold.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakCountMinThreshold.Name = "nUD_PeakCountMinThreshold";
             this.nUD_PeakCountMinThreshold.Size = new System.Drawing.Size(86, 20);
@@ -607,7 +629,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(278, 54);
+            this.groupBox3.Location = new System.Drawing.Point(278, 55);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -680,7 +702,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(278, 203);
+            this.groupBox2.Location = new System.Drawing.Point(278, 204);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -768,7 +790,7 @@
             this.groupBox1.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(32, 203);
+            this.groupBox1.Location = new System.Drawing.Point(32, 204);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -872,6 +894,51 @@
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
             // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(18, 174);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(124, 13);
+            this.label11.TabIndex = 16;
+            this.label11.Text = "Min. Bottom-Up Peptides";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.numericUpDown1.Location = new System.Drawing.Point(300, 134);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(80, 20);
+            this.numericUpDown1.TabIndex = 15;
+            // 
+            // nUD_minBUpeptides
+            // 
+            this.nUD_minBUpeptides.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.nUD_minBUpeptides.Location = new System.Drawing.Point(150, 172);
+            this.nUD_minBUpeptides.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_minBUpeptides.Maximum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nUD_minBUpeptides.Minimum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            -2147483648});
+            this.nUD_minBUpeptides.Name = "nUD_minBUpeptides";
+            this.nUD_minBUpeptides.Size = new System.Drawing.Size(80, 20);
+            this.nUD_minBUpeptides.TabIndex = 15;
+            this.nUD_minBUpeptides.ValueChanged += new System.EventHandler(this.nUD_minBUpeptides_ValueChanged);
+            // 
             // ExperimentTheoreticalComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -928,6 +995,8 @@
             this.param_splitcontainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Relations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_minBUpeptides)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -985,5 +1054,9 @@
         private System.Windows.Forms.CheckBox cb_bestETPairOnly;
         private System.Windows.Forms.RadioButton rb_ppm;
         private System.Windows.Forms.RadioButton rb_daltons;
+        private System.Windows.Forms.CheckBox cb_rt_limit_with_td_ids;
+        private System.Windows.Forms.NumericUpDown nUD_minBUpeptides;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }

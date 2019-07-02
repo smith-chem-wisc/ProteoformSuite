@@ -179,6 +179,12 @@ namespace ProteoformSuiteGUI
             nUD_notch_tolerance.Minimum = 0;
             nUD_notch_tolerance.Maximum = 30;
             nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_et);
+
+            cb_rt_limit_with_td_ids.Checked = Sweet.lollipop.et_td_rt_limit_relations;
+
+            nUD_minBUpeptides.Value = Convert.ToDecimal(Sweet.lollipop.min_bu_peptides);
+            nUD_minBUpeptides.Minimum = 0;
+            nUD_minBUpeptides.Maximum = 100;
         }
 
         #endregion Public Methods
@@ -528,9 +534,14 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.et_notch_ppm = rb_ppm.Checked;
         }
 
-        private void label10_Click(object sender, EventArgs e)
+        private void cb_rt_limit_with_td_ids_CheckedChanged(object sender, EventArgs e)
         {
+            Sweet.lollipop.et_td_rt_limit_relations = cb_rt_limit_with_td_ids.Checked;
+        }
 
+        private void nUD_minBUpeptides_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_bu_peptides = Convert.ToDouble(nUD_minBUpeptides.Value);
         }
     }
 }

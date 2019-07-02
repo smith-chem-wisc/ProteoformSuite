@@ -196,7 +196,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
-            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(new TusherAnalysis1())).Length > 0);
+            Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, new TusherAnalysis1())).Length > 0);
             Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.topdown_results_dataframe()).Length > 0);
             Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_intensities_dataframe()).Length > 0);
         }
@@ -211,7 +211,7 @@ namespace Test
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f };
-            string[] lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.TusherAnalysis1)).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, Sweet.lollipop.TusherAnalysis1)).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             Assert.True(lines.Any(a => a.Contains("E1")));
             TopDownProteoform td = ConstructorsForTesting.TopDownProteoform("TD1", 1000, 10);
@@ -221,7 +221,7 @@ namespace Test
             f2.construct_family();
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f2 };
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { td };
-            lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.TusherAnalysis1)).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, Sweet.lollipop.TusherAnalysis1)).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.topdown_results_dataframe()).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);

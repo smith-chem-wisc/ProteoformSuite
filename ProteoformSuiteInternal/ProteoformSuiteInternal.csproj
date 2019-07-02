@@ -160,7 +160,6 @@
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
-    <Compile Include="BottomUpReader.cs" />
     <Compile Include="ExcelWriter.cs" />
     <Compile Include="IAggregatable.cs" />
     <Compile Include="StatisticalAnalysis\GoAnalysis.cs" />
@@ -199,10 +198,9 @@
     <Compile Include="ProteoformCommunity.cs" />
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
-    <Compile Include="BottomUpPSM.cs" />
-    <Compile Include="TopDownReader.cs" />
+    <Compile Include="TDBUReader.cs" />
     <Compile Include="Calibration.cs" />
-    <Compile Include="TopDownHit.cs" />
+    <Compile Include="SpectrumMatch.cs" />
     <Compile Include="StatisticalAnalysis\QuantificationDistributions.cs" />
     <Compile Include="StatisticalAnalysis\QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />

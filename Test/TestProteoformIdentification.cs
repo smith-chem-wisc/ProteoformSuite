@@ -360,7 +360,7 @@ namespace Test
             Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().Item4.ptm_description);
 
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() {fam};
-            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(null).Rows.Count);
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
         }
 
         [Test]
@@ -474,11 +474,11 @@ namespace Test
             Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().Item4.ptm_description);
 
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
-            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(null).Rows.Count);
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
 
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() {e3};
-            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(null).Rows.Count);
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
             Assert.AreEqual(1, ResultsSummaryGenerator.topdown_results_dataframe().Rows.Count);
         }
 

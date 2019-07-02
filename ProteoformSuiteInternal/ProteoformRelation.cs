@@ -84,20 +84,28 @@ namespace ProteoformSuiteInternal
             List<PtmSet> candidate_sets = new List<PtmSet>();
             if (Sweet.lollipop.et_use_notch && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
             {
-                double mass = delta_mass - Sweet.lollipop.notch_tolerance_et;
-                while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_et)
+                if ((Sweet.lollipop.et_use_notch && !Sweet.lollipop.et_notch_ppm) ||
+                    Sweet.lollipop.peak_width_base_et > 0.09)
                 {
-                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
-                        Math.Round(mass, 1), out List<PtmSet> candidates);
-                    if (candidates != null)
+                    double mass = delta_mass - Sweet.lollipop.notch_tolerance_et;
+                    while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_et)
                     {
-                        candidate_sets.AddRange(candidates);
+                        Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
+                            Math.Round(mass, 1), out List<PtmSet> candidates);
+                        if (candidates != null)
+                        {
+                            candidate_sets.AddRange(candidates);
+                        }
+
+                        mass += 0.1;
                     }
 
-                    mass += 0.1;
+                    candidate_sets = candidate_sets.Distinct().ToList();
                 }
-
-                candidate_sets = candidate_sets.Distinct().ToList();
+                else
+                {
+                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
+                }
 
                 candidate_sets = candidate_sets.Where(s => Sweet.lollipop.et_notch_ppm
                     ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
@@ -105,24 +113,33 @@ namespace ProteoformSuiteInternal
                     : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_et).ToList();
                 candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
             }
+
             else if (Sweet.lollipop.ee_use_notch &&
                      (relation_type == ProteoformComparison.ExperimentalExperimental ||
                       relation_type == ProteoformComparison.ExperimentalFalse))
             {
-                double mass = delta_mass - Sweet.lollipop.notch_tolerance_ee;
-                while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_ee)
+                if ((Sweet.lollipop.ee_use_notch && !Sweet.lollipop.ee_notch_ppm) ||
+                    Sweet.lollipop.peak_width_base_ee > 0.09)
                 {
-                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
-                        Math.Round(mass, 1), out List<PtmSet> candidates);
-                    if (candidates != null)
+                    double mass = delta_mass - Sweet.lollipop.notch_tolerance_ee;
+                    while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_ee)
                     {
-                        candidate_sets.AddRange(candidates);
+                        Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
+                            Math.Round(mass, 1), out List<PtmSet> candidates);
+                        if (candidates != null)
+                        {
+                            candidate_sets.AddRange(candidates);
+                        }
+
+                        mass += 0.1;
                     }
 
-                    mass += 0.1;
+                    candidate_sets = candidate_sets.Distinct().ToList();
                 }
-
-                candidate_sets = candidate_sets.Distinct().ToList();
+                else
+                {
+                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
+                }
 
                 candidate_sets = candidate_sets.Where(s => Sweet.lollipop.ee_notch_ppm
                     ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
@@ -150,7 +167,6 @@ namespace ProteoformSuiteInternal
                     }
 
                     candidate_sets = candidate_sets.Distinct().ToList();
-
                 }
                 else
                 {
