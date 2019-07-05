@@ -6,7 +6,7 @@
              xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1000">
+             d:DesignHeight="600" d:DesignWidth="900">
     <!---->
     
     <Grid>

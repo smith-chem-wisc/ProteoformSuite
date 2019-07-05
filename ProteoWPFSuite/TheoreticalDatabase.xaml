@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ProteoWPFSuite"
              xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              mc:Ignorable="d" 
-             MinWidth="1200" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+             MinHeight="600" MinWidth="1000" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"></ColumnDefinition>

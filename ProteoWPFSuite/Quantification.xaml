@@ -7,7 +7,7 @@
              xmlns:winformchart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             d:DesignHeight="900" d:DesignWidth="1500" MinHeight="900" MinWidth="1500" >
+             MinHeight="600" MinWidth="900" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>

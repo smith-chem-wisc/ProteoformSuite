@@ -131,7 +131,8 @@ namespace ProteoWPFSuite
             temp.freeze = !setting;
             if(temp.freeze)
                 temp.Background = System.Windows.Media.Brushes.Gray;
-            //(temp.Header as ClosingTabHeader) = System.Windows.Media.Brushes.Gray;
+            else
+                temp.ClearValue(BackgroundProperty);
         }
 
         public void enable_quantificationToolStripMenuItem(bool setting)
@@ -142,6 +143,8 @@ namespace ProteoWPFSuite
             temp.freeze = !setting;
             if (temp.freeze)
                 temp.Background = System.Windows.Media.Brushes.Gray;
+            else
+                temp.ClearValue(BackgroundProperty);
         }
 
         public void enable_topDownToolStripMenuItem(bool setting)
@@ -153,6 +156,8 @@ namespace ProteoWPFSuite
             temp.freeze = !setting;
             if (temp.freeze)
                 temp.Background = System.Windows.Media.Brushes.Gray;
+            else
+                temp.ClearValue(BackgroundProperty);
         }
 
         #endregion RESULTS TOOL STRIP Public Method

@@ -6,7 +6,7 @@
              xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             MinHeight="800" MinWidth="1000">
+             MinHeight="600" MinWidth="900">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>

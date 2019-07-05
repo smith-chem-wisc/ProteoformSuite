@@ -7,7 +7,7 @@
              xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:winformchart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1000">
+             d:DesignHeight="600" d:DesignWidth="900">
     <Grid>
         <!--<WindowsFormsHost>
             <winformchart:Chart x:Name="ct_ET_Histogram"></winformchart:Chart>
