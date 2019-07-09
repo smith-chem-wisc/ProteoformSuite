@@ -24,17 +24,20 @@ namespace ProteoWPFSuite
             InitializeComponent();
         }
         #endregion Public Constructor
+
         #region Private Fields
 
         OpenFileDialog openAccessionListDialog = new OpenFileDialog();
         bool initial_load = true;
 
         #endregion Private Fields
+
         #region Public Property
 
         public List<DataTable> DataTables { get; private set; }
 
         #endregion Public Property
+
         #region Private Methods
 
         private void TheoreticalDatabase_Load(object sender, EventArgs e)
@@ -132,6 +135,7 @@ namespace ProteoWPFSuite
             nUD_MinPeptideLength.Maximum = 20;
             nUD_MinPeptideLength.Value = Sweet.lollipop.min_peptide_length;
 
+            cb_average_mass.IsChecked = Sweet.lollipop.use_average_mass;
             ckbx_combineIdenticalSequences.IsChecked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.IsChecked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
             cb_limitLargePtmSets.IsChecked = Sweet.lollipop.theoretical_database.limit_triples_and_greater;
@@ -548,6 +552,11 @@ namespace ProteoWPFSuite
         private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+
+        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.use_average_mass = (bool)cb_average_mass.IsChecked;
         }
     }
 }
