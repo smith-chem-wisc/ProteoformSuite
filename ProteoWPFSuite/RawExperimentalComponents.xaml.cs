@@ -22,6 +22,7 @@ namespace ProteoWPFSuite
             this.DataContext = this;
             CK_rb_displayIdentificationComponents = true;
             CK_rb_displayQuantificationComponents = false;
+            MessageBox.Show(CK_rb_displayIdentificationComponents+","+ CK_rb_displayQuantificationComponents+"," +rb_displayIdentificationComponents.IsChecked+","+rb_displayQuantificationComponents.IsChecked);
         }
         #endregion Public Constructor
 
@@ -39,16 +40,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                
-                if (ck_Identi == value || MDIParent==null)
+                ck_Identi = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
+                if (MDIParent == null)
                 {
                     return;
                 }
-
                 FillTablesAndCharts();
                 dgv_chargeStates.DataSource = null;
-                ck_Identi = value;
-                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
             }
         }
         public bool? CK_rb_displayQuantificationComponents
@@ -59,14 +58,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_Quanti == value)
+                ck_Quanti = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
+                if (MDIParent == null)
                 {
                     return;
                 }
                 //nothing changes here
-
-                ck_Quanti = value;
-                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
             }
         }
         public List<DataTable> DataTables { get; private set; }
