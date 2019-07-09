@@ -10,6 +10,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.ComponentModel;
+using MassSpectrometry;
 
 namespace ProteoWPFSuite
 {
@@ -91,17 +92,23 @@ namespace ProteoWPFSuite
         #region Public Methods
         public void InitializeParameterSet()
         {   
-            //tb_resultsFolder.Text = Sweet.lollipop.results_folder;
             rb_neucode.IsChecked = Sweet.lollipop.neucode_labeled;
             rb_unlabeled.IsChecked = !rb_neucode.IsChecked;
             cb_calibrate_td_files.IsChecked = Sweet.lollipop.calibrate_td_files;
             cb_calibrate_raw_files.IsChecked = Sweet.lollipop.calibrate_raw_files;
             cb_mass_cali.IsChecked = Sweet.lollipop.mass_calibration;
             cb_rt_cali.IsChecked = Sweet.lollipop.retention_time_calibration;
+            //nUD_cali_mass_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_mass_tolerance);
+            //nUD_cali_RT_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_rt_tolerance);
 
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+
+            cmbx_dissociation_types.Items.Clear();
+            cmbx_dissociation_types.ItemsSource = new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD};
+            //cmbx_dissociation_types.Items.Add(new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD });
+            cmbx_dissociation_types.SelectedIndex = 0;
         }
         public List<DataTable> SetTables()
         {
@@ -161,8 +168,6 @@ namespace ProteoWPFSuite
 
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)rb_neucode.IsChecked);
             Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
-            // Sweet.lollipop.neucode_light_lysine = (bool)rb_neucode.IsChecked;
-            // Sweet.lollipop.natural_lysine_isotope_abundance = (bool)!rb_neucode.IsChecked;
 
             foreach (InputFile f in Sweet.lollipop.input_files)
             {
@@ -206,120 +211,99 @@ namespace ProteoWPFSuite
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
-            if ((bool)rb_standardOptions.IsChecked) 
+
+            // Toggle visibility of components according to checked Radio Button in "1. Choose Analysis"
+            if (rb_standardOptions.IsChecked == true) 
             {
+                // In "2. Set Parameters"
+                grid_neucode_labeled_unlabled.Visibility    = Visibility.Visible;
+                groupbox_fullrun.Visibility                 = Visibility.Visible;
+                grid_calibrate.Visibility                   = Visibility.Collapsed;
+                panel_minmaxcharge.Visibility               = Visibility.Collapsed;
+                panel_topdown_search.Visibility             = Visibility.Collapsed;
+
+                // In "3. Load Data Using Drop Down Menu"
                 cmb_loadTable1.IsEnabled = true;
-                for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                
-                bt_calibrate.Visibility = Visibility.Collapsed;//hide all
-                cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
-                cb_calibrate_td_files.Visibility = Visibility.Collapsed;
-                cb_mass_cali.Visibility = Visibility.Collapsed;
-                cb_rt_cali.Visibility = Visibility.Collapsed;
-                bdcb.Visibility = Visibility.Collapsed;
-                bt_deconvolute.Visibility = Visibility.Collapsed;
-                bt_stepthru.Visibility = Visibility.Visible;
-                bt_fullrun.Visibility = Visibility.Visible;
-                bt_calibrate.Visibility = Visibility.Collapsed;
-                panel_deconv_calib.Visibility = Visibility.Collapsed;
-                panel_step.Visibility = Visibility.Visible;
-                nmds.Visibility = Visibility.Collapsed;
-                nud_maxcharge.Visible = false;
-                nud_mincharge.Visible = false;
-                label_maxcharge.Visibility = Visibility.Collapsed;
-                label_mincharge.Visibility = Visibility.Collapsed;
-                //label_maxRT.Visibility = Visibility.Collapsed;
-                //label_minRT.Visibility = Visibility.Collapsed;
-                rb_neucode.Visibility = Visibility.Visible;
-                rb_unlabeled.Visibility = Visibility.Visible;
-                calib_stand_splitContainer.Visibility = Visibility.Visible;
-                fullrun_groupbox.Visibility = Visibility.Visible;
+                for (int i = 0; i < 4; i++)
+                    cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                cmb_loadTable1.SelectedIndex = 0;
+
+                // In "4. Start Analysis"
+                panel_bt_stepthru.Visibility        = Visibility.Visible;
+                panel_bt_fullrun.Visibility         = Visibility.Visible;
+                panel_bt_calib.Visibility           = Visibility.Collapsed;
+                panel_bt_deconv.Visibility          = Visibility.Collapsed;
+                panel_bt_topdown_search.Visibility  = Visibility.Collapsed;            
             }
 
-            else if ((bool)rb_chemicalCalibration.IsChecked)
+            else if (rb_chemicalCalibration.IsChecked == true)
             {
+                // In "2. Set Parameters"
+                grid_neucode_labeled_unlabled.Visibility    = Visibility.Visible;
+                grid_calibrate.Visibility                   = Visibility.Visible;
+                groupbox_fullrun.Visibility                 = Visibility.Collapsed;
+                panel_minmaxcharge.Visibility               = Visibility.Collapsed;
+                panel_topdown_search.Visibility             = Visibility.Collapsed;
+
+                // In "3. Load Data Using Drop Down Menu"
                 cmb_loadTable1.IsEnabled = true;
-                for (int i = 4; i < 7; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                
-                bt_calibrate.Visibility = Visibility.Visible;
-                cb_calibrate_td_files.Visibility = Visibility.Visible;
-                cb_calibrate_raw_files.Visibility = Visibility.Visible;
-                cb_mass_cali.Visibility = Visibility.Visible;
-                cb_rt_cali.Visibility = Visibility.Visible;
-                bdcb.Visibility = Visibility.Visible;
-                bt_deconvolute.Visibility = Visibility.Collapsed;
-                bt_stepthru.Visibility = Visibility.Collapsed;
-                bt_fullrun.Visibility = Visibility.Collapsed;
-                bt_calibrate.Visibility = Visibility.Visible;
-                panel_deconv_calib.Visibility = Visibility.Visible;
-                panel_step.Visibility = Visibility.Collapsed;
-                nmds.Visibility = Visibility.Collapsed;
-                nud_maxcharge.Visible = false;
-                nud_mincharge.Visible = false;
-                label_maxcharge.Visibility = Visibility.Collapsed;
-                label_mincharge.Visibility = Visibility.Collapsed;
-                //label_maxRT.Visibility = Visibility.Collapsed;
-                //label_minRT.Visibility = Visibility.Collapsed;
-                rb_neucode.Visibility = Visibility.Visible;
-                rb_unlabeled.Visibility = Visibility.Visible;
-                calib_stand_splitContainer.Visibility = Visibility.Visible;
-                fullrun_groupbox.Visibility = Visibility.Collapsed;
+                for (int i = 4; i < 7; i++)
+                    cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                cmb_loadTable1.SelectedIndex = 0;
+
+                // In "4. Start Analysis"
+                panel_bt_calib.Visibility           = Visibility.Visible;
+                panel_bt_stepthru.Visibility        = Visibility.Collapsed;
+                panel_bt_fullrun.Visibility         = Visibility.Collapsed;
+                panel_bt_deconv.Visibility          = Visibility.Collapsed;
+                panel_bt_topdown_search.Visibility  = Visibility.Collapsed;
             }
 
-            else if ((bool)rb_deconvolution.IsChecked)
+            else if (rb_deconvolution.IsChecked == true)
             {
+                // In "2. Set Parameters"
+                panel_minmaxcharge.Visibility               = Visibility.Visible;
+                grid_neucode_labeled_unlabled.Visibility    = Visibility.Collapsed;
+                grid_calibrate.Visibility                   = Visibility.Collapsed;
+                groupbox_fullrun.Visibility                 = Visibility.Collapsed;
+                panel_topdown_search.Visibility             = Visibility.Collapsed;
+
+                // In "3. Load Data Using Drop Down Menu"
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
+                cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable1.IsEnabled = false;
-                bt_calibrate.Visibility = Visibility.Collapsed;
-                cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
-                cb_calibrate_td_files.Visibility = Visibility.Collapsed;
-                cb_mass_cali.Visibility = Visibility.Collapsed;
-                cb_rt_cali.Visibility = Visibility.Collapsed;
-                bdcb.Visibility = Visibility.Collapsed;
-                bt_stepthru.Visibility = Visibility.Collapsed;
-                bt_fullrun.Visibility = Visibility.Collapsed;
-                bt_calibrate.Visibility = Visibility.Collapsed;
-                bt_deconvolute.Visibility = Visibility.Visible;
-                panel_deconv_calib.Visibility = Visibility.Visible;
-                panel_step.Visibility = Visibility.Collapsed;
-                nmds.Visibility = Visibility.Visible;
-                nud_maxcharge.Visible = true;
-                nud_mincharge.Visible = true;
-                label_maxcharge.Visibility = Visibility.Visible;
-                label_mincharge.Visibility = Visibility.Visible;
-                //label_maxRT.Visibility = Visibility.Visible;
-                //label_minRT.Visibility = Visibility.Visible;
-                rb_neucode.Visibility = Visibility.Collapsed;
-                rb_unlabeled.Visibility = Visibility.Collapsed;
-                calib_stand_splitContainer.Visibility = Visibility.Collapsed;
-                fullrun_groupbox.Visibility = Visibility.Collapsed;
-                cmb_loadTable1.IsEnabled = false;
+
+                // In "4. Start Analysis"
+                panel_bt_deconv.Visibility          = Visibility.Visible;
+                panel_bt_stepthru.Visibility        = Visibility.Collapsed;
+                panel_bt_fullrun.Visibility         = Visibility.Collapsed;
+                panel_bt_calib.Visibility           = Visibility.Collapsed;
+                panel_bt_topdown_search.Visibility  = Visibility.Collapsed;
             }
 
-            else if ((bool)rb_topdown_search.IsChecked)
+            else if (rb_topdown_search.IsChecked == true)
             {
+                // In "2. Set Parameters"
+                panel_topdown_search.Visibility             = Visibility.Visible;
+                panel_minmaxcharge.Visibility               = Visibility.Collapsed;
+                grid_neucode_labeled_unlabled.Visibility    = Visibility.Collapsed;
+                grid_calibrate.Visibility                   = Visibility.Collapsed;
+                groupbox_fullrun.Visibility                 = Visibility.Collapsed;
+
+                // In "3. Load Data Using Drop Down Menu"
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[2]);
                 cmb_loadTable1.SelectedIndex = 0;
-                cb_calibrate_raw_files.Visibility = Visibility.Collapsed;
-                cb_calibrate_td_files.Visibility = Visibility.Collapsed;
-                bt_fullrun.Visibility = Visibility.Collapsed;
-                nud_maxcharge.Visible = true;
-                nud_mincharge.Visible = true;
-                label_maxcharge.Visibility = Visibility.Visible;
-                label_mincharge.Visibility = Visibility.Visible;
-                //label_maxRT.Visible = true;
-                //label_minRT.Visible = true;
-                rb_neucode.Visibility = Visibility.Collapsed;
-                rb_unlabeled.Visibility = Visibility.Collapsed;
-                calib_stand_splitContainer.Visibility = Visibility.Collapsed;
-                fullrun_groupbox.Visibility = Visibility.Collapsed;
+                cmb_loadTable1.IsEnabled = false;
 
-                panel_topdown_search.Visibility = Visibility.Visible;
-                panel_bt_topdown_search.Visibility = Visibility.Visible;
-
-                cmb_loadTable1.SelectedIndex = 0;
+                // In "4. Start Analysis"
+                panel_bt_topdown_search.Visibility  = Visibility.Visible;
+                panel_bt_deconv.Visibility          = Visibility.Collapsed;
+                panel_bt_stepthru.Visibility        = Visibility.Collapsed;
+                panel_bt_fullrun.Visibility         = Visibility.Collapsed;
+                panel_bt_calib.Visibility           = Visibility.Collapsed;
             }
+
             CB_select = 0;
             cmb_loadTable1.SelectedItem = cmb_loadTable1.Items[cb_select];
             LabelTxt = cmb_loadTable1.Items[cb_select].ToString();
@@ -505,14 +489,6 @@ namespace ProteoWPFSuite
 
         #region FULL RUN & STEP THROUGH Private Methods
 
-        private void btn_fullRun_Click(object sender, RoutedEventArgs e)
-        {
-            Stopwatch successful_run = this.MDIParent.full_run();
-            if (successful_run != null) MessageBox.Show("Successfully ran method in "
-                + String.Format("{0:00}:{1:00}:{2:00}.{3:00}", successful_run.Elapsed.Hours, successful_run.Elapsed.Minutes, successful_run.Elapsed.Seconds, successful_run.Elapsed.Milliseconds / 10)
-                + ". Feel free to explore using the Results menu.", "Full Run");
-            else MessageBox.Show("Method did not successfully run.", "Full Run");
-        }
         private void bt_clearResults_Click(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop = new Lollipop();
@@ -521,13 +497,24 @@ namespace ProteoWPFSuite
 
         private void bt_stepthru_Click(object sender, RoutedEventArgs e)
         {
-            this.MDIParent.resultsToolStripMenuItem.IsSubmenuOpen=true;
-            MessageBox.Show("Use the Results menu to step through processing results.\n\n" +
-                "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+            if (rb_standardOptions.IsChecked == true)
+            {
+                this.MDIParent.resultsToolStripMenuItem.IsSubmenuOpen = true;
+                MessageBox.Show("Use the Results menu to step through processing results.\n\n" +
+                    "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+            }
+        }
+
+        private void btn_fullRun_Click(object sender, RoutedEventArgs e)
+        {
+            Stopwatch successful_run = this.MDIParent.full_run();
+            if (successful_run != null) MessageBox.Show("Successfully ran method in "
+                + String.Format("{0:00}:{1:00}:{2:00}.{3:00}", successful_run.Elapsed.Hours, successful_run.Elapsed.Minutes, successful_run.Elapsed.Seconds, successful_run.Elapsed.Milliseconds / 10)
+                + ". Feel free to explore using the Results menu.", "Full Run");
+            else MessageBox.Show("Method did not successfully run.", "Full Run");
         }
 
         System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
-
 
         private void btn_browseSummarySaveFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -556,10 +543,6 @@ namespace ProteoWPFSuite
 
         private void bt_calibrate_Click(object sender, RoutedEventArgs e)
         {
-            //if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
-            //{
-            //    MessageBox.Show("Please enter raw files to calibrate."); return;
-            //}
             if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
             {
                 MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
@@ -573,7 +556,8 @@ namespace ProteoWPFSuite
         {
             if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
-                MessageBox.Show("Please enter raw files to deconvolute."); return;
+                MessageBox.Show("Please enter raw files to deconvolute.");
+                return;
             }
             string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Environment.CurrentDirectory);
             MessageBox.Show(deconv_results);
@@ -589,9 +573,9 @@ namespace ProteoWPFSuite
             {
                 MessageBox.Show("Please enter at least one database files to search."); return;
             }
-            //MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
-            //    (double)nud_precursor_mass_tol.Value,
-            //    (double)nUD_product_mass_tol.Value, (DissociationType)cmbx_dissociation_types.SelectedItem));
+            MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
+                (double)nud_precursor_mass_tol.Value,
+                (double)nud_product_mass_tol.Value, (DissociationType)cmbx_dissociation_types.SelectedItem));
         }
 
         #endregion CHANGED TABLE SELECTION Private Methods
@@ -664,7 +648,6 @@ namespace ProteoWPFSuite
         private void cb_rt_cali_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.retention_time_calibration = (bool)cb_rt_cali.IsChecked;
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
