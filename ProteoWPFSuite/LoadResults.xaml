@@ -60,7 +60,7 @@
                     <RadioButton x:Name="rb_unlabeled" IsChecked="True" Content="Unlabeled" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,31,0,0" />
                 </Grid>
 
-                <GroupBox x:Name="groupbox_fullrun" Grid.Column="1" Header="Full Run Save Options">
+                <GroupBox x:Name="groupbox_fullrun" Grid.Column="1" Header="Full Run Save Options" Margin="10 0 0 0">
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*" />
