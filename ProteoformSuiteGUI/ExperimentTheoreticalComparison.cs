@@ -185,6 +185,9 @@ namespace ProteoformSuiteGUI
             nUD_minBUpeptides.Value = Convert.ToDecimal(Sweet.lollipop.min_bu_peptides);
             nUD_minBUpeptides.Minimum = 0;
             nUD_minBUpeptides.Maximum = 100;
+
+            cb_add_topdown_theoreticals.Checked = Sweet.lollipop.add_td_theoreticals;
+
         }
 
         #endregion Public Methods
@@ -542,6 +545,11 @@ namespace ProteoformSuiteGUI
         private void nUD_minBUpeptides_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_bu_peptides = Convert.ToDouble(nUD_minBUpeptides.Value);
+        }
+
+        private void cb_add_topdown_theoreticals_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.add_td_theoreticals = cb_add_topdown_theoreticals.Checked;
         }
     }
 }

@@ -504,6 +504,7 @@ namespace ProteoformSuiteInternal
                             count += topdown_proteoforms.Count(t => t.accession.Split('_')[0] == old_accession[0] && t.accession.Split('_')[1] == old_accession[1]);
                             new_pf.accession = old_accession[0] + "_" + old_accession[1] + "_" + count + "TD";
                         }
+
                         topdown_proteoforms.Add(new_pf);
                     }
                 }
@@ -869,6 +870,7 @@ namespace ProteoformSuiteInternal
         public bool et_use_notch = false;
         public bool ee_use_notch = false;
         public bool et_notch_ppm = true;
+        public bool add_td_theoreticals = true;
         public bool et_bestETRelationOnly = false;
         public double notch_tolerance_et = 1;
         public bool ee_notch_ppm = true;
@@ -955,6 +957,7 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
+        public bool identify_from_td_nodes = false;
 
         public static string[] node_positioning = new string[]
         {
@@ -1255,6 +1258,7 @@ namespace ProteoformSuiteInternal
         public bool retention_time_calibration = true;
         public double cali_mass_tolerance = 10;
         public double cali_rt_tolerance = 5;
+        public bool only_first_ambiguous_id = true;
 
         public void read_in_calibration_td_hits()
         {

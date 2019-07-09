@@ -73,6 +73,9 @@ namespace ProteoformSuiteGUI
 
             cb_only_assign_common_known_mods.Checked = Sweet.lollipop.only_assign_common_or_known_mods;
 
+            cb_id_from_td_nodes.Checked = Sweet.lollipop.identify_from_td_nodes;
+            cb_only_first_ambiguous_ID.Checked = Sweet.lollipop.only_first_ambiguous_id;
+
             initialize_every_time();
         }
 
@@ -385,6 +388,16 @@ namespace ProteoformSuiteGUI
         private void cb_only_assign_common_known_mods_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.only_assign_common_or_known_mods = cb_only_assign_common_known_mods.Checked;
+        }
+
+        private void cb_id_from_td_nodes_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.identify_from_td_nodes = cb_id_from_td_nodes.Checked;
+        }
+
+        private void cb_only_first_ambiguous_ID_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.only_first_ambiguous_id = cb_only_first_ambiguous_ID.Checked;
         }
     }
 }

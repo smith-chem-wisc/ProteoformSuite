@@ -139,7 +139,10 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.lollipop.clear_td();
                 Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
-                Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
+                if (Sweet.lollipop.add_td_theoreticals)
+                {
+                    Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
+                }
             }
         }
 
@@ -258,5 +261,6 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.td_retention_time_tolerance = (double)nUD_td_rt_tolerance.Value;
         }
+
     }
 }

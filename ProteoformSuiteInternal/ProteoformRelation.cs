@@ -107,11 +107,14 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
                 }
 
-                candidate_sets = candidate_sets.Where(s => Sweet.lollipop.et_notch_ppm
-                    ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
-                      Sweet.lollipop.notch_tolerance_et
-                    : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_et).ToList();
-                candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
+                if (candidate_sets != null)
+                {
+                    candidate_sets = candidate_sets.Where(s => Sweet.lollipop.et_notch_ppm
+                        ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
+                          Sweet.lollipop.notch_tolerance_et
+                        : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_et).ToList();
+                    candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
+                }
             }
 
             else if (Sweet.lollipop.ee_use_notch &&
@@ -141,11 +144,14 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
                 }
 
-                candidate_sets = candidate_sets.Where(s => Sweet.lollipop.ee_notch_ppm
-                    ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
-                      Sweet.lollipop.notch_tolerance_ee
-                    : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_ee).ToList();
-                candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
+                if (candidate_sets != null)
+                {
+                    candidate_sets = candidate_sets.Where(s => Sweet.lollipop.ee_notch_ppm
+                        ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
+                          Sweet.lollipop.notch_tolerance_ee
+                        : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_ee).ToList();
+                    candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
+                }
             }
             else if
             (relation_type == ProteoformComparison.ExperimentalTheoretical ||

@@ -68,6 +68,8 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
+            this.cb_id_from_td_nodes = new System.Windows.Forms.CheckBox();
+            this.cb_only_first_ambiguous_ID = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -330,6 +332,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
+            this.splitContainer3.Panel2.Controls.Add(this.cb_only_first_ambiguous_ID);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_id_from_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -376,10 +380,10 @@
             // rtb_proteoformFamilyResults
             // 
             this.rtb_proteoformFamilyResults.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 246);
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 253);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
             this.rtb_proteoformFamilyResults.ReadOnly = true;
-            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(575, 257);
+            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(572, 257);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
             this.rtb_proteoformFamilyResults.Text = "";
             // 
@@ -388,7 +392,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(301, 86);
+            this.cb_geneCentric.Location = new System.Drawing.Point(300, 86);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 61;
@@ -420,9 +424,9 @@
             // 
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(301, 156);
+            this.groupBox5.Location = new System.Drawing.Point(50, 168);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(200, 84);
+            this.groupBox5.Size = new System.Drawing.Size(200, 85);
             this.groupBox5.TabIndex = 57;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Highlights for Significant Differences";
@@ -538,14 +542,38 @@
             // 
             this.Families_update.AllowDrop = true;
             this.Families_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Families_update.Location = new System.Drawing.Point(0, 503);
+            this.Families_update.Location = new System.Drawing.Point(0, 510);
             this.Families_update.Name = "Families_update";
-            this.Families_update.Size = new System.Drawing.Size(575, 23);
+            this.Families_update.Size = new System.Drawing.Size(572, 23);
             this.Families_update.TabIndex = 33;
             this.Families_update.Text = "Construct Families and Identify Proteoforms";
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
+            // 
+            // cb_id_from_td_nodes
+            // 
+            this.cb_id_from_td_nodes.AutoSize = true;
+            this.cb_id_from_td_nodes.Location = new System.Drawing.Point(300, 132);
+            this.cb_id_from_td_nodes.Name = "cb_id_from_td_nodes";
+            this.cb_id_from_td_nodes.Size = new System.Drawing.Size(170, 17);
+            this.cb_id_from_td_nodes.TabIndex = 65;
+            this.cb_id_from_td_nodes.Text = "Identify from Top-Down Nodes";
+            this.cb_id_from_td_nodes.UseVisualStyleBackColor = true;
+            this.cb_id_from_td_nodes.CheckedChanged += new System.EventHandler(this.cb_id_from_td_nodes_CheckedChanged);
+            // 
+            // cb_only_first_ambiguous_ID
+            // 
+            this.cb_only_first_ambiguous_ID.AutoSize = true;
+            this.cb_only_first_ambiguous_ID.Checked = true;
+            this.cb_only_first_ambiguous_ID.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_only_first_ambiguous_ID.Location = new System.Drawing.Point(300, 155);
+            this.cb_only_first_ambiguous_ID.Name = "cb_only_first_ambiguous_ID";
+            this.cb_only_first_ambiguous_ID.Size = new System.Drawing.Size(267, 17);
+            this.cb_only_first_ambiguous_ID.TabIndex = 66;
+            this.cb_only_first_ambiguous_ID.Text = "Only first ambiguous ID (recommended for complex)";
+            this.cb_only_first_ambiguous_ID.UseVisualStyleBackColor = true;
+            this.cb_only_first_ambiguous_ID.CheckedChanged += new System.EventHandler(this.cb_only_first_ambiguous_ID_CheckedChanged);
             // 
             // ProteoformFamilies
             // 
@@ -621,5 +649,7 @@
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
+        private System.Windows.Forms.CheckBox cb_id_from_td_nodes;
+        public System.Windows.Forms.CheckBox cb_only_first_ambiguous_ID;
     }
 }

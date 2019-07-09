@@ -31,10 +31,10 @@ namespace Test
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
             t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
-            t.identify_connected_experimentals();
+            t.identify_connected_experimentals(t);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(t);
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e.begin);
@@ -56,10 +56,10 @@ namespace Test
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
             t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
-            t.identify_connected_experimentals();
+            t.identify_connected_experimentals(t);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(e.linked_proteoform_references.First() as TheoreticalProteoform);
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
             Assert.AreEqual(1, e.begin);
@@ -85,10 +85,10 @@ namespace Test
             ConstructorsForTesting.make_relation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             t.relationships.First().Accepted = true;
             t.relationships.First().peak = new DeltaMassPeak(t.relationships.First(), new HashSet<ProteoformRelation> { t.relationships.First() }); // should assign the possible ptmset
-            t.identify_connected_experimentals();
+            t.identify_connected_experimentals(t);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() }); // should assign the possible ptmset
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(e.linked_proteoform_references.First() as TheoreticalProteoform);
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.ptm_combination.Count);
             Assert.AreEqual(2, e.begin);
@@ -150,7 +150,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 126.03);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(e.linked_proteoform_references.First() as TheoreticalProteoform);
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(0, e2.ptm_set.mass);
             Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(e2.linked_proteoform_references.First() as TheoreticalProteoform, e2.ptm_set, e2.begin, e2.end), 2));
@@ -160,7 +160,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 84.02);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(e.linked_proteoform_references.First() as TheoreticalProteoform);
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(42.01, e2.ptm_set.mass);
             Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(e2.linked_proteoform_references.First() as TheoreticalProteoform, e2.ptm_set, e2.begin, e2.end), 2));
@@ -170,7 +170,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 42.01);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(e.linked_proteoform_references.First() as TheoreticalProteoform);
             Assert.IsNotNull(e2.linked_proteoform_references);
             Assert.AreEqual(84.02, e2.ptm_set.mass);
             Assert.AreEqual(0, Math.Round(e2.calculate_mass_error(e2.linked_proteoform_references.First() as TheoreticalProteoform, e2.ptm_set, e2.begin, e2.end), 2));
@@ -181,7 +181,7 @@ namespace Test
             ConstructorsForTesting.make_relation(e, e2, ProteoformComparison.ExperimentalExperimental, 168.04);
             e.relationships.First().Accepted = true;
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
-            e.identify_connected_experimentals();
+            e.identify_connected_experimentals(e.linked_proteoform_references.First() as TheoreticalProteoform);
             Assert.IsNull(e2.linked_proteoform_references);
         }
 
@@ -215,7 +215,7 @@ namespace Test
             e.relationships.First().peak = new DeltaMassPeak(e.relationships.First(), new HashSet<ProteoformRelation> { e.relationships.First() });
             TestProteoformCommunityRelate.prepare_for_et(new List<double>() { set_not_quite_zero.mass });
             // Identify adds nothing to the PtmSet of the Experimental, so it will be labeled Unmodified. It adds the TheoreticalProteoform to the linked reference.
-            t.identify_connected_experimentals();
+            t.identify_connected_experimentals(t);
             Assert.IsNotNull(e.linked_proteoform_references);
             Assert.AreEqual(0, e.ptm_set.mass);
             Assert.AreEqual(new Ptm().modification.OriginalId, e.ptm_set.ptm_description); // it's unmodified

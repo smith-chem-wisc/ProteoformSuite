@@ -86,10 +86,40 @@ namespace ProteoformSuiteInternal
             foreach (TheoreticalProteoform t in theoretical_proteoforms)
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals())
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t))
                     {
                         identified_experimentals.Add(e);
                     }
+            }
+
+            if (Sweet.lollipop.identify_from_td_nodes)
+            {
+                foreach (TopDownProteoform topdown in experimental_proteoforms.Where(e => e.topdown_id))
+                {
+                    Sweet.lollipop.theoretical_database
+                        .theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number]
+                        .TryGetValue(topdown.accession.Split('_')[0].Split('-')[0], out var t);
+                    if (t != null && t.Count > 0)
+                    {
+                        TheoreticalProteoform theoretical =
+                            new TheoreticalProteoform(topdown.accession, topdown.name, topdown.sequence,
+                                t.First().ExpandedProteinList, topdown.modified_mass, topdown.lysine_count,
+                                topdown.topdown_ptm_set, true, false, null);
+                        theoretical.begin = topdown.topdown_begin;
+                        theoretical.end = topdown.topdown_end;
+                        topdown.begin = topdown.topdown_begin;
+                        topdown.end = topdown.topdown_end;
+                        topdown.ptm_set = topdown.topdown_ptm_set;
+                        foreach (ExperimentalProteoform e in topdown.identify_connected_experimentals(theoretical))
+                        {
+                            identified_experimentals.Add(e);
+                        }
+
+                        topdown.begin = 0;
+                        topdown.end = 0;
+                        topdown.ptm_set = new PtmSet(new List<Ptm>());
+                    }
+                }
             }
 
             //Continue looking for new experimental identifications until no more remain to be identified
@@ -102,7 +132,7 @@ namespace ProteoformSuiteInternal
                 foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals)
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals())
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(id_experimental.linked_proteoform_references.First() as TheoreticalProteoform))
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);
