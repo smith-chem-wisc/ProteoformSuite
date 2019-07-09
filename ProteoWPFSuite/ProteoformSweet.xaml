@@ -23,7 +23,7 @@
                 <MenuItem Header="Close" x:Name="closeToolStripMenuItem" Click="closeToolStripMenuItem_Click"/>
 
             </MenuItem>
-            <MenuItem Header="Results" x:Name="resultsToolStripMenuItem">
+            <MenuItem Header="Results" x:Name="resultsToolStripMenuItem" Visibility="Collapsed">
                 <MenuItem Header="Load Results" x:Name="loadResultsToolStripMenuItem" Click="LoadResultsToolStripMenuItem_Click"/>
                 <MenuItem Header="Theoretical Proteoform Database" x:Name="theoreticalProteoformDatabaseToolStripMenuItem" Click="theoreticalProteoformDatabaseToolStripMenuItem_Click"/>
                 <MenuItem x:Name="topdownResultsToolStripMenuItem" Header="Top-down Results" Click="topdownResultsToolStripMenuItem_Click"/>
