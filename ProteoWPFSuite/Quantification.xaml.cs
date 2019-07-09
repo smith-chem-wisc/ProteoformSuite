@@ -40,15 +40,15 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(userandomseed==value || MDIParent == null)
+                this.userandomseed = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USERANDOMSEED"));
+                if (MDIParent == null)
                 {
                     return;
                 }
-                this.userandomseed = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USERANDOMSEED"));
-                MessageBox.Show("test Random");
-                //nud_randomSeed.Enabled = (bool)value;
-                //Sweet.lollipop.useRandomSeed_quant = (bool)userandomseed;
+                
+                nud_randomSeed.Enabled = (bool)value;
+                Sweet.lollipop.useRandomSeed_quant = (bool)userandomseed;
             }
         }
         public bool? SIGNIFICANCEBYFOLDCHANGE
@@ -59,14 +59,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(significancebyfoldchange==value || MDIParent == null || init)
+                this.significancebyfoldchange = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNIFICANCEBYFOLDCHANGE"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                this.significancebyfoldchange = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNIFICANCEBYFOLDCHANGE"));
-
-                MessageBox.Show("rb_significancebyfoldchange");
+                
                 Sweet.lollipop.significance_by_log2FC = (bool)rb_significanceByFoldChange.IsChecked;
                 rb_signficanceByPermutation.IsChecked = !rb_significanceByFoldChange.IsChecked;
                 if ((bool)rb_significanceByFoldChange.IsChecked)
@@ -85,14 +84,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (significancebyfoldchange == value || MDIParent == null || init)
+                signficanceByPermutation = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNFICANCEBYPERMUTATION"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                this.significancebyfoldchange = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNFICANCEBYPERMUTATION"));
-
-                MessageBox.Show("rb_signficanceByPermutation");
+                
                 Sweet.lollipop.significance_by_permutation = (bool)rb_signficanceByPermutation.IsChecked;
                 rb_significanceByFoldChange.IsChecked = !rb_signficanceByPermutation.IsChecked;
                 if ((bool)rb_signficanceByPermutation.IsChecked)
@@ -111,14 +109,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(usefoldchangecutoff==value || MDIParent==null || init)
-                {
-                    return;
-                }
                 usefoldchangecutoff = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEFOLDCHANGECUTOFF"));
 
-                MessageBox.Show("Fold Change checked");
+                if (MDIParent==null || init)
+                {
+                    return;
+                }
+                
 
                 nud_foldChangeCutoff.Enabled = (bool)cb_useFoldChangeCutoff.IsChecked;
                 cb_useAveragePermutationFoldChange.IsEnabled = (bool)cb_useFoldChangeCutoff.IsChecked;
@@ -136,14 +134,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (useaveragepermutationfoldchange == value || MDIParent == null || init)
+                useaveragepermutationfoldchange = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEAVERAGEPERMUTATIONFOLDCHANGE"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                useaveragepermutationfoldchange = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEAVERAGEPERMUTATIONFOLDCHANGE"));
-
-                MessageBox.Show("checkbox Average");
+                
                 if ((bool)cb_useAveragePermutationFoldChange.IsChecked)
                 {
                     cb_useBiorepPermutationFoldChange.IsChecked = !cb_useAveragePermutationFoldChange.IsChecked;
@@ -162,13 +159,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(usebioreppermutationfoldchange==value || MDIParent==null || init)
+                usebioreppermutationfoldchange = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEBIOREPPERMUTATIONFOLDCHANGE"));
+                if (MDIParent==null || init)
                 {
                     return;
                 }
-                usebioreppermutationfoldchange = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEBIOREPPERMUTATIONFOLDCHANGE"));
-
+                
                 if ((bool)usebioreppermutationfoldchange)
                 {
                     USEAVERAGEPERMUTATIONFOLDCHANGE = (bool)!usebioreppermutationfoldchange;
@@ -187,12 +184,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(uselocalfdrcutoff==value || MDIParent == null)
+                uselocalfdrcutoff = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USELOCALFDRCUTOFF"));
+                if (MDIParent == null)
                 {
                     return;
                 }
-                uselocalfdrcutoff = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USELOCALFDRCUTOFF"));
+                
 
 
                 MessageBox.Show("Check localfdr cutoff");
@@ -212,14 +210,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(redborder==value || MDIParent == null)
+                this.redborder = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("REDBORDER"));
+                if (MDIParent == null)
                 {
                     return;
                 }
-                this.redborder = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("REDBORDER"));
-
-                MessageBox.Show("test red");
+                
+                
             }
         }
         public bool? BOLDLABEL
@@ -230,12 +228,12 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(boldlabel==value || MDIParent == null)
+                boldlabel = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BOLDLABEL"));
+                if ( MDIParent == null)
                 {
                     return;
                 }
-                this.boldlabel = value;
-                MessageBox.Show("Test Label");
             }
         }
         public bool? QUANTIFIEDSAMPLESET
@@ -246,12 +244,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (quantifiedsampleset == value || MDIParent == null || init)
+                quantifiedsampleset = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QUANTIFIEDSAMPLESET"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                quantifiedsampleset = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("QUANTIFIEDSAMPLESET"));
+                
                 goTermBackgroundChanged();
                 if ((bool)quantifiedsampleset)
                 {
@@ -269,12 +268,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (detectedsampleset == value || MDIParent == null || init)
+                detectedsampleset = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DETECTEDSAMPLESET"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                detectedsampleset = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DETECTEDSAMPLESET"));
+                
 
                 get_go_analysis().GoAnalysis.allDetectedProteins = (bool)rb_detectedSampleSet.IsChecked;
                 if ((bool)rb_detectedSampleSet.IsChecked)
@@ -294,12 +294,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (custombackgroundset == value || MDIParent == null || init)
+                custombackgroundset = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CUSTOMBACKGROUNDSET"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                custombackgroundset = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CUSTOMBACKGROUNDSET"));
+                
 
                 tb_goTermCustomBackground.IsEnabled = (bool)rb_customBackgroundSet.IsChecked;
                 btn_customBackgroundBrowse.IsEnabled = (bool)rb_customBackgroundSet.IsChecked;
@@ -315,12 +316,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (alltheoreticalproteins == value || MDIParent == null || init)
+                alltheoreticalproteins = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ALLTHEORETICALPROTEINS"));
+                if (MDIParent == null || init)
                 {
                     return;
                 }
-                alltheoreticalproteins = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ALLTHEORETICALPROTEINS"));
+                
 
                 get_go_analysis().GoAnalysis.allTheoreticalProteins = (bool)rb_allTheoreticalProteins.IsChecked;
                 if ((bool)rb_allTheoreticalProteins.IsChecked)
