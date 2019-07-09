@@ -5,73 +5,77 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1000" Width="Auto" Height="Auto">
+             d:DesignHeight="700" d:DesignWidth="1000" Width="Auto" Height="Auto">
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="15*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Menu Grid.Row="0" Width="Auto" HorizontalContentAlignment="Left" VerticalAlignment="Stretch">
+        <Menu Grid.ColumnSpan="2" Width="Auto" HorizontalContentAlignment="Left" VerticalAlignment="Stretch">
             <MenuItem Header="File">
                 <MenuItem Header="Export Table" x:Name="exportTablesToolStripMenuItem" Click="exportAllTablesToolStripMenuItem_Click"/>
                 <MenuItem Header="Export All Tables" x:Name="exportAllTablesToolStripMenuItem" Click="exportAllTablesToolStripMenuItem_Click"/>
                 <MenuItem Header="Print" x:Name="printToolStripMenuItem" Click="printToolStripMenuItem_Click"/>
                 <MenuItem Header="Close" x:Name="closeToolStripMenuItem" Click="closeToolStripMenuItem_Click"/>
-                
+
             </MenuItem>
-            <MenuItem Header="Results" x:Name="resultsToolStripMenuItem">
+            <MenuItem Header="Results" x:Name="resultsToolStripMenuItem" Visibility="Collapsed">
                 <MenuItem Header="Load Results" x:Name="loadResultsToolStripMenuItem" Click="LoadResultsToolStripMenuItem_Click"/>
                 <MenuItem Header="Theoretical Proteoform Database" x:Name="theoreticalProteoformDatabaseToolStripMenuItem" Click="theoreticalProteoformDatabaseToolStripMenuItem_Click"/>
                 <MenuItem x:Name="topdownResultsToolStripMenuItem" Header="Top-down Results" Click="topdownResultsToolStripMenuItem_Click"/>
-                <MenuItem Header="Raw Experimental Components" Click="rawExperimentalProteoformsToolStripMenuItem_Click"/>
+                <MenuItem x:Name="rawExperimentalProteoformsToolStripMenuItem" Header="Raw Experimental Components" Click="rawExperimentalProteoformsToolStripMenuItem_Click"/>
                 <MenuItem x:Name="neuCodeProteoformPairsToolStripMenuItem" Header="NeuCode Proteoform Pairs" Click="neuCodeProteoformPairsToolStripMenuItem_Click"/>
-                <MenuItem Header="Aggregated Proteoforms" Click="aggregatedProteoformsToolStripMenuItem_Click"/>
-                <MenuItem Header="Experiment-Theoretical Comparison" Click="experimentTheoreticalComparisonToolStripMenuItem_Click"/>
-                <MenuItem Header="Experiment-Experimental Comparison" Click="experimentExperimentComparisonToolStripMenuItem_Click"/>
-                <MenuItem Header="Proteoform Family Assignment" Click="proteoformFamilyAssignmentToolStripMenuItem_Click"/>
-                <MenuItem Header="Identified Proteoforms" Click="identifiedProteoformsToolStripMenuItem_Click"/>
+                <MenuItem x:Name="aggregatedProteoformsToolStripMenuItem" Header="Aggregated Proteoforms" Click="aggregatedProteoformsToolStripMenuItem_Click"/>
+                <MenuItem x:Name="experimentTheoreticalComparisonToolStripMenuItem" Header="Experiment-Theoretical Comparison" Click="experimentTheoreticalComparisonToolStripMenuItem_Click"/>
+                <MenuItem x:Name="experimentExperimentComparisonToolStripMenuItem" Header="Experiment-Experimental Comparison" Click="experimentExperimentComparisonToolStripMenuItem_Click"/>
+                <MenuItem x:Name="proteoformFamilyAssignmentToolStripMenuItem" Header="Proteoform Family Assignment" Click="proteoformFamilyAssignmentToolStripMenuItem_Click"/>
+                <MenuItem x:Name="identifiedProteoformsToolStripMenuItem" Header="Identified Proteoforms" Click="identifiedProteoformsToolStripMenuItem_Click"/>
                 <MenuItem x:Name="quantificationToolStripMenuItem" Click="quantificationToolStripMenuItem_Click" Header="Quantification"/>
-                <MenuItem Header="Results Summary" Click="resultsSummaryToolStripMenuItem_Click"/>
-                <MenuItem Header="test" Click="testWin"/>
+                <MenuItem x:Name="resultsSummaryToolStripMenuItem" Header="Results Summary" Click="resultsSummaryToolStripMenuItem_Click"/>
+                <!--<MenuItem Header="test" Click="testWin"/>-->
 
             </MenuItem>
             <MenuItem Header="Method">
                 <MenuItem Header="Save Method" Click="saveMethodToolStripMenuItem1_Click"/>
                 <MenuItem Header="Load Method" Click="loadSettingsToolStripMenuItem_Click"/>
             </MenuItem>
-            
+
         </Menu>
         <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Click="Button_Click_1" Height="50" Width="25" HorizontalAlignment="Right">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <Polygon Points= "10,0 0,8 10,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
-                                <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Grid>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button Click="Button_Click_2" Height="50" Width="25">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
-                                <Polygon Points= "0,0 10,8 0,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Grid>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+            <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore"  PreviewMouseDown="pressColor" PreviewMouseUp="restore">
+                <Button Click="Button_Click_1" Height="25" Width="25" HorizontalAlignment="Right">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Polygon Points= "10,0 0,8 10,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
+                                    <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Border>
+            <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore" MouseUp="restore" PreviewMouseDown="pressColor" PreviewMouseUp="restore">
+                <Button Click="Button_Click_2" Height="25" Width="25">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
+                                    <Polygon Points= "0,0 10,8 0,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Border>
         </StackPanel>
-        
+
         <TabControl x:Name="MDIContainer" Grid.Row="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
@@ -80,10 +84,8 @@
                     <Setter Property="FontSize" Value="12px"/>
                 </Style>
             </TabControl.ItemContainerStyle>
-            <TabItem x:Name="test" Header="Test">
-            </TabItem>
 
         </TabControl>
     </Grid>
-   
+
 </UserControl>

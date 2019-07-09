@@ -18,7 +18,7 @@ namespace ProteoWPFSuite
 
         #region Public Fields
         public LoadResults loadResults = new LoadResults(); //finished
-       
+
         public NeuCodePairs neuCodePairs = new NeuCodePairs(); //finished
         public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents(); //finished
         public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase(); //finished
@@ -51,8 +51,10 @@ namespace ProteoWPFSuite
 
             
             InitializeForms();
-            loadResults.InitializeParameterSet();
+            showTabs(forms);
             showForm(loadResults);
+            loadResults.InitializeParameterSet();
+            
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
@@ -62,7 +64,6 @@ namespace ProteoWPFSuite
             saveResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
             saveResults.DefaultExt = ".sweet";
             
-
         }
 
         #endregion Public Constructor
@@ -92,12 +93,31 @@ namespace ProteoWPFSuite
         }
         private void showForm(UserControl form)
         {
-            ClosingTabItem temp = new ClosingTabItem();
+            /*UClosingTabItem temp = new ClosingTabItem();
             temp.Title = form.GetType().Name;
             temp.Content = form;
             MDIContainer.Items.Add(temp);
             MDIContainer.SelectedItem = temp;
-            current_form = form as ISweetForm;
+            current_form = form as ISweetForm;*/
+            MDIContainer.SelectedIndex = ClosingTabItem.tabTable[form.GetType().Name];
+        }
+        //Initial all tabs
+        private void showTabs(List<ISweetForm> forms)
+        {
+            foreach (UserControl uc in forms)
+            {
+                
+                ClosingTabItem temp = new ClosingTabItem();
+                temp.Title = uc.GetType().Name;
+                temp.Content = uc;
+                //if (!uc.IsEnabled)
+                //{
+                    //temp.Focusable = false;//cannot be selected
+                //}
+                MDIContainer.Items.Add(temp);
+                ClosingTabItem.tabTable.Add(uc.GetType().Name, MDIContainer.Items.Count - 1);//keep a record
+                current_form = uc as ISweetForm;
+            }
         }
         #endregion Private Setup Methods
 
@@ -106,16 +126,38 @@ namespace ProteoWPFSuite
         public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
         {
             neuCodeProteoformPairsToolStripMenuItem.IsEnabled = setting;
+            ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["NeuCodePairs"]];
+            temp.Focusable=setting;
+            temp.freeze = !setting;
+            if(temp.freeze)
+                temp.Background = System.Windows.Media.Brushes.Gray;
+            else
+                temp.ClearValue(BackgroundProperty);
         }
 
         public void enable_quantificationToolStripMenuItem(bool setting)
         {
             quantificationToolStripMenuItem.IsEnabled = setting;
+            ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["Quantification"]];
+            temp.Focusable = setting;
+            temp.freeze = !setting;
+            if (temp.freeze)
+                temp.Background = System.Windows.Media.Brushes.Gray;
+            else
+                temp.ClearValue(BackgroundProperty);
         }
 
         public void enable_topDownToolStripMenuItem(bool setting)
         {
             topdownResultsToolStripMenuItem.IsEnabled = setting;
+            quantificationToolStripMenuItem.IsEnabled = setting;
+            ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["TopDown"]];
+            temp.Focusable = setting;
+            temp.freeze = !setting;
+            if (temp.freeze)
+                temp.Background = System.Windows.Media.Brushes.Gray;
+            else
+                temp.ClearValue(BackgroundProperty);
         }
 
         #endregion RESULTS TOOL STRIP Public Method
@@ -273,7 +315,7 @@ namespace ProteoWPFSuite
 
             loadResults.FillTablesAndCharts(); // updates the filelists in form
 
-          //  Check that there are input files
+            //  Check that there are input files
             if (Sweet.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
@@ -326,7 +368,7 @@ namespace ProteoWPFSuite
                     sweet.RunTheGamut(true);
             }
 
-          //  Save the results
+            //  Save the results
             resultsSummary.InitializeParameterSet();
             if (Sweet.lollipop.results_folder != "")
             {
@@ -356,7 +398,7 @@ namespace ProteoWPFSuite
             {
                 MessageBox.Show(String.Join("\n\n", warning_methods));
             }
-          //  Program ran successfully
+            //  Program ran successfully
             stopwatch.Stop();
             Mouse.OverrideCursor = null;
             return stopwatch;
@@ -440,12 +482,51 @@ namespace ProteoWPFSuite
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            int prev = MDIContainer.SelectedIndex - 1;
 
+            while (prev >= 0 && !(MDIContainer.Items[prev] as TabItem).Focusable)
+            {
+                --prev;
+            }
+            if (prev >= 0)
+            {
+                MDIContainer.SelectedIndex = prev;
+            }
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            int nxt = MDIContainer.SelectedIndex + 1;
 
+            while (nxt < MDIContainer.Items.Count && !(MDIContainer.Items[nxt] as TabItem).Focusable)
+            {
+                ++nxt;
+            }
+            if (nxt < MDIContainer.Items.Count)
+            {
+                MDIContainer.SelectedIndex = nxt;
+            }
+        }
+
+        private void changeColor(object sender, MouseEventArgs e)
+        {
+            (sender as Border).Background = System.Windows.Media.Brushes.Gray;
+        }
+
+        private void restore(object sender, MouseEventArgs e)
+        {
+            Border temp = (Border)sender;
+            temp.ClearValue(BackgroundProperty);
+        }
+
+        private void pressColor(object sender, MouseButtonEventArgs e)
+        {
+            (sender as Border).Background = System.Windows.Media.Brushes.White;
+        }
+
+        private void restore(object sender, MouseButtonEventArgs e)
+        {
+            (sender as Border).Background = System.Windows.Media.Brushes.Gray;
         }
     }
 }

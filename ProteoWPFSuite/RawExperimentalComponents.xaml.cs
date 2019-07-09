@@ -22,6 +22,7 @@ namespace ProteoWPFSuite
             this.DataContext = this;
             CK_rb_displayIdentificationComponents = true;
             CK_rb_displayQuantificationComponents = false;
+            MessageBox.Show(CK_rb_displayIdentificationComponents+","+ CK_rb_displayQuantificationComponents+"," +rb_displayIdentificationComponents.IsChecked+","+rb_displayQuantificationComponents.IsChecked);
         }
         #endregion Public Constructor
 
@@ -39,16 +40,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                
-                if (ck_Identi == value || MDIParent==null)
+                ck_Identi = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
+                if (MDIParent == null)
                 {
                     return;
                 }
-
                 FillTablesAndCharts();
                 dgv_chargeStates.DataSource = null;
-                ck_Identi = value;
-                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
             }
         }
         public bool? CK_rb_displayQuantificationComponents
@@ -59,14 +58,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_Quanti == value)
+                ck_Quanti = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
+                if (MDIParent == null)
                 {
                     return;
                 }
                 //nothing changes here
-
-                ck_Quanti = value;
-                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
             }
         }
         public List<DataTable> DataTables { get; private set; }
@@ -160,10 +158,10 @@ namespace ProteoWPFSuite
             DisplayInputFile.FormatInputFileTable(dgv_fileList, new Purpose[] { Purpose.Identification, Purpose.Quantification });
             dgv_fileList.ReadOnly = true;
 
-            if ((bool)rb_displayIdentificationComponents.IsChecked && Sweet.lollipop.raw_experimental_components.Count > 0)
+            if (rb_displayIdentificationComponents.IsChecked.HasValue && (bool)rb_displayIdentificationComponents.IsChecked.Value && Sweet.lollipop.raw_experimental_components.Count > 0)
                 DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
 
-            if ((bool)rb_displayQuantificationComponents.IsChecked && Sweet.lollipop.raw_quantification_components.Count > 0)
+            if (rb_displayQuantificationComponents.IsChecked.HasValue && (bool)rb_displayQuantificationComponents.IsChecked.Value && Sweet.lollipop.raw_quantification_components.Count > 0)
                 DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
 
             DisplayComponent.FormatComponentsTable(dgv_rawComponents);

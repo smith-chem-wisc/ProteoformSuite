@@ -179,7 +179,8 @@ namespace ProteoWPFSuite
             DisplayDeltaMassPeak.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
-            if ((bool)is_cb_Graph_lowerThreshold) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            if (is_cb_Graph_lowerThreshold.HasValue && (bool)is_cb_Graph_lowerThreshold)
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
             else ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += EE_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event

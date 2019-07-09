@@ -30,13 +30,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                
-                if (ck_cb_only_assign_common_known_mods == value || this.MDIParent==null)
+                ck_cb_only_assign_common_known_mods = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_only_assign_common_known_mods"));
+                MessageBox.Show("CK_cb_only_assign_common_known_mods" + ck_cb_only_assign_common_known_mods);
+                if (this.MDIParent==null)
                 {
                     return;
                 }
-                ck_cb_only_assign_common_known_mods = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_only_assign_common_known_mods"));
+                
                 //implement prev function
                 Sweet.lollipop.only_assign_common_or_known_mods = (bool)value;
             }
@@ -50,14 +51,17 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_count_adducts_as_id == value || this.MDIParent == null)
+                ck_cb_count_adducts_as_id = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_count_adducts_as_id"));
+                MessageBox.Show("CK_cb_count_adducts_as_id" + ck_cb_count_adducts_as_id);
+                if (this.MDIParent == null)
                 {
                     return;
                 }
-                ck_cb_count_adducts_as_id = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_count_adducts_as_id"));
+                
                 Sweet.lollipop.count_adducts_as_identifications = (bool) value; //data binding
                 update_figures_of_merit();
+                
             }
         }
         public bool? CK_cb_geneCentric
@@ -68,12 +72,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_geneCentric == value || this.MDIParent == null)
+                ck_cb_geneCentric = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_geneCentric"));
+                MessageBox.Show("CK_cb_geneCentric" + ck_cb_geneCentric);
+                if (this.MDIParent == null)
                 {
                     return;
                 }
-                ck_cb_geneCentric = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_geneCentric"));
+                
                 Lollipop.gene_centric_families = (bool)value; //data binding
             }
         }
@@ -85,13 +91,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_buildAsQuantitative== value || this.MDIParent == null)
+                ck_cb_buildAsQuantitative = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_buildAsQuantitative"));
+                MessageBox.Show("CK_cb_buildAsQuantitative" + ck_cb_buildAsQuantitative);
+
+                if (this.MDIParent == null)
                 {
                     return;
-                }
-                ck_cb_buildAsQuantitative =value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_buildAsQuantitative"));
-                cb_redBorder.IsEnabled = (bool)value;//data binding
+                }cb_redBorder.IsEnabled = (bool)value;//data binding
                 cb_boldLabel.IsEnabled = (bool)value;//data binding
                 cb_redBorder.IsChecked = true;
                 cb_boldLabel.IsChecked=true;
@@ -105,11 +112,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck_cb_scale_nodes == value || this.MDIParent == null)
+                ck_cb_scale_nodes = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_scale_nodes"));
+                MessageBox.Show("CK_cb_scale_nodes" + ck_cb_scale_nodes);
+                if (this.MDIParent == null)
                 {
                     return;
                 }
-
+                
             }
         }
         #endregion
@@ -136,10 +146,12 @@ namespace ProteoWPFSuite
             cmbx_geneLabel.SelectedIndex = 1;
 
             CK_cb_only_assign_common_known_mods = true;
-            CK_cb_count_adducts_as_id = true;
+            CK_cb_count_adducts_as_id = false;
             CK_cb_geneCentric = true;
-            CK_cb_buildAsQuantitative = true;
-
+            CK_cb_buildAsQuantitative = false;
+            CK_cb_scale_nodes = false;
+            cb_redBorder.IsChecked = true;
+            cb_boldLabel.IsChecked = true;
             InitializeParameterSet();
         }
 
