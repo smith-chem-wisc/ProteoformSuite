@@ -38,10 +38,11 @@ namespace ProteoWPFSuite
             set
             {
                 //to avoid setting twice
-                if (value < 0 || MDIParent==null || (cmbx_observationsTypeRequired.SelectedItem!=null && Sweet.lollipop.agg_observation_requirement == cmbx_observationsTypeRequired.SelectedItem.ToString()))
-                    return;
                 cb_select = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CB_SELECT"));
+                if (MDIParent==null || (cmbx_observationsTypeRequired.SelectedItem!=null && Sweet.lollipop.agg_observation_requirement == cmbx_observationsTypeRequired.SelectedItem.ToString()))
+                    return;
+                
                 cmbx_observationsTypeRequired.SelectedItem = cmbx_observationsTypeRequired.Items[value];
                 Sweet.lollipop.agg_observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
                 set_nud_minObs_maximum();
@@ -56,10 +57,11 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (ck1 == (bool)value || MDIParent==null)
-                    return;
-                ck1 = (bool)value;
+                ck1 = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK1"));
+                if (MDIParent==null)
+                    return;
+                
                 Sweet.lollipop.add_td_proteoforms = (bool)ck1;
             }
         }
@@ -71,10 +73,11 @@ namespace ProteoWPFSuite
             }
             set
             {
+                ck2 = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK2"));
                 if (ck2 == (bool)value || MDIParent == null)
                     return;
-                ck2 = (bool)value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK2"));
+                
                 Sweet.lollipop.validate_proteoforms = (bool)ck2;
             }
         }
@@ -86,10 +89,10 @@ namespace ProteoWPFSuite
             }
             set
             {
+                ra = (bool)value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RA"));
                 if (ra==(bool)value || MDIParent == null)
                     return;
-                ra = (bool)value;
-                PropertyChanged?.Invoke(this,new PropertyChangedEventArgs("RA"));
                 if ((bool)rb_displayIdentificationComponents.IsChecked)
                 {
                     display_light_proteoforms();
@@ -105,11 +108,11 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (value == null || rb == value || MDIParent == null)
-                    return;
                 rb = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RB"));
-                if ((bool)rb_displayLightQuantificationComponents.IsChecked)
+                if (value == null || rb == value || MDIParent == null)
+                    return;
+                if (!rb_displayLightQuantificationComponents.IsChecked.HasValue || (bool)rb_displayLightQuantificationComponents.IsChecked)
                 {
                     display_light_proteoforms();
                 }
@@ -124,10 +127,10 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (value == null || rc == value || MDIParent == null)
-                    return;
                 rc = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("RC"));
+                if (value == null || rc == value || MDIParent == null)
+                    return;
                 if ((bool)rb_displayHeavyQuantificationComponents.IsChecked)
                 {
                     display_light_proteoforms();

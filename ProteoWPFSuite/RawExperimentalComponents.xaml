@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-        Height="692" Width="1141">
+        MinHeight="600" MinWidth="900">
     
     <Grid x:Name="splitContainer1">
         <!--GridSplitter: Splitting affects either side-->
@@ -19,14 +19,14 @@
         <Grid Grid.Row="0" x:Name="param_splitcontainer">
             
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="4*" />
                     <ColumnDefinition Width="3" />
-                    <ColumnDefinition Width="2.5*" />
+                    <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
                         <WindowsFormsHost>

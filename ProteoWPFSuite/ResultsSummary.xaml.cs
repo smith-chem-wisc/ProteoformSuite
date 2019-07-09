@@ -48,7 +48,8 @@ namespace ProteoWPFSuite
 
         public void ClearListsTablesFigures(bool clear_following_forms)
         {
-            throw new NotImplementedException();
+            rtb_summary.Text = "";
+            tb_summarySaveFolder.Text = "";
         }
 
         public void FillTablesAndCharts()

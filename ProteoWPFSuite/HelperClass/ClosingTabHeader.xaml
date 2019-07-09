@@ -7,13 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="23" d:DesignWidth="81" Margin="0">
     <Grid>
-        <Button Content="x"  HorizontalAlignment="Right" 
-
-          x:Name="tab_close" VerticalAlignment="Top" Width="Auto" FontFamily="Leelawadee UI Semilight" 
-
-          Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
-
-          FontStretch="Normal" Visibility="Visible" Padding="0" ToolTip="Close"/>
+        
         <Label Content="TabItem"  HorizontalAlignment="Left" 
 
           Margin="4,3,0,0" x:Name="tab_title" VerticalAlignment="Top" 
