@@ -241,11 +241,11 @@ namespace ProteoWPFSuite
                 cmb_loadTable1.SelectedIndex = 0;
 
                 // In "4. Start Analysis"
-                panel_bt_stepthru.Visibility        = Visibility.Visible;
-                panel_bt_fullrun.Visibility         = Visibility.Visible;
-                panel_bt_calib.Visibility           = Visibility.Collapsed;
-                panel_bt_deconv.Visibility          = Visibility.Collapsed;
-                panel_bt_topdown_search.Visibility  = Visibility.Collapsed;            
+                panel_btn_stepthru.Visibility        = Visibility.Visible;
+                panel_btn_fullrun.Visibility         = Visibility.Visible;
+                panel_btn_calib.Visibility           = Visibility.Collapsed;
+                panel_btn_deconv.Visibility          = Visibility.Collapsed;
+                panel_btn_topdown_search.Visibility  = Visibility.Collapsed;            
             }
 
             else if (rb_chemicalCalibration.IsChecked == true)
@@ -264,11 +264,11 @@ namespace ProteoWPFSuite
                 cmb_loadTable1.SelectedIndex = 0;
 
                 // In "4. Start Analysis"
-                panel_bt_calib.Visibility           = Visibility.Visible;
-                panel_bt_stepthru.Visibility        = Visibility.Collapsed;
-                panel_bt_fullrun.Visibility         = Visibility.Collapsed;
-                panel_bt_deconv.Visibility          = Visibility.Collapsed;
-                panel_bt_topdown_search.Visibility  = Visibility.Collapsed;
+                panel_btn_calib.Visibility           = Visibility.Visible;
+                panel_btn_stepthru.Visibility        = Visibility.Collapsed;
+                panel_btn_fullrun.Visibility         = Visibility.Collapsed;
+                panel_btn_deconv.Visibility          = Visibility.Collapsed;
+                panel_btn_topdown_search.Visibility  = Visibility.Collapsed;
             }
 
             else if (rb_deconvolution.IsChecked == true)
@@ -286,11 +286,11 @@ namespace ProteoWPFSuite
                 cmb_loadTable1.IsEnabled = false;
 
                 // In "4. Start Analysis"
-                panel_bt_deconv.Visibility          = Visibility.Visible;
-                panel_bt_stepthru.Visibility        = Visibility.Collapsed;
-                panel_bt_fullrun.Visibility         = Visibility.Collapsed;
-                panel_bt_calib.Visibility           = Visibility.Collapsed;
-                panel_bt_topdown_search.Visibility  = Visibility.Collapsed;
+                panel_btn_deconv.Visibility          = Visibility.Visible;
+                panel_btn_stepthru.Visibility        = Visibility.Collapsed;
+                panel_btn_fullrun.Visibility         = Visibility.Collapsed;
+                panel_btn_calib.Visibility           = Visibility.Collapsed;
+                panel_btn_topdown_search.Visibility  = Visibility.Collapsed;
             }
 
             else if (rb_topdown_search.IsChecked == true)
@@ -309,11 +309,11 @@ namespace ProteoWPFSuite
                 cmb_loadTable1.IsEnabled = false;
 
                 // In "4. Start Analysis"
-                panel_bt_topdown_search.Visibility  = Visibility.Visible;
-                panel_bt_deconv.Visibility          = Visibility.Collapsed;
-                panel_bt_stepthru.Visibility        = Visibility.Collapsed;
-                panel_bt_fullrun.Visibility         = Visibility.Collapsed;
-                panel_bt_calib.Visibility           = Visibility.Collapsed;
+                panel_btn_topdown_search.Visibility  = Visibility.Visible;
+                panel_btn_deconv.Visibility          = Visibility.Collapsed;
+                panel_btn_stepthru.Visibility        = Visibility.Collapsed;
+                panel_btn_fullrun.Visibility         = Visibility.Collapsed;
+                panel_btn_calib.Visibility           = Visibility.Collapsed;
             }
 
             CB_select = 0;

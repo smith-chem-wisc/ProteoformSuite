@@ -202,44 +202,44 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid x:Name="panel_bt_stepthru" Grid.Column="0">
+                        <Grid x:Name="panel_btn_stepthru" Grid.Column="0">
                             <Button 
-                                x:Name="bt_stepthru" 
+                                x:Name="btn_stepthru" 
                                 Margin="0,0,4.4,0" 
                                 Click="btn_stepthru_Click"
                                 Content="Step Through Processing" />
                         </Grid>
-                        <Grid x:Name="panel_bt_fullrun" Grid.Column="1">
+                        <Grid x:Name="panel_btn_fullrun" Grid.Column="1">
                             <Button 
-                                x:Name="bt_fullrun" 
+                                x:Name="btn_fullrun" 
                                 Margin="2 0 2 0" 
                                 Click="btn_fullRun_Click"
                                 Content="Full Run" />
                         </Grid>
-                        <Grid x:Name="panel_bt_clearresults" Grid.Column="2">
+                        <Grid x:Name="panel_btn_clearresults" Grid.Column="2">
                             <Button 
-                                x:Name="bt_clearResults" 
+                                x:Name="btn_clearResults" 
                                 Margin="2 0 2 0" 
                                 Click="btn_clearResults_Click" 
                                 Content="Clear Results" />
                         </Grid>
-                        <Grid x:Name="panel_bt_calib" Grid.Column="0">
+                        <Grid x:Name="panel_btn_calib" Grid.Column="0">
                             <Button 
-                                x:Name="bt_calibrate" 
+                                x:Name="btn_calibrate" 
                                 Margin="2 0 2 0" 
                                 Click="btn_calibrate_Click" 
                                 Content="Calibrate" />
                         </Grid>
-                        <Grid x:Name="panel_bt_deconv" Grid.Column="0">
+                        <Grid x:Name="panel_btn_deconv" Grid.Column="0">
                             <Button 
-                                x:Name="bt_deconvolute" 
+                                x:Name="btn_deconvolute" 
                                 Margin="2 0 2 0" 
                                 Click="btn_deconvolute_Click" 
                                 Content="Deconvolute" />
                         </Grid>
-                        <Grid x:Name="panel_bt_topdown_search" Grid.Column="0" Width="Auto">
+                        <Grid x:Name="panel_btn_topdown_search" Grid.Column="0" Width="Auto">
                             <Button 
-                                x:Name="bt_topdown_search" 
+                                x:Name="btn_topdown_search" 
                                 Margin="0,0,4.4,0" 
                                 Click="btn_topdown_search_Click" 
                                 Content="MetaMorpheus Top-Down Search" />
