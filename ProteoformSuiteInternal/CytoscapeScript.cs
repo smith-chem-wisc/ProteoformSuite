@@ -436,7 +436,8 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
-                    name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
+                    name += " " + (e.ambiguous_identifications.Count > 0 ? "Ambiguous " : "")
+                        +(e.linked_proteoform_references.First() as TheoreticalProteoform).accession
                           + " " + e.begin + "to" + e.end + " " +
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :

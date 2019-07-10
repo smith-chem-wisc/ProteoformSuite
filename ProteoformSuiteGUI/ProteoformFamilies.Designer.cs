@@ -50,6 +50,9 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_td_ID_reduce_ambiguity = new System.Windows.Forms.CheckBox();
+            this.cb_only_first_ambiguous_ID = new System.Windows.Forms.CheckBox();
+            this.cb_id_from_td_nodes = new System.Windows.Forms.CheckBox();
             this.cb_only_assign_common_known_mods = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
@@ -68,8 +71,7 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_id_from_td_nodes = new System.Windows.Forms.CheckBox();
-            this.cb_only_first_ambiguous_ID = new System.Windows.Forms.CheckBox();
+            this.cb_remove_bad_connections = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -332,6 +334,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
+            this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_connections);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_td_ID_reduce_ambiguity);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_first_ambiguous_ID);
             this.splitContainer3.Panel2.Controls.Add(this.cb_id_from_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
@@ -365,6 +369,43 @@
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // cb_td_ID_reduce_ambiguity
+            // 
+            this.cb_td_ID_reduce_ambiguity.AutoSize = true;
+            this.cb_td_ID_reduce_ambiguity.Checked = true;
+            this.cb_td_ID_reduce_ambiguity.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_td_ID_reduce_ambiguity.Location = new System.Drawing.Point(300, 178);
+            this.cb_td_ID_reduce_ambiguity.Name = "cb_td_ID_reduce_ambiguity";
+            this.cb_td_ID_reduce_ambiguity.Size = new System.Drawing.Size(206, 17);
+            this.cb_td_ID_reduce_ambiguity.TabIndex = 67;
+            this.cb_td_ID_reduce_ambiguity.Text = "Use top-down IDs to reduce ambiguity";
+            this.cb_td_ID_reduce_ambiguity.UseVisualStyleBackColor = true;
+            this.cb_td_ID_reduce_ambiguity.CheckedChanged += new System.EventHandler(this.cb_td_ID_reduce_ambiguity_CheckedChanged);
+            // 
+            // cb_only_first_ambiguous_ID
+            // 
+            this.cb_only_first_ambiguous_ID.AutoSize = true;
+            this.cb_only_first_ambiguous_ID.Checked = true;
+            this.cb_only_first_ambiguous_ID.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_only_first_ambiguous_ID.Location = new System.Drawing.Point(300, 155);
+            this.cb_only_first_ambiguous_ID.Name = "cb_only_first_ambiguous_ID";
+            this.cb_only_first_ambiguous_ID.Size = new System.Drawing.Size(267, 17);
+            this.cb_only_first_ambiguous_ID.TabIndex = 66;
+            this.cb_only_first_ambiguous_ID.Text = "Only first ambiguous ID (recommended for complex)";
+            this.cb_only_first_ambiguous_ID.UseVisualStyleBackColor = true;
+            this.cb_only_first_ambiguous_ID.CheckedChanged += new System.EventHandler(this.cb_only_first_ambiguous_ID_CheckedChanged);
+            // 
+            // cb_id_from_td_nodes
+            // 
+            this.cb_id_from_td_nodes.AutoSize = true;
+            this.cb_id_from_td_nodes.Location = new System.Drawing.Point(300, 132);
+            this.cb_id_from_td_nodes.Name = "cb_id_from_td_nodes";
+            this.cb_id_from_td_nodes.Size = new System.Drawing.Size(170, 17);
+            this.cb_id_from_td_nodes.TabIndex = 65;
+            this.cb_id_from_td_nodes.Text = "Identify from Top-Down Nodes";
+            this.cb_id_from_td_nodes.UseVisualStyleBackColor = true;
+            this.cb_id_from_td_nodes.CheckedChanged += new System.EventHandler(this.cb_id_from_td_nodes_CheckedChanged);
             // 
             // cb_only_assign_common_known_mods
             // 
@@ -551,29 +592,18 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // cb_id_from_td_nodes
+            // cb_remove_bad_connections
             // 
-            this.cb_id_from_td_nodes.AutoSize = true;
-            this.cb_id_from_td_nodes.Location = new System.Drawing.Point(300, 132);
-            this.cb_id_from_td_nodes.Name = "cb_id_from_td_nodes";
-            this.cb_id_from_td_nodes.Size = new System.Drawing.Size(170, 17);
-            this.cb_id_from_td_nodes.TabIndex = 65;
-            this.cb_id_from_td_nodes.Text = "Identify from Top-Down Nodes";
-            this.cb_id_from_td_nodes.UseVisualStyleBackColor = true;
-            this.cb_id_from_td_nodes.CheckedChanged += new System.EventHandler(this.cb_id_from_td_nodes_CheckedChanged);
-            // 
-            // cb_only_first_ambiguous_ID
-            // 
-            this.cb_only_first_ambiguous_ID.AutoSize = true;
-            this.cb_only_first_ambiguous_ID.Checked = true;
-            this.cb_only_first_ambiguous_ID.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_only_first_ambiguous_ID.Location = new System.Drawing.Point(300, 155);
-            this.cb_only_first_ambiguous_ID.Name = "cb_only_first_ambiguous_ID";
-            this.cb_only_first_ambiguous_ID.Size = new System.Drawing.Size(267, 17);
-            this.cb_only_first_ambiguous_ID.TabIndex = 66;
-            this.cb_only_first_ambiguous_ID.Text = "Only first ambiguous ID (recommended for complex)";
-            this.cb_only_first_ambiguous_ID.UseVisualStyleBackColor = true;
-            this.cb_only_first_ambiguous_ID.CheckedChanged += new System.EventHandler(this.cb_only_first_ambiguous_ID_CheckedChanged);
+            this.cb_remove_bad_connections.AutoSize = true;
+            this.cb_remove_bad_connections.Checked = true;
+            this.cb_remove_bad_connections.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_remove_bad_connections.Location = new System.Drawing.Point(300, 201);
+            this.cb_remove_bad_connections.Name = "cb_remove_bad_connections";
+            this.cb_remove_bad_connections.Size = new System.Drawing.Size(148, 17);
+            this.cb_remove_bad_connections.TabIndex = 68;
+            this.cb_remove_bad_connections.Text = "Remove bad connections";
+            this.cb_remove_bad_connections.UseVisualStyleBackColor = true;
+            this.cb_remove_bad_connections.CheckedChanged += new System.EventHandler(this.cb_remove_bad_connections_CheckedChanged);
             // 
             // ProteoformFamilies
             // 
@@ -651,5 +681,7 @@
         private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
         private System.Windows.Forms.CheckBox cb_id_from_td_nodes;
         public System.Windows.Forms.CheckBox cb_only_first_ambiguous_ID;
+        public System.Windows.Forms.CheckBox cb_td_ID_reduce_ambiguity;
+        public System.Windows.Forms.CheckBox cb_remove_bad_connections;
     }
 }

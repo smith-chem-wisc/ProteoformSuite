@@ -464,32 +464,32 @@ namespace ProteoformSuiteInternal
                 results.Rows.Add(
                     community.community_number < 0 ? "Target" : "Decoy_" + community.community_number,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).accession + (e.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item1.accession))
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.theoretical_base.accession))
                         : ""),
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).description + (e.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).description))
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).description))
                         : ""),
                     e.accession,
                     e.linked_proteoform_references.Last().gene_name.primary + (e.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).gene_name.primary))
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).gene_name.primary))
                         : ""),
                     string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()) + (e.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.theoretical_base as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
                         : ""),
                     string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + (e.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())))
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.theoretical_base as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())))
                         : ""),
-                    e.ptm_set.ptm_description  + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item4.ptm_description)) : ""),
-                    e.begin + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item2 + " to " + p.Item3)) : ""),
+                    e.ptm_set.ptm_description  + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.set.ptm_description)) : ""),
+                    e.begin + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.begin + " to " + p.end)) : ""),
                     e.get_sequence(e.linked_proteoform_references.First() as TheoreticalProteoform, e.begin, e.end)
                     + (e.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.get_sequence(i.Item1 as TheoreticalProteoform, i.Item2, i.Item3)))
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.get_sequence(i.theoretical_base as TheoreticalProteoform, i.begin, i.end)))
                         : ""),
                     e.uniprot_mods,
                     e.novel_mods,
                     e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString()
                     + (e.ambiguous_identifications.Count > 0
-                    ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.Item1 as TheoreticalProteoform, i.Item4, i.Item2, i.Item3).ToString()))
+                    ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.set, i.begin, i.end).ToString()))
                     : ""),
                     e.modified_mass,
                     e.agg_rt,
@@ -629,37 +629,37 @@ namespace ProteoformSuiteInternal
                 results.Rows.Add(
                     td.pfr_accession,
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).accession + (td.ambiguous_identifications.Count > 0
-                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.Item1.accession))
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.theoretical_base.accession))
                                                                           : ""),
                     td.accession,
                     td.accession.Split('_')[0],
                     td.linked_proteoform_references == null ? "N/A" : string.Join("; ", (td.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct()) + (td.ambiguous_identifications.Count > 0
-                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(t => string.Join("; ", (t.theoretical_base as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
                                                                           : ""),
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).description + (td.ambiguous_identifications.Count > 0
-                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).description))
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).description))
                                                                           : ""),
                     td.name,
-                    td.linked_proteoform_references == null ? "N/A" : td.begin + " to " + td.end + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.Item2 + " to " + p.Item3)) : ""),
+                    td.linked_proteoform_references == null ? "N/A" : td.begin + " to " + td.end + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.begin + " to " + p.end)) : ""),
                     td.topdown_begin + " to " + td.topdown_end,
                     td.linked_proteoform_references == null ? "N/A" :  td.get_sequence(td.linked_proteoform_references.First() as TheoreticalProteoform, td.begin, td.end)
                     + (td.ambiguous_identifications.Count > 0
-                        ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.get_sequence(i.Item1 as TheoreticalProteoform, i.Item2, i.Item3)))
+                        ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.get_sequence(i.theoretical_base as TheoreticalProteoform, i.begin, i.end)))
                         : ""),
                     td.sequence,
-                    td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_description + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.Item4.ptm_description)) : ""),
+                    td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_description + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.set.ptm_description)) : ""),
                     td.topdown_ptm_description,
                     td.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)),
                     td.linked_proteoform_references == null ? "N/A" : td.calculate_mass_error(td.linked_proteoform_references.First() as TheoreticalProteoform, td.ptm_set, td.begin, td.end).ToString()
                                                                       + (td.ambiguous_identifications.Count > 0
-                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.calculate_mass_error(i.Item1 as TheoreticalProteoform, i.Item4, i.Item2, i.Item3).ToString()))
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.set, i.begin, i.end).ToString()))
                                                                           : ""),
                     td.modified_mass - td.theoretical_mass,
                     td.modified_mass,
                     td.agg_rt,
                     td.manual_validation_id,
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).gene_name.primary + (td.ambiguous_identifications.Count > 0
-                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).gene_name.primary))
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).gene_name.primary))
                                                                           : ""),
                     td.gene_name != null ? td.gene_name.primary : "",
                     td.family == null ? "N/A" : td.family.family_id.ToString(),

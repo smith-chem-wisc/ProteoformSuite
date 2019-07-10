@@ -161,7 +161,7 @@ namespace ProteoformSuiteInternal
                     Sweet.lollipop.et_low_mass_difference
                     && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <=
                     Sweet.lollipop.et_high_mass_difference
-                    && (Sweet.lollipop.add_td_theoreticals || !(pf2_with_allowed_lysines as TheoreticalProteoform).topdown_theoretical);
+                    && (Sweet.lollipop.add_td_theoreticals || !(pf2_with_allowed_lysines as TheoreticalProteoform).new_topdown_proteoform);
             }
             else if (relation_type == ProteoformComparison.ExperimentalExperimental)
             {

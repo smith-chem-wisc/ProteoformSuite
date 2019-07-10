@@ -92,7 +92,7 @@ namespace ProteoformSuiteGUI
         public string ptm_description
         {
             get { return (e.linked_proteoform_references != null ? e.ptm_set.ptm_description : "" ) + 
-                         (e.ambiguous_identifications.Count > 0 ? " | " +  String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item4.ptm_description)) : "" ); }
+                         (e.ambiguous_identifications.Count > 0 ? " | " +  String.Join(" | ", e.ambiguous_identifications.Select(p => p.set.ptm_description)) : "" ); }
         } 
 
         public string uniprot_mods
@@ -107,12 +107,12 @@ namespace ProteoformSuiteGUI
 
         public string Begin
         {
-            get { return e.begin.ToString() + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item2)) : "" ); }
+            get { return e.begin.ToString() + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.begin)) : "" ); }
         }
 
         public string End
         {
-            get { return e.end.ToString() + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item3)) : "" ); }
+            get { return e.end.ToString() + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.end)) : "" ); }
         }
 
         public string gene_name
@@ -122,7 +122,7 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null
                            ? (e.linked_proteoform_references[0] as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                            : "") + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item1.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
                            : "");
             }
         }
@@ -133,7 +133,7 @@ namespace ProteoformSuiteGUI
             {
                 return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count.ToString() : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.Item1.accession.Split('_')[0], i.Item4, i.Item2, i.Item3).Count.ToString()))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.set, i.begin, i.end).Count.ToString()))
                            : "");
             }
         }
@@ -145,8 +145,8 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
                            String.Join(", ", Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.Item1.accession.Split('_')[0], i.Item4, i.Item2, i.Item3).Count(p => p.ptm_list.Count > 0) == 0 ?
-                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.Item1.accession.Split('_')[0], i.Item4, i.Item2, i.Item3).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.set, i.begin, i.end).Count(p => p.ptm_list.Count > 0) == 0 ?
+                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.set, i.begin, i.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
                            : "");
             }
         }
@@ -158,7 +158,7 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null
                            ? string.Join("; ", (e.linked_proteoform_references[0] as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())
                            : "") + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.Item1 as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.theoretical_base as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
                            : "");
             }
         }
@@ -170,7 +170,7 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null
                     ? (e.linked_proteoform_references[0] as TheoreticalProteoform).accession
                     : "") + (e.ambiguous_identifications.Count > 0
-                          ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.Item1.accession))
+                          ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.theoretical_base.accession))
                           : "");
             }
         }
@@ -182,7 +182,7 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null
                            ? (e.linked_proteoform_references[0] as TheoreticalProteoform).fragment
                            : "") + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).fragment))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).fragment))
                            : "");
             }
         }
@@ -195,7 +195,7 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null
                            ? (e.linked_proteoform_references[0] as TheoreticalProteoform).description
                            : "") + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.Item1 as TheoreticalProteoform).description))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).description))
                            : "");
             }
         }
@@ -225,7 +225,7 @@ namespace ProteoformSuiteGUI
         {
             get { return (e.linked_proteoform_references != null ? e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString() : "N/A")
                          + (e.ambiguous_identifications.Count > 0
-                             ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.Item1 as TheoreticalProteoform, i.Item4, i.Item2, i.Item3).ToString()))
+                             ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.set, i.begin, i.end).ToString()))
                              : ""); }
         }
 

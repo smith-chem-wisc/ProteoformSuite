@@ -83,14 +83,6 @@ namespace ProteoformSuiteInternal
         public void identify_experimentals()
         {
             HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
-            foreach (TheoreticalProteoform t in theoretical_proteoforms)
-            {
-                lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t))
-                    {
-                        identified_experimentals.Add(e);
-                    }
-            }
 
             if (Sweet.lollipop.identify_from_td_nodes)
             {
@@ -105,11 +97,12 @@ namespace ProteoformSuiteInternal
                             new TheoreticalProteoform(topdown.accession, topdown.name, topdown.sequence,
                                 t.First().ExpandedProteinList, topdown.modified_mass, topdown.lysine_count,
                                 topdown.topdown_ptm_set, true, false, null);
+                        theoretical.topdown_theoretical = true;
                         theoretical.begin = topdown.topdown_begin;
                         theoretical.end = topdown.topdown_end;
                         topdown.begin = topdown.topdown_begin;
                         topdown.end = topdown.topdown_end;
-                        topdown.ptm_set = topdown.topdown_ptm_set;
+                        topdown.ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination);
                         foreach (ExperimentalProteoform e in topdown.identify_connected_experimentals(theoretical))
                         {
                             identified_experimentals.Add(e);
@@ -120,6 +113,14 @@ namespace ProteoformSuiteInternal
                         topdown.ptm_set = new PtmSet(new List<Ptm>());
                     }
                 }
+            }
+            foreach (TheoreticalProteoform t in theoretical_proteoforms)
+            {
+                lock (identified_experimentals)
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t))
+                    {
+                        identified_experimentals.Add(e);
+                    }
             }
 
             //Continue looking for new experimental identifications until no more remain to be identified

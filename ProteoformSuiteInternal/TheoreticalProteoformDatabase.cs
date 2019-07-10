@@ -396,7 +396,7 @@ namespace ProteoformSuiteInternal
                             decoy_number < 0,
                             check_contaminants,
                             theoretical_proteins);
-                    t.topdown_theoretical = prot.topdown_protein;
+                    t.new_topdown_proteoform = prot.topdown_protein;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
                 }
@@ -435,7 +435,9 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0].Split('-')[0])
                 && p.sequence == seq).OrderBy(t => t.accession).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
-                if (!new_theoreticals.Any(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)))
+                var same_ptmset_theos = new_theoreticals.Where(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)).ToList();
+                foreach (var x in same_ptmset_theos) x.topdown_theoretical = true;
+                if (same_ptmset_theos.Count == 0)
                 {
                     //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
                     PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
@@ -452,6 +454,7 @@ namespace ProteoformSuiteInternal
                         false,
                         theoretical_proteins);
                     t.topdown_theoretical = true;
+                    t.new_topdown_proteoform = true;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
                 }

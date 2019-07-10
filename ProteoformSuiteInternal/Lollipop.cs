@@ -152,7 +152,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
                 List<Component> someComponents = file.extension == ".xlsx" ? file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics)
-                        : file.reader.read_components_from_tsv(file, remove_missed_monos_and_harmonics);
+                        : file.reader.read_components_from_tsv(file, false);
                 lock (destination) destination.AddRange(someComponents);
             });
 
@@ -958,6 +958,8 @@ namespace ProteoformSuiteInternal
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
         public bool identify_from_td_nodes = false;
+        public bool topdown_theoretical_reduce_ambiguity = true;
+        public bool remove_bad_connections = true;
 
         public static string[] node_positioning = new string[]
         {
@@ -987,8 +989,18 @@ namespace ProteoformSuiteInternal
 
         public void construct_target_and_decoy_families()
         {
+            //in case any were unaccepted before
+            Parallel.ForEach(et_peaks, p => p.grouped_relations.Select(r => r.Accepted = p.Accepted));
+            Parallel.ForEach(ee_peaks, p => p.grouped_relations.Select(r => r.Accepted = p.Accepted));
+
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
+
+            if (remove_bad_connections)
+            {
+                clear_all_families();
+                target_proteoform_community.construct_families();
+            }
         }
 
         #endregion PROTEOFORM FAMILIES Public Fields
@@ -1520,7 +1532,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
-                    p.ambiguous_identifications.Clear();
+                    (p as ExperimentalProteoform).ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1548,7 +1560,7 @@ namespace ProteoformSuiteInternal
                     p.family = null;
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
-                    p.ambiguous_identifications.Clear();
+                    (p as ExperimentalProteoform).ambiguous_identifications.Clear();
                     if (p as TopDownProteoform == null) p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
