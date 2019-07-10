@@ -16,6 +16,7 @@ namespace ProteoWPFSuite
 {
     public partial class LoadResults : UserControl, ITabbedMDI, ISweetForm, INotifyPropertyChanged
     {
+        #region Public Constructor
         public LoadResults()
         {
             InitializeComponent();
@@ -23,6 +24,7 @@ namespace ProteoWPFSuite
             
             populate_file_lists();
         }
+        #endregion Public Constructor
 
         #region Public Property
         public List<DataTable> DataTables { get; private set; }
@@ -82,34 +84,39 @@ namespace ProteoWPFSuite
         }
         #endregion Public Property
 
-        #region Private Field
+        #region Private Fields
         private String _labeltxt;
         private bool ck_rbneucode;
         private int cb_select;
         //private string[] cb_src;
-        #endregion Private Field
+        #endregion Private Fields
 
         #region Public Methods
         public void InitializeParameterSet()
-        {   
-            rb_neucode.IsChecked = Sweet.lollipop.neucode_labeled;
-            rb_unlabeled.IsChecked = !rb_neucode.IsChecked;
-            cb_calibrate_td_files.IsChecked = Sweet.lollipop.calibrate_td_files;
-            cb_calibrate_raw_files.IsChecked = Sweet.lollipop.calibrate_raw_files;
-            cb_mass_cali.IsChecked = Sweet.lollipop.mass_calibration;
-            cb_rt_cali.IsChecked = Sweet.lollipop.retention_time_calibration;
-            //nUD_cali_mass_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_mass_tolerance);
-            //nUD_cali_RT_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_rt_tolerance);
+        {
+            // Initialize components in "2. Set Parameters"
+            rb_neucode.IsChecked    = Sweet.lollipop.neucode_labeled;
+            rb_unlabeled.IsChecked  = !rb_neucode.IsChecked;
+
+            // Initialize components in "2. Set Parameters" that fall under "1. Choose Analysis->Chemical Calibration"
+            cb_calibrate_raw_files.IsChecked        = Sweet.lollipop.calibrate_raw_files;
+            cb_calibrate_td_files.IsChecked         = Sweet.lollipop.calibrate_td_files;
+            cb_mass_calibration.IsChecked           = Sweet.lollipop.mass_calibration;
+            cb_retention_time_calibration.IsChecked = Sweet.lollipop.retention_time_calibration;
+            //nud_cali_mass_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_mass_tolerance);
+            //nud_cali_rt_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_rt_tolerance);
+
+            // Initialize components in "2. Set Parameters" that fall under "1. Choose Analysis->MetaMorpheus Top-Down Search"
+            // p.s. Formerly named cmbx_dissociation_types
+            cmb_dissociation_types.Items.Clear();
+            cmb_dissociation_types.ItemsSource = new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD };
+            cmb_dissociation_types.SelectedIndex = 0;
 
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
-
-            cmbx_dissociation_types.Items.Clear();
-            cmbx_dissociation_types.ItemsSource = new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD};
-            //cmbx_dissociation_types.Items.Add(new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD });
-            cmbx_dissociation_types.SelectedIndex = 0;
         }
+
         public List<DataTable> SetTables()
         {
             DataTables = new List<DataTable>();
@@ -129,6 +136,7 @@ namespace ProteoWPFSuite
                 DataTables.Add(DisplayInputFile.FormatInputFileTable(Sweet.lollipop.get_files(Sweet.lollipop.input_files, new List<Purpose> { Purpose.ProteinDatabase }).Select(x => new DisplayInputFile(x)).ToList(), "ProteinDatabases", new List<Purpose> { Purpose.ProteinDatabase}));
             return DataTables;
         }
+
         public void ClearListsTablesFigures(bool clear_following)
         {
             Sweet.lollipop.input_files.Clear();
@@ -147,6 +155,7 @@ namespace ProteoWPFSuite
             }
             FillTablesAndCharts();
         }
+
         public bool ReadyToRunTheGamut()
         {
             return true;
@@ -154,8 +163,10 @@ namespace ProteoWPFSuite
 
         public void RunTheGamut(bool full_run)
         {
-            populate_file_lists();
+            if (ReadyToRunTheGamut() == true)
+                populate_file_lists();
         }
+
         public void FillTablesAndCharts()
         {
             populate_file_lists();
@@ -171,23 +182,23 @@ namespace ProteoWPFSuite
 
             foreach (InputFile f in Sweet.lollipop.input_files)
             {
-                if ((bool)rb_neucode.IsChecked) f.label = Labeling.NeuCode;
-                if ((bool)rb_unlabeled.IsChecked) f.label = Labeling.Unlabeled;
+                if ((bool)rb_neucode.IsChecked)
+                    f.label = Labeling.NeuCode;
+                if ((bool)rb_unlabeled.IsChecked)
+                    f.label = Labeling.Unlabeled;
             }
             populate_file_lists();
         }
+
         private void rb_unlabeled_CheckedChanged(object sender, RoutedEventArgs e)
         { }
+
         private void rb_standardOptions_CheckedChanged(object sender, RoutedEventArgs e)
         {
             populate_file_lists();
         }
-        private void rb_chemicalCalibration_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            populate_file_lists();
-        }
 
-        private void rb_advanced_user_CheckedChanged(object sender, EventArgs e)
+        private void rb_chemicalCalibration_CheckedChanged(object sender, RoutedEventArgs e)
         {
             populate_file_lists();
         }
@@ -208,6 +219,7 @@ namespace ProteoWPFSuite
             
             CB_select = cmb_loadTable1.SelectedIndex;
         }
+
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
@@ -308,14 +320,13 @@ namespace ProteoWPFSuite
             cmb_loadTable1.SelectedItem = cmb_loadTable1.Items[cb_select];
             LabelTxt = cmb_loadTable1.Items[cb_select].ToString();
             //MessageBox.Show(LabelTxt + " , " + Lollipop.file_lists.Count());
-            reload_dgvs();
-            
+
+            reload_dgvs();          
             refresh_dgvs();
         }
         #endregion GENERAL TABLE OPTIONS Private Methods
 
         #region DGV DRAG AND DROP Private Methods
-
         private void dgv_deconResults_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
@@ -360,11 +371,11 @@ namespace ProteoWPFSuite
 
         private void refresh_dgvs()
         {
-            
             foreach (System.Windows.Forms.DataGridView dgv in new List<System.Windows.Forms.DataGridView> { dgv_loadFiles1 })
             {
                 dgv.Refresh();
             }
+
             if (this.MDIParent != null) //doesn't work first time
             {
                 this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
@@ -377,11 +388,9 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_loadFiles1, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[Lollipop.file_lists.ToList().IndexOf(LabelTxt)]);
         }
-
         #endregion DGV DRAG AND DROP Private Methods
         
         #region CELL FORMATTING Private Methods
-
         private void dgv_loadFiles1_CellFormatting(object sender, System.Windows.Forms.DataGridViewCellFormattingEventArgs e)
         {
             if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
@@ -404,7 +413,6 @@ namespace ProteoWPFSuite
                 return propertyInfo.GetValue(property, null).ToString();
             }
         }
-
         #endregion CELL FORMATTING Private Methods
 
         #region ADD BUTTONS Private Methods
@@ -423,7 +431,7 @@ namespace ProteoWPFSuite
             openFileDialog.Multiselect = true;
 
             bool dr = (bool)openFileDialog.ShowDialog();
-            if (dr)
+            if (dr == true)
             {
                 if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
@@ -464,9 +472,6 @@ namespace ProteoWPFSuite
             }
             MessageBox.Show("Warning! Cannot find Thermo MSFileReader (v3.0 SP2 is preferred); a crash may result from searching this .raw file");
         }
-
-
-
         #endregion ADD BUTTONS Private Methods
 
         #region CLEAR BUTTONS Private Methods
@@ -488,14 +493,8 @@ namespace ProteoWPFSuite
         #endregion CLEAR BUTTONS Private Methods
 
         #region FULL RUN & STEP THROUGH Private Methods
-
-        private void bt_clearResults_Click(object sender, RoutedEventArgs e)
-        {
-            Sweet.lollipop = new Lollipop();
-            ClearListsTablesFigures(true);
-        }
-
-        private void bt_stepthru_Click(object sender, RoutedEventArgs e)
+        // formerly bt_stepthru_Click
+        private void btn_stepthru_Click(object sender, RoutedEventArgs e)
         {
             if (rb_standardOptions.IsChecked == true)
             {
@@ -514,7 +513,14 @@ namespace ProteoWPFSuite
             else MessageBox.Show("Method did not successfully run.", "Full Run");
         }
 
-        System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+        // formerly bt_clearResults_Click
+        private void btn_clearResults_Click(object sender, RoutedEventArgs e)
+        {
+            Sweet.lollipop = new Lollipop();
+            ClearListsTablesFigures(true);
+        }
+
+        private System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
 
         private void btn_browseSummarySaveFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -526,22 +532,11 @@ namespace ProteoWPFSuite
                 Sweet.lollipop.results_folder = temp_folder_path;
             }
         }
-
         #endregion FULL RUN & STEP THROUGH Private Methods
 
-        #region FILTERS Private Methods
-        //function moved to property get
-        /*private void tb_filter1_TextChanged(object sender, PropertyChangedEventArgs e)
-        {
-            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.SelectedItem.ToString());
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
-        }*/
-        #endregion FILTERS Private Methods
-
         #region CHANGED TABLE SELECTION Private Methods
-
-        private void bt_calibrate_Click(object sender, RoutedEventArgs e)
+        // formerly bt_calibrate_Click
+        private void btn_calibrate_Click(object sender, RoutedEventArgs e)
         {
             if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
             {
@@ -552,7 +547,8 @@ namespace ProteoWPFSuite
             MessageBox.Show(Sweet.lollipop.calibrate_files());
         }
 
-        private void bt_deconvolute_Click(object sender, RoutedEventArgs e)
+        // formerly bt_deconvolute_Click
+        private void btn_deconvolute_Click(object sender, RoutedEventArgs e)
         {
             if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
@@ -563,7 +559,8 @@ namespace ProteoWPFSuite
             MessageBox.Show(deconv_results);
         }
 
-        private void bt_topdown_search_Click(object sender, RoutedEventArgs e)
+        // formerly bt_topdown_search_Click
+        private void btn_topdown_search_Click(object sender, RoutedEventArgs e)
         {
             if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).Count() == 0)
             {
@@ -575,20 +572,26 @@ namespace ProteoWPFSuite
             }
             MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
                 (double)nud_precursor_mass_tol.Value,
-                (double)nud_product_mass_tol.Value, (DissociationType)cmbx_dissociation_types.SelectedItem));
+                (double)nud_product_mass_tol.Value, (DissociationType)cmb_dissociation_types.SelectedItem));
         }
-
         #endregion CHANGED TABLE SELECTION Private Methods
 
-        #region CHANGE ALL CELLS private methods
+        #region FILTERS Private Methods
+        //function moved to property get
+        /*private void tb_filter1_TextChanged(object sender, PropertyChangedEventArgs e)
+        {
+            int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.SelectedItem.ToString());
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
+        }*/
+        #endregion FILTERS Private Methods
 
+        #region CHANGE ALL CELLS private methods
         private void dgv_loadFiles1_CellMouseClick(object sender, System.Windows.Forms.DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
                 change_all_selected_cells(dgv_loadFiles1);
-        }
-
-        
+        } 
 
         private void change_all_selected_cells(System.Windows.Forms.DataGridView dgv)
         {
@@ -602,11 +605,9 @@ namespace ProteoWPFSuite
             }
             testdialog.Close();
         }
-
-        #endregion
+        #endregion CHANGE ALL CELLS private methods
 
         #region Cell Validation Methods
-
         private void dgv_loadFiles1_CellValidating(object sender, System.Windows.Forms.DataGridViewCellValidatingEventArgs e)
         {
             validate(dgv_loadFiles1, e);
@@ -627,9 +628,9 @@ namespace ProteoWPFSuite
                 MessageBox.Show("Please use positive integers for biological replicate labels.");
             }
         }
-
         #endregion Cell Validation Methods
 
+        #region Chemical Calibration Private Methods
         private void cb_calibrate_raw_files_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.calibrate_raw_files = (bool)cb_calibrate_raw_files.IsChecked;
@@ -640,25 +641,17 @@ namespace ProteoWPFSuite
             Sweet.lollipop.calibrate_td_files = (bool)cb_calibrate_td_files.IsChecked;
         }
 
-        private void cb_mass_cali_CheckedChanged(object sender, EventArgs e)
+        // Formerly cb_mass_cali_CheckedChanged
+        private void cb_mass_calibration_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.mass_calibration = (bool)cb_mass_cali.IsChecked;
+            Sweet.lollipop.mass_calibration = (bool)cb_mass_calibration.IsChecked;
         }
 
-        private void cb_rt_cali_CheckedChanged(object sender, EventArgs e)
+        // Formerly cb_rt_cali_CheckedChanged
+        private void cb_retention_time_calibration_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.retention_time_calibration = (bool)cb_rt_cali.IsChecked;
+            Sweet.lollipop.retention_time_calibration = (bool)cb_retention_time_calibration.IsChecked;
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            CB_select = 0;
-            //MessageBox.Show(cmb_loadTable1.SelectedItem.ToString()+cmb_loadTable1.SelectedIndex + "," + cb_select);
-        }
-
-        /*private void topbar_splitcontainer_SplitterMoved(object sender, SplitterEventArgs e)
-{
-
-}*/
+        #endregion Chemical Calibration Private Methods
     }
 }
