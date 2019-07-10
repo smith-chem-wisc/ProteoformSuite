@@ -55,7 +55,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid x:Name="grid_neucode_labeled_unlabled" >
+                <Grid x:Name="grid_neucode_labeled_unlabled" Grid.Column="0">
                     <RadioButton 
                         x:Name="rb_neucode" 
                         Content="NeuCode Labeled" 
@@ -89,14 +89,32 @@
                     <CheckBox x:Name="cb_calibrate_raw_files" Content="Write Calibrated Raw Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="cb_calibrate_raw_files_CheckedChanged" />
                     <CheckBox x:Name="cb_calibrate_td_files" Content="Calibrate Top-Down Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,31,0,0" Click="cb_calibrate_td_files_CheckedChanged" />
                     <CheckBox x:Name="cb_mass_calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,52,0,0" Click="cb_mass_calibration_CheckedChanged">
-                        <TextBlock>
-                            Calibrate Masses - <Run FontWeight="Bold">Mass Tol. (ppm)</Run>
-                        </TextBlock>
+                        <WrapPanel>
+                            <TextBlock Margin="0 0 10 0">Calibrate Masses:</TextBlock>
+                            <WindowsFormsHost Height="20" Width="50">
+                                <winform:NumericUpDown 
+                                    x:Name="nud_cali_mass_tolerance" 
+                                    ValueChanged="nud_cali_mass_tolerance_ValueChanged"
+                                    Dock="Fill" 
+                                    Minimum="0" Maximum="15" 
+                                    Increment="0.1" DecimalPlaces="1" />
+                            </WindowsFormsHost>
+                            <TextBlock FontWeight="Bold" Margin="5 0 0 0">Mass Tol. (ppm)</TextBlock>
+                        </WrapPanel>
                     </CheckBox>
                     <CheckBox x:Name="cb_retention_time_calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,73,0,10" Click="cb_retention_time_calibration_CheckedChanged">
-                        <TextBlock>
-                            Calibrate Retention Times - <Run FontWeight="Bold">RT Tol. (min)</Run>
-                        </TextBlock>
+                        <WrapPanel>
+                            <TextBlock Margin="0 0 10 0">Calibrate Retention Times:</TextBlock>
+                            <WindowsFormsHost Height="20" Width="50">
+                                <winform:NumericUpDown 
+                                    x:Name="nud_cali_rt_tolerance" 
+                                    ValueChanged="nud_cali_rt_tolerance_ValueChanged"
+                                    Dock="Fill" 
+                                    Minimum="0" Maximum="15" 
+                                    Increment="0.1" DecimalPlaces="1" />
+                            </WindowsFormsHost>
+                            <TextBlock FontWeight="Bold" Margin="5 0 0 0">RT Tol. (min)</TextBlock>
+                        </WrapPanel>
                     </CheckBox>
                 </Grid>
 
@@ -174,18 +192,31 @@
                 <GroupBox Grid.Row="2" Grid.Column="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="bt_AddFiles1" Grid.Column="0" VerticalAlignment="Center" Height="40" Margin="0 0 10 0" Click="btn_addFiles1_Click">Add</Button>
-                        <Button x:Name="bt_clearFiles1" Height="40" VerticalAlignment="Center" Margin="10 0 0 0" Grid.Column="1" Click="btn_clearFiles1_Click">Clear</Button>
-                        <GroupBox Header="Text Filter" Grid.Column="2" Margin="10,10,10,1">
+                        <Button 
+                            x:Name="btn_AddFiles1" 
+                            Grid.Column="0"  
+                            Height="40" Margin="10 0 10 0"
+                            VerticalAlignment="Center"
+                            Click="btn_addFiles1_Click"
+                            Content="Add Files..." />
+                        <Button 
+                            x:Name="btn_clearFiles1" 
+                            Grid.Column="1"
+                            Height="40" Margin="10 0 10 0"
+                            VerticalAlignment="Center" 
+                            Click="btn_clearFiles1_Click" 
+                            Content="Clear All" />
+                        <GroupBox Header="Text Filter" Grid.Column="2" Margin="10,10,10,0">
                             <StackPanel Orientation="Vertical">
                                 <TextBox Height="30" x:Name="tb_filter1" Background="#FFE6E4E4"/>
-                                <Label x:Name="lb_filter1" Height="27" Content="{Binding Path=LabelTxt, UpdateSourceTrigger=PropertyChanged}" >
-                                    <!--update as soon as property is changed-->
-                                </Label>
+                                <Label 
+                                    x:Name="lb_filter1" 
+                                    Height="27" 
+                                    Content="{Binding Path=LabelTxt, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </GroupBox>
                     </Grid>

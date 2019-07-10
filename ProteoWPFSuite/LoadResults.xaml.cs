@@ -21,7 +21,7 @@ namespace ProteoWPFSuite
         {
             InitializeComponent();
             this.DataContext = this;
-            
+
             populate_file_lists();
         }
         #endregion Public Constructor
@@ -103,8 +103,8 @@ namespace ProteoWPFSuite
             cb_calibrate_td_files.IsChecked         = Sweet.lollipop.calibrate_td_files;
             cb_mass_calibration.IsChecked           = Sweet.lollipop.mass_calibration;
             cb_retention_time_calibration.IsChecked = Sweet.lollipop.retention_time_calibration;
-            //nud_cali_mass_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_mass_tolerance);
-            //nud_cali_rt_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.cali_rt_tolerance);
+            nud_cali_mass_tolerance.Value           = Convert.ToDecimal(Sweet.lollipop.cali_mass_tolerance);
+            nud_cali_rt_tolerance.Value             = Convert.ToDecimal(Sweet.lollipop.cali_rt_tolerance);
 
             // Initialize components in "2. Set Parameters" that fall under "1. Choose Analysis->MetaMorpheus Top-Down Search"
             // p.s. Formerly named cmbx_dissociation_types
@@ -652,6 +652,17 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.retention_time_calibration = (bool)cb_retention_time_calibration.IsChecked;
         }
+
+        private void nud_cali_mass_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.cali_mass_tolerance = Convert.ToDouble(nud_cali_mass_tolerance.Value);
+        }
+
+        private void nud_cali_rt_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.cali_rt_tolerance = Convert.ToDouble(nud_cali_rt_tolerance.Value);
+        }
+
         #endregion Chemical Calibration Private Methods
     }
 }
