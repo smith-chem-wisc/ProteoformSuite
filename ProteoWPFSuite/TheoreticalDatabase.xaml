@@ -63,9 +63,10 @@
                 -->
                 <GroupBox HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="2" Header="Theoretical Database Creation">
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        
-                        <CheckBox Margin="0 10 0 0" x:Name="ckbx_Carbam" IsChecked="True" Content="Fixed Carbamidomethylation" Unchecked="ckbx_Carbam_CheckedChanged" Checked="ckbx_Carbam_CheckedChanged"></CheckBox>
-                        <CheckBox Margin="0 3 0 0" x:Name="ckbx_OxidMeth" Content="Variable Oxidized Methionine" IsChecked="True" Checked="ckbx_OxidMeth_CheckedChanged" Unchecked="ckbx_OxidMeth_CheckedChanged"></CheckBox>
+
+                        <CheckBox Margin="0 10 0 0" x:Name="cb_average_mass" Content="Average Mass" Unchecked="cb_mostAbundantMass_CheckedChanged" Checked="cb_mostAbundantMass_CheckedChanged"></CheckBox>
+                        <CheckBox Margin="0 3 0 0" x:Name="ckbx_Carbam" Content="Fixed Carbamidomethylation" Unchecked="ckbx_Carbam_CheckedChanged" Checked="ckbx_Carbam_CheckedChanged"></CheckBox>
+                        <CheckBox Margin="0 3 0 0" x:Name="ckbx_OxidMeth" Content="Variable Oxidized Methionine" Checked="ckbx_OxidMeth_CheckedChanged" Unchecked="ckbx_OxidMeth_CheckedChanged"></CheckBox>
                         <CheckBox Margin="0 3 0 0" x:Name="ckbx_Meth_Cleaved" Content="Cleaved N-Methionine" Checked="ckbx_Meth_Cleaved_CheckedChanged" Unchecked="ckbx_Meth_Cleaved_CheckedChanged" IsChecked="True"></CheckBox>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -73,7 +74,7 @@
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <WindowsFormsHost Height="25" Width="90" HorizontalAlignment="Left">
-                                <winform:NumericUpDown Value="1" ValueChanged="nUD_NumDecoyDBs_ValueChanged" Maximum="100" Minimum="0" Increment="1" x:Name="nUD_NumDecoyDBs">
+                                <winform:NumericUpDown Value="10" ValueChanged="nUD_NumDecoyDBs_ValueChanged" Maximum="100" Minimum="0" Increment="1" x:Name="nUD_NumDecoyDBs">
                                 </winform:NumericUpDown>
                             </WindowsFormsHost>
                             <Label Grid.Column="1">Number of Decoy Database</Label>
@@ -83,7 +84,7 @@
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <CheckBox x:Name="cb_useRandomSeed" Checked="cb_useRandomSeed_CheckedChanged" Unchecked="cb_useRandomSeed_CheckedChanged" Content="Use Random Seed"></CheckBox>
+                            <CheckBox x:Name="cb_useRandomSeed" IsChecked="True" Checked="cb_useRandomSeed_CheckedChanged" Unchecked="cb_useRandomSeed_CheckedChanged" Content="Use Random Seed"></CheckBox>
                             <WindowsFormsHost HorizontalAlignment="Left" Height="25" Width="60" Grid.Column="1">
                                 <winform:NumericUpDown Maximum="1000" Minimum="1" Increment="1" Value="1" x:Name="nud_randomSeed" ValueChanged="nud_randomSeed_ValueChanged">
                                 </winform:NumericUpDown>
@@ -100,22 +101,22 @@
                             </WindowsFormsHost>
                             <Label Grid.Column="1">Minimum Sequence Length</Label>
                         </Grid>
-                        <CheckBox Checked="ckbx_combineIdenticalSequences_CheckedChanged" Unchecked="ckbx_combineIdenticalSequences_CheckedChanged" Content="Combine Sequence-Identical Proteins" x:Name="ckbx_combineIdenticalSequences"></CheckBox>
-                        <CheckBox Margin="0 3 0 0" Checked="ckbx_combineTheoreticalsByMass_CheckedChanged" Unchecked="ckbx_combineTheoreticalsByMass_CheckedChanged" Content="Combine Theoretical Proteoforms By Mass" x:Name="ckbx_combineTheoreticalsByMass"></CheckBox>
+                        <CheckBox IsChecked="True" Checked="ckbx_combineIdenticalSequences_CheckedChanged" Unchecked="ckbx_combineIdenticalSequences_CheckedChanged" Content="Combine Sequence-Identical Proteins" x:Name="ckbx_combineIdenticalSequences"></CheckBox>
+                        <CheckBox IsChecked="True" Margin="0 3 0 0" Checked="ckbx_combineTheoreticalsByMass_CheckedChanged" Unchecked="ckbx_combineTheoreticalsByMass_CheckedChanged" Content="Combine Theoretical Proteoforms By Mass" x:Name="ckbx_combineTheoreticalsByMass"></CheckBox>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"></RowDefinition>
                                 <RowDefinition Height="1*"></RowDefinition>
                             </Grid.RowDefinitions>
                             <WindowsFormsHost Margin="5 0 0 0" Grid.Row="1" Height="25" Width="90" HorizontalAlignment="Left">
-                                <winform:NumericUpDown Dock="Fill" Value="3" Maximum="5" Minimum="0" Increment="1" x:Name="nUD_MaxPTMs" ValueChanged="nUD_MaxPTMs_ValueChanged" Enabled="True" Visible="True">
+                                <winform:NumericUpDown Dock="Fill" Value="2" Maximum="5" Minimum="0" Increment="1" x:Name="nUD_MaxPTMs" ValueChanged="nUD_MaxPTMs_ValueChanged" Enabled="True" Visible="True">
                                 </winform:NumericUpDown>
                             </WindowsFormsHost>
                             <Label Grid.Column="1">NumberMax Modifications per Proteoform:</Label>
                         </Grid>
                         <CheckBox Margin="0 3 0 0" x:Name="cb_limitLargePtmSets" Content="Three or More Mods of a Kind Only" IsChecked="True" Checked="cb_limitLargePtmSets_CheckedChanged" Unchecked="cb_limitLargePtmSets_CheckedChanged"></CheckBox>
                         <Label Content="Modification Types to Exclude"></Label>
-                        <TextBox x:Name="tb_modTypesToExclude" TextChanged="tb_modTypesToExclude_TextChanged"></TextBox>
+                        <TextBox x:Name="tb_modTypesToExclude" TextChanged="tb_modTypesToExclude_TextChanged">Metal,PeptideTermMod,TrypticProduct,TrypsinDigestedMod</TextBox>
                         <Button Height="50" VerticalAlignment="Stretch" Margin="0 10 0 0" x:Name="btn_Make_Databases" Content="Time to make the databases" Click="btn_Make_Databases_Click"></Button>
                     </StackPanel>
                 </GroupBox>
@@ -134,7 +135,7 @@
                 <GroupBox Header="Modification Names" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1">
                     <StackPanel VerticalAlignment="Top">
                         <Label Content="Total Theoretical Proteoforms"></Label>
-                        <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True" Foreground="#FFE0E0E0" Background="#FFF0F0F0"></TextBox>
+                        <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True" Foreground="#FFE0E0E0" Background="#FFF0F0F0">0</TextBox>
                         <Label Content="Database Displayed"></Label>
                         <ComboBox x:Name="cmbx_DisplayWhichDB" Height="25" SelectionChanged="cmbx_DisplayWhichDB_SelectedIndexChanged"></ComboBox>
                         <Label Content="Database Filter by Text"></Label>
