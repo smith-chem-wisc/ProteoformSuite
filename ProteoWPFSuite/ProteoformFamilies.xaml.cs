@@ -32,7 +32,6 @@ namespace ProteoWPFSuite
             {
                 ck_cb_only_assign_common_known_mods = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_only_assign_common_known_mods"));
-                MessageBox.Show("CK_cb_only_assign_common_known_mods" + ck_cb_only_assign_common_known_mods);
                 if (this.MDIParent==null)
                 {
                     return;
@@ -53,7 +52,6 @@ namespace ProteoWPFSuite
             {
                 ck_cb_count_adducts_as_id = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_count_adducts_as_id"));
-                MessageBox.Show("CK_cb_count_adducts_as_id" + ck_cb_count_adducts_as_id);
                 if (this.MDIParent == null)
                 {
                     return;
@@ -74,7 +72,6 @@ namespace ProteoWPFSuite
             {
                 ck_cb_geneCentric = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_geneCentric"));
-                MessageBox.Show("CK_cb_geneCentric" + ck_cb_geneCentric);
                 if (this.MDIParent == null)
                 {
                     return;
@@ -93,7 +90,6 @@ namespace ProteoWPFSuite
             {
                 ck_cb_buildAsQuantitative = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_buildAsQuantitative"));
-                MessageBox.Show("CK_cb_buildAsQuantitative" + ck_cb_buildAsQuantitative);
 
                 if (this.MDIParent == null)
                 {
@@ -114,7 +110,6 @@ namespace ProteoWPFSuite
             {
                 ck_cb_scale_nodes = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_scale_nodes"));
-                MessageBox.Show("CK_cb_scale_nodes" + ck_cb_scale_nodes);
                 if (this.MDIParent == null)
                 {
                     return;

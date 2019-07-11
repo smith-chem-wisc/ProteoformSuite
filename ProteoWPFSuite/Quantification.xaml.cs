@@ -358,6 +358,19 @@ namespace ProteoWPFSuite
             cmbx_geneLabel.SelectedIndex = 1;
             cmbx_nodeLabel.SelectedIndex = 1;
             cmbx_edgeLabel.SelectedIndex = 1;
+
+            SIGNIFICANCEBYFOLDCHANGE = true;
+            SIGNFICANCEBYPERMUTATION = false;
+            USEFOLDCHANGECUTOFF = false;
+            USEAVERAGEPERMUTATIONFOLDCHANGE = false;
+            USEBIOREPPERMUTATIONFOLDCHANGE = false;
+            USELOCALFDRCUTOFF = false;
+            QUANTIFIEDSAMPLESET = false;
+            DETECTEDSAMPLESET = false;
+            CUSTOMBACKGROUNDSET = false;
+            ALLTHEORETICALPROTEINS = false;
+            REDBORDER = false;
+            BOLDLABEL = false;
         }
 
         #endregion Constructor
