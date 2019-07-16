@@ -26,6 +26,13 @@ namespace ProteoWPFSuite
         }
         #endregion Public Constructor
 
+        #region Private Fields
+        private String _labeltxt;
+        private bool ck_rbneucode;
+        private int cb_select;
+        //private string[] cb_src;
+        #endregion Private Fields
+
         #region Public Property
         public List<DataTable> DataTables { get; private set; }
         public ProteoformSweet MDIParent { get; set; }
@@ -44,7 +51,7 @@ namespace ProteoWPFSuite
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LabelTxt"));
                 
-                //moved tb_filter1 to here
+                // moved tb_filter1 to here
                 int selected_index = Lollipop.file_lists.ToList().IndexOf(value);
                 DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
                 DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
@@ -83,13 +90,6 @@ namespace ProteoWPFSuite
             }
         }
         #endregion Public Property
-
-        #region Private Fields
-        private String _labeltxt;
-        private bool ck_rbneucode;
-        private int cb_select;
-        //private string[] cb_src;
-        #endregion Private Fields
 
         #region Public Methods
         public void InitializeParameterSet()
@@ -228,9 +228,9 @@ namespace ProteoWPFSuite
             if (rb_standardOptions.IsChecked == true) 
             {
                 // In "2. Set Parameters"
-                grid_neucode_labeled_unlabled.Visibility    = Visibility.Visible;
-                groupbox_fullrun.Visibility                 = Visibility.Visible;
-                grid_calibrate.Visibility                   = Visibility.Collapsed;
+                panel_neucode_labeled_unlabled.Visibility   = Visibility.Visible;
+                panel_fullrun.Visibility                    = Visibility.Visible;
+                panel_calibrate.Visibility                  = Visibility.Collapsed;
                 panel_minmaxcharge.Visibility               = Visibility.Collapsed;
                 panel_topdown_search.Visibility             = Visibility.Collapsed;
 
@@ -251,9 +251,9 @@ namespace ProteoWPFSuite
             else if (rb_chemicalCalibration.IsChecked == true)
             {
                 // In "2. Set Parameters"
-                grid_neucode_labeled_unlabled.Visibility    = Visibility.Visible;
-                grid_calibrate.Visibility                   = Visibility.Visible;
-                groupbox_fullrun.Visibility                 = Visibility.Collapsed;
+                panel_neucode_labeled_unlabled.Visibility   = Visibility.Visible;
+                panel_calibrate.Visibility                  = Visibility.Visible;
+                panel_fullrun.Visibility                    = Visibility.Collapsed;
                 panel_minmaxcharge.Visibility               = Visibility.Collapsed;
                 panel_topdown_search.Visibility             = Visibility.Collapsed;
 
@@ -275,9 +275,9 @@ namespace ProteoWPFSuite
             {
                 // In "2. Set Parameters"
                 panel_minmaxcharge.Visibility               = Visibility.Visible;
-                grid_neucode_labeled_unlabled.Visibility    = Visibility.Collapsed;
-                grid_calibrate.Visibility                   = Visibility.Collapsed;
-                groupbox_fullrun.Visibility                 = Visibility.Collapsed;
+                panel_neucode_labeled_unlabled.Visibility   = Visibility.Collapsed;
+                panel_calibrate.Visibility                  = Visibility.Collapsed;
+                panel_fullrun.Visibility                    = Visibility.Collapsed;
                 panel_topdown_search.Visibility             = Visibility.Collapsed;
 
                 // In "3. Load Data Using Drop Down Menu"
@@ -298,9 +298,9 @@ namespace ProteoWPFSuite
                 // In "2. Set Parameters"
                 panel_topdown_search.Visibility             = Visibility.Visible;
                 panel_minmaxcharge.Visibility               = Visibility.Collapsed;
-                grid_neucode_labeled_unlabled.Visibility    = Visibility.Collapsed;
-                grid_calibrate.Visibility                   = Visibility.Collapsed;
-                groupbox_fullrun.Visibility                 = Visibility.Collapsed;
+                panel_neucode_labeled_unlabled.Visibility   = Visibility.Collapsed;
+                panel_calibrate.Visibility                  = Visibility.Collapsed;
+                panel_fullrun.Visibility                    = Visibility.Collapsed;
 
                 // In "3. Load Data Using Drop Down Menu"
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
@@ -586,7 +586,7 @@ namespace ProteoWPFSuite
         }*/
         #endregion FILTERS Private Methods
 
-        #region CHANGE ALL CELLS private methods
+        #region CHANGE ALL CELLS Private methods
         private void dgv_loadFiles1_CellMouseClick(object sender, System.Windows.Forms.DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -605,9 +605,9 @@ namespace ProteoWPFSuite
             }
             testdialog.Close();
         }
-        #endregion CHANGE ALL CELLS private methods
+        #endregion CHANGE ALL CELLS Private methods
 
-        #region Cell Validation Methods
+        #region Cell Validation Private Methods
         private void dgv_loadFiles1_CellValidating(object sender, System.Windows.Forms.DataGridViewCellValidatingEventArgs e)
         {
             validate(dgv_loadFiles1, e);
@@ -628,7 +628,7 @@ namespace ProteoWPFSuite
                 MessageBox.Show("Please use positive integers for biological replicate labels.");
             }
         }
-        #endregion Cell Validation Methods
+        #endregion Cell Validation Private Methods
 
         #region Chemical Calibration Private Methods
         private void cb_calibrate_raw_files_CheckedChanged(object sender, RoutedEventArgs e)
@@ -662,7 +662,6 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.cali_rt_tolerance = Convert.ToDouble(nud_cali_rt_tolerance.Value);
         }
-
         #endregion Chemical Calibration Private Methods
     }
 }

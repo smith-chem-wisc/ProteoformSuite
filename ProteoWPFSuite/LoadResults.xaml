@@ -10,12 +10,17 @@
         </Grid.ColumnDefinitions>
 
         <!-- 1. Choose Analysis -->
-        <GroupBox x:Name="box_loadoptions" HorizontalAlignment="Left" Height="Auto" VerticalAlignment="Top" FontSize="12" Grid.Column="0" Grid.Row="0">
+        <GroupBox x:Name="box_loadoptions" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="Auto" FontSize="12" Padding="5">
             <GroupBox.Header>
                 <TextBlock FontWeight="Bold">1. Choose Analysis</TextBlock>
             </GroupBox.Header>
 
-            <StackPanel Margin="10 10">
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type RadioButton}">
+                        <Setter Property="Margin" Value="3" />
+                    </Style>
+                </StackPanel.Resources>
                 <RadioButton 
                     IsChecked="True" 
                     x:Name="rb_standardOptions" 
@@ -41,7 +46,7 @@
         </GroupBox>
 
         <!-- 2. Set Parameters -->
-        <GroupBox x:Name="box_parameters" HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Top" FontSize="12" Margin="10,0,0,0" Padding="0,2,0,3" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="2">
+        <GroupBox x:Name="box_parameters" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="Auto" FontSize="12" Padding="5">
             <GroupBox.Header>
                 <TextBlock FontWeight="Bold">2. Set Parameters</TextBlock>
             </GroupBox.Header>
@@ -49,48 +54,91 @@
             <Grid x:Name="calib_stand_splitContainer">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid x:Name="grid_neucode_labeled_unlabled" Grid.Column="0">
+                <StackPanel x:Name="panel_neucode_labeled_unlabled" Grid.Column="0">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type RadioButton}">
+                            <Setter Property="Margin" Value="5" />
+                        </Style>
+                    </StackPanel.Resources>
                     <RadioButton 
                         x:Name="rb_neucode" 
-                        Content="NeuCode Labeled" 
                         IsChecked="{Binding Path=CK_rbneucode,UpdateSourceTrigger=PropertyChanged}" 
                         HorizontalAlignment="Left" 
-                        VerticalAlignment="Top" 
-                        Margin="0,10,0,0" />
+                        Content="NeuCode Labeled" />
                     <RadioButton 
                         x:Name="rb_unlabeled" 
                         IsChecked="True" 
-                        Content="NeuCode Unlabeled" 
-                        HorizontalAlignment="Left" 
-                        VerticalAlignment="Top" 
-                        Margin="0,31,0,0" />
-                </Grid>
+                        HorizontalAlignment="Left"
+                        Content="NeuCode Unlabeled" />
+                </StackPanel>
 
-                <GroupBox x:Name="groupbox_fullrun" Grid.Column="1" Header="Full Run Save Options" Margin="10 0 0 0">
-                    <Grid Grid.Row="0">
+                <StackPanel x:Name="panel_fullrun" Grid.Column="2" HorizontalAlignment="Right">
+                    <Label Content="Save Options (for Full Run) :-" />
+                    <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Border VerticalAlignment="Center" Grid.Column="0" Height="30" BorderBrush="Black" BorderThickness="1 1 1 1" Margin="0 0 10 0">
-                            <TextBox x:Name="tb_resultsFolder" Background="#FFE6E4E4" MinWidth="200"/>
-                        </Border>
-                        <Button Grid.Column="1" Height="30" Padding="10 0 10 0" Click="btn_browseSummarySaveFolder_Click">Browse Results Folder</Button>
-                    </Grid>
-                </GroupBox>
+                        <Grid.RowDefinitions>
+                            <RowDefinition MinHeight="28" />
+                        </Grid.RowDefinitions>
 
-                <Grid x:Name="grid_calibrate" Grid.Column="1">
-                    <CheckBox x:Name="cb_calibrate_raw_files" Content="Write Calibrated Raw Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="cb_calibrate_raw_files_CheckedChanged" />
-                    <CheckBox x:Name="cb_calibrate_td_files" Content="Calibrate Top-Down Files" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,31,0,0" Click="cb_calibrate_td_files_CheckedChanged" />
-                    <CheckBox x:Name="cb_mass_calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,52,0,0" Click="cb_mass_calibration_CheckedChanged">
+                        <TextBox x:Name="tb_resultsFolder" Grid.Column="0" Margin="0 0 5 0" Width="300">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                    <Style.Resources>
+                                        <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                            <VisualBrush.Visual>
+                                                <Label Content="Enter results folder directory..." Foreground="Gray" Padding="5 0 0 0"/>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Style.Resources>
+                                    <Style.Triggers>
+                                        <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="Text" Value="{x:Null}">
+                                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                            <Setter Property="Background" Value="White" />
+                                            <Setter Property="Padding" Value="5 0 0 0"/>
+                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        </Trigger>
+                                        <Trigger Property="IsKeyboardFocused" Value="False">
+                                            <Setter Property="Padding" Value="5 0 0 0"/>
+                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <Button 
+                            Grid.Column="1" 
+                            Padding="5 0 5 0"              
+                            Click="btn_browseSummarySaveFolder_Click" 
+                            Content="Browse for results folder..." />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel x:Name="panel_calibrate" Grid.Column="1">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="Margin" Value="5" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <CheckBox x:Name="cb_calibrate_raw_files" Content="Write Calibrated Raw Files" Click="cb_calibrate_raw_files_CheckedChanged" />
+                    <CheckBox x:Name="cb_calibrate_td_files" Content="Calibrate Top-Down Files" Click="cb_calibrate_td_files_CheckedChanged" />
+                    <CheckBox x:Name="cb_mass_calibration" Click="cb_mass_calibration_CheckedChanged">
                         <WrapPanel>
-                            <TextBlock Margin="0 0 10 0">Calibrate Masses:</TextBlock>
+                            <TextBlock Margin="0 0 10 0" Width="138">Calibrate Masses:</TextBlock>
                             <WindowsFormsHost Height="20" Width="50">
                                 <winform:NumericUpDown 
                                     x:Name="nud_cali_mass_tolerance" 
@@ -102,7 +150,7 @@
                             <TextBlock FontWeight="Bold" Margin="5 0 0 0">Mass Tol. (ppm)</TextBlock>
                         </WrapPanel>
                     </CheckBox>
-                    <CheckBox x:Name="cb_retention_time_calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,73,0,10" Click="cb_retention_time_calibration_CheckedChanged">
+                    <CheckBox x:Name="cb_retention_time_calibration" Click="cb_retention_time_calibration_CheckedChanged">
                         <WrapPanel>
                             <TextBlock Margin="0 0 10 0">Calibrate Retention Times:</TextBlock>
                             <WindowsFormsHost Height="20" Width="50">
@@ -116,18 +164,34 @@
                             <TextBlock FontWeight="Bold" Margin="5 0 0 0">RT Tol. (min)</TextBlock>
                         </WrapPanel>
                     </CheckBox>
-                </Grid>
+                </StackPanel>
 
-                <StackPanel x:Name="panel_minmaxcharge" Orientation="Horizontal">
-                    <WindowsFormsHost Height="20" Width="50" VerticalAlignment="Top">
-                        <winform:NumericUpDown x:Name="nud_mincharge" Dock="Fill" Value="1" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
-                    </WindowsFormsHost>
-                    <Label x:Name="label_mincharge" Width="Auto" Padding="5,0,5,5">Min Charge</Label>
+                <StackPanel x:Name="panel_minmaxcharge">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Label}">
+                            <Setter Property="Margin" Value="0 0 10 0" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    <WindowsFormsHost Height="20" Width="49" VerticalAlignment="Top">
-                        <winform:NumericUpDown x:Name="nud_maxcharge" Dock="Fill" Value="60" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
-                    </WindowsFormsHost>
-                    <Label x:Name="label_maxcharge" Width="Auto" Padding="5,0,5,5">Max Charge</Label>
+                        <Label x:Name="label_mincharge" Grid.Column="0" Grid.Row="0">Min Charge:</Label>
+                        <WindowsFormsHost Grid.Column="1" Grid.Row="0" Height="20" Width="50">
+                            <winform:NumericUpDown x:Name="nud_mincharge" Dock="Fill" Value="1" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0" />
+                        </WindowsFormsHost>
+
+                        <Label x:Name="label_maxcharge" Grid.Column="0" Grid.Row="1">Max Charge:</Label>
+                        <WindowsFormsHost Grid.Column="1" Grid.Row="1" Height="20" Width="50">
+                            <winform:NumericUpDown x:Name="nud_maxcharge" Dock="Fill" Value="60" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0" />
+                        </WindowsFormsHost>
+                    </Grid>
                 </StackPanel>
 
                 <StackPanel x:Name="panel_topdown_search">
@@ -138,30 +202,36 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
 
-                        <Label x:Name="label_nud_precursor_mass_tol" Grid.Row="0" Grid.Column="0">Precursor Mass Tolerance (ppm)</Label>
-                        <WindowsFormsHost Height="20" Width="49" Grid.Row="0" Grid.Column="1">
-                            <winform:NumericUpDown x:Name="nud_precursor_mass_tol" Dock="Fill" Value="5" Minimum="1" Maximum="100" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
-                        </WindowsFormsHost>
-
-                        <Label x:Name="label_nud_product_mass_tol" Grid.Row="1" Grid.Column="0">Product Mass Tolerance (ppm)</Label>
-                        <WindowsFormsHost Height="20" Width="49" Grid.Row="1" Grid.Column="1">
-                            <winform:NumericUpDown x:Name="nud_product_mass_tol" Dock="Fill" Value="20" Minimum="1" Maximum="100" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
-                        </WindowsFormsHost>
+                        <WrapPanel Grid.Row="0" Grid.Column="0" Margin="5">
+                            <TextBlock Margin="0 0 9 0">Precursor Mass Tolerance:</TextBlock>
+                            <WindowsFormsHost Height="20" Width="49">
+                                <winform:NumericUpDown x:Name="nud_precursor_mass_tol" Dock="Fill" Value="5" Minimum="1" Maximum="100" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <TextBlock FontWeight="Bold" Margin="5 0 0 0">ppm</TextBlock>
+                        </WrapPanel>
+                        
+                        <WrapPanel Grid.Row="1" Grid.Column="0" Margin="5">
+                            <TextBlock Margin="0 0 18 0">Product Mass Tolerance:</TextBlock>
+                            <WindowsFormsHost Height="20" Width="49">
+                                <winform:NumericUpDown x:Name="nud_product_mass_tol" Dock="Fill" Value="20" Minimum="1" Maximum="100" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <TextBlock FontWeight="Bold" Margin="5 0 0 0">ppm</TextBlock>
+                        </WrapPanel>
 
                         <CheckBox 
                             x:Name="cb_carbamidomethylate" 
-                            Grid.Row="2" Grid.Column="0"
+                            Grid.Row="2"
+                            Margin="5"
                             Content="Fixed Carbamidomethyl Mod" 
                             Click="cb_calibrate_raw_files_CheckedChanged" />
+                        
+                        <Label Grid.Row="3">Dissociation Type:</Label>
                         <ComboBox 
                             x:Name="cmb_dissociation_types" 
-                            Grid.Row="3" Grid.Column="0"
-                            VerticalAlignment="Stretch" />
+                            Grid.Row="3"
+                            Margin="5" Width="80"
+                            HorizontalAlignment="Right" />
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -178,13 +248,13 @@
                     <ColumnDefinition Width="4*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="9*" />
                     <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
- 
-                <ComboBox x:Name="cmb_loadTable1" MaxHeight="40" Height="Auto" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" Margin="2 10 2 0" SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></ComboBox>
-                <WindowsFormsHost Margin="2 10 2 10"  Grid.Row="1" Grid.ColumnSpan="2" Background="#FFE4E4E4">
+
+                <ComboBox x:Name="cmb_loadTable1" Grid.Column="0" Grid.Row="0" Padding="5" Margin="2 10 2 0" SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <WindowsFormsHost Margin="2 10 2 10" Grid.Row="1" Grid.ColumnSpan="2" Background="#FFE4E4E4">
                     <winform:DataGridView x:Name="dgv_loadFiles1" CellFormatting="dgv_loadFiles1_CellFormatting" CellMouseClick="dgv_loadFiles1_CellMouseClick" CellValidating="dgv_loadFiles1_CellValidating" DragDrop="dgv_deconResults_DragDrop" DragEnter="dgv_deconResults_DragEnter">
                     </winform:DataGridView>
                 </WindowsFormsHost>
@@ -196,27 +266,56 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
+                        
                         <Button 
                             x:Name="btn_AddFiles1" 
                             Grid.Column="0"  
-                            Height="40" Margin="10 0 10 0"
+                            Height="40" Margin="5"
                             VerticalAlignment="Center"
                             Click="btn_addFiles1_Click"
                             Content="Add Files..." />
+                        
                         <Button 
                             x:Name="btn_clearFiles1" 
                             Grid.Column="1"
-                            Height="40" Margin="10 0 10 0"
+                            Height="40" Margin="5"
                             VerticalAlignment="Center" 
                             Click="btn_clearFiles1_Click" 
                             Content="Clear All" />
-                        <GroupBox Header="Text Filter" Grid.Column="2" Margin="10,10,10,0">
+                        
+                        <GroupBox Header="Enter filter for :-" Grid.Column="2">
                             <StackPanel Orientation="Vertical">
-                                <TextBox Height="30" x:Name="tb_filter1" Background="#FFE6E4E4"/>
-                                <Label 
-                                    x:Name="lb_filter1" 
-                                    Height="27" 
-                                    Content="{Binding Path=LabelTxt, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label x:Name="lb_filter1" Content="{Binding Path=LabelTxt, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox x:Name="tb_filter1" Height="28">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                            <Style.Resources>
+                                                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                    <VisualBrush.Visual>
+                                                        <Label Content="Enter filter keyword..." Foreground="Gray" Padding="5 0 0 0"/>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Style.Resources>
+                                            <Style.Triggers>
+                                                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                                </Trigger>
+                                                <Trigger Property="Text" Value="{x:Null}">
+                                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                                </Trigger>
+                                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                                    <Setter Property="Background" Value="White" />
+                                                    <Setter Property="Padding" Value="5 0 0 0"/>
+                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                </Trigger>
+                                                <Trigger Property="IsKeyboardFocused" Value="False">
+                                                    <Setter Property="Padding" Value="5 0 0 0"/>
+                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
                             </StackPanel>
                         </GroupBox>
                     </Grid>
