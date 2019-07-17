@@ -58,8 +58,12 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             if (full_run)
             {
-                shift_masses(); //check for shifts from presets (need to have peaks formed first)
-                RunTheGamut(false);
+                List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
+                if(peaks_to_shift.Count > 0)
+                {
+                    shift_masses(); //check for shifts from presets (need to have peaks formed first)
+                    RunTheGamut(false);
+                }
             }
             FillTablesAndCharts();
         }

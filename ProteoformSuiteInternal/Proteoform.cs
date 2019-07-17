@@ -182,14 +182,14 @@ namespace ProteoformSuiteInternal
             }
 
 
-            if (r.represented_ptmset == null)
-            {
-                r.represented_ptmset = best_loss == null ? best_addition : best_loss;
-                if (r.RelationType == ProteoformComparison.ExperimentalExperimental)
-                {
-                    r.DeltaMass *= sign;
-                }
-            }
+            //if (r.represented_ptmset == null)
+            //{
+            //    r.represented_ptmset = best_loss == null ? best_addition : best_loss;
+            //    if (r.RelationType == ProteoformComparison.ExperimentalExperimental)
+            //    {
+            //        r.DeltaMass *= sign;
+            //    }
+            //}
 
             return with_mod_change;
         }
@@ -362,74 +362,66 @@ namespace ProteoformSuiteInternal
                 }
 
             }
+
             else
             {
+                //check if assign 
+                int begin = this.begin;
+                int end = this.end;
 
-                if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && !theoretical_base.topdown_theoretical && (e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
+                PtmSet ptm_set = set;
+                List<Ptm> remove = new List<Ptm>();
+                //do retention of M first
+                foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "AminoAcid"))
                 {
-                    if(Sweet.lollipop.remove_bad_connections)
-                    {
-                        r.Accepted = false;
-                    }
-                    //do nothing - don't assign it. top-down theoretical trumps.
+                    begin--;
+                    remove.Add(mod);
                 }
-                else if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && theoretical_base.topdown_theoretical && !(e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
+
+                foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "Missing"))
                 {
-                    e.linked_proteoform_references = null;
-                    if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity)
+                    if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() ==
+                        mod.modification.Target.ToString())
                     {
-                        List<AmbiguousIdentification> remove = e.ambiguous_identifications.Where(id => !(id.theoretical_base.topdown_theoretical)).ToList();
-                        foreach (var x in remove)
-                        {
-                            x.relation.Accepted = false;
-                            e.ambiguous_identifications.Remove(x);
-                        }
+                        begin++;
+                        remove.Add(mod); //dont have in ptmset --> change the begin & end
                     }
-
-                    //reassign the topdown-based ID
-                    assign_pf_identity(e, set, r, theoretical_base);
-                }
-                else
-                {
-                    //check if assign 
-                    int begin = this.begin;
-                    int end = this.end;
-
-                    PtmSet ptm_set = set;
-                    List<Ptm> remove = new List<Ptm>();
-                    //do retention of M first
-                    foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "AminoAcid"))
+                    else if (theoretical_base.sequence[this.end - this.begin].ToString() ==
+                             mod.modification.Target.ToString())
                     {
-                        begin--;
+                        end--;
                         remove.Add(mod);
                     }
+                }
 
-                    foreach (var mod in set.ptm_combination.Where(m => m.modification.ModificationType == "Missing"))
+                foreach (var ptm in remove)
+                {
+                    ptm_set.ptm_combination.Remove(ptm);
+                }
+
+                ptm_set = new PtmSet(ptm_set.ptm_combination);
+
+                if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
+                    theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                    || e.begin != begin || e.end != end || !e.ptm_set.same_ptmset(ptm_set, true))
+                {
+                    if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && !theoretical_base.topdown_theoretical && (e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
                     {
-                        if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() ==
-                            mod.modification.Target.ToString())
+                        if (Sweet.lollipop.remove_bad_connections)
                         {
-                            begin++;
-                            remove.Add(mod); //dont have in ptmset --> change the begin & end
+                            r.Accepted = false;
                         }
-                        else if (theoretical_base.sequence[this.end - this.begin].ToString() ==
-                                 mod.modification.Target.ToString())
-                        {
-                            end--;
-                            remove.Add(mod);
-                        }
-                    }
 
-                    foreach (var ptm in remove)
+                        //do nothing - don't assign it. top-down theoretical trumps.
+                    }
+                    else if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && theoretical_base.topdown_theoretical && !(e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
                     {
-                        ptm_set.ptm_combination.Remove(ptm);
+                        e.linked_proteoform_references = null;
+
+                             //reassign the topdown-based ID
+                        assign_pf_identity(e, set, r, theoretical_base);
                     }
-
-                    ptm_set = new PtmSet(ptm_set.ptm_combination);
-
-                    if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
-                        theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                        || e.begin != begin || e.end != end || !e.ptm_set.same_ptmset(ptm_set, true))
+                    else
                     {
                         AmbiguousIdentification new_id =
                             new AmbiguousIdentification(begin, end, ptm_set, r, theoretical_base);
@@ -448,9 +440,28 @@ namespace ProteoformSuiteInternal
                 }
             }
 
+
             if (this as ExperimentalProteoform != null &&
                 (this as ExperimentalProteoform).ambiguous_identifications.Count > 0)
             {
+                if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && theoretical_base.topdown_theoretical)
+                {
+                    List<AmbiguousIdentification> to_remove = e.ambiguous_identifications.Where(id => !(id.theoretical_base.topdown_theoretical) &&
+                    (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
+                                 id.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                                 || e.begin != id.begin || e.end != id.end ||
+                                 !e.ptm_set.same_ptmset(id.set, true))).ToList();
+                    foreach (var x in to_remove)
+                    {
+                        e.ambiguous_identifications.Remove(x);
+                        if (Sweet.lollipop.remove_bad_connections)
+                        {
+                            x.relation.Accepted = false;
+                        }
+                    }
+                }
+
+
                 //just do it for the first ambiguous ID or else adds LOTS of computation time
                 int iterations = Sweet.lollipop.only_first_ambiguous_id
                     ? 1

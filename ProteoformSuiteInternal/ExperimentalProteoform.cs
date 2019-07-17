@@ -60,7 +60,6 @@ namespace ProteoformSuiteInternal
         public string uniprot_mods { get; set; }
 
         public bool novel_mods { get; set; }
-
         //if ambiguous id's store here
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<AmbiguousIdentification> ambiguous_identifications { get; set; } = new List<AmbiguousIdentification>();

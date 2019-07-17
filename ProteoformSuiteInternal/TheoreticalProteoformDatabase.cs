@@ -94,6 +94,7 @@ namespace ProteoformSuiteInternal
             possible_ptmset_dictionary = make_ptmset_dictionary();
 
             //read in bottom-up PSMs
+            bottom_up_psm_by_accession.Clear();
             foreach (var file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
             {
                 var bottom_up_psms = Sweet.lollipop.bottomupReader.ReadTDFile(file);

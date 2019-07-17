@@ -21,6 +21,7 @@ namespace ProteoformSuiteInternal
             this.end = end;
             this.relation = relation;
             this.theoretical_base = theoretical_base;
+            this.set = set;
         }
 
     }

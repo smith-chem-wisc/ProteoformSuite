@@ -990,8 +990,10 @@ namespace ProteoformSuiteInternal
         public void construct_target_and_decoy_families()
         {
             //in case any were unaccepted before
-            Parallel.ForEach(et_peaks, p => p.grouped_relations.Select(r => r.Accepted = p.Accepted));
-            Parallel.ForEach(ee_peaks, p => p.grouped_relations.Select(r => r.Accepted = p.Accepted));
+            Parallel.ForEach(et_relations, r => r.Accepted = r.peak != null && r.peak.Accepted);
+            Parallel.ForEach(ee_relations, r => r.Accepted = r.peak != null && r.peak.Accepted);
+            Parallel.ForEach(ed_relations.Values.SelectMany(r => r), r => r.Accepted = r.peak != null && r.peak.Accepted);
+            Parallel.ForEach(ef_relations.Values.SelectMany(r => r), r => r.Accepted = r.peak != null && r.peak.Accepted);
 
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
@@ -1000,6 +1002,7 @@ namespace ProteoformSuiteInternal
             {
                 clear_all_families();
                 target_proteoform_community.construct_families();
+                foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
             }
         }
 

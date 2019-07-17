@@ -151,7 +151,8 @@ namespace ProteoformSuiteInternal
                     && e.ptm_set.ptm_combination.Any(m =>
                         m.modification.OriginalId == "Sulfate Adduct"
                         || m.modification.OriginalId == "Acetone Artifact (Unconfirmed)"
-                        || m.modification.OriginalId == "Hydrogen Dodecyl Sulfate")
+                        || m.modification.OriginalId == "Hydrogen Dodecyl Sulfate"
+                        || UnlocalizedModification.LookUpId(m.modification) == "Oxidation")
                     && experimental_proteoforms.Any(l =>
                         l.linked_proteoform_references != null
                         && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
@@ -161,7 +162,8 @@ namespace ProteoformSuiteInternal
                                 p.modification.ModificationType != "Deconvolution Error"
                                 && p.modification.OriginalId != "Sulfate Adduct"
                                 && p.modification.OriginalId != "Acetone Artifact (Unconfirmed)"
-                                && p.modification.OriginalId != "Hydrogen Dodecyl Sulfate")
+                                && p.modification.OriginalId != "Hydrogen Dodecyl Sulfate"
+                                && UnlocalizedModification.LookUpId(p.modification) != "Oxidation")
                             == 0
                         );
                 if (e as TopDownProteoform != null) { (e as TopDownProteoform).set_correct_id(); }
