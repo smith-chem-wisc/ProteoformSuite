@@ -1576,13 +1576,13 @@ namespace ProteoformSuiteInternal
             Sweet.lollipop.topdown_proteoforms.Clear();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
-                List<TheoreticalProteoform> topdown_theoreticals = community.theoretical_proteoforms.Where(t => t.topdown_theoretical).ToList();
+                List<TheoreticalProteoform> topdown_theoreticals = community.theoretical_proteoforms.Where(t => t.new_topdown_proteoform).ToList();
                 community.theoretical_proteoforms = community.theoretical_proteoforms.Except(topdown_theoreticals).ToArray();
                 if (theoretical_database.theoreticals_by_accession.ContainsKey(community.community_number))
                 {
                     Parallel.ForEach(theoretical_database.theoreticals_by_accession[community.community_number], list =>
                     {
-                        list.Value.RemoveAll(t => t.topdown_theoretical);
+                        list.Value.RemoveAll(t => t.new_topdown_proteoform);
                     });
                 }
             }

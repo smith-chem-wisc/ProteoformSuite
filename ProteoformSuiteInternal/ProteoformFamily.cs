@@ -98,6 +98,7 @@ namespace ProteoformSuiteInternal
                                 t.First().ExpandedProteinList, topdown.modified_mass, topdown.lysine_count,
                                 topdown.topdown_ptm_set, true, false, null);
                         theoretical.topdown_theoretical = true;
+                        theoretical.new_topdown_proteoform = true;
                         theoretical.begin = topdown.topdown_begin;
                         theoretical.end = topdown.topdown_end;
                         topdown.begin = topdown.topdown_begin;

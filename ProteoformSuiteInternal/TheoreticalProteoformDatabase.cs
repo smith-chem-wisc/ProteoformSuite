@@ -397,7 +397,6 @@ namespace ProteoformSuiteInternal
                             decoy_number < 0,
                             check_contaminants,
                             theoretical_proteins);
-                    t.new_topdown_proteoform = prot.topdown_protein;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
                 }
@@ -602,6 +601,8 @@ namespace ProteoformSuiteInternal
                     TheoreticalProteoform t = new TheoreticalProteoform(p.accession + "_DECOY_" + decoyNumber,
                         p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'),
                         p.ptm_set, false, p.contaminant, theoretical_proteins);
+                    t.topdown_theoretical = p.topdown_theoretical;
+                    t.new_topdown_proteoform = p.new_topdown_proteoform;
                     decoy_proteoforms.Add(t);
                 }
 

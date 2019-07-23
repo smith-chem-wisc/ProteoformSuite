@@ -99,7 +99,6 @@ namespace ProteoformSuiteGUI
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
-
         }
 
         public void FillTablesAndCharts()

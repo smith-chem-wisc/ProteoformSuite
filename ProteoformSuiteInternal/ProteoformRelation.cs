@@ -139,9 +139,9 @@ namespace ProteoformSuiteInternal
 
                     candidate_sets = candidate_sets.Distinct().ToList();
                 }
-                else
+                else 
                 {
-                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
+                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
                 }
 
                 if (candidate_sets != null)

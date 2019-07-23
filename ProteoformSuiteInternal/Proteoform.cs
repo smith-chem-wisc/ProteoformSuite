@@ -418,7 +418,7 @@ namespace ProteoformSuiteInternal
                     {
                         e.linked_proteoform_references = null;
 
-                             //reassign the topdown-based ID
+                        //reassign the topdown-based ID
                         assign_pf_identity(e, set, r, theoretical_base);
                     }
                     else
