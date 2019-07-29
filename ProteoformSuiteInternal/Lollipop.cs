@@ -958,8 +958,10 @@ namespace ProteoformSuiteInternal
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
         public bool identify_from_td_nodes = false;
-        public bool topdown_theoretical_reduce_ambiguity = true;
-        public bool remove_bad_connections = true;
+        public bool topdown_theoretical_reduce_ambiguity = false;
+        public bool remove_bad_connections = false;
+        public double id_ppm_tolerance = 10.0;
+        public bool id_use_ppm_tolerance = false;
 
         public static string[] node_positioning = new string[]
         {
@@ -1536,9 +1538,10 @@ namespace ProteoformSuiteInternal
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
-                    if (p as TopDownProteoform == null) p.gene_name = null;
+                    p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
+                 //   p.relation_to_id = null;
                 }
 
                 foreach (Proteoform p in community.theoretical_proteoforms)
@@ -1564,7 +1567,8 @@ namespace ProteoformSuiteInternal
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
-                    if (p as TopDownProteoform == null) p.gene_name = null;
+                    p.gene_name = null;
+                  //  p.relation_to_id = null;
                     p.begin = 0;
                     p.end = 0;
                 }

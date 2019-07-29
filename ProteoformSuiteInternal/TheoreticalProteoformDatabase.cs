@@ -414,7 +414,7 @@ namespace ProteoformSuiteInternal
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
                 if (candidate_theoreticals.Count > 0)
                 {
-                    topdown.gene_name = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
+                    topdown.topdown_geneName = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
                         int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);

@@ -482,7 +482,7 @@ namespace ProteoformSuiteInternal
                     string.Join(", ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + (e.ambiguous_identifications.Count > 0
                         ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.theoretical_base as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())))
                         : ""),
-                    e.ptm_set.ptm_description  + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.set.ptm_description)) : ""),
+                    e.ptm_set.ptm_description  + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.ptm_set.ptm_description)) : ""),
                     e.begin + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.begin + " to " + p.end)) : ""),
                     e.get_sequence(e.linked_proteoform_references.First() as TheoreticalProteoform, e.begin, e.end)
                     + (e.ambiguous_identifications.Count > 0
@@ -492,7 +492,7 @@ namespace ProteoformSuiteInternal
                     e.novel_mods,
                     e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString()
                     + (e.ambiguous_identifications.Count > 0
-                    ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.set, i.begin, i.end).ToString()))
+                    ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.ptm_set, i.begin, i.end).ToString()))
                     : ""),
                     e.modified_mass,
                     e.agg_rt,
@@ -626,6 +626,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Family ID", typeof(string));
             results.Columns.Add("Correct ID", typeof(bool));
             results.Columns.Add("Accepted", typeof(bool));
+            results.Columns.Add("Family", typeof(string));
 
             foreach (TopDownProteoform td in Sweet.lollipop.topdown_proteoforms)
             {
@@ -650,12 +651,12 @@ namespace ProteoformSuiteInternal
                         ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.get_sequence(i.theoretical_base as TheoreticalProteoform, i.begin, i.end)))
                         : ""),
                     td.sequence,
-                    td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_description + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.set.ptm_description)) : ""),
+                    td.linked_proteoform_references == null ? "N/A" : td.ptm_set.ptm_description + (td.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => p.ptm_set.ptm_description)) : ""),
                     td.topdown_ptm_description,
                     td.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)),
                     td.linked_proteoform_references == null ? "N/A" : td.calculate_mass_error(td.linked_proteoform_references.First() as TheoreticalProteoform, td.ptm_set, td.begin, td.end).ToString()
                                                                       + (td.ambiguous_identifications.Count > 0
-                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.set, i.begin, i.end).ToString()))
+                                                                          ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.ptm_set, i.begin, i.end).ToString()))
                                                                           : ""),
                     td.modified_mass - td.theoretical_mass,
                     td.modified_mass,
@@ -664,10 +665,11 @@ namespace ProteoformSuiteInternal
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).gene_name.primary + (td.ambiguous_identifications.Count > 0
                                                                           ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).gene_name.primary))
                                                                           : ""),
-                    td.gene_name != null ? td.gene_name.primary : "",
+                    td.topdown_geneName != null ? td.topdown_geneName.primary : "",
                     td.family == null ? "N/A" : td.family.family_id.ToString(),
                     td.correct_id,
-                    td.accepted
+                    td.accepted,
+                    td.family != null ? td.family.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() > 1 ? "Ambiguous" : "Identified" : ""
                     );
             }
 

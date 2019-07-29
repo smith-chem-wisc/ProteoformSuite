@@ -278,7 +278,7 @@ namespace Test
             ProteoformCommunity community = TestProteoformFamilies.construct_community_with_td_proteoforms(-1);
             Sweet.lollipop.target_proteoform_community = community;
             TopDownProteoform td = ConstructorsForTesting.TopDownProteoform("ASDF", 1000, 50);
-            td.gene_name = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
+            td.topdown_geneName = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
             ProteoformFamily fam = new ProteoformFamily(td);
             fam.construct_family();
             CytoscapeScript.write_cytoscape_script(new List<ProteoformFamily>() { fam }, new List<ProteoformFamily>() { fam },

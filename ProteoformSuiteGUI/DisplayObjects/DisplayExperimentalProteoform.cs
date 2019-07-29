@@ -92,7 +92,7 @@ namespace ProteoformSuiteGUI
         public string ptm_description
         {
             get { return (e.linked_proteoform_references != null ? e.ptm_set.ptm_description : "" ) + 
-                         (e.ambiguous_identifications.Count > 0 ? " | " +  String.Join(" | ", e.ambiguous_identifications.Select(p => p.set.ptm_description)) : "" ); }
+                         (e.ambiguous_identifications.Count > 0 ? " | " +  String.Join(" | ", e.ambiguous_identifications.Select(p => p.ptm_set.ptm_description)) : "" ); }
         } 
 
         public string uniprot_mods
@@ -133,7 +133,7 @@ namespace ProteoformSuiteGUI
             {
                 return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count.ToString() : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.set, i.begin, i.end).Count.ToString()))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Count.ToString()))
                            : "");
             }
         }
@@ -145,8 +145,8 @@ namespace ProteoformSuiteGUI
                 return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
                            String.Join(", ", Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.set, i.begin, i.end).Count(p => p.ptm_list.Count > 0) == 0 ?
-                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.set, i.begin, i.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Count(p => p.ptm_list.Count > 0) == 0 ?
+                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
                            : "");
             }
         }
@@ -225,7 +225,7 @@ namespace ProteoformSuiteGUI
         {
             get { return (e.linked_proteoform_references != null ? e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString() : "N/A")
                          + (e.ambiguous_identifications.Count > 0
-                             ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.set, i.begin, i.end).ToString()))
+                             ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.ptm_set, i.begin, i.end).ToString()))
                              : ""); }
         }
 

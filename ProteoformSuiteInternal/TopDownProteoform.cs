@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
                     string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
             }
         }
-
+        public GeneName topdown_geneName { get; set; }
         public string topdown_ptm_description { get; set; }
         public ExperimentalProteoform matching_experimental { get; set; } //corresponding experimental
         public bool correct_id { get; set; } //true if the ID given by ProteoformSuite matches ID from topdown
@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
             this.root = t.root;
             this.name = t.name;
             this.ptm_set = new PtmSet(t.ptm_set.ptm_combination);
-            this.topdown_ptm_set = t.topdown_ptm_set;
+            this.topdown_ptm_set = new PtmSet(t.topdown_ptm_set.ptm_combination);
             this.uniprot_id = t.uniprot_id;
             this.sequence = t.sequence;
             this.begin = t.begin;
@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
             this.is_target = t.is_target;
             this.topdown_end = t.topdown_end;
             this.topdown_begin = t.topdown_begin;
-            this.gene_name = t.gene_name;
+            this.topdown_geneName = t.topdown_geneName;
         }
 
         public void calculate_td_properties()

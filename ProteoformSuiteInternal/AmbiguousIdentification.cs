@@ -11,17 +11,19 @@ namespace ProteoformSuiteInternal
     {
         public int begin;
         public int end;
-        public PtmSet set = new PtmSet(new List<Ptm>());
+        public PtmSet ptm_set = new PtmSet(new List<Ptm>());
         public ProteoformRelation relation;
         public TheoreticalProteoform theoretical_base;
+        public GeneName gene_name { get; set; }
 
-        public AmbiguousIdentification(int begin, int end, PtmSet set, ProteoformRelation relation, TheoreticalProteoform theoretical_base)
+
+        public AmbiguousIdentification(int begin, int end, PtmSet ptm_set, ProteoformRelation relation, TheoreticalProteoform theoretical_base)
         {
             this.begin = begin;
             this.end = end;
             this.relation = relation;
             this.theoretical_base = theoretical_base;
-            this.set = set;
+            this.ptm_set = ptm_set;
         }
 
     }

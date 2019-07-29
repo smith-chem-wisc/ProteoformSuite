@@ -125,43 +125,36 @@ namespace ProteoformSuiteInternal
         }
 
         public void RetentionTimeCalibrateTopDownHits(List<SpectrumMatch> topdown_hits)
+
         {
             all_topdown_hits = topdown_hits.Where(h => h.score > 0).ToList();
             high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
             List<string> filenames_orderbydescendingUniquePFRs = high_scoring_topdown_hits.Select(h => h.filename).Distinct().OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count()).ThenByDescending(f => high_scoring_topdown_hits.Count(h => h.filename == f)).ToList();
             if (filenames_orderbydescendingUniquePFRs.Count == 1) return; //only if more than 1 file.
 
-            List<string> filenames_order_by_descending_overlap_with_most_hits_file =
-                high_scoring_topdown_hits.Select(h => h.filename).Distinct().OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count(f2 => high_scoring_topdown_hits.Any(h => h.filename == filenames_orderbydescendingUniquePFRs.First() && h.pfr_accession == f2))).ToList();
-            
-            List<string> calibrated_filenames = new List<string>() { filenames_orderbydescendingUniquePFRs[0] };
-
             //calibrate everything to file with most unique hits.
             List<SpectrumMatch> calibrated_RT_topdown_hits =
                 high_scoring_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs.First()).ToList();
 
-            for (int i = 1; i < filenames_order_by_descending_overlap_with_most_hits_file.Count; i++)
+            for (int i = 1; i < filenames_orderbydescendingUniquePFRs.Count; i++)
             {
                 var myMs1DataPoints = new List<(double[] xValue, double yValue)>();
-                List<string> PFRs = high_scoring_topdown_hits.Where(h => h.filename == filenames_order_by_descending_overlap_with_most_hits_file[i]).Select(h => h.pfr_accession).Distinct().ToList();
-
-                string filename_with_most_overlap = calibrated_filenames.OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count(f2 => high_scoring_topdown_hits.Any(h => h.filename == filenames_orderbydescendingUniquePFRs.First() && h.pfr_accession == f2))).First();
-
+                List<string> PFRs = high_scoring_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]).Select(h => h.pfr_accession).Distinct().ToList();
                 foreach (var PFR in PFRs)
                 {
                     double minRTNewFile = high_scoring_topdown_hits
-                        .Where(h => h.filename == filenames_order_by_descending_overlap_with_most_hits_file[i] && h.pfr_accession == PFR)
+                        .Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i] && h.pfr_accession == PFR)
                         .Min(h => h.ms2_retention_time);
                     var calibratedRTs = calibrated_RT_topdown_hits
-                        .Where(h => h.pfr_accession == PFR && h.filename == filename_with_most_overlap);
+                        .Where(h => h.pfr_accession == PFR);
                     if (calibratedRTs.Count() == 0) continue;
 
                     var calibratedminRT = calibratedRTs.Min(h => h.calibrated_retention_time);
 
-                    myMs1DataPoints.Add((new double[] { minRTNewFile }, minRTNewFile - calibratedminRT));
+                    myMs1DataPoints.Add((new double[] { minRTNewFile}, minRTNewFile - calibratedminRT));
                 }
                 var ms1Model = GetRandomForestModel(myMs1DataPoints);
-                foreach (SpectrumMatch hit in all_topdown_hits.Where(h => h.filename == filenames_order_by_descending_overlap_with_most_hits_file[i]))
+                foreach (SpectrumMatch hit in all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]))
                 {
                     hit.calibrated_retention_time = hit.ms2_retention_time - ms1Model.Predict(new double[] { hit.ms2_retention_time });
                     if (hit.score > 40)
@@ -169,7 +162,6 @@ namespace ProteoformSuiteInternal
                         calibrated_RT_topdown_hits.Add(hit); //use for subsequent rounds
                     }
                 }
-                calibrated_filenames.Add(filenames_order_by_descending_overlap_with_most_hits_file[i]);
             }
         }
 

@@ -326,7 +326,7 @@ namespace Test
                 e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 1);
@@ -337,7 +337,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl; acetyl", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl; acetyl", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 1);
@@ -347,7 +347,7 @@ namespace Test
                 e2.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e2.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e2.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e2.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e2.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e1.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e1.begin, 1);
@@ -357,7 +357,7 @@ namespace Test
                 e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e1.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() {fam};
             Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
@@ -440,7 +440,7 @@ namespace Test
                 e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 1);
@@ -451,7 +451,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl; acetyl", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl; acetyl", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 1);
@@ -461,7 +461,7 @@ namespace Test
                 e2.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e2.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e2.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e2.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e2.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e1.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e1.begin, 1);
@@ -471,7 +471,7 @@ namespace Test
                 e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e1.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
             Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
@@ -557,7 +557,7 @@ namespace Test
             Assert.AreEqual("gene2", e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(3, e1.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual("gene1", e3.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
@@ -567,7 +567,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(3, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
 
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
@@ -578,7 +578,7 @@ namespace Test
             Assert.AreEqual("gene2", e4.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(3, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 2);
@@ -661,7 +661,7 @@ namespace Test
             Assert.AreEqual("gene2", e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(3, e1.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual(1, e3.ambiguous_identifications.Count);
             Assert.AreEqual("gene1", e3.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
@@ -671,7 +671,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(3, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
 
             Assert.IsNull( e4.gene_name);
@@ -757,7 +757,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 1);
@@ -767,7 +767,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 1);
@@ -776,7 +776,7 @@ namespace Test
             Assert.AreEqual("gene1", e2.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e2.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e2.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl; acetyl", e2.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl; acetyl", e2.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e1.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e1.begin, 1);
@@ -785,7 +785,7 @@ namespace Test
             Assert.AreEqual("gene2", e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e1.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
-            Assert.AreEqual("acetyl; acetyl", e1.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("acetyl; acetyl", e1.ambiguous_identifications.First().ptm_set.ptm_description);
 
         }
 
@@ -862,7 +862,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(3, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 4);
@@ -872,7 +872,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(4, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 2);
@@ -960,7 +960,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(2, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(11, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 2);
@@ -970,7 +970,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(2, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(10, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 2);
@@ -1069,7 +1069,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(2, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(11, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 2);
@@ -1160,7 +1160,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(1, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 1);
@@ -1170,7 +1170,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e2.begin, 2);
@@ -1254,7 +1254,7 @@ namespace Test
             Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(2, e3.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
 
             Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
             Assert.AreEqual(e4.begin, 1);
@@ -1264,7 +1264,7 @@ namespace Test
             Assert.AreEqual(1, e4.ambiguous_identifications.Count);
             Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
             Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
-            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().set.ptm_description);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
 
         }
 

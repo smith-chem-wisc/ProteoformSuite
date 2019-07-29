@@ -606,8 +606,8 @@ namespace Test
             Assert.AreEqual(26, Sweet.lollipop.theoretical_database.expanded_proteins.Length); //should have new topdown protein added
             Assert.AreEqual(1, Sweet.lollipop.theoretical_database.expanded_proteins.Count(p => p.topdown_protein)); //only add 1 new sequence
             Assert.AreEqual("VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA", Sweet.lollipop.theoretical_database.expanded_proteins.Where(p => p.topdown_protein).First().BaseSequence);
-            List<TheoreticalProteoform> td_theoreticals = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.topdown_theoretical).OrderBy(p => p.accession).ToList();
-            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => !p.topdown_theoretical && p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_set.ptm_combination.Count == 0));
+            List<TheoreticalProteoform> td_theoreticals = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(p => p.new_topdown_proteoform).OrderBy(p => p.accession).ToList();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(p => !p.new_topdown_proteoform && p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_set.ptm_combination.Count == 0));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_set.ptm_combination.Count == 0));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA" && p.ptm_set.ptm_description == "Acetylation"));
             Assert.AreEqual(1, td_theoreticals.Count(p => p.sequence == "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR" && p.ptm_set.ptm_description == "Acetylation"));

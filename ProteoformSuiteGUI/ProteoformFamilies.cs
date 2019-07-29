@@ -77,6 +77,8 @@ namespace ProteoformSuiteGUI
             cb_only_first_ambiguous_ID.Checked = Sweet.lollipop.only_first_ambiguous_id;
             cb_td_ID_reduce_ambiguity.Checked = Sweet.lollipop.topdown_theoretical_reduce_ambiguity;
             cb_remove_bad_connections.Checked = Sweet.lollipop.remove_bad_connections;
+            nUD_notch_tolerance.Value = (decimal)Sweet.lollipop.id_ppm_tolerance;
+            cb_ppm_tolerance.Checked = Sweet.lollipop.id_use_ppm_tolerance;
 
             initialize_every_time();
         }
@@ -410,6 +412,16 @@ namespace ProteoformSuiteGUI
         private void cb_remove_bad_connections_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.remove_bad_connections = cb_remove_bad_connections.Checked;
+        }
+
+        private void nUD_notch_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.id_ppm_tolerance = (double)nUD_notch_tolerance.Value;
+        }
+
+        private void cb_ppm_tolerance_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.id_use_ppm_tolerance = cb_ppm_tolerance.Checked;
         }
     }
 }

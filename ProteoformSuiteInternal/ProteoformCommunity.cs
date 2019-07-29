@@ -83,7 +83,8 @@ namespace ProteoformSuiteInternal
                         pf1.ptm_set = null;
                         pf1.linked_proteoform_references = null;
                         pf1.ambiguous_identifications.Clear();
-                        if (pf1 as TopDownProteoform == null) pf1.gene_name = null;
+                        pf1.gene_name = null;
+                    //    pf1.relation_to_id = null;
                     }
 
                     if (relation_type == ProteoformComparison.ExperimentalTheoretical ||
@@ -141,7 +142,15 @@ namespace ProteoformSuiteInternal
                 (from pf1 in pfs1
                  from pf2 in pf1.candidate_relatives
                  select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, current_directory)).ToList();
- 
+
+            if (relation_type == ProteoformComparison.ExperimentalExperimental ||
+                        relation_type == ProteoformComparison.ExperimentalFalse)
+            {
+                if (Sweet.lollipop.ee_use_notch)
+                {
+                    relations = relations.Where(r => r.candidate_ptmset != null).ToList();
+                }
+            }
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }
 
@@ -163,7 +172,6 @@ namespace ProteoformSuiteInternal
                     && pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference
-                    && in_notch(pf1, pf2_with_allowed_lysines)
                     && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;
             }
             else if (relation_type == ProteoformComparison.ExperimentalFalse)
@@ -173,7 +181,6 @@ namespace ProteoformSuiteInternal
                     pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
                     && pf1 != pf2_with_allowed_lysines
                     && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
-                    && in_notch(pf1, pf2_with_allowed_lysines)
                     && (Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) > 10)
                     && (!Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) < Sweet.lollipop.ee_max_RetentionTime_difference);
             }
@@ -183,34 +190,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private bool in_notch(Proteoform pf1, Proteoform pf2_with_allowed_lysines)
-        {
-            if (!Sweet.lollipop.ee_use_notch) return true;
-            double delta_mass = pf1.modified_mass - pf2_with_allowed_lysines.modified_mass;
-            if ( !Sweet.lollipop.ee_notch_ppm)
-            {
-                double mass = delta_mass - Sweet.lollipop.notch_tolerance_ee;
-                while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_ee)
-                {
-                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
-                        Math.Round(mass, 1), out List<PtmSet> candidates);
-                    if (candidates != null)
-                    {
-                        return true;
-                    }
-                    mass += 0.1;
-                }
-            }
-            else
-            {
-                Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(Math.Round(delta_mass, 1), out var candidate_sets);
-                if (candidate_sets != null)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
 
         public bool topdown_bottomup_comparison(ExperimentalProteoform pf1, TheoreticalProteoform pf2_with_allowed_lysines)
         {
@@ -446,8 +425,9 @@ namespace ProteoformSuiteInternal
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
+               // p.relation_to_id = null;
                 p.ambiguous_identifications.Clear();
-                if (p as TopDownProteoform == null) { p.gene_name = null; }
+                p.gene_name = null; 
                 p.novel_mods = false;
                 p.uniprot_mods = "";
             }

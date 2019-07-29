@@ -281,8 +281,8 @@ namespace Test
             //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
             //test that the relation.represented_modification gets set
             Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 19 || r.represented_ptmset == null));
-            Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 0 || r.represented_ptmset.ptm_combination.First().modification.OriginalId == "unmodified"));
             Assert.True(pf1 == pf3.linked_proteoform_references.First() || pf2 == pf3.linked_proteoform_references.First());
+            Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 0 || r.represented_ptmset.ptm_combination.First().modification.OriginalId == "unmodified"));
 
             //uniprot vs. novel mods
             Assert.AreEqual("oxidation", pf3.linked_proteoform_references.First().ptm_set.ptm_description);
@@ -468,7 +468,7 @@ namespace Test
 
             TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("ACCESSION", 1000.0, 1);
             TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("ACCESSION2", 1000.0, 1);
-            t2.topdown_theoretical = true;
+            t2.new_topdown_proteoform = true;
 
             TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 0 });
             //need to make theoretical accession database
@@ -581,14 +581,14 @@ namespace Test
             Sweet.lollipop.top_down_hits = new List<SpectrumMatch>() { new SpectrumMatch() };
             Assert.AreEqual(1, Sweet.lollipop.top_down_hits.Count);
             Assert.IsNotEmpty(Sweet.lollipop.topdown_proteoforms);
-            Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));
-            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
-            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.new_topdown_proteoform));
+            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
+            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
             Sweet.lollipop.clear_td();
             Assert.IsEmpty(Sweet.lollipop.topdown_proteoforms);
-            Assert.IsFalse(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));
-            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
-            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Assert.IsFalse(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.new_topdown_proteoform));
+            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
+            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
         }
 
         [Test]

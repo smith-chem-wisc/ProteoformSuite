@@ -265,19 +265,19 @@ namespace ProteoformSuiteInternal
                         );
                     }
                 }
-                foreach (TopDownProteoform t in families.SelectMany(f => f.experimental_proteoforms.Where(exp => exp.topdown_id)))
+                foreach (TopDownProteoform t in families.SelectMany(f => f.experimental_proteoforms.Where(exp => exp as TopDownProteoform != null)))
                 {
-                    string gene_name = t.gene_name.get_prefered_name(preferred_gene_label);
+                    string gene_name = t.topdown_geneName.get_prefered_name(preferred_gene_label);
                     if (gene_name != null)
                     {
                         edge_table.Rows.Add
                          (
                         get_proteoform_shared_name(t, node_label, double_rounding),
                         t.lysine_count,
-                        t.gene_name.get_prefered_name(preferred_gene_label),
+                        t.topdown_geneName.get_prefered_name(preferred_gene_label),
                         "",
                         ""
-                                                );
+                        );
                     }
                 }
             }
@@ -390,7 +390,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).ToList().
                     Concat(families.SelectMany(f => f.experimental_proteoforms.Where(pf => pf.topdown_id)).
-                    Select(t => t.gene_name.get_prefered_name(preferred_gene_label))).Distinct())
+                    Select(t => (t as TopDownProteoform).topdown_geneName.get_prefered_name(preferred_gene_label))).Distinct())
                 {
                     if (gene_name != null && quantitative != null)
                         node_table.Rows.Add(gene_name, gene_name_label, mock_intensity, "Other Gene Names: ", 0, "", "", "", "");
