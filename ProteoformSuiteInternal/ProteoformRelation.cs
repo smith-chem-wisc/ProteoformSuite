@@ -48,6 +48,7 @@ namespace ProteoformSuiteInternal
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
         public ProteoformComparison RelationType { get; set; }
+        public bool Identification { get; set; } = false;
 
         /// <summary>
         /// Is this relation in an accepted peak?

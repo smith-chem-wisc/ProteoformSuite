@@ -169,6 +169,18 @@ namespace ProteoformSuiteInternal
                         );
                 if (e as TopDownProteoform != null) { (e as TopDownProteoform).set_correct_id(); }
             });
+
+            //unidentified family - relation accepts = true
+            if (Sweet.lollipop.remove_bad_connections)
+            {
+                if (theoretical_proteoforms.Count > 0 || (Sweet.lollipop.identify_from_td_nodes && experimental_proteoforms.Count(e => e.topdown_id) > 0))
+                {
+                    Parallel.ForEach(relations, r =>
+                    {
+                        r.Accepted = r.Identification;
+                    });
+                }
+            }
         }
 
         #endregion Public Methods
