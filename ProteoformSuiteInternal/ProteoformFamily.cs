@@ -115,7 +115,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            foreach (TheoreticalProteoform t in theoretical_proteoforms)
+            foreach (TheoreticalProteoform t in theoretical_proteoforms.OrderBy(t => t.topdown_theoretical))
             {
                 lock (identified_experimentals)
                     foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t))
@@ -131,7 +131,7 @@ namespace ProteoformSuiteInternal
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
-                foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals)
+                foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals.OrderBy(e => (e.linked_proteoform_references.First() as TopDownProteoform) != null || (e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical))
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
                             foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(id_experimental.linked_proteoform_references.First() as TheoreticalProteoform))

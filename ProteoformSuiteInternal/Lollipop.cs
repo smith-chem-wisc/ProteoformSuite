@@ -866,7 +866,6 @@ namespace ProteoformSuiteInternal
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public bool ee_accept_peaks_based_on_rank = true;
-        public bool et_td_rt_limit_relations = false;
         public bool et_use_notch = false;
         public bool ee_use_notch = false;
         public bool et_notch_ppm = true;
@@ -996,6 +995,12 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(ee_relations, r => r.Accepted = r.peak != null && r.peak.Accepted);
             Parallel.ForEach(ed_relations.Values.SelectMany(r => r), r => r.Accepted = r.peak != null && r.peak.Accepted);
             Parallel.ForEach(ef_relations.Values.SelectMany(r => r), r => r.Accepted = r.peak != null && r.peak.Accepted);
+
+            Parallel.ForEach(et_relations, r => r.Identification = false);
+            Parallel.ForEach(ee_relations, r => r.Identification = false);
+            Parallel.ForEach(ef_relations.Values.SelectMany(r => r), r => r.Identification = false);
+            Parallel.ForEach(ed_relations.Values.SelectMany(r => r), r => r.Identification = false);
+
 
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
@@ -1541,7 +1546,8 @@ namespace ProteoformSuiteInternal
                     p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
-                 //   p.relation_to_id = null;
+                    ProteoformRelation relation = null;
+                    p.relation_to_id = relation;
                 }
 
                 foreach (Proteoform p in community.theoretical_proteoforms)
@@ -1568,7 +1574,8 @@ namespace ProteoformSuiteInternal
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
                     p.gene_name = null;
-                  //  p.relation_to_id = null;
+                    ProteoformRelation relation = null;
+                    p.relation_to_id = relation;
                     p.begin = 0;
                     p.end = 0;
                 }

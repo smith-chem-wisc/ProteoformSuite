@@ -63,7 +63,6 @@
             this.cb_add_topdown_theoreticals = new System.Windows.Forms.CheckBox();
             this.nUD_minBUpeptides = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
-            this.cb_rt_limit_with_td_ids = new System.Windows.Forms.CheckBox();
             this.rb_ppm = new System.Windows.Forms.RadioButton();
             this.rb_daltons = new System.Windows.Forms.RadioButton();
             this.cb_bestETPairOnly = new System.Windows.Forms.CheckBox();
@@ -310,7 +309,7 @@
             this.groupBox6.Controls.Add(this.cb_discoveryHistogram);
             this.groupBox6.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox6.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox6.Location = new System.Drawing.Point(486, 206);
+            this.groupBox6.Location = new System.Drawing.Point(486, 207);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(263, 93);
             this.groupBox6.TabIndex = 36;
@@ -362,7 +361,7 @@
             this.groupBox5.Controls.Add(this.tb_peakTableFilter);
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Controls.Add(this.tb_max_accepted_fdr);
-            this.groupBox5.Location = new System.Drawing.Point(486, 93);
+            this.groupBox5.Location = new System.Drawing.Point(486, 94);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(263, 100);
             this.groupBox5.TabIndex = 35;
@@ -441,7 +440,6 @@
             this.groupBox4.Controls.Add(this.cb_add_topdown_theoreticals);
             this.groupBox4.Controls.Add(this.nUD_minBUpeptides);
             this.groupBox4.Controls.Add(this.label11);
-            this.groupBox4.Controls.Add(this.cb_rt_limit_with_td_ids);
             this.groupBox4.Controls.Add(this.rb_ppm);
             this.groupBox4.Controls.Add(this.rb_daltons);
             this.groupBox4.Controls.Add(this.cb_bestETPairOnly);
@@ -452,7 +450,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(11, 6);
+            this.groupBox4.Location = new System.Drawing.Point(11, 7);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -504,19 +502,6 @@
             this.label11.Size = new System.Drawing.Size(124, 13);
             this.label11.TabIndex = 16;
             this.label11.Text = "Min. Bottom-Up Peptides";
-            // 
-            // cb_rt_limit_with_td_ids
-            // 
-            this.cb_rt_limit_with_td_ids.AutoSize = true;
-            this.cb_rt_limit_with_td_ids.Checked = true;
-            this.cb_rt_limit_with_td_ids.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_rt_limit_with_td_ids.Location = new System.Drawing.Point(5, 38);
-            this.cb_rt_limit_with_td_ids.Name = "cb_rt_limit_with_td_ids";
-            this.cb_rt_limit_with_td_ids.Size = new System.Drawing.Size(252, 17);
-            this.cb_rt_limit_with_td_ids.TabIndex = 60;
-            this.cb_rt_limit_with_td_ids.Text = "Use agg. RT tolerance if TD ID from same gene";
-            this.cb_rt_limit_with_td_ids.UseVisualStyleBackColor = true;
-            this.cb_rt_limit_with_td_ids.CheckedChanged += new System.EventHandler(this.cb_rt_limit_with_td_ids_CheckedChanged);
             // 
             // rb_ppm
             // 
@@ -672,7 +657,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(486, 7);
+            this.groupBox3.Location = new System.Drawing.Point(486, 8);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -745,7 +730,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(278, 206);
+            this.groupBox2.Location = new System.Drawing.Point(278, 207);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -833,7 +818,7 @@
             this.groupBox1.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(32, 206);
+            this.groupBox1.Location = new System.Drawing.Point(32, 207);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -1051,7 +1036,6 @@
         private System.Windows.Forms.CheckBox cb_bestETPairOnly;
         private System.Windows.Forms.RadioButton rb_ppm;
         private System.Windows.Forms.RadioButton rb_daltons;
-        private System.Windows.Forms.CheckBox cb_rt_limit_with_td_ids;
         private System.Windows.Forms.NumericUpDown nUD_minBUpeptides;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox cb_add_topdown_theoreticals;

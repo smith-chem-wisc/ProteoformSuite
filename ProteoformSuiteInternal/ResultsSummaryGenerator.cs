@@ -620,6 +620,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Top-Down Mass Error", typeof(double));
             results.Columns.Add("Proteoform Mass");
             results.Columns.Add("Retention Time", typeof(double));
+            results.Columns.Add("Best C-score", typeof(double));
             results.Columns.Add("Best Scoring Hit", typeof(string));
             results.Columns.Add("Theoretical Gene Name", typeof(string));
             results.Columns.Add("Top-Down Gene Name", typeof(string));
@@ -661,6 +662,7 @@ namespace ProteoformSuiteInternal
                     td.modified_mass - td.theoretical_mass,
                     td.modified_mass,
                     td.agg_rt,
+                    td.topdown_hits.Max(h => h.score),
                     td.manual_validation_id,
                     td.linked_proteoform_references == null ? "N/A" : (td.linked_proteoform_references.First() as TheoreticalProteoform).gene_name.primary + (td.ambiguous_identifications.Count > 0
                                                                           ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).gene_name.primary))

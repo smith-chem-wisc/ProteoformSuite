@@ -199,12 +199,8 @@ namespace ProteoformSuiteInternal
                         .Contains(td.accession.Split('_')[0].Split('-')[0]))).ToList();
             bool good_BU_PSMs = topdown_proteoforms_same_accession.Count > 0 || 
                                 pf2_with_allowed_lysines.bottom_up_PSMs.Count >= Sweet.lollipop.min_bu_peptides;
-            
-            bool td_matching_rt = !Sweet.lollipop.et_td_rt_limit_relations || pf1.topdown_id || topdown_proteoforms_same_accession.Count == 0
-            || topdown_proteoforms_same_accession.Any(p =>
-                Math.Abs(pf1.agg_rt - p.agg_rt) < Sweet.lollipop.retention_time_tolerance);
-            return good_BU_PSMs && td_matching_rt;
-
+          
+            return good_BU_PSMs;
         }
 
         public static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)
@@ -425,7 +421,8 @@ namespace ProteoformSuiteInternal
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
-               // p.relation_to_id = null;
+                ProteoformRelation relation = null;
+                p.relation_to_id = null;
                 p.ambiguous_identifications.Clear();
                 p.gene_name = null; 
                 p.novel_mods = false;

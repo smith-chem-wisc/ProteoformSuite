@@ -90,16 +90,25 @@ namespace ProteoformSuiteInternal
                 if (Sweet.lollipop.identify_from_td_nodes && this as TopDownProteoform != null && e as TopDownProteoform != null) continue; //between two TD nodes
 
                 //going back the way you came
-                // if (this.linked_proteoform_references.Contains(e)) continue;
+                if (this.linked_proteoform_references.Contains(e) && this.linked_proteoform_references.First() == e.linked_proteoform_references.First()
+                   && (this as ExperimentalProteoform) != null && (this as ExperimentalProteoform).ambiguous_identifications.Count == 0)
+                {
+                    continue;
+                }
 
                 double mass_tolerance = modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
-                PtmSet with_mod_change = determine_mod_change(e, this, theoretical_base, r, this.ptm_set);
+                PtmSet with_mod_change = determine_mod_change(e, this, theoretical_base, r, this.ptm_set, this.begin, this.end);
 
                 if (with_mod_change == null && Math.Abs(r.peak.DeltaMass) <= mass_tolerance)
                 {
-                    lock (r) lock (e) assign_pf_identity(e, ptm_set, r, theoretical_base);
-                    r.Identification = true;
-                    identified.Add(e);
+                    lock (r) lock (e)
+                        {
+                            if (assign_pf_identity(e, ptm_set, this.begin, this.end, r, theoretical_base, true))
+                            {
+                                r.Identification = true;
+                                identified.Add(e);
+                            }
+                        }
                     continue;
                 }
 
@@ -110,20 +119,21 @@ namespace ProteoformSuiteInternal
 
                 lock (r) lock (e)
                     {
-                        assign_pf_identity(e, with_mod_change, r, theoretical_base);
+                        if (assign_pf_identity(e, with_mod_change, begin, end, r, theoretical_base, true))
+                        {
+                            {
+                                r.Identification = true;
+                                identified.Add(e);
+                            }
+                        }
                     }
-                if (e.linked_proteoform_references != null)
-                {
-                    r.Identification = true;
-                    identified.Add(e);
-                }
             }
-                   
+
             return identified;
         }
 
         private static PtmSet determine_mod_change(ExperimentalProteoform e, Proteoform p,
-            TheoreticalProteoform theoretical_base, ProteoformRelation r, PtmSet this_ptmset)
+            TheoreticalProteoform theoretical_base, ProteoformRelation r, PtmSet this_ptmset, int begin, int end)
         {
             double mass_tolerance = p.modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
             int sign = Math.Sign(e.modified_mass - p.modified_mass);
@@ -139,8 +149,8 @@ namespace ProteoformSuiteInternal
                 .ToList(); // EE relations have PtmSets around both positive and negative deltaM, so remove the ones around the opposite of the deltaM of interest
 
             PtmSet best_addition = generate_possible_added_ptmsets(possible_additions,
-                    Sweet.lollipop.theoretical_database.all_mods_with_mass, theoretical_base, p.begin, p.end,
-                    p.ptm_set, 1, true)
+                    Sweet.lollipop.theoretical_database.all_mods_with_mass, theoretical_base, begin, end,
+                    this_ptmset, 1, true)
                 .OrderBy(x =>
                     (double)x.ptm_rank_sum +
                     Math.Abs(x.mass - deltaM) *
@@ -319,20 +329,20 @@ namespace ProteoformSuiteInternal
 
         #region Private Methods
 
-        private void assign_pf_identity(ExperimentalProteoform e, PtmSet set, ProteoformRelation r, TheoreticalProteoform theoretical_base)
+        private bool assign_pf_identity(ExperimentalProteoform e, PtmSet set, int begin, int end, ProteoformRelation r, TheoreticalProteoform theoretical_base, bool check_ambiguous_IDs)
         {
-
+            bool identification_assigned = false;
             if (!Sweet.lollipop.id_use_ppm_tolerance || Math.Abs(e.calculate_mass_error(theoretical_base, set, begin, end) * 1e6 / e.modified_mass) < Sweet.lollipop.id_ppm_tolerance)
             {
-
+                identification_assigned = true;
                 if (e.linked_proteoform_references == null)
                 {
-                    if (this.linked_proteoform_references != null && this.linked_proteoform_references.Count > 0)
+                    if (this.linked_proteoform_references != null && this.linked_proteoform_references.Count > 0 && check_ambiguous_IDs)
                     {
                         e.linked_proteoform_references = new List<Proteoform>(this.linked_proteoform_references);
                         e.linked_proteoform_references.Add(this);
                     }
-                    else //from top-down node
+                    else //from top-down node or ambiguous ID
                     {
                         e.linked_proteoform_references = new List<Proteoform>() { theoretical_base };
                     }
@@ -384,21 +394,20 @@ namespace ProteoformSuiteInternal
                     {
                         e.gene_name.gene_names.Concat(this.gene_name.gene_names);
                     }
-
                 }
 
                 else
                 {
                     //check if assign 
-                    int begin = this.begin;
-                    int end = this.end;
+                    int new_begin = begin;
+                    int new_end = end;
 
                     PtmSet new_set = new PtmSet(new List<Ptm>(set.ptm_combination));
                     List<Ptm> remove = new List<Ptm>();
                     //do retention of M first
                     foreach (var mod in new_set.ptm_combination.Where(m => m.modification.ModificationType == "AminoAcid"))
                     {
-                        begin--;
+                        new_begin--;
                         remove.Add(mod);
                     }
 
@@ -406,17 +415,17 @@ namespace ProteoformSuiteInternal
                     {
                         if (!new_set.ptm_combination.Any(m => m.modification.ModificationType == "AminoAcid"))
                         {
-                            if (theoretical_base.sequence[this.begin - theoretical_base.begin].ToString() ==
+                            if (theoretical_base.sequence[begin - theoretical_base.begin].ToString() ==
                             mod.modification.Target.ToString())
                             {
-                                begin++;
+                                new_begin++;
                                 remove.Add(mod); //dont have in ptmset --> change the begin & end
                             }
                         }
-                         if (!remove.Contains(mod) && theoretical_base.sequence[this.end - this.begin].ToString() ==
-                                 mod.modification.Target.ToString())
+                        if (!remove.Contains(mod) && theoretical_base.sequence[end - begin].ToString() ==
+                                mod.modification.Target.ToString())
                         {
-                            end--;
+                            new_end--;
                             remove.Add(mod);
                         }
                     }
@@ -428,43 +437,49 @@ namespace ProteoformSuiteInternal
 
                     new_set = new PtmSet(new_set.ptm_combination);
 
-                    if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && theoretical_base.topdown_theoretical && !(e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
-                    {
-                        if (Sweet.lollipop.remove_bad_connections)
-                        {
-                            if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
-                       theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                       || e.begin != begin || e.end != end || !e.ptm_set.same_ptmset(new_set, true))
-                            {
-                                e.relation_to_id.Identification = false;
-                                e.relation_to_id.represented_ptmset = null;
-                            }
-                        }
+                    List<Modification> this_known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
+                    List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
 
+                    //  if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && theoretical_base.topdown_theoretical && !(e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
+                    if(Sweet.lollipop.topdown_theoretical_reduce_ambiguity
+                        && new_set.ptm_combination.All(mod1 => this_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification)))
+                        && !e.ptm_set.ptm_combination.All(mod1 => previous_id_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification))))
+
+                    {
+                        if (Sweet.lollipop.remove_bad_connections && e.relation_to_id != r)
+                        {
+                            e.relation_to_id.Identification = false;
+                            e.relation_to_id.represented_ptmset = null;
+                        }
                         e.linked_proteoform_references = null;
                         e.ptm_set = new PtmSet(new List<Ptm>());
                         e.begin = 0;
                         e.end = 0;
                         e.gene_name = null;
                         e.ambiguous_identifications.Clear();
-          
+
                         //reassign the topdown-based ID
-                        assign_pf_identity(e, set, r, theoretical_base);
-                        return;
+                        return this.assign_pf_identity(e, set, begin, end, r, theoretical_base, true);
                     }
 
-                    if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
-                        theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                        || e.begin != begin || e.end != end || !e.ptm_set.same_ptmset(new_set, true))
+
+                    // if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && !theoretical_base.topdown_theoretical && (e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
+
+                    if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity
+                        && !new_set.ptm_combination.All(mod1 => this_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification)))
+                        && e.ptm_set.ptm_combination.All(mod1 => previous_id_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification))))
+
                     {
-                        if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && !theoretical_base.topdown_theoretical && (e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical)
-                        {
-                            //do nothing - don't assign it. top-down theoretical trumps.
-                        }
-                        else
+                        //do nothing - don't assign it. top-down theoretical trumps.
+                    }
+                    else
+                    {
+                        if (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
+                      theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                  || e.begin != new_begin || e.end != new_end || !e.ptm_set.same_ptmset(new_set, true))
                         {
                             AmbiguousIdentification new_id =
-                                new AmbiguousIdentification(begin, end, new_set, r, theoretical_base);
+                                new AmbiguousIdentification(new_begin, new_end, new_set, r, theoretical_base);
                             lock (e.ambiguous_identifications)
                             {
                                 if (!e.ambiguous_identifications.Any(p =>
@@ -481,139 +496,78 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-
-            if (this as ExperimentalProteoform != null &&
-                (this as ExperimentalProteoform).ambiguous_identifications.Count > 0 && e.linked_proteoform_references != null)
+            if (e.linked_proteoform_references != null)
             {
-                if (Sweet.lollipop.topdown_theoretical_reduce_ambiguity && theoretical_base.topdown_theoretical)
+                List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
+                if (identification_assigned && Sweet.lollipop.topdown_theoretical_reduce_ambiguity &&
+                             e.ptm_set.ptm_combination.All(mod1 => previous_id_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification))))
+
                 {
-                    List<AmbiguousIdentification> to_remove = e.ambiguous_identifications.Where(id => !(id.theoretical_base.topdown_theoretical) &&
-                    (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
-                                 id.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                                 || e.begin != id.begin || e.end != id.end ||
-                                 !e.ptm_set.same_ptmset(id.ptm_set, true))).ToList();
+                    List<AmbiguousIdentification> to_remove = e.ambiguous_identifications.Where(id => !id.theoretical_base.topdown_theoretical &&
+                (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
+                             id.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                             || e.begin != id.begin || e.end != id.end ||
+                             !e.ptm_set.same_ptmset(id.ptm_set, true))).ToList();
                     foreach (var x in to_remove)
                     {
                         e.ambiguous_identifications.Remove(x);
-                        if (Sweet.lollipop.remove_bad_connections)
+                        if (Sweet.lollipop.remove_bad_connections && x.relation != r)
                         {
                             x.relation.Identification = false;
-                        }
-                    }
-                }
-
-
-                //just do it for the first ambiguous ID or else adds LOTS of computation time
-                int iterations = Sweet.lollipop.only_first_ambiguous_id
-                    ? 1
-                    : (this as ExperimentalProteoform).ambiguous_identifications.Count;
-                for (int i = 0; i < iterations; i++)
-                { 
-                    if ((this as ExperimentalProteoform).ambiguous_identifications.Count == 0) continue;
-                    var id = (this as ExperimentalProteoform).ambiguous_identifications[i];
-                    TheoreticalProteoform id_theoretical_base = id.theoretical_base;
-                    int begin = id.begin;
-                    int end = id.end;
-                    var remove = new List<Ptm>();
-
-                    var new_set = determine_mod_change(e, this, id_theoretical_base, r, id.ptm_set);
-                    if (new_set != null)
-                    {
-                        if (!Sweet.lollipop.id_use_ppm_tolerance || Math.Abs(e.calculate_mass_error(id_theoretical_base, new_set, begin, end) * 1e6 / e.modified_mass) < Sweet.lollipop.id_ppm_tolerance)
-                        {
-                            //do retention of M first
-                            foreach (var mod in new_set.ptm_combination.Where(m =>
-                                m.modification.ModificationType == "AminoAcid"))
-                            {
-                                begin--;
-                                remove.Add(mod);
-                            }
-
-                            foreach (var mod in new_set.ptm_combination.Where(m =>
-                                m.modification.ModificationType == "Missing"))
-                            {
-                                if (!new_set.ptm_combination.Any(m => m.modification.ModificationType == "AminoAcid"))
-                                {
-                                    if (id_theoretical_base.sequence[id.begin - id.begin].ToString() ==
-                                    mod.modification.Target.ToString())
-                                    {
-                                        begin++;
-                                        remove.Add(mod); //dont have in ptmset --> change the begin & end
-                                    }
-                                }
-                                if (!remove.Contains(mod) && id_theoretical_base.sequence[id.end - id.begin].ToString() ==
-                                         mod.modification.Target.ToString())
-                                {
-                                    end--;
-                                    remove.Add(mod);
-                                }
-                            }
-
-                            foreach (var ptm in remove)
-                            {
-                                new_set.ptm_combination.Remove(ptm);
-                            }
-
-                            new_set = new PtmSet(new List<Ptm>((new_set.ptm_combination)));
-                            lock (e.ambiguous_identifications)
-                            {
-                                var new_id = new AmbiguousIdentification(begin, end, new_set, id.relation, id.theoretical_base);
-                                var same = e.ambiguous_identifications.Where(p =>
-                                        p.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label) ==
-                                        new_id.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                                        && p.begin == new_id.begin && p.end == new_id.end &&
-                                        p.ptm_set.same_ptmset(new_id.ptm_set, true));
-                                if(Sweet.lollipop.topdown_theoretical_reduce_ambiguity)
-                                {
-                                    if(new_id.theoretical_base.topdown_theoretical)
-                                    {
-                                        var remove_ambig = same.Where(a => !a.theoretical_base.topdown_theoretical).ToList();
-                                        foreach (var x in remove_ambig)
-                                        {
-                                            e.ambiguous_identifications.Remove(x);
-                                        }
-                                    }
-                                }
-                                if ((e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
-                                     new_id.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-                                     || e.begin != new_id.begin || e.end != new_id.end ||
-                                     !e.ptm_set.same_ptmset(new_id.ptm_set, true)) && same.Count() == 0)
-                                {
-                                    e.ambiguous_identifications.Add(new_id);
-                                }
-                            }
+                            x.relation.represented_ptmset = null;
                         }
                     }
                 }
             }
 
-            e.uniprot_mods = "";
-            foreach (string mod in e.ptm_set.ptm_combination.Concat(e.ambiguous_identifications.SelectMany(i => i.ptm_set.ptm_combination)).Where(ptm => ptm.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m))
+            if (check_ambiguous_IDs)
             {
-                // positions with mod
-                List<int> theo_ptms = theoretical_base.ExpandedProteinList.First()
-                    .OneBasedPossibleLocalizedModifications
-                    .Where(p => p.Key >= e.begin && p.Key <= e.end
-                                                 && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
-                    .Select(m => m.Key).ToList();
-                if (theo_ptms.Count > 0)
+                if (this as ExperimentalProteoform != null && (this as ExperimentalProteoform).ambiguous_identifications.Count > 0)
                 {
-                    e.uniprot_mods += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
-                }
-                if (e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
-                        .Count(m => m == mod) > theo_ptms.Count
-                    || e.ambiguous_identifications.Any(i => i.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
-                                                                .Count(m => m == mod) > theo_ptms.Count))
-                {
-                    e.novel_mods = true;
-                }
-            }
+                    //just do it for the first ambiguous ID or else adds lots of computation time
+                    int iterations = Sweet.lollipop.only_first_ambiguous_id
+                        ? 1
+                        : (this as ExperimentalProteoform).ambiguous_identifications.Count;
+                    for (int i = 0; i < iterations; i++)
+                    {
+                        // if ((this as ExperimentalProteoform).ambiguous_identifications.Count == 0) continue;
+                        var id = (this as ExperimentalProteoform).ambiguous_identifications[i];
 
-            //else if (!e.topdown_id && e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != this.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
-            // && e.linked_proteoform_references.Count == this.linked_proteoform_references.Count + 1)
-            //{
-            //    e.ambiguous = true;
-            //}
+                        var new_set = determine_mod_change(e, this, id.theoretical_base, r, id.ptm_set, id.begin, id.end);
+                        if (new_set != null)
+                        {
+
+                            if (assign_pf_identity(e, new_set, id.begin, id.end, r, id.theoretical_base, false))
+                            {
+                                identification_assigned = true;
+                            }
+                        }
+                    }
+                }
+                e.uniprot_mods = "";
+                foreach (string mod in e.ptm_set.ptm_combination.Concat(e.ambiguous_identifications.SelectMany(i => i.ptm_set.ptm_combination)).Where(ptm => ptm.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m))
+                {
+                    // positions with mod
+                    List<int> theo_ptms = theoretical_base.ExpandedProteinList.First()
+                        .OneBasedPossibleLocalizedModifications
+                        .Where(p => p.Key >= e.begin && p.Key <= e.end
+                                                     && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                        .Select(m => m.Key).ToList();
+                    if (theo_ptms.Count > 0)
+                    {
+                        e.uniprot_mods += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                    }
+                    if (e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                            .Count(m => m == mod) > theo_ptms.Count
+                        || e.ambiguous_identifications.Any(i => i.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                                                                    .Count(m => m == mod) > theo_ptms.Count))
+                    {
+                        e.novel_mods = true;
+                    }
+                }
+
+            }
+            return identification_assigned;
         }
 
         #endregion Private Methods
