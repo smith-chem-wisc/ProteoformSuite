@@ -422,7 +422,7 @@ namespace ProteoformSuiteInternal
                 p.ptm_set = new PtmSet(new List<Ptm>());
                 p.linked_proteoform_references = null;
                 ProteoformRelation relation = null;
-                p.relation_to_id = null;
+                p.relation_to_id = relation;
                 p.ambiguous_identifications.Clear();
                 p.gene_name = null; 
                 p.novel_mods = false;

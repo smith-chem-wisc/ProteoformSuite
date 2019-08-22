@@ -167,7 +167,109 @@ namespace ProteoformSuiteInternal
                                 && UnlocalizedModification.LookUpId(p.modification) != "Oxidation")
                             == 0
                         );
+
                 if (e as TopDownProteoform != null) { (e as TopDownProteoform).set_correct_id(); }
+
+
+                var mods = e.ptm_set.ptm_combination.Where(p => p.modification.ModificationType != "Deconvolution Error"
+                         && p.modification.OriginalId != "Sulfate Adduct"
+                       && p.modification.OriginalId != "Acetone Artifact (Unconfirmed)"
+                       && p.modification.OriginalId != "Hydrogen Dodecyl Sulfate"
+                       && UnlocalizedModification.LookUpId(p.modification) != "Oxidation")
+                       .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
+                e.uniprot_mods = "";
+                string add = "";
+                foreach (string mod in mods)
+                {
+                    // positions with mod
+                    List<int> theo_ptms = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.First()
+                        .OneBasedPossibleLocalizedModifications
+                        .Where(p => p.Key >= e.begin && p.Key <= e.end
+                                                     && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                        .Select(m => m.Key).ToList();
+                    if (theo_ptms.Count > 0)
+                    {
+                        add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                    }
+                    if (e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                            .Count(m => m == mod) > theo_ptms.Count
+                        || e.ambiguous_identifications.Any(i => i.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                                                                    .Count(m => m == mod) > theo_ptms.Count))
+                    {
+                        e.novel_mods = true;
+                    }
+                }
+                e.uniprot_mods += add;
+                if (add.Length == 0) e.uniprot_mods += "N/A";
+
+                foreach (var ambig_id in e.ambiguous_identifications)
+                {
+                    var ambig_mods = ambig_id.ptm_set.ptm_combination.Where(p => p.modification.ModificationType != "Deconvolution Error"
+                                  && p.modification.OriginalId != "Sulfate Adduct"
+                                && p.modification.OriginalId != "Acetone Artifact (Unconfirmed)"
+                                && p.modification.OriginalId != "Hydrogen Dodecyl Sulfate"
+                                && UnlocalizedModification.LookUpId(p.modification) != "Oxidation")
+                               .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
+
+                    e.uniprot_mods += " | ";
+                    add = "";
+                    foreach (var mod in ambig_mods)
+                    {
+                        // positions with mod
+                        List<int> theo_ptms = ambig_id.theoretical_base.ExpandedProteinList.First()
+                            .OneBasedPossibleLocalizedModifications
+                            .Where(p => p.Key >= ambig_id.begin && p.Key <= ambig_id.end
+                                                         && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                            .Select(m => m.Key).ToList();
+                        if (theo_ptms.Count > 0)
+                        {
+                            add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                        }
+                    }
+                    e.uniprot_mods += add;
+                    if (add.Length == 0) e.uniprot_mods += "N/A";
+                }
+
+                //determine level #
+                if(e.linked_proteoform_references == null)
+                {
+                    e.proteoform_level = 5;
+                }
+                else if(e.ambiguous_identifications.Count == 0)
+                {
+                    if(e.ptm_set.ptm_combination.Count == 0)
+                    {
+                        e.proteoform_level = 1;
+                    }
+                    else
+                    {
+                        e.proteoform_level = 2;
+                    }
+
+                    //check if accessions had been grouped in constructing the theoretical database
+                    if ((e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct().Count() > 1)
+                        e.proteoform_level += 1;
+                }
+                else
+                {
+                    var unique_accessions = new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0] }.Concat(e.ambiguous_identifications.Select(a => a.theoretical_base.accession.Split('_')[0].Split('-')[0])).Distinct();
+                    var unique_sequences = new List<string>() { ExperimentalProteoform.get_sequence(e.linked_proteoform_references.First() as TheoreticalProteoform, e.begin, e.end) }.
+                    Concat(e.ambiguous_identifications.Select(a => ExperimentalProteoform.get_sequence(a.theoretical_base, a.begin, a.end))).Distinct();
+                    var unique_PTMs = new List<string>() { e.ptm_set.ptm_description }.Concat(e.ambiguous_identifications.Select(a => a.ptm_set.ptm_description)).Distinct();
+
+                    int gene_ambiguity = unique_accessions.Count() > 1 ? 1 : 0;
+                    
+                    //check if accessions had been grouped in constructing the theoretical database
+                    if ((e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct().Count() > 1)
+                            gene_ambiguity = 1;
+
+                    int sequence_ambiguity = unique_sequences.Count() > 1 ? 1 : 0;
+                    int PTM_ambiguity = unique_PTMs.Count() > 1 ? 1 : 0;
+                    int PTM_location = e.ptm_set.ptm_combination.Count > 0 || e.ambiguous_identifications.Any(a => a.ptm_set.ptm_combination.Count > 0) ? 1 : 0;
+
+                    e.proteoform_level = 1 + gene_ambiguity + sequence_ambiguity + PTM_ambiguity + PTM_location;
+                }
+
             });
 
             //unidentified family - relation accepts = true

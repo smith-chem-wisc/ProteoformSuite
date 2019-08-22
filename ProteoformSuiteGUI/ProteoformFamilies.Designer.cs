@@ -50,9 +50,9 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_ppm_tolerance = new System.Windows.Forms.CheckBox();
             this.cb_remove_bad_connections = new System.Windows.Forms.CheckBox();
-            this.cb_td_ID_reduce_ambiguity = new System.Windows.Forms.CheckBox();
-            this.cb_only_first_ambiguous_ID = new System.Windows.Forms.CheckBox();
+            this.nUD_notch_tolerance = new System.Windows.Forms.NumericUpDown();
             this.cb_id_from_td_nodes = new System.Windows.Forms.CheckBox();
             this.cb_only_assign_common_known_mods = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
@@ -72,8 +72,6 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.nUD_notch_tolerance = new System.Windows.Forms.NumericUpDown();
-            this.cb_ppm_tolerance = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -88,9 +86,9 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -340,8 +338,6 @@
             this.splitContainer3.Panel2.Controls.Add(this.cb_ppm_tolerance);
             this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_connections);
             this.splitContainer3.Panel2.Controls.Add(this.nUD_notch_tolerance);
-            this.splitContainer3.Panel2.Controls.Add(this.cb_td_ID_reduce_ambiguity);
-            this.splitContainer3.Panel2.Controls.Add(this.cb_only_first_ambiguous_ID);
             this.splitContainer3.Panel2.Controls.Add(this.cb_id_from_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
@@ -375,12 +371,23 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_ppm_tolerance
+            // 
+            this.cb_ppm_tolerance.AutoSize = true;
+            this.cb_ppm_tolerance.Location = new System.Drawing.Point(387, 184);
+            this.cb_ppm_tolerance.Name = "cb_ppm_tolerance";
+            this.cb_ppm_tolerance.Size = new System.Drawing.Size(115, 17);
+            this.cb_ppm_tolerance.TabIndex = 69;
+            this.cb_ppm_tolerance.Text = "Use ppm tolerance";
+            this.cb_ppm_tolerance.UseVisualStyleBackColor = true;
+            this.cb_ppm_tolerance.CheckedChanged += new System.EventHandler(this.cb_ppm_tolerance_CheckedChanged);
+            // 
             // cb_remove_bad_connections
             // 
             this.cb_remove_bad_connections.AutoSize = true;
             this.cb_remove_bad_connections.Checked = true;
             this.cb_remove_bad_connections.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_remove_bad_connections.Location = new System.Drawing.Point(300, 201);
+            this.cb_remove_bad_connections.Location = new System.Drawing.Point(299, 155);
             this.cb_remove_bad_connections.Name = "cb_remove_bad_connections";
             this.cb_remove_bad_connections.Size = new System.Drawing.Size(148, 17);
             this.cb_remove_bad_connections.TabIndex = 68;
@@ -388,31 +395,31 @@
             this.cb_remove_bad_connections.UseVisualStyleBackColor = true;
             this.cb_remove_bad_connections.CheckedChanged += new System.EventHandler(this.cb_remove_bad_connections_CheckedChanged);
             // 
-            // cb_td_ID_reduce_ambiguity
+            // nUD_notch_tolerance
             // 
-            this.cb_td_ID_reduce_ambiguity.AutoSize = true;
-            this.cb_td_ID_reduce_ambiguity.Checked = true;
-            this.cb_td_ID_reduce_ambiguity.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_td_ID_reduce_ambiguity.Location = new System.Drawing.Point(300, 178);
-            this.cb_td_ID_reduce_ambiguity.Name = "cb_td_ID_reduce_ambiguity";
-            this.cb_td_ID_reduce_ambiguity.Size = new System.Drawing.Size(206, 17);
-            this.cb_td_ID_reduce_ambiguity.TabIndex = 67;
-            this.cb_td_ID_reduce_ambiguity.Text = "Use top-down IDs to reduce ambiguity";
-            this.cb_td_ID_reduce_ambiguity.UseVisualStyleBackColor = true;
-            this.cb_td_ID_reduce_ambiguity.CheckedChanged += new System.EventHandler(this.cb_td_ID_reduce_ambiguity_CheckedChanged);
-            // 
-            // cb_only_first_ambiguous_ID
-            // 
-            this.cb_only_first_ambiguous_ID.AutoSize = true;
-            this.cb_only_first_ambiguous_ID.Checked = true;
-            this.cb_only_first_ambiguous_ID.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_only_first_ambiguous_ID.Location = new System.Drawing.Point(300, 155);
-            this.cb_only_first_ambiguous_ID.Name = "cb_only_first_ambiguous_ID";
-            this.cb_only_first_ambiguous_ID.Size = new System.Drawing.Size(267, 17);
-            this.cb_only_first_ambiguous_ID.TabIndex = 66;
-            this.cb_only_first_ambiguous_ID.Text = "Only first ambiguous ID (recommended for complex)";
-            this.cb_only_first_ambiguous_ID.UseVisualStyleBackColor = true;
-            this.cb_only_first_ambiguous_ID.CheckedChanged += new System.EventHandler(this.cb_only_first_ambiguous_ID_CheckedChanged);
+            this.nUD_notch_tolerance.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.nUD_notch_tolerance.DecimalPlaces = 1;
+            this.nUD_notch_tolerance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nUD_notch_tolerance.Location = new System.Drawing.Point(296, 183);
+            this.nUD_notch_tolerance.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_notch_tolerance.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nUD_notch_tolerance.Name = "nUD_notch_tolerance";
+            this.nUD_notch_tolerance.Size = new System.Drawing.Size(86, 20);
+            this.nUD_notch_tolerance.TabIndex = 37;
+            this.nUD_notch_tolerance.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUD_notch_tolerance.ValueChanged += new System.EventHandler(this.nUD_notch_tolerance_ValueChanged);
             // 
             // cb_id_from_td_nodes
             // 
@@ -610,43 +617,6 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // nUD_notch_tolerance
-            // 
-            this.nUD_notch_tolerance.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.nUD_notch_tolerance.DecimalPlaces = 1;
-            this.nUD_notch_tolerance.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.nUD_notch_tolerance.Location = new System.Drawing.Point(300, 220);
-            this.nUD_notch_tolerance.Margin = new System.Windows.Forms.Padding(2);
-            this.nUD_notch_tolerance.Maximum = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
-            this.nUD_notch_tolerance.Name = "nUD_notch_tolerance";
-            this.nUD_notch_tolerance.Size = new System.Drawing.Size(86, 20);
-            this.nUD_notch_tolerance.TabIndex = 37;
-            this.nUD_notch_tolerance.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nUD_notch_tolerance.ValueChanged += new System.EventHandler(this.nUD_notch_tolerance_ValueChanged);
-            // 
-            // cb_ppm_tolerance
-            // 
-            this.cb_ppm_tolerance.AutoSize = true;
-            this.cb_ppm_tolerance.Location = new System.Drawing.Point(391, 222);
-            this.cb_ppm_tolerance.Name = "cb_ppm_tolerance";
-            this.cb_ppm_tolerance.Size = new System.Drawing.Size(115, 17);
-            this.cb_ppm_tolerance.TabIndex = 69;
-            this.cb_ppm_tolerance.Text = "Use ppm tolerance";
-            this.cb_ppm_tolerance.UseVisualStyleBackColor = true;
-            this.cb_ppm_tolerance.CheckedChanged += new System.EventHandler(this.cb_ppm_tolerance_CheckedChanged);
-            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -673,10 +643,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -723,8 +693,6 @@
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
         private System.Windows.Forms.CheckBox cb_id_from_td_nodes;
-        public System.Windows.Forms.CheckBox cb_only_first_ambiguous_ID;
-        public System.Windows.Forms.CheckBox cb_td_ID_reduce_ambiguity;
         public System.Windows.Forms.CheckBox cb_remove_bad_connections;
         private System.Windows.Forms.NumericUpDown nUD_notch_tolerance;
         public System.Windows.Forms.CheckBox cb_ppm_tolerance;

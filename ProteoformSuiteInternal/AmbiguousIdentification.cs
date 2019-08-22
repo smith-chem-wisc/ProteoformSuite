@@ -14,8 +14,6 @@ namespace ProteoformSuiteInternal
         public PtmSet ptm_set = new PtmSet(new List<Ptm>());
         public ProteoformRelation relation;
         public TheoreticalProteoform theoretical_base;
-        public GeneName gene_name { get; set; }
-
 
         public AmbiguousIdentification(int begin, int end, PtmSet ptm_set, ProteoformRelation relation, TheoreticalProteoform theoretical_base)
         {

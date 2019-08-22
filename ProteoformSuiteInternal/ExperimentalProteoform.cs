@@ -61,6 +61,8 @@ namespace ProteoformSuiteInternal
 
         public bool novel_mods { get; set; }
 
+        public int proteoform_level { get; set; }
+
         //if ambiguous id's store here
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<AmbiguousIdentification> ambiguous_identifications { get; set; } = new List<AmbiguousIdentification>();
@@ -183,7 +185,7 @@ namespace ProteoformSuiteInternal
             return Math.Round(agg_mass - theoretical_mass, 4 );
         }
 
-        public string get_sequence(TheoreticalProteoform t, int begin, int end)
+        public static string get_sequence(TheoreticalProteoform t, int begin, int end)
         {
             string sequence = t.sequence
                 .Substring(begin < t.begin ? 0 : begin - t.begin,

@@ -957,7 +957,6 @@ namespace ProteoformSuiteInternal
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
         public bool identify_from_td_nodes = false;
-        public bool topdown_theoretical_reduce_ambiguity = false;
         public bool remove_bad_connections = false;
         public double id_ppm_tolerance = 10.0;
         public bool id_use_ppm_tolerance = false;
@@ -1280,7 +1279,6 @@ namespace ProteoformSuiteInternal
         public bool retention_time_calibration = true;
         public double cali_mass_tolerance = 10;
         public double cali_rt_tolerance = 5;
-        public bool only_first_ambiguous_id = true;
 
         public void read_in_calibration_td_hits()
         {

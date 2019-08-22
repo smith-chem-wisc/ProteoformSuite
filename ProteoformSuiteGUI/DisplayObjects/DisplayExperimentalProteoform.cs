@@ -151,6 +151,14 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public int Level
+        {
+            get
+            {
+                return e.proteoform_level;
+            }
+        }
+
         public string GeneID
         {
             get
@@ -174,6 +182,19 @@ namespace ProteoformSuiteGUI
                           : "");
             }
         }
+        
+        public string grouped_accessions
+        {
+            get
+            {
+                return (e.linked_proteoform_references != null
+                    ? string.Join(", ", (e.linked_proteoform_references[0] as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct())
+                    : "") + (e.ambiguous_identifications.Count > 0
+                          ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => string.Join(", ", p.theoretical_base.ExpandedProteinList.SelectMany(a => a.AccessionList).Select(a => a.Split('_')[0]).Distinct())))
+                          : "");
+            }
+        }
+    
 
         public string Fragment
         {
@@ -335,6 +356,7 @@ namespace ProteoformSuiteGUI
             if (property_name == nameof(novel_mods)) return "Potentially Novel Mods";
             if (property_name == nameof(bu_PSMs)) return "Modified Bottom-Up PSMs";
             if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
+            if (property_name == nameof(grouped_accessions)) return "Grouped Accessions";
             return null;
         }
 

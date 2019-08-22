@@ -38,6 +38,7 @@ namespace ProteoformSuiteInternal
         public ExperimentalProteoform matching_experimental { get; set; } //corresponding experimental
         public bool correct_id { get; set; } //true if the ID given by ProteoformSuite matches ID from topdown
         public List<SpectrumMatch> ambiguous_topdown_hits = new List<SpectrumMatch>();
+        public int topdown_level;
 
         public TopDownProteoform(string accession, List<SpectrumMatch> hits) : base(accession, null, true)
         {
@@ -100,6 +101,29 @@ namespace ProteoformSuiteInternal
                     continue;
                 }
                 ambiguous_topdown_hits.Add(ambiguous_id);
+            }
+            calculate_topdown_level();
+        }
+
+        private void calculate_topdown_level()
+        {
+            if (ambiguous_topdown_hits.Count == 0)
+            {
+                topdown_level = 1;
+            }
+            else
+            {
+                var unique_accessions = new List<string>() { this.accession.Split('_')[0].Split('-')[0] }.Concat(ambiguous_topdown_hits.Select(a => a.accession.Split('_')[0].Split('-')[0])).Distinct();
+                var unique_sequences = new List<string>() { sequence }.Concat(ambiguous_topdown_hits.Select(a => sequence)).Distinct();
+                var unique_PTM_locations = new List<string>() { string.Join(",", topdown_ptm_set.ptm_combination.Select(p => p.position).OrderBy(n => n)) }.Concat(ambiguous_topdown_hits.Select(h => string.Join(",", h.ptm_list.Select(p => p.position).OrderBy(n => n)))).Distinct();
+                var unique_PTM_IDs = new List<string>() { string.Join(",", topdown_ptm_set.ptm_combination.Select(p => UnlocalizedModification.LookUpId(p.modification)).OrderBy(n => n)) }.Concat(ambiguous_topdown_hits.Select(h => string.Join(",", h.ptm_list.Select(p => UnlocalizedModification.LookUpId(p.modification)).OrderBy(n => n)))).Distinct();
+
+                int gene_ambiguity = unique_accessions.Count() > 1 ? 1 : 0;
+                int sequence_ambiguity = unique_sequences.Count() > 1 ? 1 : 0;
+                int PTM_ambiguity = unique_PTM_IDs.Count() > 1 ? 1 : 0;
+                int PTM_location = unique_PTM_locations.Count() > 1 ? 1 : 0;
+
+                topdown_level = 1 + gene_ambiguity + sequence_ambiguity + PTM_ambiguity + PTM_location;
             }
         }
 

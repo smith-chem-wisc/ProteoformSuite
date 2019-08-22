@@ -124,6 +124,14 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public int Level
+        {
+            get
+            {
+                return t.topdown_level;
+            }
+        }
+
         public double modified_mass
         {
             get { return t.modified_mass; }
