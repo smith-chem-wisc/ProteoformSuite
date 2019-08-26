@@ -446,6 +446,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Aggregated Intensity", typeof(double));
             results.Columns.Add("Top-Down Proteoform", typeof(bool));
             results.Columns.Add("Same ID as Top-Down", typeof(string));
+            results.Columns.Add("Linked Proteoform References", typeof(string));
             results.Columns.Add("Ambiguous", typeof(bool));
             results.Columns.Add("Adduct", typeof(bool));
             results.Columns.Add("Contaminant", typeof(bool));
@@ -500,6 +501,9 @@ namespace ProteoformSuiteInternal
                     e.agg_intensity,
                     e.topdown_id,
                     e.topdown_id ? (e as TopDownProteoform).correct_id.ToString() : "N/A",
+                    string.Join(", ", (e.linked_proteoform_references.Select(p => p.accession))) + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => string.Join(", ", p.linked_proteoform_references.Select(a => a.accession))))
+                        : ""),
                     e.ambiguous_identifications.Count > 0 ? "TRUE" : "FALSE",
                     e.adduct,
                     (e.linked_proteoform_references.First() as TheoreticalProteoform).contaminant,

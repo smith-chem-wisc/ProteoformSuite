@@ -50,6 +50,7 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_td_ID_reduce_ambiguity = new System.Windows.Forms.CheckBox();
             this.cb_ppm_tolerance = new System.Windows.Forms.CheckBox();
             this.cb_remove_bad_connections = new System.Windows.Forms.CheckBox();
             this.nUD_notch_tolerance = new System.Windows.Forms.NumericUpDown();
@@ -335,6 +336,7 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
+            this.splitContainer3.Panel2.Controls.Add(this.cb_td_ID_reduce_ambiguity);
             this.splitContainer3.Panel2.Controls.Add(this.cb_ppm_tolerance);
             this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_connections);
             this.splitContainer3.Panel2.Controls.Add(this.nUD_notch_tolerance);
@@ -371,10 +373,23 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_td_ID_reduce_ambiguity
+            // 
+            this.cb_td_ID_reduce_ambiguity.AutoSize = true;
+            this.cb_td_ID_reduce_ambiguity.Checked = true;
+            this.cb_td_ID_reduce_ambiguity.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_td_ID_reduce_ambiguity.Location = new System.Drawing.Point(301, 178);
+            this.cb_td_ID_reduce_ambiguity.Name = "cb_td_ID_reduce_ambiguity";
+            this.cb_td_ID_reduce_ambiguity.Size = new System.Drawing.Size(158, 17);
+            this.cb_td_ID_reduce_ambiguity.TabIndex = 70;
+            this.cb_td_ID_reduce_ambiguity.Text = "Use TD to reduce ambiguity";
+            this.cb_td_ID_reduce_ambiguity.UseVisualStyleBackColor = true;
+            this.cb_td_ID_reduce_ambiguity.CheckedChanged += new System.EventHandler(this.cb_td_ID_reduce_ambiguity_CheckedChanged_1);
+            // 
             // cb_ppm_tolerance
             // 
             this.cb_ppm_tolerance.AutoSize = true;
-            this.cb_ppm_tolerance.Location = new System.Drawing.Point(387, 184);
+            this.cb_ppm_tolerance.Location = new System.Drawing.Point(301, 218);
             this.cb_ppm_tolerance.Name = "cb_ppm_tolerance";
             this.cb_ppm_tolerance.Size = new System.Drawing.Size(115, 17);
             this.cb_ppm_tolerance.TabIndex = 69;
@@ -404,7 +419,7 @@
             0,
             0,
             65536});
-            this.nUD_notch_tolerance.Location = new System.Drawing.Point(296, 183);
+            this.nUD_notch_tolerance.Location = new System.Drawing.Point(411, 224);
             this.nUD_notch_tolerance.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_notch_tolerance.Maximum = new decimal(new int[] {
             15,
@@ -696,5 +711,6 @@
         public System.Windows.Forms.CheckBox cb_remove_bad_connections;
         private System.Windows.Forms.NumericUpDown nUD_notch_tolerance;
         public System.Windows.Forms.CheckBox cb_ppm_tolerance;
+        public System.Windows.Forms.CheckBox cb_td_ID_reduce_ambiguity;
     }
 }

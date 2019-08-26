@@ -129,7 +129,7 @@ namespace ProteoformSuiteInternal
 
         public void set_correct_id()
         {
-            if (linked_proteoform_references == null) correct_id = false;
+            if (linked_proteoform_references == null || ambiguous_identifications.Count > 0) correct_id = false;
             else
             {
                 TheoreticalProteoform t = linked_proteoform_references.First() as TheoreticalProteoform;

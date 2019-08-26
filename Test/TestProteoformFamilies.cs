@@ -299,9 +299,9 @@ namespace Test
             Assert.AreEqual("oxidation", pf7.ptm_set.ptm_description);
             Assert.AreEqual("oxidation", pf8.ptm_set.ptm_description);
 
-            Assert.AreEqual("", pf3.uniprot_mods);
-            Assert.AreEqual("", pf4.uniprot_mods);
-            Assert.AreEqual("", pf5.uniprot_mods);
+            Assert.AreEqual("N/A | oxidation @ 1; ", pf3.uniprot_mods);
+            Assert.AreEqual("N/A | oxidation @ 1; ", pf4.uniprot_mods);
+            Assert.AreEqual("N/A | oxidation @ 1; ", pf5.uniprot_mods);
             Assert.AreEqual("oxidation @ 1; ", pf6.uniprot_mods);
             Assert.AreEqual("oxidation @ 1; ", pf7.uniprot_mods);
             Assert.AreEqual("oxidation @ 1; ", pf8.uniprot_mods);
