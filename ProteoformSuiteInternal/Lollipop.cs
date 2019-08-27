@@ -997,6 +997,11 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(ed_relations.Values.SelectMany(r => r), r => r.Accepted = r.peak != null && r.peak.Accepted);
             Parallel.ForEach(ef_relations.Values.SelectMany(r => r), r => r.Accepted = r.peak != null && r.peak.Accepted);
 
+            Parallel.ForEach(et_relations, r => r.Identification = false);
+            Parallel.ForEach(ee_relations, r => r.Identification = false);
+            Parallel.ForEach(ef_relations.Values.SelectMany(r => r), r => r.Identification = false);
+            Parallel.ForEach(ed_relations.Values.SelectMany(r => r), r => r.Identification = false);
+
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
 

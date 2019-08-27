@@ -78,6 +78,7 @@ namespace ProteoformSuiteGUI
             cb_remove_bad_connections.Checked = Sweet.lollipop.remove_bad_connections;
             nUD_notch_tolerance.Value = (decimal)Sweet.lollipop.id_ppm_tolerance;
             cb_ppm_tolerance.Checked = Sweet.lollipop.id_use_ppm_tolerance;
+            cb_annotated_PTMs_reduce_ambiguity.Checked = Sweet.lollipop.annotated_PTMs_reduce_ambiguity;
 
             initialize_every_time();
         }
@@ -416,6 +417,11 @@ namespace ProteoformSuiteGUI
         private void cb_td_ID_reduce_ambiguity_CheckedChanged_1(object sender, EventArgs e)
         {
             Sweet.lollipop.topdown_theoretical_reduce_ambiguity = cb_td_ID_reduce_ambiguity.Checked;
+        }
+
+        private void cb_annotated_PTMs_reduce_ambiguity_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.annotated_PTMs_reduce_ambiguity = cb_annotated_PTMs_reduce_ambiguity.Checked;
         }
     }
 }

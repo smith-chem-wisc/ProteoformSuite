@@ -127,7 +127,7 @@ namespace ProteoformSuiteInternal
             //Continue looking for new experimental identifications until no more remain to be identified
             List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals).OrderBy(p => p.relationships.Count(r => r.candidate_ptmset != null) > 0 ? p.relationships.Where(r => r.candidate_ptmset != null).Min(r => Math.Abs(r.DeltaMass - r.candidate_ptmset.mass)) : 1e6).ThenBy(p => p.modified_mass).ToList();
             int last_identified_count = identified_experimentals.Count - 1;
-            while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
+            while (newly_identified_experimentals.Count > 0) //&& identified_experimentals.Count > last_identified_count)
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
@@ -255,6 +255,17 @@ namespace ProteoformSuiteInternal
                     e.proteoform_level = 1 + gene_ambiguity + sequence_ambiguity + PTM_ambiguity + PTM_location;
                 }
             });
+
+            if (Sweet.lollipop.remove_bad_connections)
+            {
+                if (theoretical_proteoforms.Count > 0 || (Sweet.lollipop.identify_from_td_nodes && experimental_proteoforms.Count(e => e.topdown_id) > 0))
+                {
+                    Parallel.ForEach(relations, r =>
+                    {
+                        r.Accepted = r.Identification;
+                    });
+                }
+            }
         }
 
         #endregion Public Methods
