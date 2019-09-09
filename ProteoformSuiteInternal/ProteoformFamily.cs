@@ -131,14 +131,16 @@ namespace ProteoformSuiteInternal
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
-                foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals.OrderBy(e => (e.linked_proteoform_references.First() as TopDownProteoform) != null || (e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical))
+                foreach (ExperimentalProteoform id_experimental in newly_identified_experimentals)
                 {
-                    lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(id_experimental.linked_proteoform_references.First() as TheoreticalProteoform))
-                            {
-                                identified_experimentals.Add(new_e);
-                                tmp_new_experimentals.Add(new_e);
-                            }
+                    {
+                        lock (identified_experimentals) lock (tmp_new_experimentals)
+                                foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(id_experimental.linked_proteoform_references.First() as TheoreticalProteoform))
+                                {
+                                    identified_experimentals.Add(new_e);
+                                    tmp_new_experimentals.Add(new_e);
+                                }
+                    }
                 }
                 newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
             }
