@@ -99,6 +99,7 @@ namespace ProteoformSuiteInternal
                         {
                             if (assign_pf_identity(e, ptm_set, this.begin, this.end, r, theoretical_base, this.linked_proteoform_references, true))
                             {
+                                r.Identification = true;
                                 identified.Add(e);
                             }
                         }
@@ -114,6 +115,7 @@ namespace ProteoformSuiteInternal
                     {
                         if (assign_pf_identity(e, with_mod_change, begin, end, r, theoretical_base, this.linked_proteoform_references, true))
                         {
+                            r.Identification = true;
                             identified.Add(e);
                         }
                     }
@@ -381,7 +383,6 @@ namespace ProteoformSuiteInternal
                     e.ptm_set = new_set;
                     e.begin = new_begin;
                     e.end = new_end;
-                    r.Identification = true;
 
 
                     if (e.gene_name == null)
@@ -445,7 +446,6 @@ namespace ProteoformSuiteInternal
                         }
                         else
                         {
-                            r.Identification = true;
                             if (different_id)
                             {
                                 var new_linked_proteoform_references = new List<Proteoform>(linked_proteoform_references);
@@ -503,10 +503,17 @@ namespace ProteoformSuiteInternal
                             e.ambiguous_identifications.Remove(x);
                             if (Sweet.lollipop.remove_bad_connections)
                             {
-                                x.relation.Identification = false;
-                                x.relation.represented_ptmset = null;
+                                if (e.relation_to_id != x.relation)
+                                {
+                                    x.relation.Identification = false;
+                                    x.relation.represented_ptmset = null;
+                                }
                             }
                         }
+                    }
+                    foreach(var x in e.ambiguous_identifications)
+                    {
+                        x.relation.Identification = true;
                     }
                 }
 
@@ -533,7 +540,6 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-
             return identification_assigned;
         }
 
