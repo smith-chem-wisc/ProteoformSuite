@@ -78,7 +78,7 @@ namespace ProteoformSuiteInternal
             return relationships.Where(r => r.Accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
 
-        public List<ExperimentalProteoform> identify_connected_experimentals(TheoreticalProteoform theoretical_base)
+        public List<ExperimentalProteoform> identify_connected_experimentals(TheoreticalProteoform theoretical_base, int begin, int end, PtmSet ptm_set, List<Proteoform> linked_proteoform_references)
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
             //do relations first closest to candidate ptmset delta mass, then in order of relation delta mass (need to do in same order every round)
@@ -88,16 +88,16 @@ namespace ProteoformSuiteInternal
 
                 if (e == null) { continue; }// Looking at an ET pair, expecting an EE pair
 
-                if (Sweet.lollipop.identify_from_td_nodes && this as TopDownProteoform != null && e as TopDownProteoform != null) continue; //between two TD nodes
+               //if (Sweet.lollipop.identify_from_td_nodes && this as TopDownProteoform != null && e as TopDownProteoform != null) continue; //between two TD nodes
 
                 double mass_tolerance = modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
-                PtmSet with_mod_change = determine_mod_change(e, this, theoretical_base, r, this.ptm_set, this.begin, this.end);
+                PtmSet with_mod_change = determine_mod_change(e, this, theoretical_base, r, ptm_set, begin, end);
 
                 if (with_mod_change == null && Math.Abs(r.peak.DeltaMass) <= mass_tolerance)
                 {
                     lock (r) lock (e)
                         {
-                            if (assign_pf_identity(e, ptm_set, this.begin, this.end, r, theoretical_base, this.linked_proteoform_references, true))
+                            if (assign_pf_identity(e, ptm_set, begin, end, r, theoretical_base, linked_proteoform_references, true))
                             {
                                 r.Identification = true;
                                 identified.Add(e);
@@ -113,7 +113,7 @@ namespace ProteoformSuiteInternal
 
                 lock (r) lock (e)
                     {
-                        if (assign_pf_identity(e, with_mod_change, begin, end, r, theoretical_base, this.linked_proteoform_references, true))
+                        if (assign_pf_identity(e, with_mod_change, begin, end, r, theoretical_base, linked_proteoform_references, true))
                         {
                             r.Identification = true;
                             identified.Add(e);
@@ -393,10 +393,10 @@ namespace ProteoformSuiteInternal
                     {
                         e.gene_name.gene_names.Concat(this.gene_name.gene_names);
                     }
-                }
+            }
                 else
                 {
-                    if (!linked_proteoform_references.Contains(e))
+                    if (linked_proteoform_references != null && !linked_proteoform_references.Contains(e))
                     {
                         bool different_id = e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) !=
                             theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label) ||

@@ -283,6 +283,7 @@ namespace ProteoformSuiteInternal
             //this # accounts for accessions that were grouped but are the same mass.... (don't  count as an additional ID)
             report += unique_experimental_ids_not_in_td + "\tUnique  Intact-Mass Experimental Proteoforms Identifications Not Identified in Top-Down" + Environment.NewLine;
             int total_unique = unique_td + unique_experimental_ids_not_in_td;
+            report += Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => !e.topdown_id && e.linked_proteoform_references == null) + "\tUnidentified Intact-Mass Experimental Proteoforms" + Environment.NewLine;
             report += total_unique + "\tTotal Unique Proteoform Identifications" + Environment.NewLine;
             report += Environment.NewLine;
 

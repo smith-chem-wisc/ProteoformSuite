@@ -101,24 +101,18 @@ namespace ProteoformSuiteInternal
                         theoretical.new_topdown_proteoform = true;
                         theoretical.begin = topdown.topdown_begin;
                         theoretical.end = topdown.topdown_end;
-                        topdown.begin = topdown.topdown_begin;
-                        topdown.end = topdown.topdown_end;
-                        topdown.ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination);
-                        foreach (ExperimentalProteoform e in topdown.identify_connected_experimentals(theoretical))
+                        foreach (ExperimentalProteoform e in topdown.identify_connected_experimentals(theoretical, topdown.topdown_begin, topdown.topdown_end,
+                             new PtmSet(topdown.topdown_ptm_set.ptm_combination), null))
                         {
                             identified_experimentals.Add(e);
                         }
-
-                        topdown.begin = 0;
-                        topdown.end = 0;
-                        topdown.ptm_set = new PtmSet(new List<Ptm>());
                     }
                 }
             }
             foreach (TheoreticalProteoform t in theoretical_proteoforms.OrderBy(t => t.topdown_theoretical))
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t, t.begin, t.end, t.ptm_set, t.linked_proteoform_references))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -135,7 +129,8 @@ namespace ProteoformSuiteInternal
                 {
                     {
                         lock (identified_experimentals) lock (tmp_new_experimentals)
-                                foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(id_experimental.linked_proteoform_references.First() as TheoreticalProteoform))
+                                foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(id_experimental.linked_proteoform_references.First() as TheoreticalProteoform, id_experimental.begin,
+                                    id_experimental.end, id_experimental.ptm_set, id_experimental.linked_proteoform_references))
                                 {
                                     identified_experimentals.Add(new_e);
                                     tmp_new_experimentals.Add(new_e);
