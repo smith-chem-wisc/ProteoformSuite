@@ -23,7 +23,11 @@ namespace ProteoWPFSuite
         public MainWindow()
         {
             InitializeComponent();
-            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            this.MinHeight = (System.Windows.SystemParameters.PrimaryScreenHeight * 0.75);
+            this.MinWidth = (System.Windows.SystemParameters.PrimaryScreenWidth * 0.50);
+            this.Height = (System.Windows.SystemParameters.PrimaryScreenHeight * 0.95);
+            this.Width = (System.Windows.SystemParameters.PrimaryScreenWidth * 0.75);
             this.Activate();
         }
 
