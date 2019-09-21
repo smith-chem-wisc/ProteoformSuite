@@ -254,8 +254,8 @@
             </GroupBox.Header>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="6*" />
-                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition Width="3*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -263,7 +263,12 @@
                     <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
 
-                <ComboBox x:Name="cmb_loadTable1" Grid.Column="0" Grid.Row="0" Padding="5" Margin="2 10 2 0" SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <ComboBox 
+                    x:Name="cmb_loadTable1" 
+                    Grid.Row="0" Grid.Column="0" 
+                    Padding="5" Margin="2 10 2 0" 
+                    SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                
                 <WindowsFormsHost Margin="2 10 2 10" Grid.Row="1" Grid.ColumnSpan="2" Background="#FFE4E4E4">
                     <winform:DataGridView x:Name="dgv_loadFiles1" CellFormatting="dgv_loadFiles1_CellFormatting" CellMouseClick="dgv_loadFiles1_CellMouseClick" CellValidating="dgv_loadFiles1_CellValidating" DragDrop="dgv_deconResults_DragDrop" DragEnter="dgv_deconResults_DragEnter">
                     </winform:DataGridView>
@@ -274,7 +279,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="4*"/>
                         </Grid.ColumnDefinitions>
                         
                         <Button 
@@ -295,14 +300,14 @@
                         
                         <GroupBox Header="Enter filter for :-" Grid.Column="2">
                             <StackPanel Orientation="Vertical">
-                                <Label x:Name="lb_filter1" Content="{Binding Path=LabelTxt, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBox x:Name="tb_filter1" Height="28">
+                                <Label x:Name="lb_filter1" Content="{Binding Path=LabelTxt, UpdateSourceTrigger=PropertyChanged}" ContentStringFormat=" {0}:- " />
+                                <TextBox x:Name="tb_filter1" Height="28" Margin="8 0 8 0">
                                     <TextBox.Style>
                                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                             <Style.Resources>
                                                 <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                                     <VisualBrush.Visual>
-                                                        <Label Content="Enter filter keyword..." Foreground="Gray" Padding="5 0 0 0"/>
+                                                        <Label Content="Enter file name/keyword..." Foreground="Gray" Padding="5 0 0 0"/>
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
                                             </Style.Resources>
@@ -336,54 +341,54 @@
                     <GroupBox.Header>
                         <TextBlock FontWeight="Bold">4. Start Analysis</TextBlock>
                     </GroupBox.Header>
-                    <Grid Margin="4 7 4 4">
+                    <Grid Margin="5 0 5 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid x:Name="panel_btn_stepthru" Grid.Column="0">
-                            <Button 
-                                x:Name="btn_stepthru" 
-                                Margin="0,0,4.4,0" 
-                                Click="btn_stepthru_Click"
-                                Content="Step Through Processing" />
-                        </Grid>
-                        <Grid x:Name="panel_btn_fullrun" Grid.Column="1">
-                            <Button 
-                                x:Name="btn_fullrun" 
-                                Margin="2 0 2 0" 
-                                Click="btn_fullRun_Click"
-                                Content="Full Run" />
-                        </Grid>
-                        <Grid x:Name="panel_btn_clearresults" Grid.Column="2">
-                            <Button 
-                                x:Name="btn_clearResults" 
-                                Margin="2 0 2 0" 
-                                Click="btn_clearResults_Click" 
-                                Content="Clear Results" />
-                        </Grid>
-                        <Grid x:Name="panel_btn_calib" Grid.Column="0">
-                            <Button 
-                                x:Name="btn_calibrate" 
-                                Margin="2 0 2 0" 
-                                Click="btn_calibrate_Click" 
-                                Content="Calibrate" />
-                        </Grid>
-                        <Grid x:Name="panel_btn_deconv" Grid.Column="0">
-                            <Button 
-                                x:Name="btn_deconvolute" 
-                                Margin="2 0 2 0" 
-                                Click="btn_deconvolute_Click" 
-                                Content="Deconvolute" />
-                        </Grid>
-                        <Grid x:Name="panel_btn_topdown_search" Grid.Column="0" Width="Auto">
-                            <Button 
-                                x:Name="btn_topdown_search" 
-                                Margin="0,0,4.4,0" 
-                                Click="btn_topdown_search_Click" 
-                                Content="MetaMorpheus Top-Down Search" />
-                        </Grid>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Margin" Value="3,3,3,0"/>
+                                <Setter Property="MaxHeight" Value="60"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Button 
+                            x:Name="btn_stepthru"
+                            Padding="10 5 10 5"
+                            Grid.Column="0"
+                            Click="btn_stepthru_Click" 
+                         >
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">Step Through Processing</TextBlock>
+                        </Button>
+                        <Button 
+                            x:Name="btn_fullRun" 
+                            Grid.Column="1"
+                            Click="btn_fullRun_Click"
+                            Content="Full Run" />
+                        <Button 
+                            x:Name="btn_calibrate" 
+                            Grid.Column="0" Grid.ColumnSpan="2"
+                            Click="btn_calibrate_Click" 
+                            Content="Calibrate" />
+                        <Button 
+                            x:Name="btn_deconvolute"
+                            Grid.Column="0" Grid.ColumnSpan="2"
+                            Click="btn_deconvolute_Click" 
+                            Content="Deconvolute" />
+                        <Button 
+                            x:Name="btn_topdown_search" 
+                            Padding="10 0 10 0"
+                            Grid.Column="0" Grid.ColumnSpan="2"
+                            Click="btn_topdown_search_Click" 
+                         >
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">MetaMorpheus Top-Down Search</TextBlock>
+                        </Button>
+                        <Button 
+                            x:Name="btn_clearresults"
+                            Grid.Column="2"
+                            Click="btn_clearResults_Click" 
+                            Content="Clear Results" />
                     </Grid>
                 </GroupBox>
             </Grid>
