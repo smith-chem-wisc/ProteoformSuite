@@ -27,6 +27,11 @@ namespace ProteoformSuiteInternal
 
         #endregion Constants
 
+        public Lollipop()
+        {
+            Loaders.LoadElements();
+        }
+
         #region Input Files
 
         public List<InputFile> input_files = new List<InputFile>();
@@ -455,6 +460,7 @@ namespace ProteoformSuiteInternal
         public double td_retention_time_tolerance = 5; //min
         public List<SpectrumMatch> top_down_hits = new List<SpectrumMatch>();
         public List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
+        public List<TopDownProteoform> topdown_proteoforms_no_theoretical = new List<TopDownProteoform>();
         public TDBUReader topdownReader = new TDBUReader();
         //C-score > 40: proteoform is both identified and fully characterized;
         //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized;
@@ -621,7 +627,7 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
-            foreach (TopDownProteoform topdown in topdown_proteoforms.Where(t => t.accepted).OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
+            foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
             {
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
@@ -896,7 +902,7 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, et_bestETRelationOnly));
+                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, Environment.CurrentDirectory, et_bestETRelationOnly));
                 if (i == 0)
                     ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
@@ -1160,9 +1166,9 @@ namespace ProteoformSuiteInternal
 
             computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
-            observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
+            observedProteins = getProteins(target_proteoform_community.experimental_proteoforms);
             quantifiedProteins = getProteins(satisfactoryProteoforms);
-            qVals = satisfactoryProteoforms.Where(pf => pf.accepted).Select(pf => pf.quant).ToList();
+            qVals = satisfactoryProteoforms.Select(pf => pf.quant).ToList();
 
             TusherAnalysis1.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList).ToList<IBiorepIntensity>(), TusherAnalysis1.QuantitativeDistributions.logIntensityHistogram);
             TusherAnalysis1.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList), TusherAnalysis1.QuantitativeDistributions.logSelectIntensityHistogram);
@@ -1584,6 +1590,7 @@ namespace ProteoformSuiteInternal
         public void clear_td()
         {
             Sweet.lollipop.topdown_proteoforms.Clear();
+            Sweet.lollipop.topdown_proteoforms_no_theoretical.Clear();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
                 List<TheoreticalProteoform> topdown_theoreticals = community.theoretical_proteoforms.Where(t => t.new_topdown_proteoform).ToList();

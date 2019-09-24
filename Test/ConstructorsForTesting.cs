@@ -102,7 +102,6 @@ namespace Test
             e.modified_mass = modified_mass;
             e.agg_mass = modified_mass;
             e.lysine_count = lysine_count;
-            e.accepted = true;
             return e;
         }
 
@@ -131,9 +130,12 @@ namespace Test
             h.sequence = "MSSSSSSSSSS";
             h.begin = 10;
             h.end = 20;
+            h.pfr_accession = "";
+            h.name = "";
+            h.uniprot_id = "";
             TopDownProteoform td = new TopDownProteoform(accession, new List<SpectrumMatch>() { h } );
+            td.topdown_geneName = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
             (td as ExperimentalProteoform).topdown_id = true;
-            td.accepted = true;
             return td;
         }
 

@@ -70,7 +70,6 @@ namespace ProteoformSuiteInternal
 
             if (CH2 == null || HPO3 == null)
             {
-                Loaders.LoadElements();
                 CH2 = ChemicalFormula.ParseFormula("C1 H2");
                 HPO3 = ChemicalFormula.ParseFormula("H1 O3 P1");
             }

@@ -264,7 +264,7 @@ namespace ProteoformSuiteInternal
 
                         if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 && td_hit.pscore > 0 &&
                             td_hit.reported_mass > 0 && td_hit.score > 0
-                            && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
+                            && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0 && (td_hit.end - td_hit.begin + 1 == td_hit.sequence.Length))
                         {
                             lock (td_hits) td_hits.Add(td_hit);
                         }

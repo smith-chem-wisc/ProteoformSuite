@@ -140,6 +140,10 @@ namespace ProteoformSuiteInternal
                 newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
             }
 
+            List<string> topdown_ids = Sweet.lollipop.topdown_proteoforms
+               .Select(p => p.accession.Split('_')[0].Split('-')[0] + "_" + p.sequence + "_" + string.Join(", ", p.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m))).ToList();
+
+
             //determine identified experimentals that are adducts
             //checks if any experimentals have same mods as e's ptmset, except e has additional adduct only mods.
             Parallel.ForEach(experimental_proteoforms, e =>
@@ -176,10 +180,8 @@ namespace ProteoformSuiteInternal
                         {
                             add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
                         }
-                        if (e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
-                                .Count(m => m == mod) > theo_ptms.Count
-                            || e.ambiguous_identifications.Any(i => i.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
-                                                                        .Count(m => m == mod) > theo_ptms.Count))
+                        if (e.ptm_set.ptm_combination.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                                .Count(m => m == mod) > theo_ptms.Count)
                         {
                             e.novel_mods = true;
                         }
@@ -206,6 +208,11 @@ namespace ProteoformSuiteInternal
                             {
                                 add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
                             }
+                            if(ambig_id.ptm_set.ptm_combination.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                                                                        .Count(m => m == mod) > theo_ptms.Count)
+                            {
+                                e.novel_mods = true;
+                            }
                         }
                         e.uniprot_mods += add;
                         if (add.Length == 0) e.uniprot_mods += "N/A";
@@ -213,24 +220,31 @@ namespace ProteoformSuiteInternal
                 }
 
                 //determine level #
+                e.proteoform_level_description = "";
                 if(e.linked_proteoform_references == null)
                 {
                     e.proteoform_level = 5;
+                    e.proteoform_level_description = "Unidentified";
                 }
                 else if(e.ambiguous_identifications.Count == 0)
                 {
                     if(e.ptm_set.ptm_combination.Count == 0)
                     {
                         e.proteoform_level = 1;
+
                     }
                     else
                     {
                         e.proteoform_level = 2;
+                        e.proteoform_level_description += "PTM localization ambiguity; ";
                     }
 
                     //check if accessions had been grouped in constructing the theoretical database
                     if ((e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct().Count() > 1)
+                    {
                         e.proteoform_level += 1;
+                        e.proteoform_level_description += "Gene ambiguity; ";
+                    }
                 }
                 else
                 {
@@ -240,16 +254,39 @@ namespace ProteoformSuiteInternal
                     var unique_PTMs = new List<string>() { e.ptm_set.ptm_description }.Concat(e.ambiguous_identifications.Select(a => a.ptm_set.ptm_description)).Distinct();
 
                     int gene_ambiguity = unique_accessions.Count() > 1 ? 1 : 0;
-                    
+
                     //check if accessions had been grouped in constructing the theoretical database
                     if ((e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct().Count() > 1)
-                            gene_ambiguity = 1;
+                    {
+                        gene_ambiguity = 1;
+                    }
 
                     int sequence_ambiguity = unique_sequences.Count() > 1 ? 1 : 0;
                     int PTM_ambiguity = unique_PTMs.Count() > 1 ? 1 : 0;
                     int PTM_location = e.ptm_set.ptm_combination.Count > 0 || e.ambiguous_identifications.Any(a => a.ptm_set.ptm_combination.Count > 0) ? 1 : 0;
 
                     e.proteoform_level = 1 + gene_ambiguity + sequence_ambiguity + PTM_ambiguity + PTM_location;
+                    if (gene_ambiguity > 0) e.proteoform_level_description += "Gene ambiguity; ";
+                    if (sequence_ambiguity > 0)  e.proteoform_level_description += "Sequence ambiguity; ";
+                    if (PTM_ambiguity > 0) e.proteoform_level_description += "PTM identity ambiguity; ";
+                    if (PTM_location > 0) e.proteoform_level_description += "PTM localization ambiguity; ";
+
+                }
+                if (e.proteoform_level == 1)
+                {
+                    e.proteoform_level_description = "Unambiguous";
+                }
+
+                //determine if new intact-mass ID
+                e.new_intact_mass_id = false;
+                if (!e.topdown_id && e.linked_proteoform_references != null && e.ambiguous_identifications.Count == 0)
+                {
+                    string this_id = string.Join(",", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()) + "_" + ExperimentalProteoform.get_sequence(e.linked_proteoform_references.First() as TheoreticalProteoform, e.begin, e.end) + "_" + string.Join(", ", e.ptm_set.ptm_combination.Where(m => m.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m));
+                    if (!topdown_ids.Any(t => this_id.Split('_')[0].Split(',').Contains(t.Split('_')[0])
+                        && this_id.Split('_')[1] == t.Split('_')[1] && this_id.Split('_')[2] == t.Split('_')[2]))
+                    {
+                        e.new_intact_mass_id = true;
+                    }
                 }
             });
 

@@ -95,14 +95,14 @@ namespace ProteoformSuiteInternal
 
                 if (with_mod_change == null && Math.Abs(r.peak.DeltaMass) <= mass_tolerance)
                 {
-                    lock (r) lock (e)
+                    lock (r) lock (e) lock(this)
                         {
                             if (assign_pf_identity(e, ptm_set, begin, end, r, theoretical_base, linked_proteoform_references, true))
-                            {
-                                r.Identification = true;
-                                identified.Add(e);
+                                {
+                                    r.Identification = true;
+                                    identified.Add(e);
+                                }
                             }
-                        }
                     continue;
                 }
 
@@ -110,15 +110,14 @@ namespace ProteoformSuiteInternal
                 {
                     continue;
                 }
-
-                lock (r) lock (e)
-                    {
-                        if (assign_pf_identity(e, with_mod_change, begin, end, r, theoretical_base, linked_proteoform_references, true))
+                lock (r) lock (e) lock (this)
                         {
-                            r.Identification = true;
-                            identified.Add(e);
+                            if (assign_pf_identity(e, with_mod_change, begin, end, r, theoretical_base, linked_proteoform_references, true))
+                            {
+                                r.Identification = true;
+                                identified.Add(e);
+                            }
                         }
-                    }
             }
 
             return identified;
@@ -341,7 +340,7 @@ namespace ProteoformSuiteInternal
 
                 foreach (var mod in new_set.ptm_combination.Where(m => m.modification.ModificationType == "Missing"))
                 {
-                    if (!new_set.ptm_combination.Any(m => m.modification.ModificationType == "AminoAcid"))
+                    if (!new_set.ptm_combination.Any(m => m.modification.ModificationType == "AminoAcid") && begin >= theoretical_base.begin)
                     {
                         if (theoretical_base.sequence[begin - theoretical_base.begin].ToString() ==
                         mod.modification.Target.ToString())
@@ -472,7 +471,6 @@ namespace ProteoformSuiteInternal
             }
 
 
-
             if (check_ambiguous_IDs)
             {  
                 //remove bad relations if using td to reduce ambiguity
@@ -517,24 +515,28 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
+               
                 if (this as ExperimentalProteoform != null && (this as ExperimentalProteoform).ambiguous_identifications.Count > 0)
                 {
-                    int count = (this as ExperimentalProteoform).ambiguous_identifications.Count;
-                    PtmSet[] new_ptm_set = new PtmSet[count];
-                    Parallel.For(0, count, i => 
+                    lock ((this as ExperimentalProteoform).ambiguous_identifications)
                     {
-                        var id = (this as ExperimentalProteoform).ambiguous_identifications[i];
-                       new_ptm_set[i] = determine_mod_change(e, this, id.theoretical_base, r, id.ptm_set, id.begin, id.end);
-
-                    });
-                    for(int i = 0; i < count; i++)
-                    {
-                        if(new_ptm_set[i] != null)
+                        int count = (this as ExperimentalProteoform).ambiguous_identifications.Count;
+                        PtmSet[] new_ptm_set = new PtmSet[count];
+                        Parallel.For(0, count, i =>
                         {
                             var id = (this as ExperimentalProteoform).ambiguous_identifications[i];
-                            if (assign_pf_identity(e, new_ptm_set[i], id.begin, id.end, r, id.theoretical_base, id.linked_proteoform_references, false))
+                            new_ptm_set[i] = determine_mod_change(e, this, id.theoretical_base, r, id.ptm_set, id.begin, id.end);
+
+                        });
+                        for (int i = 0; i < count; i++)
+                        {
+                            if (new_ptm_set[i] != null)
                             {
-                                identification_assigned = true;
+                                var id = (this as ExperimentalProteoform).ambiguous_identifications[i];
+                                if (assign_pf_identity(e, new_ptm_set[i], id.begin, id.end, r, id.theoretical_base, id.linked_proteoform_references, false))
+                                {
+                                    identification_assigned = true;
+                                }
                             }
                         }
                     }

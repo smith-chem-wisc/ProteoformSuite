@@ -33,13 +33,10 @@ namespace ProteoformSuiteInternal
 
         #region BUILDING RELATIONSHIPS
 
-        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, bool accepted_only, string current_directory, bool limit_et_relations)
+        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, string current_directory, bool limit_et_relations)
         {
-            if (accepted_only)
-                pfs1 = pfs1.Where(pf1 => pf1.accepted).ToArray();
-
-            if (accepted_only && (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse))
-                pfs2 = pfs2.OfType<ExperimentalProteoform>().Where(pf2 => pf2.accepted).ToArray();
+            if (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse)
+                pfs2 = pfs2.OfType<ExperimentalProteoform>().ToArray();
 
             Dictionary<int, List<Proteoform>> pfs2_lysine_lookup = new Dictionary<int, List<Proteoform>>();
             if (Sweet.lollipop.neucode_labeled)
@@ -50,7 +47,7 @@ namespace ProteoformSuiteInternal
                     else { same_lysine_ct.Add(pf2); }
                 }
             }
-
+            
             Parallel.ForEach(pfs1, pf1 =>
             {
                 lock (pf1)
@@ -213,7 +210,7 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
-            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true, Environment.CurrentDirectory, true);
+            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, Environment.CurrentDirectory, true);
             Random random = Sweet.lollipop.useRandomSeed_decoys ? new Random(community_number + Sweet.lollipop.randomSeed_decoys) : new Random(); //new random generator for each round of
             var shuffled = all_ef_relations.OrderBy(item => random.Next()).ToList();
             return shuffled.Take(Sweet.lollipop.ee_relations.Count).ToList();
@@ -319,7 +316,7 @@ namespace ProteoformSuiteInternal
         public List<ProteoformFamily> construct_families()
         {
             ProteoformFamily.reset_family_counter();
-            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToArray());
+            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms.ToArray());
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
             List<Thread> active = new List<Thread>();

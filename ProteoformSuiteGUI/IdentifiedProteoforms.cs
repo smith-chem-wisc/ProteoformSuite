@@ -43,7 +43,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_identified_experimentals, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_identified_experimentals);
-            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id && e.linked_proteoform_references != null)).Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
+            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
             tb_not_td.Text = "Identified Experimental Proteoforms Not in Top-Down";
             tb_topdown.Text = "Top-Down Proteoforms";

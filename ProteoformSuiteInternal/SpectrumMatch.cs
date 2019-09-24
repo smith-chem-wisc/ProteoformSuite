@@ -20,6 +20,7 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }
+        public GeneName gene_name { get; set; }
         public double pscore { get; set; }
         public double reported_mass { get; set; } //reported in TD results file
         public double score { get; set; }//C-score

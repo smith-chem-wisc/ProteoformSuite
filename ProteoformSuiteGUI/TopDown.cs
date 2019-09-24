@@ -49,9 +49,9 @@ namespace ProteoformSuiteGUI
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             load_colors();
             mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification.OriginalId).Distinct().ToList();
-            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count(td => td.accepted).ToString();
+            tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count().ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
-            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Where(td => td.accepted).Select(p => p.pfr_accession).Distinct().Count().ToString();
+            tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
         }
 
         public void RunTheGamut(bool full_run)
@@ -87,10 +87,10 @@ namespace ProteoformSuiteGUI
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
                     warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_ptms.Distinct()));
                 }
-                if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
+                if (Sweet.lollipop.topdown_proteoforms_no_theoretical.Count() > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms_no_theoretical.Select(t => t.accession.Split('_')[0]).Concat(Sweet.lollipop.topdown_proteoforms.SelectMany(t => t.ambiguous_topdown_hits).Select(p => p.accession.Split('_')[0])).Distinct()));
                 }
                 if (warning_methods.Count > 1)
                 {

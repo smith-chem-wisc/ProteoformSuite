@@ -412,7 +412,21 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.OrderBy(t => t.modified_mass))
             {
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
-                if (candidate_theoreticals.Count > 0)
+                bool accessions_in_database = true;
+                foreach(var hit in topdown.ambiguous_topdown_hits)
+                {
+                    var ambiguous_hit_theoretical = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(hit.accession.Split('_')[0].Split('-')[0])).ToList();
+                    if(ambiguous_hit_theoretical.Count > 0)
+                    {
+                        hit.gene_name = new GeneName(ambiguous_hit_theoretical.SelectMany(t => t.GeneNames));
+                    }
+                    else
+                    {
+                        accessions_in_database = false;
+                    }
+                }
+
+                if (candidate_theoreticals.Count > 0 && accessions_in_database)
                 {
                     topdown.topdown_geneName = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
@@ -425,8 +439,9 @@ namespace ProteoformSuiteInternal
                         new_proteins.Add(p);
                     }
                 }
-                else topdown.accepted = false;
+                else Sweet.lollipop.topdown_proteoforms_no_theoretical.Add(topdown);
             }
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.topdown_proteoforms.Except(Sweet.lollipop.topdown_proteoforms_no_theoretical).ToList();
             expanded_proteins = expanded_proteins.Concat(new_proteins).ToArray();
         }
 

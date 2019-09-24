@@ -39,6 +39,9 @@ namespace ProteoformSuiteInternal
         public bool correct_id { get; set; } //true if the ID given by ProteoformSuite matches ID from topdown
         public List<SpectrumMatch> ambiguous_topdown_hits = new List<SpectrumMatch>();
         public int topdown_level;
+        public string topdown_level_description;
+        public string topdown_uniprot_mods;
+        public bool topdown_novel_mods;
 
         public TopDownProteoform(string accession, List<SpectrumMatch> hits) : base(accession, null, true)
         {
@@ -52,8 +55,8 @@ namespace ProteoformSuiteInternal
             this.theoretical_mass = root.theoretical_mass;
             this.topdown_end = root.end;
             this.topdown_hits = hits;
-            this.calculate_td_properties();
             this.accession = accession + "_" + topdown_begin + "to" + topdown_end + "_1TD";
+            this.calculate_td_properties();
             this.lysine_count = sequence.Count(s => s == 'K');
             this.topdown_id = true;
         }
@@ -76,7 +79,6 @@ namespace ProteoformSuiteInternal
             this.accession = t.accession;
             this.agg_rt = t.agg_rt;
             this.lysine_count = t.lysine_count;
-            this.accepted = t.accepted;
             this.uniprot_id = t.uniprot_id;
             this.pfr_accession = t.pfr_accession;
             this.agg_intensity = t.agg_intensity;
@@ -103,13 +105,84 @@ namespace ProteoformSuiteInternal
                 ambiguous_topdown_hits.Add(ambiguous_id);
             }
             calculate_topdown_level();
+            get_uniprot_mods();
+        }
+
+        private void get_uniprot_mods()
+        {
+            var mods = topdown_ptm_set.ptm_combination.Where(p => !Proteoform.modification_is_adduct(p.modification))
+                          .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
+            topdown_uniprot_mods = "";
+            string add = "";
+            if (Sweet.lollipop.theoretical_database.theoreticals_by_accession.ContainsKey(Sweet.lollipop.target_proteoform_community.community_number))
+            {
+                Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number].TryGetValue(accession.Split('_')[0].Split('-')[0], out var matching_theoretical);
+                if (matching_theoretical != null)
+                {
+                    foreach (string mod in mods)
+                    {
+                        // positions with mod
+                        List<int> theo_ptms = matching_theoretical.First().ExpandedProteinList.First()
+                            .OneBasedPossibleLocalizedModifications
+                            .Where(p => p.Key >= topdown_begin && p.Key <= topdown_end
+                                                         && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                            .Select(m => m.Key).ToList();
+                        if (theo_ptms.Count > 0)
+                        {
+                            add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                        }
+                        if (topdown_ptm_set.ptm_combination.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                                .Count(m => m == mod) > theo_ptms.Count)
+                        {
+                            topdown_novel_mods = true;
+                        }
+                    }
+                    topdown_uniprot_mods += add;
+                    if (add.Length == 0) topdown_uniprot_mods += "N/A";
+
+                    foreach (var ambig_id in ambiguous_topdown_hits)
+                    {
+                        Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number].TryGetValue(accession.Split('_')[0].Split('-')[0], out var matching_ambig_theoretical);
+                        if (matching_ambig_theoretical != null)
+                        {
+                            var ambig_mods = ambig_id.ptm_list.Where(p => !Proteoform.modification_is_adduct(p.modification))
+                                       .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
+
+                            topdown_uniprot_mods += " | ";
+                            add = "";
+                            foreach (var mod in ambig_mods)
+                            {
+                                // positions with mod
+                                List<int> theo_ptms = matching_ambig_theoretical.First().ExpandedProteinList.First()
+                                    .OneBasedPossibleLocalizedModifications
+                                    .Where(p => p.Key >= ambig_id.begin && p.Key <= ambig_id.end
+                                                                 && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                                    .Select(m => m.Key).ToList();
+                                if (theo_ptms.Count > 0)
+                                {
+                                    add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                                }
+                                if (ambig_id.ptm_list.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                                                          .Count(m => m == mod) > theo_ptms.Count)
+                                {
+                                    topdown_novel_mods = true;
+                                }
+                            }
+                        }
+                        topdown_uniprot_mods += add;
+                        if (add.Length == 0) topdown_uniprot_mods += "N/A";
+                    }
+                }
+            }
         }
 
         private void calculate_topdown_level()
         {
+            topdown_level_description = "";
             if (ambiguous_topdown_hits.Count == 0)
             {
                 topdown_level = 1;
+                topdown_level_description = "Unambiguous";
             }
             else
             {
@@ -123,6 +196,10 @@ namespace ProteoformSuiteInternal
                 int PTM_ambiguity = unique_PTM_IDs.Count() > 1 ? 1 : 0;
                 int PTM_location = unique_PTM_locations.Count() > 1 ? 1 : 0;
 
+                if (gene_ambiguity > 0) topdown_level_description += "Gene ambiguity; ";
+                if (sequence_ambiguity > 0) topdown_level_description += "Sequence ambiguity; ";
+                if (PTM_ambiguity > 0) topdown_level_description += "PTM identity ambiguity; ";
+                if (PTM_location > 0) topdown_level_description += "PTM localization ambiguity; ";
                 topdown_level = 1 + gene_ambiguity + sequence_ambiguity + PTM_ambiguity + PTM_location;
             }
         }

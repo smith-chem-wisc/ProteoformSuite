@@ -205,6 +205,7 @@ namespace Test
         public void results_dataframe_with_something()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.input_files.Add(ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Identification, "n", "s", "1", "1", "1")); //0
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             e.linked_proteoform_references = new List<Proteoform>(new List<Proteoform> { ConstructorsForTesting.make_a_theoretical() });
             e.ptm_set = e.linked_proteoform_references.Last().ptm_set;
@@ -228,9 +229,9 @@ namespace Test
             Assert.True(lines.Any(a => a.Contains("TD1")));
             Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f, f2 };
             lines = ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.experimental_intensities_dataframe()).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            Assert.True(lines.Count() == 4);
-            Assert.True(lines.Any(a => a.Contains("TD1")));
+            Assert.AreEqual(lines.Count(), 4);
             Assert.True(lines.Any(a => a.Contains("E1")));
+            Assert.True(lines.Any(a => a.Contains("TD1")));
         }
 
         [Test]

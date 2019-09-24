@@ -110,7 +110,6 @@ namespace Test
             }
 
             tdhList[9].ms2_retention_time = 52;
-
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
 
@@ -433,7 +432,7 @@ namespace Test
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform> { td1, td2, td3 };
             Sweet.lollipop.add_td_proteoforms = true;
             Sweet.lollipop.aggregate_proteoforms(Sweet.lollipop.validate_proteoforms, Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, 0);
-            List<ProteoformRelation> relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
+            List<ProteoformRelation> relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, Environment.CurrentDirectory, true);
             List<DeltaMassPeak> peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>>());
             //should have 4 experimental proteoforms -- 3 topdown, 1 not topdown experimental
             Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.topdown_id));
@@ -569,11 +568,6 @@ namespace Test
             t4.sequence = "ADGYEEIIITNQQSFYSVDLEVGTPPQNVTVLVDTGSSDLWIMGSDNPYCSSNSMGSSRRR";
             t.sequence = "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA";
             t5.sequence = "VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA";
-            t.accepted = true;
-            t2.accepted = true;
-            t3.accepted = true;
-            t4.accepted = true;
-            t5.accepted = true;
             t3.topdown_begin = 68;
             t3.topdown_end = 128;
             ModificationMotif motif;
@@ -598,11 +592,11 @@ namespace Test
             Assert.AreEqual(28, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { t, t2, t3, t4, t5 };
             Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
-            Assert.IsTrue(t.accepted);
-            Assert.IsFalse(t2.accepted);
-            Assert.IsTrue(t3.accepted);
-            Assert.IsTrue(t4.accepted);
-            Assert.IsTrue(t5.accepted);
+            Assert.IsTrue(Sweet.lollipop.topdown_proteoforms.Contains(t));
+            Assert.IsFalse(Sweet.lollipop.topdown_proteoforms.Contains(t2));
+            Assert.IsTrue(Sweet.lollipop.topdown_proteoforms.Contains(t3));
+            Assert.IsTrue(Sweet.lollipop.topdown_proteoforms.Contains(t4));
+            Assert.IsTrue(Sweet.lollipop.topdown_proteoforms.Contains(t5));
             Assert.AreEqual(26, Sweet.lollipop.theoretical_database.expanded_proteins.Length); //should have new topdown protein added
             Assert.AreEqual(1, Sweet.lollipop.theoretical_database.expanded_proteins.Count(p => p.topdown_protein)); //only add 1 new sequence
             Assert.AreEqual("VKLTSIAAGVAAIAATASATTTLAQSDERVNLVELGVYVSDIRAHLA", Sweet.lollipop.theoretical_database.expanded_proteins.Where(p => p.topdown_protein).First().BaseSequence);
