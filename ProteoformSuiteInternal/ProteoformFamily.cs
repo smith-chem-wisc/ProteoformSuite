@@ -102,7 +102,7 @@ namespace ProteoformSuiteInternal
                         theoretical.begin = topdown.topdown_begin;
                         theoretical.end = topdown.topdown_end;
                         foreach (ExperimentalProteoform e in topdown.identify_connected_experimentals(theoretical, topdown.topdown_begin, topdown.topdown_end,
-                             new PtmSet(topdown.topdown_ptm_set.ptm_combination), null))
+                              new PtmSet(topdown.topdown_ptm_set.ptm_combination), null))
                         {
                             identified_experimentals.Add(e);
                         }
