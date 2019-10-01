@@ -503,6 +503,4 @@ namespace ProteoformSuiteInternal
             return true;
         }
     }
-
-
 }

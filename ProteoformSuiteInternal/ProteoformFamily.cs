@@ -141,7 +141,7 @@ namespace ProteoformSuiteInternal
             }
 
             List<string> topdown_ids = Sweet.lollipop.topdown_proteoforms
-               .Select(p => p.accession.Split('_')[0].Split('-')[0] + "_" + p.sequence + "_" + string.Join(", ", p.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m))).ToList();
+               .Select(p => p.accession.Split('_')[0].Split('-')[0] + "_" + p.sequence + "_" + string.Join(", ", p.topdown_ptm_set.ptm_combination.Where(m => m.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m))).ToList();
 
 
             //determine identified experimentals that are adducts
@@ -180,7 +180,7 @@ namespace ProteoformSuiteInternal
                         {
                             add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
                         }
-                        if (e.ptm_set.ptm_combination.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                        if (e.ptm_set.ptm_combination.Where(ptm => ptm.modification.ModificationType != "Deconvolution Error" && !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
                                 .Count(m => m == mod) > theo_ptms.Count)
                         {
                             e.novel_mods = true;
@@ -208,7 +208,7 @@ namespace ProteoformSuiteInternal
                             {
                                 add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
                             }
-                            if(ambig_id.ptm_set.ptm_combination.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
+                            if(ambig_id.ptm_set.ptm_combination.Where(ptm => ptm.modification.ModificationType != "Deconvolution Error" && !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
                                                                         .Count(m => m == mod) > theo_ptms.Count)
                             {
                                 e.novel_mods = true;
@@ -251,7 +251,7 @@ namespace ProteoformSuiteInternal
                     var unique_accessions = new List<string>() { e.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0] }.Concat(e.ambiguous_identifications.Select(a => a.theoretical_base.accession.Split('_')[0].Split('-')[0])).Distinct();
                     var unique_sequences = new List<string>() { ExperimentalProteoform.get_sequence(e.linked_proteoform_references.First() as TheoreticalProteoform, e.begin, e.end) }.
                     Concat(e.ambiguous_identifications.Select(a => ExperimentalProteoform.get_sequence(a.theoretical_base, a.begin, a.end))).Distinct();
-                    var unique_PTMs = new List<string>() { e.ptm_set.ptm_description }.Concat(e.ambiguous_identifications.Select(a => a.ptm_set.ptm_description)).Distinct();
+                    var unique_PTMs = new List<string>() { string.Join(", ", e.ptm_set.ptm_combination.Where(m => m.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)) }.Concat(e.ambiguous_identifications.Select(a => string.Join(", ", a.ptm_set.ptm_combination.Where(m => m.modification.ModificationType != "Deconvolution Error").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))))).Distinct();
 
                     int gene_ambiguity = unique_accessions.Count() > 1 ? 1 : 0;
 
@@ -263,7 +263,7 @@ namespace ProteoformSuiteInternal
 
                     int sequence_ambiguity = unique_sequences.Count() > 1 ? 1 : 0;
                     int PTM_ambiguity = unique_PTMs.Count() > 1 ? 1 : 0;
-                    int PTM_location = e.ptm_set.ptm_combination.Count > 0 || e.ambiguous_identifications.Any(a => a.ptm_set.ptm_combination.Count > 0) ? 1 : 0;
+                    int PTM_location = e.ptm_set.ptm_combination.Count(m => m.modification.ModificationType != "Deconvolution Error") > 0 || e.ambiguous_identifications.Any(a => a.ptm_set.ptm_combination.Count(m => m.modification.ModificationType != "Deconvolution Error") > 0) ? 1 : 0;
 
                     e.proteoform_level = 1 + gene_ambiguity + sequence_ambiguity + PTM_ambiguity + PTM_location;
                     if (gene_ambiguity > 0) e.proteoform_level_description += "Gene ambiguity; ";
