@@ -679,11 +679,6 @@ namespace ProteoformSuiteInternal
             return results;
         }
 
-        private static void normalize_intensitites()
-        {
-
-        }
-
         public static DataTable topdown_results_dataframe()
         {
             DataTable results = new DataTable();

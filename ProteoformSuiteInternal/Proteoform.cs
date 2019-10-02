@@ -392,7 +392,7 @@ namespace ProteoformSuiteInternal
                     {
                         e.gene_name.gene_names.Concat(this.gene_name.gene_names);
                     }
-            }
+                }
                 else
                 {
                     if (linked_proteoform_references != null && !linked_proteoform_references.Contains(e))
@@ -403,8 +403,8 @@ namespace ProteoformSuiteInternal
                             != ExperimentalProteoform.get_sequence(theoretical_base, new_begin, new_end) || !e.ptm_set.same_ptmset(new_set, true);
 
 
-                        List<Modification> this_known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
-                        List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
+                        List<Modification> this_known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(v => v.MonoisotopicMass != 0).ToList();
+                        List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(v => v.MonoisotopicMass != 0).ToList();
                         if (!Sweet.lollipop.topdown_theoretical_reduce_ambiguity || (theoretical_base.topdown_theoretical && !(e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical))
                         {
                             if (!Sweet.lollipop.annotated_PTMs_reduce_ambiguity ||
@@ -477,7 +477,7 @@ namespace ProteoformSuiteInternal
                 if (identification_assigned)
                 {
                     List<AmbiguousIdentification> to_remove = new List<AmbiguousIdentification>();
-                    List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
+                    List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(m => m.MonoisotopicMass != 0).ToList();
                     if (theoretical_base.topdown_theoretical && Sweet.lollipop.topdown_theoretical_reduce_ambiguity)
                     {
                         to_remove.AddRange(e.ambiguous_identifications.Where(id => !id.theoretical_base.topdown_theoretical));
@@ -487,7 +487,7 @@ namespace ProteoformSuiteInternal
                     {
                         foreach (var ambiguous_id in e.ambiguous_identifications)
                         {
-                            List<Modification> ambiguous_id_known_mods = ambiguous_id.theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).ToList();
+                            List<Modification> ambiguous_id_known_mods = ambiguous_id.theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(m => m.MonoisotopicMass != 0).ToList();
                             if (ambiguous_id.ptm_set.ptm_combination.Any(mod1 => !modification_is_adduct(mod1.modification) && !ambiguous_id_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification))))
                             {
                                 to_remove.Add(ambiguous_id);

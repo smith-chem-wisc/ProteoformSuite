@@ -556,7 +556,7 @@ namespace Test
         }
 
         [Test]
-        public void test_add_topdown_theoreticals()
+        public static void test_add_topdown_theoreticals()
         {
             Sweet.lollipop = new Lollipop();
             TopDownProteoform t = ConstructorsForTesting.TopDownProteoform("P32329_1", 1000, 10); //sequence not in database

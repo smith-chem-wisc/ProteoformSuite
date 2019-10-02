@@ -69,7 +69,6 @@ namespace ProteoformSuiteInternal
         //if ambiguous id's store here
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<AmbiguousIdentification> ambiguous_identifications { get; set; } = new List<AmbiguousIdentification>();
-        public AmbiguousIdentification identification { get; set; }
 
         #endregion Public Properties
 
