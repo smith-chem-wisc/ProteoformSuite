@@ -519,6 +519,34 @@ namespace Test
             prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
             Assert.AreEqual(1, prList.Count);
 
+            //Da instead of ppm -- return 1
+            Sweet.lollipop.et_notch_ppm = false;
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
+
+            //outside ppm tolerance - return 0
+            pf1.modified_mass = 1000;
+            pf2.modified_mass = 1010.5;
+            Sweet.lollipop.et_notch_ppm = true;
+            Sweet.lollipop.notch_tolerance_et = 1;
+            paE[0] = pf1;
+            paT[0] = pf2;
+            prepare_for_et(new List<double> { -10 });
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(0, prList.Count);
+
+
+            //outside Da toelrance - return 0.
+            pf1.modified_mass = 1000;
+            pf2.modified_mass = 1010.5;
+            Sweet.lollipop.et_notch_ppm = false;
+            Sweet.lollipop.notch_tolerance_et = .5;
+            paE[0] = pf1;
+            paT[0] = pf2;
+            prepare_for_et(new List<double> { -10 });
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(0, prList.Count);
+
             // One experimental one theoretical protoeform; mass difference > 500 -- return 0
             pf1.modified_mass = 1000;
             pf2.modified_mass = 2000;
@@ -594,6 +622,57 @@ namespace Test
             paT[0] = pf2;
             prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
             Assert.AreEqual(1, prList.Count);
+        }
+
+        [Test]
+        public void TestUnabeledProteoformCommunityRelateWithNotches_EE()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.ee_use_notch = true;
+            Sweet.lollipop.ee_max_mass_difference = 200;
+
+            // One experimental one theoretical protoeform; mass difference < 500 -- return 1
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, -1, true);
+            ExperimentalProteoform[] paE = new ExperimentalProteoform[2];
+            paE[0] = pf1;
+            paE[1] = pf2;
+            List<ProteoformRelation> prList = new List<ProteoformRelation>();
+            prepare_for_et(new List<double> { pf2.modified_mass - pf1.modified_mass });
+            prList = community.relate(paE, paE, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
+
+            //Da instead of ppm -- return 1
+            Sweet.lollipop.ee_notch_ppm = false;
+            prList = community.relate(paE, paE, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(1, prList.Count);
+
+            //outside ppm tolerance - return 0
+            pf1.modified_mass = 1000;
+            pf2.modified_mass = 1010.5;
+            Sweet.lollipop.ee_notch_ppm = true;
+            Sweet.lollipop.notch_tolerance_ee = 1;
+            prepare_for_et(new List<double> { 10 });
+            prList = community.relate(paE, paE, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(0, prList.Count);
+
+
+            //outside Da toelrance - return 0.
+            pf1.modified_mass = 1000;
+            pf2.modified_mass = 1010.5;
+            Sweet.lollipop.ee_notch_ppm = false;
+            Sweet.lollipop.notch_tolerance_ee = .5;
+            prepare_for_et(new List<double> { 10 });
+            prList = community.relate(paE, paE, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(0, prList.Count);
+
+            // One experimental one theoretical protoeform; mass difference > 500 -- return 0
+            pf1.modified_mass = 1000;
+            pf2.modified_mass = 2000;
+            prepare_for_et(new List<double> { pf2.modified_mass - pf1.modified_mass });
+            prList = community.relate(paE, paE, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(0, prList.Count);           
         }
 
         [Test]

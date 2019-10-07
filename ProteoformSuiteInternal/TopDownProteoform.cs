@@ -122,8 +122,8 @@ namespace ProteoformSuiteInternal
                     foreach (string mod in mods)
                     {
                         // positions with mod
-                        List<int> theo_ptms = matching_theoretical.First().ExpandedProteinList.First()
-                            .OneBasedPossibleLocalizedModifications
+                        List<int> theo_ptms = matching_theoretical.First().ExpandedProteinList.SelectMany(p => p
+                            .OneBasedPossibleLocalizedModifications)
                             .Where(p => p.Key >= topdown_begin && p.Key <= topdown_end
                                                          && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
                             .Select(m => m.Key).ToList();
@@ -153,8 +153,8 @@ namespace ProteoformSuiteInternal
                             foreach (var mod in ambig_mods)
                             {
                                 // positions with mod
-                                List<int> theo_ptms = matching_ambig_theoretical.First().ExpandedProteinList.First()
-                                    .OneBasedPossibleLocalizedModifications
+                                List<int> theo_ptms = matching_ambig_theoretical.First().ExpandedProteinList.SelectMany(p => p
+                                    .OneBasedPossibleLocalizedModifications)
                                     .Where(p => p.Key >= ambig_id.begin && p.Key <= ambig_id.end
                                                                  && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
                                     .Select(m => m.Key).ToList();

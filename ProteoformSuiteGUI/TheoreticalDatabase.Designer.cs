@@ -520,6 +520,7 @@
             this.ckbx_combineTheoreticalsByMass.TabIndex = 22;
             this.ckbx_combineTheoreticalsByMass.Text = "Combine Theoretical Proteoforms By Mass";
             this.ckbx_combineTheoreticalsByMass.UseVisualStyleBackColor = true;
+            this.ckbx_combineTheoreticalsByMass.Visible = false;
             this.ckbx_combineTheoreticalsByMass.CheckedChanged += new System.EventHandler(this.ckbx_combineTheoreticalsByMass_CheckedChanged);
             // 
             // nUD_NumDecoyDBs

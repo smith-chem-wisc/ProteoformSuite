@@ -352,11 +352,11 @@ namespace ProteoformSuiteGUI
 
         private void GraphETRelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", true);
+            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", false);
             ct_ET_Histogram.Series["relations"].Enabled = true;
             if (Sweet.lollipop.ed_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"], "decoys", true);
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"], "decoys", false);
                 ct_ET_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }

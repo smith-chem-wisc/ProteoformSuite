@@ -155,7 +155,7 @@ namespace ProteoformSuiteInternal
                         l.linked_proteoform_references != null
                         && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                         && l.ptm_set.ptm_combination.Count < e.ptm_set.ptm_combination.Count
-                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId) != e.ptm_set.ptm_combination.Count(p => p.modification.OriginalId == m.modification.OriginalId))
+                        && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => UnlocalizedModification.LookUpId(p.modification) == UnlocalizedModification.LookUpId(m.modification)) != e.ptm_set.ptm_combination.Count(p => UnlocalizedModification.LookUpId(p.modification) == UnlocalizedModification.LookUpId(m.modification)))
                             .Count(p => !Proteoform.modification_is_adduct(p.modification))
                             == 0
                         );
@@ -171,8 +171,8 @@ namespace ProteoformSuiteInternal
                     foreach (string mod in mods)
                     {
                         // positions with mod
-                        List<int> theo_ptms = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.First()
-                            .OneBasedPossibleLocalizedModifications
+                        List<int> theo_ptms = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p
+                            .OneBasedPossibleLocalizedModifications)
                             .Where(p => p.Key >= e.begin && p.Key <= e.end
                                                          && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
                             .Select(m => m.Key).ToList();
@@ -199,8 +199,8 @@ namespace ProteoformSuiteInternal
                         foreach (var mod in ambig_mods)
                         {
                             // positions with mod
-                            List<int> theo_ptms = ambig_id.theoretical_base.ExpandedProteinList.First()
-                                .OneBasedPossibleLocalizedModifications
+                            List<int> theo_ptms = ambig_id.theoretical_base.ExpandedProteinList.SelectMany(p => p
+                                .OneBasedPossibleLocalizedModifications)
                                 .Where(p => p.Key >= ambig_id.begin && p.Key <= ambig_id.end
                                                              && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
                                 .Select(m => m.Key).ToList();

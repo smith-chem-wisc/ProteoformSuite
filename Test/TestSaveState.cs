@@ -235,6 +235,26 @@ namespace Test
         }
 
         [Test]
+        public void results_decoy_dataframe_with_something()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.input_files.Add(ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Identification, "n", "s", "1", "1", "1")); //0
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
+            e.linked_proteoform_references = new List<Proteoform>(new List<Proteoform> { ConstructorsForTesting.make_a_theoretical() });
+            e.ptm_set = e.linked_proteoform_references.Last().ptm_set;
+            ProteoformFamily f = new ProteoformFamily(e);
+            f.construct_family();
+            Sweet.lollipop.decoy_proteoform_communities.Add("Decoy1", new ProteoformCommunity());
+            Sweet.lollipop.decoy_proteoform_communities["Decoy1"].families = new List<ProteoformFamily> { f };
+            var time_stamp = Sweet.time_stamp();
+            var directory = TestContext.CurrentContext.TestDirectory;
+            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, time_stamp, Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, Sweet.lollipop.TusherAnalysis1 as TusherAnalysis);
+            Assert.IsTrue(File.Exists(Path.Combine(directory, "decoy_experimental_results_" + time_stamp + ".tsv")));
+            var lines = File.ReadAllLines(Path.Combine(directory, "decoy_experimental_results_" + time_stamp + ".tsv"));
+            Assert.AreEqual(2, lines.Length);
+        }
+
+        [Test]
         public void saveall()
         {
             Sweet.lollipop = new Lollipop();
@@ -245,6 +265,30 @@ namespace Test
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Add(g);
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { ConstructorsForTesting.TopDownProteoform("td1", 1000, 10) };
             ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp(), Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, Sweet.lollipop.TusherAnalysis1 as TusherAnalysis);
+        }
+
+        [Test]
+        public void experimental_intensitites_dataframe()
+        {
+            Sweet.lollipop = new Lollipop();
+            int id_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.Identification)).First());
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[id_file_index], Lollipop.file_types[id_file_index], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_3columns.tsv") }, Lollipop.acceptable_extensions[id_file_index], Lollipop.file_types[id_file_index], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).First().lt_condition = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList()[1].fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList()[1].biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList()[1].technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList()[1].lt_condition = "1";
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), Sweet.lollipop.raw_experimental_components, Purpose.Identification, false);
+            Sweet.lollipop.aggregate_proteoforms(true, null, Sweet.lollipop.raw_experimental_components, null, 1);
+            Sweet.lollipop.construct_target_and_decoy_families();
+            var dt = ResultsSummaryGenerator.experimental_intensities_dataframe();
+            Assert.AreEqual(111, dt.Rows.Count);
+            Assert.AreEqual(10, dt.Columns.Count);
+
         }
 
         [Test]

@@ -83,8 +83,7 @@ namespace ProteoformSuiteInternal
             List<PtmSet> candidate_sets = new List<PtmSet>();
             if (Sweet.lollipop.et_use_notch && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
             {
-                if ((Sweet.lollipop.et_use_notch && !Sweet.lollipop.et_notch_ppm) ||
-                    Sweet.lollipop.peak_width_base_et > 0.09)
+                if (Sweet.lollipop.et_use_notch && !Sweet.lollipop.et_notch_ppm)
                 {
                     double mass = delta_mass - Sweet.lollipop.notch_tolerance_et;
                     while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_et)
@@ -120,8 +119,7 @@ namespace ProteoformSuiteInternal
                      (relation_type == ProteoformComparison.ExperimentalExperimental ||
                       relation_type == ProteoformComparison.ExperimentalFalse))
             {
-                if ((Sweet.lollipop.ee_use_notch && !Sweet.lollipop.ee_notch_ppm) ||
-                    Sweet.lollipop.peak_width_base_ee > 0.09)
+                if (Sweet.lollipop.ee_use_notch && !Sweet.lollipop.ee_notch_ppm)
                 {
                     double mass = delta_mass - Sweet.lollipop.notch_tolerance_ee;
                     while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_ee)

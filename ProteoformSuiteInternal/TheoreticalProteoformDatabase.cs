@@ -80,7 +80,7 @@ namespace ProteoformSuiteInternal
             Sweet.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
             unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<Modification> { new Ptm().modification }));
-            load_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
+            load_unlocalized_names(Path.Combine(current_directory, "Mods", "stored_mods.modnames"));
 
 
             //this is for ptmsets --> used in RELATIONS
