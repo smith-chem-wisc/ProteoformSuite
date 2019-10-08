@@ -75,7 +75,7 @@ namespace ProteoformSuiteGUI
             ct.Series[series].Points.Clear();
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "nearby_relations_count";
-            List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.DeltaMass).ToList();
+            List<ProteoformRelation> relations_ordered = relations.OrderBy(r => r.DeltaMass).ToList();
             for (int i = 0; i < relations_ordered.Count; i++)
             {
                 ProteoformRelation relation = relations_ordered[i];

@@ -21,7 +21,6 @@ namespace Test
             //One accepted ET relation; should give one ProteoformFamily
             Sweet.lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
-            pf1.accepted = true;
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
@@ -281,8 +280,8 @@ namespace Test
             //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
             //test that the relation.represented_modification gets set
             Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 19 || r.represented_ptmset == null));
-            Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 0 || r.represented_ptmset.ptm_combination.First().modification.OriginalId == "unmodified"));
             Assert.True(pf1 == pf3.linked_proteoform_references.First() || pf2 == pf3.linked_proteoform_references.First());
+            Assert.True(Sweet.lollipop.et_relations.All(r => r.peak.DeltaMass != 0 || r.represented_ptmset.ptm_combination.First().modification.OriginalId == "unmodified"));
 
             //uniprot vs. novel mods
             Assert.AreEqual("oxidation", pf3.linked_proteoform_references.First().ptm_set.ptm_description);
@@ -299,9 +298,9 @@ namespace Test
             Assert.AreEqual("oxidation", pf7.ptm_set.ptm_description);
             Assert.AreEqual("oxidation", pf8.ptm_set.ptm_description);
 
-            Assert.AreEqual("", pf3.uniprot_mods);
-            Assert.AreEqual("", pf4.uniprot_mods);
-            Assert.AreEqual("", pf5.uniprot_mods);
+            Assert.AreEqual("N/A | oxidation @ 1; ", pf3.uniprot_mods);
+            Assert.AreEqual("N/A | oxidation @ 1; ", pf4.uniprot_mods);
+            Assert.AreEqual("N/A | oxidation @ 1; ", pf5.uniprot_mods);
             Assert.AreEqual("oxidation @ 1; ", pf6.uniprot_mods);
             Assert.AreEqual("oxidation @ 1; ", pf7.uniprot_mods);
             Assert.AreEqual("oxidation @ 1; ", pf8.uniprot_mods);
@@ -375,8 +374,8 @@ namespace Test
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { decoy1 };
 
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
-            Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, TestContext.CurrentContext.TestDirectory, true);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
+            Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.relate_ef();
             foreach (ProteoformRelation pr in Sweet.lollipop.et_relations) pr.set_nearby_group(Sweet.lollipop.et_relations, Sweet.lollipop.et_relations.Select(r => r.InstanceId).ToList());
@@ -397,7 +396,7 @@ namespace Test
             //peak is accepted --> relation should be accepted, peak added to relation
             Sweet.lollipop.clear_et();
             Sweet.lollipop.min_peak_count_et = 1;
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
             Sweet.lollipop.relate_ed();
             foreach (ProteoformRelation pr in Sweet.lollipop.et_relations) pr.set_nearby_group(Sweet.lollipop.et_relations, Sweet.lollipop.et_relations.Select(r => r.InstanceId).ToList());
             foreach (ProteoformRelation pr in Sweet.lollipop.ee_relations) pr.set_nearby_group(Sweet.lollipop.ee_relations, Sweet.lollipop.ee_relations.Select(r => r.InstanceId).ToList());
@@ -415,7 +414,7 @@ namespace Test
             //one peak accepted --> one of the EF relations falls into range of peak and should be accepted
             Sweet.lollipop.clear_ee();
             Sweet.lollipop.min_peak_count_ee = 1;
-            Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, TestContext.CurrentContext.TestDirectory, true);
+            Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, TestContext.CurrentContext.TestDirectory, true);
             Sweet.lollipop.relate_ef();
             Sweet.lollipop.ee_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.ee_relations, Sweet.lollipop.ef_relations);
             Assert.AreEqual(3, Sweet.lollipop.ee_peaks.Count(p => p.Accepted));
@@ -438,7 +437,7 @@ namespace Test
             Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms(-100);
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
             foreach (ProteoformRelation pr in Sweet.lollipop.et_relations) pr.set_nearby_group(Sweet.lollipop.et_relations, Sweet.lollipop.et_relations.Select(r => r.InstanceId).ToList());
             Sweet.lollipop.min_peak_count_et = 1;
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
@@ -463,12 +462,13 @@ namespace Test
             pf1.agg_rt = 45;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("A2", 1001.0, 1, true);
             pf2.agg_rt = 85;
+
             TopDownProteoform td1 = ConstructorsForTesting.TopDownProteoform("DIFFACCESSION_2", 1000.0, 45);
             TopDownProteoform td2 = ConstructorsForTesting.TopDownProteoform("ACCESSION_2", 1001.0, 85);
 
             TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("ACCESSION", 1000.0, 1);
             TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("ACCESSION2", 1000.0, 1);
-            t2.topdown_theoretical = true;
+            t2.new_topdown_proteoform = true;
 
             TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 0 });
             //need to make theoretical accession database
@@ -572,23 +572,23 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms(-100);
             Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"] = construct_community_with_td_proteoforms(0);
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, true);
             foreach (ProteoformRelation pr in Sweet.lollipop.et_relations) pr.set_nearby_group(Sweet.lollipop.et_relations, Sweet.lollipop.et_relations.Select(r => r.InstanceId).ToList());
             Sweet.lollipop.min_peak_count_et = 1;
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             Sweet.lollipop.target_proteoform_community.construct_families();
             Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].construct_families();
-            Sweet.lollipop.top_down_hits = new List<TopDownHit>() { new TopDownHit() };
+            Sweet.lollipop.top_down_hits = new List<SpectrumMatch>() { new SpectrumMatch() };
             Assert.AreEqual(1, Sweet.lollipop.top_down_hits.Count);
             Assert.IsNotEmpty(Sweet.lollipop.topdown_proteoforms);
-            Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));
-            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
-            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.new_topdown_proteoform));
+            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
+            Assert.IsTrue(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
             Sweet.lollipop.clear_td();
             Assert.IsEmpty(Sweet.lollipop.topdown_proteoforms);
-            Assert.IsFalse(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical));
-            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
-            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.topdown_theoretical).Count() > 0);
+            Assert.IsFalse(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.new_topdown_proteoform));
+            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
+            Assert.IsFalse(Sweet.lollipop.theoretical_database.theoreticals_by_accession[0].Values.SelectMany(t => t).Where(t => t.new_topdown_proteoform).Count() > 0);
         }
 
         [Test]

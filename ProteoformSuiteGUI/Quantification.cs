@@ -72,7 +72,7 @@ namespace ProteoformSuiteGUI
 
             //Results dataframe for selected tusher analysis
             DataTable results;
-            results = ResultsSummaryGenerator.experimental_results_dataframe(selected_tusher_analysis);
+            results = ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, selected_tusher_analysis);
             results.TableName = "Results_" + selected_tusher_analysis.sortedPermutedRelativeDifferences.Count.ToString() + "Perm";
             DataTables.Add(results);
 
@@ -541,7 +541,7 @@ namespace ProteoformSuiteGUI
 
                 if (cmbx_quantitativeValuesTableSelection.SelectedIndex == 1)
                 {
-                    DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.experimental_results_dataframe(get_tusher_analysis()));
+                    DisplayUtility.FillDataGridView(dgv_quantification_results, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, get_tusher_analysis()));
                     return;
                 }
             }
@@ -1245,7 +1245,7 @@ namespace ProteoformSuiteGUI
             string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString(), false);
+                cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 

@@ -52,11 +52,6 @@ namespace ProteoWPFSuite
             get { return e.lysine_count; }
         }
 
-        public bool Accepted
-        {
-            get { return e.accepted; }
-        }
-
         public bool mass_shifted
         {
             get { return e.aggregated.Any(c => c as Component != null && (c as Component).manual_mass_shift != 0); }

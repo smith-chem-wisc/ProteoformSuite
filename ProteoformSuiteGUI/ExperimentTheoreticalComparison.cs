@@ -53,13 +53,17 @@ namespace ProteoformSuiteGUI
         {
             shift_masses();  //check for shifts from GUI
             ClearListsTablesFigures(true);
-            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, Sweet.lollipop.et_bestETRelationOnly);
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, Environment.CurrentDirectory, Sweet.lollipop.et_bestETRelationOnly);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             if (full_run)
             {
-                shift_masses(); //check for shifts from presets (need to have peaks formed first)
-                RunTheGamut(false);
+                List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
+                if(peaks_to_shift.Count > 0)
+                {
+                    shift_masses(); //check for shifts from presets (need to have peaks formed first)
+                    RunTheGamut(false);
+                }
             }
             FillTablesAndCharts();
         }
@@ -138,7 +142,7 @@ namespace ProteoformSuiteGUI
 
             //Other stuff
             yMaxET.Minimum = 0;
-            yMaxET.Maximum = 1000;
+            yMaxET.Maximum = 8000;
             yMaxET.Value = 100; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             yMinET.Minimum = -100;
@@ -179,6 +183,13 @@ namespace ProteoformSuiteGUI
             nUD_notch_tolerance.Minimum = 0;
             nUD_notch_tolerance.Maximum = 30;
             nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_et);
+
+            nUD_minBUpeptides.Value = Convert.ToDecimal(Sweet.lollipop.min_bu_peptides);
+            nUD_minBUpeptides.Minimum = 0;
+            nUD_minBUpeptides.Maximum = 100;
+
+            cb_add_topdown_theoreticals.Checked = Sweet.lollipop.add_td_theoreticals;
+
         }
 
         #endregion Public Methods
@@ -341,11 +352,11 @@ namespace ProteoformSuiteGUI
 
         private void GraphETRelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", true);
+            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", false);
             ct_ET_Histogram.Series["relations"].Enabled = true;
             if (Sweet.lollipop.ed_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"], "decoys", true);
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"], "decoys", false);
                 ct_ET_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -411,7 +422,7 @@ namespace ProteoformSuiteGUI
                 if (et_histogram_from_unmod.Count == 0)
                 {
                     ProteoformCommunity community = new ProteoformCommunity();
-                    et_histogram_from_unmod = community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, Environment.CurrentDirectory, false);
+                    et_histogram_from_unmod = community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.ToArray(), Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).ToArray(), ProteoformComparison.ExperimentalTheoretical, Environment.CurrentDirectory, false);
                 }
                 DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", true);
 
@@ -526,6 +537,17 @@ namespace ProteoformSuiteGUI
         {
             rb_daltons.Checked = !rb_ppm.Checked;
             Sweet.lollipop.et_notch_ppm = rb_ppm.Checked;
+        }
+
+
+        private void nUD_minBUpeptides_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_bu_peptides = Convert.ToDouble(nUD_minBUpeptides.Value);
+        }
+
+        private void cb_add_topdown_theoreticals_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.add_td_theoreticals = cb_add_topdown_theoreticals.Checked;
         }
     }
 }

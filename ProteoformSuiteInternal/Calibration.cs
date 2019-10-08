@@ -25,11 +25,11 @@ namespace ProteoformSuiteInternal
         //CALIBRATION WITH TD HITS
         private MsDataFile myMsDataFile;
 
-        private List<TopDownHit> all_topdown_hits;
-        private List<TopDownHit> high_scoring_topdown_hits;
+        private List<SpectrumMatch> all_topdown_hits;
+        private List<SpectrumMatch> high_scoring_topdown_hits;
         private InputFile raw_file;
 
-        public bool Run_TdMzCal(InputFile raw_file, List<TopDownHit> topdown_hits)
+        public bool Run_TdMzCal(InputFile raw_file, List<SpectrumMatch> topdown_hits)
         {
             all_topdown_hits = topdown_hits.Where(h => h.score > 0).ToList();
             //need to reset m/z in case same td hits used for multiple calibration raw files...
@@ -85,7 +85,7 @@ namespace ProteoformSuiteInternal
             if (Sweet.lollipop.retention_time_calibration)
             {
                 var myMs1DataPoints = new List<(double[] xValues, double yValue)>();
-                List<TopDownHit> firstElutingTopDownHit = new List<TopDownHit>();
+                List<SpectrumMatch> firstElutingTopDownHit = new List<SpectrumMatch>();
                 List<string> PFRs = high_scoring_topdown_hits.Select(h => h.pfr_accession).Distinct().ToList();
                 foreach (var PFR in PFRs)
                 {
@@ -124,7 +124,8 @@ namespace ProteoformSuiteInternal
             return true;
         }
 
-        public void RetentionTimeCalibrateTopDownHits(List<TopDownHit> topdown_hits)
+        public void RetentionTimeCalibrateTopDownHits(List<SpectrumMatch> topdown_hits)
+
         {
             all_topdown_hits = topdown_hits.Where(h => h.score > 0).ToList();
             high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
@@ -132,7 +133,7 @@ namespace ProteoformSuiteInternal
             if (filenames_orderbydescendingUniquePFRs.Count == 1) return; //only if more than 1 file.
 
             //calibrate everything to file with most unique hits.
-            List<TopDownHit> calibrated_RT_topdown_hits =
+            List<SpectrumMatch> calibrated_RT_topdown_hits =
                 high_scoring_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs.First()).ToList();
 
             for (int i = 1; i < filenames_orderbydescendingUniquePFRs.Count; i++)
@@ -150,10 +151,10 @@ namespace ProteoformSuiteInternal
 
                     var calibratedminRT = calibratedRTs.Min(h => h.calibrated_retention_time);
 
-                    myMs1DataPoints.Add((new double[] { minRTNewFile }, minRTNewFile - calibratedminRT));
+                    myMs1DataPoints.Add((new double[] { minRTNewFile}, minRTNewFile - calibratedminRT));
                 }
                 var ms1Model = GetRandomForestModel(myMs1DataPoints);
-                foreach (TopDownHit hit in all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]))
+                foreach (SpectrumMatch hit in all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]))
                 {
                     hit.calibrated_retention_time = hit.ms2_retention_time - ms1Model.Predict(new double[] { hit.ms2_retention_time });
                     if (hit.score > 40)
@@ -166,7 +167,7 @@ namespace ProteoformSuiteInternal
 
         public void CalibrateHitsAndComponents(RegressionForestModel bestCf)
         {
-            foreach (TopDownHit hit in all_topdown_hits)
+            foreach (SpectrumMatch hit in all_topdown_hits)
             {
                 hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.ms1_scan.RetentionTime, Math.Log(hit.ms1_scan.TotalIonCurrent), hit.ms1_scan.InjectionTime.HasValue ? Math.Log(hit.ms1_scan.InjectionTime.Value) : double.NaN });
             }
@@ -203,7 +204,7 @@ namespace ProteoformSuiteInternal
 
             // Set of peaks, identified by m/z and retention time. If a peak is in here, it means it has been a part of an accepted identification, and should be rejected
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, int>>();
-            foreach (TopDownHit identification in high_scoring_topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass))
+            foreach (SpectrumMatch identification in high_scoring_topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass))
             {
                 int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(identification.ms2_retention_time);
 
@@ -277,7 +278,7 @@ namespace ProteoformSuiteInternal
             return res;
         }
 
-        private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, List<int> scansAdded, HashSet<Tuple<double, int>> peaksAddedHashSet, int proteinCharge, TopDownHit identification)
+        private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, List<int> scansAdded, HashSet<Tuple<double, int>> peaksAddedHashSet, int proteinCharge, SpectrumMatch identification)
         {
             int theIndex = direction == 1 ? ms2spectrumIndex : ms2spectrumIndex - 1;
             bool addedAscan = true;

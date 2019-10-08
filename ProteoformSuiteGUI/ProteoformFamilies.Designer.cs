@@ -50,6 +50,12 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_annotated_PTMs_reduce_ambiguity = new System.Windows.Forms.CheckBox();
+            this.cb_td_ID_reduce_ambiguity = new System.Windows.Forms.CheckBox();
+            this.cb_ppm_tolerance = new System.Windows.Forms.CheckBox();
+            this.cb_remove_bad_connections = new System.Windows.Forms.CheckBox();
+            this.nUD_notch_tolerance = new System.Windows.Forms.NumericUpDown();
+            this.cb_id_from_td_nodes = new System.Windows.Forms.CheckBox();
             this.cb_only_assign_common_known_mods = new System.Windows.Forms.CheckBox();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
@@ -68,7 +74,6 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_scale_nodes = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -83,6 +88,7 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).BeginInit();
             this.SuspendLayout();
@@ -331,7 +337,12 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.AutoScroll = true;
-            this.splitContainer3.Panel2.Controls.Add(this.cb_scale_nodes);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_annotated_PTMs_reduce_ambiguity);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_td_ID_reduce_ambiguity);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_ppm_tolerance);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_connections);
+            this.splitContainer3.Panel2.Controls.Add(this.nUD_notch_tolerance);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_id_from_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_only_assign_common_known_mods);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -364,6 +375,93 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(771, 526);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_annotated_PTMs_reduce_ambiguity
+            // 
+            this.cb_annotated_PTMs_reduce_ambiguity.AutoSize = true;
+            this.cb_annotated_PTMs_reduce_ambiguity.Checked = true;
+            this.cb_annotated_PTMs_reduce_ambiguity.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_annotated_PTMs_reduce_ambiguity.Location = new System.Drawing.Point(300, 193);
+            this.cb_annotated_PTMs_reduce_ambiguity.Name = "cb_annotated_PTMs_reduce_ambiguity";
+            this.cb_annotated_PTMs_reduce_ambiguity.Size = new System.Drawing.Size(222, 17);
+            this.cb_annotated_PTMs_reduce_ambiguity.TabIndex = 71;
+            this.cb_annotated_PTMs_reduce_ambiguity.Text = "Use annotated PTMs to reduce ambiguity";
+            this.cb_annotated_PTMs_reduce_ambiguity.UseVisualStyleBackColor = true;
+            this.cb_annotated_PTMs_reduce_ambiguity.CheckedChanged += new System.EventHandler(this.cb_annotated_PTMs_reduce_ambiguity_CheckedChanged);
+            // 
+            // cb_td_ID_reduce_ambiguity
+            // 
+            this.cb_td_ID_reduce_ambiguity.AutoSize = true;
+            this.cb_td_ID_reduce_ambiguity.Checked = true;
+            this.cb_td_ID_reduce_ambiguity.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_td_ID_reduce_ambiguity.Location = new System.Drawing.Point(300, 173);
+            this.cb_td_ID_reduce_ambiguity.Name = "cb_td_ID_reduce_ambiguity";
+            this.cb_td_ID_reduce_ambiguity.Size = new System.Drawing.Size(158, 17);
+            this.cb_td_ID_reduce_ambiguity.TabIndex = 70;
+            this.cb_td_ID_reduce_ambiguity.Text = "Use TD to reduce ambiguity";
+            this.cb_td_ID_reduce_ambiguity.UseVisualStyleBackColor = true;
+            this.cb_td_ID_reduce_ambiguity.CheckedChanged += new System.EventHandler(this.cb_td_ID_reduce_ambiguity_CheckedChanged_1);
+            // 
+            // cb_ppm_tolerance
+            // 
+            this.cb_ppm_tolerance.AutoSize = true;
+            this.cb_ppm_tolerance.Location = new System.Drawing.Point(300, 215);
+            this.cb_ppm_tolerance.Name = "cb_ppm_tolerance";
+            this.cb_ppm_tolerance.Size = new System.Drawing.Size(115, 17);
+            this.cb_ppm_tolerance.TabIndex = 69;
+            this.cb_ppm_tolerance.Text = "Use ppm tolerance";
+            this.cb_ppm_tolerance.UseVisualStyleBackColor = true;
+            this.cb_ppm_tolerance.CheckedChanged += new System.EventHandler(this.cb_ppm_tolerance_CheckedChanged);
+            // 
+            // cb_remove_bad_connections
+            // 
+            this.cb_remove_bad_connections.AutoSize = true;
+            this.cb_remove_bad_connections.Checked = true;
+            this.cb_remove_bad_connections.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_remove_bad_connections.Location = new System.Drawing.Point(300, 150);
+            this.cb_remove_bad_connections.Name = "cb_remove_bad_connections";
+            this.cb_remove_bad_connections.Size = new System.Drawing.Size(148, 17);
+            this.cb_remove_bad_connections.TabIndex = 68;
+            this.cb_remove_bad_connections.Text = "Remove bad connections";
+            this.cb_remove_bad_connections.UseVisualStyleBackColor = true;
+            this.cb_remove_bad_connections.CheckedChanged += new System.EventHandler(this.cb_remove_bad_connections_CheckedChanged);
+            // 
+            // nUD_notch_tolerance
+            // 
+            this.nUD_notch_tolerance.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.nUD_notch_tolerance.DecimalPlaces = 1;
+            this.nUD_notch_tolerance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nUD_notch_tolerance.Location = new System.Drawing.Point(421, 215);
+            this.nUD_notch_tolerance.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_notch_tolerance.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nUD_notch_tolerance.Name = "nUD_notch_tolerance";
+            this.nUD_notch_tolerance.Size = new System.Drawing.Size(86, 20);
+            this.nUD_notch_tolerance.TabIndex = 37;
+            this.nUD_notch_tolerance.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUD_notch_tolerance.ValueChanged += new System.EventHandler(this.nUD_notch_tolerance_ValueChanged);
+            // 
+            // cb_id_from_td_nodes
+            // 
+            this.cb_id_from_td_nodes.AutoSize = true;
+            this.cb_id_from_td_nodes.Location = new System.Drawing.Point(300, 127);
+            this.cb_id_from_td_nodes.Name = "cb_id_from_td_nodes";
+            this.cb_id_from_td_nodes.Size = new System.Drawing.Size(170, 17);
+            this.cb_id_from_td_nodes.TabIndex = 65;
+            this.cb_id_from_td_nodes.Text = "Identify from Top-Down Nodes";
+            this.cb_id_from_td_nodes.UseVisualStyleBackColor = true;
+            this.cb_id_from_td_nodes.CheckedChanged += new System.EventHandler(this.cb_id_from_td_nodes_CheckedChanged);
+            // 
             // cb_only_assign_common_known_mods
             // 
             this.cb_only_assign_common_known_mods.Checked = true;
@@ -378,10 +476,10 @@
             // rtb_proteoformFamilyResults
             // 
             this.rtb_proteoformFamilyResults.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 246);
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(0, 253);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
             this.rtb_proteoformFamilyResults.ReadOnly = true;
-            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(575, 257);
+            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(572, 257);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
             this.rtb_proteoformFamilyResults.Text = "";
             // 
@@ -390,7 +488,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(301, 86);
+            this.cb_geneCentric.Location = new System.Drawing.Point(300, 81);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 61;
@@ -402,15 +500,15 @@
             // 
             this.cb_count_adducts_as_id.Location = new System.Drawing.Point(300, 59);
             this.cb_count_adducts_as_id.Name = "cb_count_adducts_as_id";
-            this.cb_count_adducts_as_id.Size = new System.Drawing.Size(180, 24);
+            this.cb_count_adducts_as_id.Size = new System.Drawing.Size(247, 21);
             this.cb_count_adducts_as_id.TabIndex = 0;
-            this.cb_count_adducts_as_id.Text = "Count Adducts as Identifications";
+            this.cb_count_adducts_as_id.Text = "Count Oxidation/Adducts as Identifications";
             this.cb_count_adducts_as_id.CheckedChanged += new System.EventHandler(this.cb_count_adducts_as_id_CheckedChanged);
             // 
             // cb_buildAsQuantitative
             // 
             this.cb_buildAsQuantitative.AutoSize = true;
-            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(301, 109);
+            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(300, 104);
             this.cb_buildAsQuantitative.Name = "cb_buildAsQuantitative";
             this.cb_buildAsQuantitative.Size = new System.Drawing.Size(163, 17);
             this.cb_buildAsQuantitative.TabIndex = 58;
@@ -422,9 +520,9 @@
             // 
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(301, 156);
+            this.groupBox5.Location = new System.Drawing.Point(50, 168);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(200, 84);
+            this.groupBox5.Size = new System.Drawing.Size(200, 85);
             this.groupBox5.TabIndex = 57;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Highlights for Significant Differences";
@@ -540,24 +638,14 @@
             // 
             this.Families_update.AllowDrop = true;
             this.Families_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Families_update.Location = new System.Drawing.Point(0, 503);
+            this.Families_update.Location = new System.Drawing.Point(0, 510);
             this.Families_update.Name = "Families_update";
-            this.Families_update.Size = new System.Drawing.Size(575, 23);
+            this.Families_update.Size = new System.Drawing.Size(572, 23);
             this.Families_update.TabIndex = 33;
             this.Families_update.Text = "Construct Families and Identify Proteoforms";
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
-            // 
-            // cb_scale_nodes
-            // 
-            this.cb_scale_nodes.AutoSize = true;
-            this.cb_scale_nodes.Location = new System.Drawing.Point(301, 132);
-            this.cb_scale_nodes.Name = "cb_scale_nodes";
-            this.cb_scale_nodes.Size = new System.Drawing.Size(217, 17);
-            this.cb_scale_nodes.TabIndex = 65;
-            this.cb_scale_nodes.Text = "Scale Selected Families to Largest Node";
-            this.cb_scale_nodes.UseVisualStyleBackColor = true;
             // 
             // ProteoformFamilies
             // 
@@ -585,6 +673,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).EndInit();
@@ -633,6 +722,11 @@
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.CheckBox cb_only_assign_common_known_mods;
-        private System.Windows.Forms.CheckBox cb_scale_nodes;
+        private System.Windows.Forms.CheckBox cb_id_from_td_nodes;
+        public System.Windows.Forms.CheckBox cb_remove_bad_connections;
+        private System.Windows.Forms.NumericUpDown nUD_notch_tolerance;
+        public System.Windows.Forms.CheckBox cb_ppm_tolerance;
+        public System.Windows.Forms.CheckBox cb_td_ID_reduce_ambiguity;
+        public System.Windows.Forms.CheckBox cb_annotated_PTMs_reduce_ambiguity;
     }
 }

@@ -7,12 +7,12 @@
         public readonly double retentionTime;
         public double logTotalIonCurrent;
         public double logInjectionTime;
-        public readonly TopDownHit identification;
+        public readonly SpectrumMatch identification;
         public double massError { get; private set; }
         public double[] Inputs { get; private set; }
         public double RTError { get; private set; }
 
-        public LabeledMs1DataPoint(double mz, double retentionTime, double logTotalIonCurrent, double logInjectionTime, double massError, double RTError, TopDownHit identification)
+        public LabeledMs1DataPoint(double mz, double retentionTime, double logTotalIonCurrent, double logInjectionTime, double massError, double RTError, SpectrumMatch identification)
         {
             this.mz = mz;
             this.retentionTime = retentionTime;

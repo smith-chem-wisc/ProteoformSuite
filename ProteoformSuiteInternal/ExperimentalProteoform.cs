@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -38,8 +40,6 @@ namespace ProteoformSuiteInternal
 
         public QuantitativeProteoformValues quant { get; set; }
 
-        public bool accepted { get; set; } = true;
-
         public double agg_mass { get; set; } = 0;
 
         public double agg_intensity { get; set; } = 0;
@@ -59,6 +59,16 @@ namespace ProteoformSuiteInternal
         public string uniprot_mods { get; set; }
 
         public bool novel_mods { get; set; }
+
+        public int proteoform_level { get; set; }
+
+        public string proteoform_level_description { get; set; } = "";
+
+        public bool new_intact_mass_id { get; set; }
+
+        //if ambiguous id's store here
+        //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
+        public List<AmbiguousIdentification> ambiguous_identifications { get; set; } = new List<AmbiguousIdentification>();
 
         #endregion Public Properties
 
@@ -133,7 +143,6 @@ namespace ProteoformSuiteInternal
             modified_mass = e.modified_mass;
             agg_rt = e.agg_rt;
             lysine_count = e.lysine_count;
-            accepted = e.accepted;
             is_target = e.is_target;
             family = e.family;
             aggregated = new List<IAggregatable>(e.aggregated);
@@ -175,6 +184,15 @@ namespace ProteoformSuiteInternal
             double theoretical_mass =
                 TheoreticalProteoform.CalculateProteoformMass(sequence, ptm_set.ptm_combination);
             return Math.Round(agg_mass - theoretical_mass, 4 );
+        }
+
+        public static string get_sequence(TheoreticalProteoform t, int begin, int end)
+        {
+            string sequence = t.sequence
+                .Substring(begin < t.begin ? 0 : begin - t.begin,
+                    1 + end - (begin < t.begin ? t.begin : begin));
+            if (begin < t.begin) sequence = "M" + sequence;
+            return sequence;
         }
 
         #endregion Public Methods
@@ -224,7 +242,6 @@ namespace ProteoformSuiteInternal
             agg_rt = aggregated.Sum(c => c.rt_apex * c.intensity_sum / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
-            accepted = true;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on
@@ -244,6 +261,7 @@ namespace ProteoformSuiteInternal
             return tolerable_rt(candidate, root.agg_rt) && tolerable_neucode_mass(candidate, lt_corrected_mass, hv_corrected_mass, light);
         }
 
+  
         #endregion Aggregation Public Methods
 
         #region Aggregation Private Methods

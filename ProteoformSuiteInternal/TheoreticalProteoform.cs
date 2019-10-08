@@ -20,11 +20,12 @@ namespace ProteoformSuiteInternal
         public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
 
-        //  public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
+        public List<SpectrumMatch> bottom_up_PSMs { get; set; } = new List<SpectrumMatch>();
         public bool contaminant { get; set; }
 
         public List<GoTerm> goTerms { get; private set; }
         public bool topdown_theoretical { get; set; }
+        public bool new_topdown_proteoform { get; set; } //not in DB without topdown result loaded in...
 
         #endregion Public Properties
 
@@ -49,6 +50,7 @@ namespace ProteoformSuiteInternal
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
             this.modified_mass = CalculateProteoformMass(sequence, ptm_set.ptm_combination);
+            bottom_up_PSMs = get_possible_PSMs(accession, ptm_set, begin, end);
         }
 
         #endregion Public Constructor

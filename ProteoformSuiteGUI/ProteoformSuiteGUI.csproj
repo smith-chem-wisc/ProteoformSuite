@@ -203,7 +203,6 @@
     <Compile Include="DisplayObjects\DisplayDeltaMassPeak.cs" />
     <Compile Include="DisplayObjects\DisplayNeuCodePair.cs" />
     <Compile Include="DisplayObjects\DisplayProteoformFamily.cs" />
-    <Compile Include="DisplayObjects\DisplayBottomUpPSM.cs" />
     <Compile Include="DisplayObjects\DisplayTopDownHit.cs" />
     <Compile Include="DisplayObjects\DisplayTopDownProteoform.cs" />
     <Compile Include="DisplayObjects\DisplayTheoreticalProteoform.cs" />

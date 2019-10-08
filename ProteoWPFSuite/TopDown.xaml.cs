@@ -83,15 +83,15 @@ namespace ProteoWPFSuite
             if (!full_run)
             {
                 List<string> warning_methods = new List<string>() { "Warning:" };
-                if (Sweet.lollipop.topdownReader.bad_topdown_ptms.Count > 0)
+                if (Sweet.lollipop.topdownReader.bad_ptms.Count > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_topdown_ptms.Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_ptms.Distinct()));
                 }
-                if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
+                if (Sweet.lollipop.topdown_proteoforms_no_theoretical.Count() > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms_no_theoretical.Select(t => t.accession.Split('_')[0]).Distinct()));
                 }
                 if (warning_methods.Count > 1)
                 {
