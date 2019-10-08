@@ -98,7 +98,8 @@ namespace ProteoformSuiteInternal
             this.agg_rt = topdown_hits.Select(h => h.ms2_retention_time).Average();
             foreach (var ambiguous_id in topdown_hits.SelectMany(h => h.ambiguous_matches))
             {
-                if (this.pfr_accession == ambiguous_id.pfr_accession || ambiguous_topdown_hits.Select(h => h.pfr_accession).Contains(ambiguous_id.pfr_accession))
+                if ((this.pfr_accession == ambiguous_id.pfr_accession && this.accession.Split('_')[0].Split('-')[0] == ambiguous_id.accession.Split('_')[0].Split('-')[0])
+                    || ambiguous_topdown_hits.Any(h => h.pfr_accession == ambiguous_id.pfr_accession && h.accession.Split('_')[0].Split('-')[0] == ambiguous_id.accession.Split('_')[0].Split('-')[0]))
                 {
                     continue;
                 }
@@ -195,6 +196,13 @@ namespace ProteoformSuiteInternal
                 int sequence_ambiguity = unique_sequences.Count() > 1 ? 1 : 0;
                 int PTM_ambiguity = unique_PTM_IDs.Count() > 1 ? 1 : 0;
                 int PTM_location = unique_PTM_locations.Count() > 1 ? 1 : 0;
+
+                if(gene_ambiguity == 0 && sequence_ambiguity == 0 && PTM_ambiguity == 0 && PTM_location == 0)
+                {
+                    var unique_PTMs = new List<string>() { string.Join(",", topdown_ptm_set.ptm_combination.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(n => n)) }.Concat(ambiguous_topdown_hits.Select(h => string.Join(",", h.ptm_list.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(n => n)))).Distinct();
+                    if (unique_PTMs.Count() > 1) PTM_location = 1;
+                    else PTM_ambiguity = 1;
+                }
 
                 if (gene_ambiguity > 0) topdown_level_description += "Gene ambiguity; ";
                 if (sequence_ambiguity > 0) topdown_level_description += "Sequence ambiguity; ";

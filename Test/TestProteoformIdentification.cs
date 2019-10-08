@@ -4,7 +4,6 @@ using Proteomics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 
 namespace Test
 {
@@ -980,6 +979,273 @@ namespace Test
             Assert.AreEqual("acetyl", e1.ptm_set.ptm_description);
         }
 
+        [Test]
+        public void removing_ambiguous_IDs_topdownTheo()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.mod_rank_sum_threshold = 5;
+            Lollipop.preferred_gene_label = "primary";
+            Sweet.lollipop.remove_bad_connections = true;
+            Sweet.lollipop.topdown_theoretical_reduce_ambiguity = true;
+
+            TheoreticalProteoform
+                t1 = ConstructorsForTesting.make_a_theoretical("T1", 10000, 0); // sequence with all serines
+            t1.gene_name = new GeneName(new List<Tuple<string, string>>()
+                {new Tuple<string, string>("primary", "gene1")});
+            TheoreticalProteoform
+                t2 = ConstructorsForTesting.make_a_theoretical("T2", 10000, 0); // sequence with all serines
+            t2.gene_name = new GeneName(new List<Tuple<string, string>>()
+                {new Tuple<string, string>("primary", "gene2")});
+          TheoreticalProteoform
+                t3 = ConstructorsForTesting.make_a_theoretical("T3", 10000, 0); // sequence with all serines
+            t3.gene_name = new GeneName(new List<Tuple<string, string>>()
+                {new Tuple<string, string>("primary", "gene3")});
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", 100042.01, 0, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", 100042.01, 0, true);
+            TopDownProteoform e3 = ConstructorsForTesting.TopDownProteoform("E3", 100084.02, 0);
+            ExperimentalProteoform e4 = ConstructorsForTesting.ExperimentalProteoform("E4", 100126.03, 0, true);
+            ConstructorsForTesting.make_relation(t1, e1, ProteoformComparison.ExperimentalTheoretical, 0);
+            ConstructorsForTesting.make_relation(e2, e3, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(t2, e2, ProteoformComparison.ExperimentalTheoretical, 0);
+            var relation34 =
+            ConstructorsForTesting.make_relation(e3, e4, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(e1, e3, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(t3, e3, ProteoformComparison.ExperimentalTheoretical, 42.01);
+
+            ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
+            Ptm acetyl_ptm = new Ptm(0,
+                new Modification("acetyl", _modificationType: "Common", _target: motif,
+                    _locationRestriction: "Anywhere.", _monoisotopicMass: 42.011));
+            PtmSet acetyl = new PtmSet(new List<Ptm>
+            {
+                acetyl_ptm
+            });
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+
+            // Proteoforms start without any modifications in the PtmSet
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                {Math.Round(acetyl.mass, 1), new List<PtmSet> {acetyl}},
+                {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>() { set_unmodified, acetyl };
+            for (int i = 0; i < 3; i++)
+            {
+                e1.relationships[i].Accepted = true;
+                e1.relationships[i].peak = new DeltaMassPeak(e1.relationships[i],
+                    new HashSet<ProteoformRelation> { e1.relationships[i] });
+                e2.relationships[i].Accepted = true;
+                e2.relationships[i].peak = new DeltaMassPeak(e2.relationships[i],
+                    new HashSet<ProteoformRelation> { e2.relationships[i] });
+            }
+            t3.relationships.First().Accepted = true;
+            t3.relationships.First().peak = new DeltaMassPeak(t3.relationships.First(), new HashSet<ProteoformRelation> { t3.relationships.First() });
+
+            relation34.Accepted = true;
+            relation34.peak = new DeltaMassPeak(relation34, new HashSet<ProteoformRelation>() { relation34 });
+
+            t1.topdown_theoretical = true;
+            t2.topdown_theoretical = true;
+
+            ProteoformFamily fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList =
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            fam.identify_experimentals();
+            Assert.AreEqual(4, fam.experimental_proteoforms.Count);
+            Assert.AreEqual(3, fam.theoretical_proteoforms.Count);
+            Assert.AreEqual(4, fam.gene_names.Count);
+            Assert.AreEqual(1, e3.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e2.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e1.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e4.ambiguous_identifications.Count);
+            Assert.IsFalse(t3.relationships.First().Accepted);
+            Assert.IsFalse(t3.relationships.First().Identification);
+
+            Assert.AreEqual(1, e3.ambiguous_identifications.Count);
+            Assert.AreEqual("gene1", e3.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e3.begin, 1);
+            Assert.AreEqual(e3.end, 12);
+            Assert.AreEqual("acetyl", e3.ptm_set.ptm_description);
+            Assert.AreEqual("gene2",
+                e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e3.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
+            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e4.begin, 1);
+            Assert.AreEqual(e4.end, 12);
+            Assert.AreEqual("acetyl; acetyl", e4.ptm_set.ptm_description);
+            Assert.AreEqual("gene2",
+                e4.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e4.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
+            Assert.AreEqual("acetyl; acetyl", e4.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e2.begin, 1);
+            Assert.AreEqual(e2.end, 12);
+            Assert.AreEqual("Unmodified", e2.ptm_set.ptm_description);
+            Assert.AreEqual("gene1",
+                e2.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e2.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e2.ambiguous_identifications.First().end);
+            Assert.AreEqual("Unmodified", e2.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene1", e1.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e1.begin, 1);
+            Assert.AreEqual(e1.end, 12);
+            Assert.AreEqual("Unmodified", e1.ptm_set.ptm_description);
+            Assert.AreEqual("gene2",
+                e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e1.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
+            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
+
+            Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { e3 };
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
+            Assert.AreEqual(1, ResultsSummaryGenerator.topdown_results_dataframe().Rows.Count);
+        }
+
+        [Test]
+        public void removing_ambiguous_IDs_unannotatedPTMs()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.mod_rank_sum_threshold = 5;
+            Lollipop.preferred_gene_label = "primary";
+            Sweet.lollipop.remove_bad_connections = true;
+            Sweet.lollipop.annotated_PTMs_reduce_ambiguity = true;
+
+            TheoreticalProteoform
+                t1 = ConstructorsForTesting.make_a_theoretical("T1", 10000, 0); // sequence with all serines
+            t1.gene_name = new GeneName(new List<Tuple<string, string>>()
+                {new Tuple<string, string>("primary", "gene1")});
+            TheoreticalProteoform
+                t2 = ConstructorsForTesting.make_a_theoretical("T2", 10000, 0); // sequence with all serines
+            t2.gene_name = new GeneName(new List<Tuple<string, string>>()
+                {new Tuple<string, string>("primary", "gene2")});
+            TheoreticalProteoform
+                  t3 = ConstructorsForTesting.make_a_theoretical("T3", 10000, 0); // sequence with all serines
+            t3.gene_name = new GeneName(new List<Tuple<string, string>>()
+                {new Tuple<string, string>("primary", "gene3")});
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", 100042.01, 0, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", 100042.01, 0, true);
+            TopDownProteoform e3 = ConstructorsForTesting.TopDownProteoform("E3", 100084.02, 0);
+            ExperimentalProteoform e4 = ConstructorsForTesting.ExperimentalProteoform("E4", 100126.03, 0, true);
+            ConstructorsForTesting.make_relation(t1, e1, ProteoformComparison.ExperimentalTheoretical, 0);
+            ConstructorsForTesting.make_relation(e2, e3, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(t2, e2, ProteoformComparison.ExperimentalTheoretical, 0);
+            var relation34 =
+            ConstructorsForTesting.make_relation(e3, e4, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(e1, e3, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(t3, e3, ProteoformComparison.ExperimentalTheoretical, 42.01);
+
+            ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
+            Ptm acetyl_ptm = new Ptm(0,
+                new Modification("acetyl", _modificationType: "Common", _target: motif,
+                    _locationRestriction: "Anywhere.", _monoisotopicMass: 42.011));
+            PtmSet acetyl = new PtmSet(new List<Ptm>
+            {
+                acetyl_ptm
+            });
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+
+            // Proteoforms start without any modifications in the PtmSet
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                {Math.Round(acetyl.mass, 1), new List<PtmSet> {acetyl}},
+                {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>() { set_unmodified, acetyl };
+            for (int i = 0; i < 3; i++)
+            {
+                e1.relationships[i].Accepted = true;
+                e1.relationships[i].peak = new DeltaMassPeak(e1.relationships[i],
+                    new HashSet<ProteoformRelation> { e1.relationships[i] });
+                e2.relationships[i].Accepted = true;
+                e2.relationships[i].peak = new DeltaMassPeak(e2.relationships[i],
+                    new HashSet<ProteoformRelation> { e2.relationships[i] });
+            }
+            t3.relationships.First().Accepted = true;
+            t3.relationships.First().peak = new DeltaMassPeak(t3.relationships.First(), new HashSet<ProteoformRelation> { t3.relationships.First() });
+
+            relation34.Accepted = true;
+            relation34.peak = new DeltaMassPeak(relation34, new HashSet<ProteoformRelation>() { relation34 });
+
+            t1.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Add(new KeyValuePair<int, List<Modification>>(1, new List<Modification>() { acetyl_ptm.modification }));
+            t2.ExpandedProteinList.First().OneBasedPossibleLocalizedModifications.Add(new KeyValuePair<int, List<Modification>>(1, new List<Modification>() { acetyl_ptm.modification }));
+
+            ProteoformFamily fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList =
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            fam.identify_experimentals();
+            Assert.AreEqual(4, fam.experimental_proteoforms.Count);
+            Assert.AreEqual(3, fam.theoretical_proteoforms.Count);
+            Assert.AreEqual(4, fam.gene_names.Count);
+            Assert.AreEqual(1, e3.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e2.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e1.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e4.ambiguous_identifications.Count);
+            Assert.IsFalse(t3.relationships.First().Accepted);
+            Assert.IsFalse(t3.relationships.First().Identification);
+
+            Assert.AreEqual(1, e3.ambiguous_identifications.Count);
+            Assert.AreEqual("gene1", e3.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e3.begin, 1);
+            Assert.AreEqual(e3.end, 12);
+            Assert.AreEqual("acetyl", e3.ptm_set.ptm_description);
+            Assert.AreEqual("gene2",
+                e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e3.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
+            Assert.AreEqual("acetyl", e3.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e4.begin, 1);
+            Assert.AreEqual(e4.end, 12);
+            Assert.AreEqual("acetyl; acetyl", e4.ptm_set.ptm_description);
+            Assert.AreEqual("gene2",
+                e4.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e4.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
+            Assert.AreEqual("acetyl; acetyl", e4.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene2", e2.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e2.begin, 1);
+            Assert.AreEqual(e2.end, 12);
+            Assert.AreEqual("Unmodified", e2.ptm_set.ptm_description);
+            Assert.AreEqual("gene1",
+                e2.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e2.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e2.ambiguous_identifications.First().end);
+            Assert.AreEqual("Unmodified", e2.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene1", e1.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e1.begin, 1);
+            Assert.AreEqual(e1.end, 12);
+            Assert.AreEqual("Unmodified", e1.ptm_set.ptm_description);
+            Assert.AreEqual("gene2",
+                e1.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e1.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e1.ambiguous_identifications.First().end);
+            Assert.AreEqual("Unmodified", e1.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
+
+            Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily>() { fam };
+            Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { e3 };
+            Assert.AreEqual(4, ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, null).Rows.Count);
+            Assert.AreEqual(1, ResultsSummaryGenerator.topdown_results_dataframe().Rows.Count);
+        }
 
 
         [Test]

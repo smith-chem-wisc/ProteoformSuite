@@ -214,6 +214,9 @@
     <None Include="testHits.psmtsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="testHitsGenes.psmtsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="test_directory\one.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
