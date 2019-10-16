@@ -46,6 +46,14 @@
 
         </Menu>
         <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Content="Run Page" 
+                    x:Name="btn_RunPage"
+                    Margin="0 5 20 5" 
+                    Padding="20 0 20 0" 
+                    Height="30" 
+                    FontWeight="Bold" 
+                    Click="Btn_RunPage_Click"/>
+
             <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore"  PreviewMouseDown="pressColor" PreviewMouseUp="restore">
                 <Button Click="Button_Click_Left" Height="25" Width="25" HorizontalAlignment="Right">
                     <Button.Template>

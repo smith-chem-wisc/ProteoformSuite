@@ -25,7 +25,7 @@ namespace ProteoWPFSuite
         public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase(); //finished
         public TopDown topDown = new TopDown();//finished
         public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms(); //finished
-        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison(); //Finished
+        public ExperimentTheoreticalComparison experimentTheoreticalComparison = new ExperimentTheoreticalComparison(); //Finished
         public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison(); //Finished
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();//Finished
         public Quantification quantification = new Quantification();//Finished
@@ -80,7 +80,7 @@ namespace ProteoWPFSuite
                 rawExperimentalComponents,
                 neuCodePairs,
                 aggregatedProteoforms,
-                experimentalTheoreticalComparison,
+                experimentTheoreticalComparison,
                 experimentExperimentComparison,
                 identifiedProteoforms,
                 proteoformFamilies,
@@ -200,7 +200,7 @@ namespace ProteoWPFSuite
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(aggregatedProteoforms);
 
-        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentalTheoreticalComparison);
+        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentTheoreticalComparison);
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentExperimentComparison);
 
@@ -459,7 +459,7 @@ namespace ProteoWPFSuite
             if (Sweet.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
             if (Sweet.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
 
-            if (Sweet.lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
+            if (Sweet.lollipop.et_relations.Count > 0) save_as_png(experimentTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
             //if (Sweet.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
@@ -586,7 +586,7 @@ namespace ProteoWPFSuite
                     break;
 
                 case "Experiment Theoretical Comparison":
-                    showForm(experimentalTheoreticalComparison);
+                    showForm(experimentTheoreticalComparison);
                     break;
 
                 case "Experiment Experiment Comparison":
@@ -612,6 +612,131 @@ namespace ProteoWPFSuite
                     resultsSummary.InitializeParameterSet();
                     resultsSummary.create_summary();
                     showForm(resultsSummary);
+                    break;
+
+                default:
+                    MessageBox.Show("ERROR: Click unknown. You clicked: " + item.Title);
+                    break;
+            }
+        }
+
+        private void Btn_RunPage_Click(object sender, RoutedEventArgs e)
+        {
+            ClosingTabItem item = MDIContainer.SelectedValue as ClosingTabItem;
+            MessageBox.Show("This page is :" + item.Title);
+
+            // Dynamically change the button's action according to page.
+            // i.e. use the correct RunTheGamut that refers to page.
+            switch (item.Title)
+            {
+                case "Load Results":
+                    // not yet
+                    break;
+
+                case "Theoretical Database":
+                    theoreticalDatabase.RunTheGamut(false);
+                    break;
+
+                case "Top Down":
+                    // not yet
+                    break;
+
+                case "Raw Experimental Components":
+                    Mouse.OverrideCursor = Cursors.Wait;
+                    rawExperimentalComponents.RunTheGamut(false);
+                    Mouse.OverrideCursor = null;
+                    break;
+
+                case "Neu Code Pairs":
+                    if (neuCodePairs.ReadyToRunTheGamut())
+                        neuCodePairs.RunTheGamut(false);
+                    break;
+
+                case "Aggregated Proteoforms":
+                    if (aggregatedProteoforms.ReadyToRunTheGamut())
+                    {
+                        Mouse.OverrideCursor = Cursors.Wait;
+                        aggregatedProteoforms.RunTheGamut(false);
+                        Mouse.OverrideCursor = null;
+                    }
+                    else if (Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
+                    {
+                        MessageBox.Show("Go back and load in deconvolution results.");
+                    }
+                    break;
+
+                case "Experiment Theoretical Comparison":
+                    if (experimentTheoreticalComparison.ReadyToRunTheGamut())
+                    {
+                        System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                        experimentTheoreticalComparison.RunTheGamut(false);
+                        experimentTheoreticalComparison.xMaxET.Value = (decimal)Sweet.lollipop.et_high_mass_difference;
+                        experimentTheoreticalComparison.xMinET.Value = (decimal)Sweet.lollipop.et_low_mass_difference;
+                        System.Windows.Input.Mouse.OverrideCursor = null;
+                    }
+                    else if (Sweet.lollipop.target_proteoform_community.has_e_proteoforms)
+                        MessageBox.Show("Go back and create a theoretical database.");
+                    else
+                        MessageBox.Show("Go back and aggregate experimental proteoforms.");
+                    break;
+
+                case "Experiment Experiment Comparison":
+                    if (experimentExperimentComparison.ReadyToRunTheGamut())
+                    {
+                        System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                        experimentExperimentComparison.RunTheGamut(false);
+                        experimentExperimentComparison.xMaxEE.Value = Convert.ToDecimal(Sweet.lollipop.ee_max_mass_difference);
+                        System.Windows.Input.Mouse.OverrideCursor = null;
+                    }
+                    else if (Sweet.lollipop.target_proteoform_community.has_e_proteoforms)
+                        MessageBox.Show("Go back and create the theoretical database.");
+                    else
+                        MessageBox.Show("Go back and aggregate experimental proteoforms.");
+                    break;
+
+                case "Proteoform Families":
+                    if (proteoformFamilies.ReadyToRunTheGamut())
+                    {
+                        System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                        proteoformFamilies.RunTheGamut(false);
+                        System.Windows.Input.Mouse.OverrideCursor = null;
+                    }
+                    break;
+
+                case "Identified Proteoforms":
+                    if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut(false);
+                    break;
+
+                case "Quantification":
+                    if (quantification.ReadyToRunTheGamut())
+                    {
+                        Mouse.OverrideCursor = Cursors.Wait;
+                        quantification.RunTheGamut(false);
+                        Mouse.OverrideCursor = null;
+                    }
+                    else if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() <= 0)
+                        MessageBox.Show("Please load quantification results in Load Deconvolution Results.", "Quantification");
+                    else if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
+                        MessageBox.Show("Please be sure the technical replicate, fraction, biological replicate, and condition are labeled for each quantification file.");
+                    else if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().Count() != 2)
+                        MessageBox.Show("Please be sure there are two conditions.");
+                    else if (!Sweet.lollipop.neucode_labeled && !Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().All(d => Sweet.lollipop.input_files.Where(f2 => f2.purpose == Purpose.Quantification && f2.lt_condition != c).
+                            Select(f2 => f2.biological_replicate + f2.fraction + f2.technical_replicate).Distinct().ToList().Contains(d))))
+                        MessageBox.Show("Please be sure there are the same number and labels for each biological replicate, fraction, and technical replicate for each condition.");
+                    else if (!Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => f.lt_condition).Concat(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification).Select(f => Sweet.lollipop.neucode_labeled ? f.hv_condition : f.lt_condition)).Distinct().All(c => Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Quantification && f.lt_condition == c).Select(f => f.biological_replicate).Distinct().Count() >= 2))
+                        MessageBox.Show("Please be sure there are at least two biological replicates for each condition.");
+                    else if (Sweet.lollipop.raw_quantification_components.Count == 0)
+                        MessageBox.Show("Please process raw components.", "Quantification");
+                    else if (Sweet.lollipop.raw_experimental_components.Count <= 0)
+                        MessageBox.Show("Please load deconvolution results.", "Quantification");
+                    else if (Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
+                        MessageBox.Show("Please aggregate proteoform observations.", "Quantification");
+                    else if (Sweet.lollipop.target_proteoform_community.families.Count <= 0)
+                        MessageBox.Show("Please construct proteoform families.", "Quantification");
+                    break;
+
+                case "Results Summary":
+                    // not yet
                     break;
 
                 default:
