@@ -54,8 +54,12 @@ namespace ProteoWPFSuite
             Mouse.OverrideCursor = null;
         }
 
-        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
+        private void Cmbx_DisplayWhichDB_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
+
             if (!initial_load)
             {
                 string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
@@ -303,7 +307,10 @@ namespace ProteoWPFSuite
         public void reload_database_list()
         {
             cmb_loadTable.Items.Clear();
-            Lollipop.file_lists.ToList().ForEach(itm => cmb_loadTable.Items.Add(itm));//might be a problem
+            // Lollipop.file_lists.ToList().ForEach(itm => cmb_loadTable.Items.Add(itm));//might be a problem // edit: it WAS a problem
+            for (int i = 0; i < 4; i++)
+                cmb_loadTable.Items.Add(Lollipop.file_lists[i]);
+
             cmb_loadTable.SelectedIndex = 2;
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
@@ -341,7 +348,7 @@ namespace ProteoWPFSuite
 
         #region ADD/CLEAR Private Methods
 
-        private void btn_addFiles_Click(object sender, EventArgs e)
+        private void btn_addFiles_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = cmb_loadTable.SelectedItem.ToString();
@@ -350,7 +357,7 @@ namespace ProteoWPFSuite
             
             if ((bool)openFileDialog.ShowDialog())
             {
-                if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
+                // if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Sweet.lollipop.input_files, true);
             }
 
@@ -429,22 +436,9 @@ namespace ProteoWPFSuite
 
 
         public ProteoformSweet MDIParent { get; set; }
-        
-        
-        
-
-        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
 
         private void cmb_empty_TextChanged(object sender, TextChangedEventArgs e)
         {
-        }        
-
-        private void btn_addFiles_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void btn_downloadUniProtPtmList_Click(object sender, RoutedEventArgs e)
@@ -557,6 +551,13 @@ namespace ProteoWPFSuite
         private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.use_average_mass = (bool)cb_average_mass.IsChecked;
+        }
+
+        private void Cmb_loadTable_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
         }
     }
 }

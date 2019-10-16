@@ -47,7 +47,7 @@
         </Menu>
         <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
             <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore"  PreviewMouseDown="pressColor" PreviewMouseUp="restore">
-                <Button Click="Button_Click_1" Height="25" Width="25" HorizontalAlignment="Right">
+                <Button Click="Button_Click_Left" Height="25" Width="25" HorizontalAlignment="Right">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Grid>
@@ -61,7 +61,7 @@
                 </Button>
             </Border>
             <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore" MouseUp="restore" PreviewMouseDown="pressColor" PreviewMouseUp="restore">
-                <Button Click="Button_Click_2" Height="25" Width="25">
+                <Button Click="Button_Click_Right" Height="25" Width="25">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Grid>
@@ -76,15 +76,37 @@
             </Border>
         </StackPanel>
 
-        <TabControl x:Name="MDIContainer" Grid.Row="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto">
-            <TabControl.ItemContainerStyle>
+        <TabControl x:Name="MDIContainer" SelectionChanged="MDIContainer_OnSelectionChanged" Grid.Row="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto">
+            <!--<TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
-                    <Setter Property="Height" Value="Auto" />
-                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="Height" Value="28" />
+                    <Setter Property="Width" Value="300"/>
                     <Setter Property="FontSize" Value="12px"/>
                 </Style>
-            </TabControl.ItemContainerStyle>
-
+            </TabControl.ItemContainerStyle>-->
+            <TabControl.Template>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto"  VerticalScrollBarVisibility="Hidden">
+                            <TabPanel x:Name="HeaderPanel"
+                                      Panel.ZIndex ="1" 
+                                      KeyboardNavigation.TabIndex="1"
+                                      Grid.Column="0"
+                                      Grid.Row="0"
+                                      Margin="2,2,2,0"
+                                      IsItemsHost="true" />  
+                        </ScrollViewer>
+                        <ContentPresenter x:Name="PART_SelectedContentHost"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          Margin="{TemplateBinding Padding}"
+                                          ContentSource="SelectedContent" Grid.Row="1" />
+                    </Grid>
+                </ControlTemplate>
+            </TabControl.Template>
         </TabControl>
     </Grid>
 

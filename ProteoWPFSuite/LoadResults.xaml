@@ -266,7 +266,8 @@
                 <ComboBox x:Name="cmb_loadTable1"
                           Grid.Row="0" Grid.Column="0" 
                           Padding="5" Margin="2 10 2 0" 
-                          SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                          SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          SelectionChanged="Cmb_loadTable1_OnSelectionChanged"/>
 
                 <TextBox x:Name="tb_filter1" Grid.Row="0" Grid.Column="1" Height="28" Margin="2 10 2 0">
                     <TextBox.Style>

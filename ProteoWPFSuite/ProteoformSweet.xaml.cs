@@ -10,6 +10,7 @@ using ProteoformSuiteInternal;
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Input;
+using System.Text.RegularExpressions;
 
 namespace ProteoWPFSuite
 {
@@ -48,13 +49,13 @@ namespace ProteoWPFSuite
         public ProteoformSweet()
         {
             InitializeComponent();
-
             
             InitializeForms();
             showTabs(forms);
+            
             showForm(loadResults);
             loadResults.InitializeParameterSet();
-            
+
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
@@ -108,12 +109,18 @@ namespace ProteoWPFSuite
             {
                 
                 ClosingTabItem temp = new ClosingTabItem();
-                temp.Title = uc.GetType().Name;
                 temp.Content = uc;
+
+                // Format the header name with spaces
+                string[] tokenizedName = Regex.Split(uc.GetType().Name, @"(?<!^)(?=[A-Z])");
+                string cleanedHeaderName = string.Join(" ", tokenizedName);
+                temp.Title = cleanedHeaderName;
+
                 //if (!uc.IsEnabled)
                 //{
-                    //temp.Focusable = false;//cannot be selected
+                //temp.Focusable = false;//cannot be selected
                 //}
+
                 MDIContainer.Items.Add(temp);
                 ClosingTabItem.tabTable.Add(uc.GetType().Name, MDIContainer.Items.Count - 1);//keep a record
                 current_form = uc as ISweetForm;
@@ -170,6 +177,14 @@ namespace ProteoWPFSuite
             showForm(loadResults);
         }
 
+        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            theoreticalDatabase.reload_database_list();
+            showForm(theoreticalDatabase);
+        }
+
+        private void topdownResultsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(topDown);
+
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             showForm(rawExperimentalComponents);
@@ -185,16 +200,7 @@ namespace ProteoWPFSuite
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(aggregatedProteoforms);
 
-        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            theoreticalDatabase.reload_database_list();
-            showForm(theoreticalDatabase);
-        }
-
-        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            showForm(experimentalTheoreticalComparison);
-        }
+        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentalTheoreticalComparison);
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentExperimentComparison);
 
@@ -203,7 +209,6 @@ namespace ProteoWPFSuite
             showForm(proteoformFamilies);
             //proteoformFamilies.initialize_every_time();
         }
-        private void topdownResultsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(topDown);
 
         private void identifiedProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -480,7 +485,7 @@ namespace ProteoWPFSuite
         }
         #endregion Others
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_Left(object sender, RoutedEventArgs e)
         {
             int prev = MDIContainer.SelectedIndex - 1;
 
@@ -494,7 +499,7 @@ namespace ProteoWPFSuite
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void Button_Click_Right(object sender, RoutedEventArgs e)
         {
             int nxt = MDIContainer.SelectedIndex + 1;
 
@@ -527,6 +532,92 @@ namespace ProteoWPFSuite
         private void restore(object sender, MouseButtonEventArgs e)
         {
             (sender as Border).Background = System.Windows.Media.Brushes.Gray;
+        }
+
+        /**
+         * When a tab a clicked, this runs the appropriate "initializing" for that TabItem.
+         * Used by <TabControl x:Name="MDIContainer" ..> in ProteoformSweet.xaml
+         * 
+         * @param sender    is the TabControl object that triggers this function. Can be used to 
+         *                  get reference to the selected tab by using the field SelectedValue.
+         */
+        private void MDIContainer_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
+
+            // Gets the reference to the selected tab
+            TabControl tabControl = sender as TabControl;
+            ClosingTabItem item = tabControl.SelectedValue as ClosingTabItem;
+
+            // Before opening each tab, there are initializations that are specific
+            // to each tab that needs to be done.
+            switch (item.Title)
+            {
+                case "Load Results":
+                    //loadResults.InitializeParameterSet();
+                    showForm(loadResults);
+                    //loadResults.InitializeParameterSet();
+                    break;
+
+                case "Theoretical Database":
+                    theoreticalDatabase.reload_database_list();
+                    showForm(theoreticalDatabase);
+                    break;
+
+                case "Top Down":
+                    showForm(topDown);
+                    break;
+
+                case "Raw Experimental Components":
+                    showForm(rawExperimentalComponents);
+                    rawExperimentalComponents.InitializeParameterSet();
+                    break;
+
+                case "Neu Code Pairs":
+                    showForm(neuCodePairs);
+                    if (neuCodePairs.ReadyToRunTheGamut())
+                        neuCodePairs.RunTheGamut(false); // There's no update/run button in NeuCodePairs, so just fill the tables
+                    break;
+
+                case "Aggregated Proteoforms":
+                    showForm(aggregatedProteoforms);
+                    break;
+
+                case "Experiment Theoretical Comparison":
+                    showForm(experimentalTheoreticalComparison);
+                    break;
+
+                case "Experiment Experiment Comparison":
+                    showForm(experimentExperimentComparison);
+                    break;
+
+                case "Proteoform Families":
+                    showForm(proteoformFamilies);
+                    //proteoformFamilies.initialize_every_time();
+                    break;
+
+                case "Identified Proteoforms":
+                    showForm(identifiedProteoforms);
+                    if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut(false);
+                    break;
+
+                case "Quantification":
+                    quantification.initialize_every_time();
+                    showForm(quantification);
+                    break;
+
+                case "Results Summary":
+                    resultsSummary.InitializeParameterSet();
+                    resultsSummary.create_summary();
+                    showForm(resultsSummary);
+                    break;
+
+                default:
+                    MessageBox.Show("ERROR: Click unknown. You clicked: " + item.Title);
+                    break;
+            }
         }
     }
 }

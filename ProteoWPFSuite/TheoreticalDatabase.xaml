@@ -25,7 +25,7 @@
                     <RowDefinition Height="*" MinHeight="100"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" SelectionChanged="cmbx_DisplayWhichDB_SelectedIndexChanged"></ComboBox>
+                <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" SelectionChanged="Cmb_loadTable_OnSelectionChanged"></ComboBox>
                 <WindowsFormsHost Grid.Row="1">
                     <winform:DataGridView x:Name="dgv_loadFiles" DragDrop="dgv_loadFiles_DragDrop" DragEnter="dgv_loadFiles_DragEnter"></winform:DataGridView>
                 </WindowsFormsHost>
@@ -137,7 +137,7 @@
                         <Label Content="Total Theoretical Proteoforms"></Label>
                         <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True" Foreground="#FFE0E0E0" Background="#FFF0F0F0">0</TextBox>
                         <Label Content="Database Displayed"></Label>
-                        <ComboBox x:Name="cmbx_DisplayWhichDB" Height="25" SelectionChanged="cmbx_DisplayWhichDB_SelectedIndexChanged"></ComboBox>
+                        <ComboBox x:Name="cmbx_DisplayWhichDB" Height="25" SelectionChanged="Cmbx_DisplayWhichDB_OnSelectionChanged"></ComboBox>
                         <Label Content="Database Filter by Text"></Label>
                         <TextBox x:Name="tb_tableFilter" Height="25" TextChanged="tb_tableFilter_TextChanged"></TextBox>
                     </StackPanel>

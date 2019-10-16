@@ -60,7 +60,7 @@
                             <WindowsFormsHost Grid.Column="0" Margin="5 5 0 0" Width="70" Height="28">
                                 <winform:NumericUpDown Value="1" Minimum="1" Maximum="100" Increment="1" DecimalPlaces="0" x:Name="nud_minObservations" ValueChanged="nud_minObservations_ValueChanged" Dock="Fill"></winform:NumericUpDown>
                             </WindowsFormsHost>
-                            <ComboBox x:Name="cmbx_observationsTypeRequired" Grid.Column="1" Margin="10 5 10 0" SelectedIndex="{Binding Path=CB_SELECT, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></ComboBox>
+                            <ComboBox x:Name="cmbx_observationsTypeRequired" Grid.Column="1" Margin="10 5 10 0" SelectedIndex="{Binding Path=CB_SELECT, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectionChanged="Cmbx_observationsTypeRequired_OnSelectionChanged"></ComboBox>
                             <!--Do the same binding as in loadresult, cmbx_observationsTypeRequired_SelectedIndexChanged-->
                         </Grid>
                     </GroupBox>

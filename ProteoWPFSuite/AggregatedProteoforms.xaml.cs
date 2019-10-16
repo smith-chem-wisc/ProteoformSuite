@@ -391,5 +391,12 @@ namespace ProteoWPFSuite
         {
             CK1 = !CK1;
         }
+
+        private void Cmbx_observationsTypeRequired_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
+        }
     }
 }

@@ -213,12 +213,12 @@ namespace ProteoWPFSuite
             populate_file_lists();
         }
 
-        //Using property notification instead
-        private void cmb_loadTable1_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
+        private void Cmb_loadTable1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
-            CB_select = cmb_loadTable1.SelectedIndex;
-        }
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
+        }    
 
         private void populate_file_lists()
         {

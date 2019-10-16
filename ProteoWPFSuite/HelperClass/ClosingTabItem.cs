@@ -28,6 +28,9 @@ namespace ProteoWPFSuite
             set {
                 ((ClosingTabHeader)this.header).tab_title.Content = value;
             }
+            get {
+                return ((ClosingTabHeader)this.header).tab_title.Content as string;
+            }
         }
         protected override void OnSelected(RoutedEventArgs e)
         {
