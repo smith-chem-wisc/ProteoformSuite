@@ -68,23 +68,12 @@
                         <CheckBox Margin="0 3 0 0" x:Name="ckbx_Carbam" Content="Fixed Carbamidomethylation" Unchecked="ckbx_Carbam_CheckedChanged" Checked="ckbx_Carbam_CheckedChanged"></CheckBox>
                         <CheckBox Margin="0 3 0 0" x:Name="ckbx_OxidMeth" Content="Variable Oxidized Methionine" Checked="ckbx_OxidMeth_CheckedChanged" Unchecked="ckbx_OxidMeth_CheckedChanged"></CheckBox>
                         <CheckBox Margin="0 3 0 0" x:Name="ckbx_Meth_Cleaved" Content="Cleaved N-Methionine" Checked="ckbx_Meth_Cleaved_CheckedChanged" Unchecked="ckbx_Meth_Cleaved_CheckedChanged" IsChecked="True"></CheckBox>
-                        <Grid>
+                        <Grid Margin="0 3 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <WindowsFormsHost Height="25" Width="90" HorizontalAlignment="Left">
-                                <winform:NumericUpDown Value="10" ValueChanged="nUD_NumDecoyDBs_ValueChanged" Maximum="100" Minimum="0" Increment="1" x:Name="nUD_NumDecoyDBs">
-                                </winform:NumericUpDown>
-                            </WindowsFormsHost>
-                            <Label Grid.Column="1">Number of Decoy Database</Label>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox x:Name="cb_useRandomSeed" IsChecked="True" Checked="cb_useRandomSeed_CheckedChanged" Unchecked="cb_useRandomSeed_CheckedChanged" Content="Use Random Seed"></CheckBox>
+                            <CheckBox x:Name="cb_useRandomSeed" IsChecked="True" Checked="cb_useRandomSeed_CheckedChanged" Unchecked="cb_useRandomSeed_CheckedChanged" Content="Use Random Seed:"></CheckBox>
                             <WindowsFormsHost HorizontalAlignment="Left" Height="25" Width="60" Grid.Column="1">
                                 <winform:NumericUpDown Maximum="1000" Minimum="1" Increment="1" Value="1" x:Name="nud_randomSeed" ValueChanged="nud_randomSeed_ValueChanged">
                                 </winform:NumericUpDown>
@@ -95,24 +84,35 @@
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <WindowsFormsHost Height="25" Width="90" HorizontalAlignment="Left">
+                            <Label>Number of Decoy Database:</Label>
+                            <WindowsFormsHost Grid.Column="1" Height="25" Width="60" HorizontalAlignment="Left">
+                                <winform:NumericUpDown Value="10" ValueChanged="nUD_NumDecoyDBs_ValueChanged" Maximum="100" Minimum="0" Increment="1" x:Name="nUD_NumDecoyDBs">
+                                </winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label>Minimum Sequence Length:</Label>
+                            <WindowsFormsHost Grid.Column="1" Height="25" Width="60" HorizontalAlignment="Left">
                                 <winform:NumericUpDown x:Name="nUD_MinPeptideLength" ValueChanged="nUD_MinPeptideLength_ValueChanged" Value="7" Maximum="100" Minimum="0" Increment="1" Text="Num">
                                 </winform:NumericUpDown>
                             </WindowsFormsHost>
-                            <Label Grid.Column="1">Minimum Sequence Length</Label>
                         </Grid>
                         <CheckBox IsChecked="True" Checked="ckbx_combineIdenticalSequences_CheckedChanged" Unchecked="ckbx_combineIdenticalSequences_CheckedChanged" Content="Combine Sequence-Identical Proteins" x:Name="ckbx_combineIdenticalSequences"></CheckBox>
                         <CheckBox IsChecked="True" Margin="0 3 0 0" Checked="ckbx_combineTheoreticalsByMass_CheckedChanged" Unchecked="ckbx_combineTheoreticalsByMass_CheckedChanged" Content="Combine Theoretical Proteoforms By Mass" x:Name="ckbx_combineTheoreticalsByMass"></CheckBox>
                         <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"></RowDefinition>
-                                <RowDefinition Height="1*"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <WindowsFormsHost Margin="5 0 0 0" Grid.Row="1" Height="25" Width="90" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label>Max Modifications per Proteoform:</Label>
+                            <WindowsFormsHost Grid.Column="1" Margin="5 0 0 0" Height="25" Width="60" HorizontalAlignment="Left">
                                 <winform:NumericUpDown Dock="Fill" Value="2" Maximum="5" Minimum="0" Increment="1" x:Name="nUD_MaxPTMs" ValueChanged="nUD_MaxPTMs_ValueChanged" Enabled="True" Visible="True">
                                 </winform:NumericUpDown>
                             </WindowsFormsHost>
-                            <Label Grid.Column="1">NumberMax Modifications per Proteoform:</Label>
                         </Grid>
                         <CheckBox Margin="0 3 0 0" x:Name="cb_limitLargePtmSets" Content="Three or More Mods of a Kind Only" IsChecked="True" Checked="cb_limitLargePtmSets_CheckedChanged" Unchecked="cb_limitLargePtmSets_CheckedChanged"></CheckBox>
                         <Label Content="Modification Types to Exclude"></Label>
