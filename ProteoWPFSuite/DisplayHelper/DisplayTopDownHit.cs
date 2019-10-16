@@ -11,7 +11,7 @@ namespace ProteoWPFSuite
     {
         #region Public Constructors
 
-        public DisplayTopDownHit(TopDownHit h)
+        public DisplayTopDownHit(SpectrumMatch h)
             : base(h)
         {
             this.h = h;
@@ -21,7 +21,7 @@ namespace ProteoWPFSuite
 
         #region Private Fields
 
-        private readonly TopDownHit h;
+        private readonly SpectrumMatch h;
 
         #endregion Private Fields
 

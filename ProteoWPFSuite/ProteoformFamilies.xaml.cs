@@ -479,7 +479,7 @@ namespace ProteoWPFSuite
             Sweet.lollipop.family_build_folder_path, "", time_stamp,
             (bool)cb_buildAsQuantitative.IsChecked ? (this.MDIParent as ProteoformSweet).resultsSummary.get_go_analysis() : null, (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString(), (bool)ck_cb_scale_nodes);
+                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 

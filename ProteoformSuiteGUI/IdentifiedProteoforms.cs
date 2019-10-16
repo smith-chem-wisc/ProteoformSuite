@@ -43,7 +43,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_identified_experimentals, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_identified_experimentals);
-            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id && e.linked_proteoform_references != null)).Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
+            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
             tb_not_td.Text = "Identified Experimental Proteoforms Not in Top-Down";
             tb_topdown.Text = "Top-Down Proteoforms";
@@ -79,8 +79,8 @@ namespace ProteoformSuiteGUI
                 if (sdr == DialogResult.OK)
                 {
                     InputFile file = new InputFile(openFileDialog.FileName, Purpose.TopDown);
-                    TopDownReader reader = new TopDownReader();
-                    List<TopDownHit> hits = reader.ReadTDFile(file);
+                    TDBUReader reader = new TDBUReader();
+                    List<SpectrumMatch> hits = reader.ReadTDFile(file);
                     List<TopDownProteoform> td_proteoforms = Sweet.lollipop.aggregate_td_hits(hits, 0, true, true);
                     List<ExperimentalProteoform> experimentals = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !p.adduct) && !p.topdown_id).ToList();
                     experimentals = Sweet.lollipop.add_topdown_proteoforms(experimentals, td_proteoforms);

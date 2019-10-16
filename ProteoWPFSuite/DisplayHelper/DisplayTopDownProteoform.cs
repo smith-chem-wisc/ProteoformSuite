@@ -37,11 +37,6 @@ namespace ProteoWPFSuite
             get { return t.name; }
         }
 
-        public string geneID
-        {
-            get { return t.geneID; }
-        }
-
         public string Sequence
         {
             get { return t.sequence; }

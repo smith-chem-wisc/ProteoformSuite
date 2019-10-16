@@ -80,12 +80,17 @@
             this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
             this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cb_ee_peak_accept_rank = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.cb_ee_peak_accept_rank = new System.Windows.Forms.CheckBox();
+            this.rb_ppm = new System.Windows.Forms.RadioButton();
+            this.rb_daltons = new System.Windows.Forms.RadioButton();
+            this.label13 = new System.Windows.Forms.Label();
+            this.nUD_notch_tolerance = new System.Windows.Forms.NumericUpDown();
+            this.cb_use_ppm_notch = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -127,6 +132,7 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -651,6 +657,11 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Controls.Add(this.rb_ppm);
+            this.groupBox1.Controls.Add(this.rb_daltons);
+            this.groupBox1.Controls.Add(this.label13);
+            this.groupBox1.Controls.Add(this.nUD_notch_tolerance);
+            this.groupBox1.Controls.Add(this.cb_use_ppm_notch);
             this.groupBox1.Controls.Add(this.cb_ee_peak_accept_rank);
             this.groupBox1.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox1.Controls.Add(this.label9);
@@ -662,10 +673,23 @@
             this.groupBox1.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox1.Location = new System.Drawing.Point(12, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(224, 210);
+            this.groupBox1.Size = new System.Drawing.Size(456, 210);
             this.groupBox1.TabIndex = 28;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "EE Peak List Parameters";
+            // 
+            // cb_ee_peak_accept_rank
+            // 
+            this.cb_ee_peak_accept_rank.AutoSize = true;
+            this.cb_ee_peak_accept_rank.Checked = true;
+            this.cb_ee_peak_accept_rank.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_ee_peak_accept_rank.Location = new System.Drawing.Point(6, 98);
+            this.cb_ee_peak_accept_rank.Name = "cb_ee_peak_accept_rank";
+            this.cb_ee_peak_accept_rank.Size = new System.Drawing.Size(222, 17);
+            this.cb_ee_peak_accept_rank.TabIndex = 32;
+            this.cb_ee_peak_accept_rank.Text = "Auto-Accept Peaks Based on Delta Mass";
+            this.cb_ee_peak_accept_rank.UseVisualStyleBackColor = true;
+            this.cb_ee_peak_accept_rank.CheckedChanged += new System.EventHandler(this.cb_ee_peak_accept_rank_CheckedChanged);
             // 
             // tb_max_accepted_fdr
             // 
@@ -737,18 +761,81 @@
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
-            // cb_ee_peak_accept_rank
+            // rb_ppm
             // 
-            this.cb_ee_peak_accept_rank.AutoSize = true;
-            this.cb_ee_peak_accept_rank.Checked = true;
-            this.cb_ee_peak_accept_rank.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_ee_peak_accept_rank.Location = new System.Drawing.Point(6, 98);
-            this.cb_ee_peak_accept_rank.Name = "cb_ee_peak_accept_rank";
-            this.cb_ee_peak_accept_rank.Size = new System.Drawing.Size(222, 17);
-            this.cb_ee_peak_accept_rank.TabIndex = 32;
-            this.cb_ee_peak_accept_rank.Text = "Auto-Accept Peaks Based on Delta Mass";
-            this.cb_ee_peak_accept_rank.UseVisualStyleBackColor = true;
-            this.cb_ee_peak_accept_rank.CheckedChanged += new System.EventHandler(this.cb_ee_peak_accept_rank_CheckedChanged);
+            this.rb_ppm.AutoSize = true;
+            this.rb_ppm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_ppm.Location = new System.Drawing.Point(211, 76);
+            this.rb_ppm.Name = "rb_ppm";
+            this.rb_ppm.Size = new System.Drawing.Size(45, 17);
+            this.rb_ppm.TabIndex = 63;
+            this.rb_ppm.Text = "ppm";
+            this.rb_ppm.UseVisualStyleBackColor = true;
+            this.rb_ppm.CheckedChanged += new System.EventHandler(this.rb_ppm_CheckedChanged);
+            // 
+            // rb_daltons
+            // 
+            this.rb_daltons.AutoSize = true;
+            this.rb_daltons.Checked = true;
+            this.rb_daltons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rb_daltons.Location = new System.Drawing.Point(211, 53);
+            this.rb_daltons.Name = "rb_daltons";
+            this.rb_daltons.Size = new System.Drawing.Size(61, 17);
+            this.rb_daltons.TabIndex = 64;
+            this.rb_daltons.TabStop = true;
+            this.rb_daltons.Text = "Daltons";
+            this.rb_daltons.UseVisualStyleBackColor = true;
+            this.rb_daltons.CheckedChanged += new System.EventHandler(this.rb_daltons_CheckedChanged);
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(197, 33);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(87, 13);
+            this.label13.TabIndex = 61;
+            this.label13.Text = "Notch Tolerance";
+            // 
+            // nUD_notch_tolerance
+            // 
+            this.nUD_notch_tolerance.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.nUD_notch_tolerance.DecimalPlaces = 1;
+            this.nUD_notch_tolerance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nUD_notch_tolerance.Location = new System.Drawing.Point(277, 65);
+            this.nUD_notch_tolerance.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_notch_tolerance.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nUD_notch_tolerance.Name = "nUD_notch_tolerance";
+            this.nUD_notch_tolerance.Size = new System.Drawing.Size(86, 20);
+            this.nUD_notch_tolerance.TabIndex = 62;
+            this.nUD_notch_tolerance.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUD_notch_tolerance.ValueChanged += new System.EventHandler(this.nUD_notch_tolerance_ValueChanged);
+            // 
+            // cb_use_ppm_notch
+            // 
+            this.cb_use_ppm_notch.AutoSize = true;
+            this.cb_use_ppm_notch.Checked = true;
+            this.cb_use_ppm_notch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_use_ppm_notch.Location = new System.Drawing.Point(195, 12);
+            this.cb_use_ppm_notch.Name = "cb_use_ppm_notch";
+            this.cb_use_ppm_notch.Size = new System.Drawing.Size(90, 17);
+            this.cb_use_ppm_notch.TabIndex = 60;
+            this.cb_use_ppm_notch.Text = "Notch search";
+            this.cb_use_ppm_notch.UseVisualStyleBackColor = true;
+            this.cb_use_ppm_notch.CheckedChanged += new System.EventHandler(this.cb_use_ppm_notch_CheckedChanged);
             // 
             // ExperimentExperimentComparison
             // 
@@ -807,6 +894,7 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_notch_tolerance)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -862,6 +950,11 @@
         private System.Windows.Forms.TextBox tb_noMansUpperBound;
         private System.Windows.Forms.TextBox tb_noMansLowerBound;
         private System.Windows.Forms.CheckBox cb_ee_peak_accept_rank;
+        private System.Windows.Forms.RadioButton rb_ppm;
+        private System.Windows.Forms.RadioButton rb_daltons;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown nUD_notch_tolerance;
+        private System.Windows.Forms.CheckBox cb_use_ppm_notch;
     }
 }
 

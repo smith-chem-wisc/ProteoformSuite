@@ -73,6 +73,13 @@ namespace ProteoformSuiteGUI
 
             cb_only_assign_common_known_mods.Checked = Sweet.lollipop.only_assign_common_or_known_mods;
 
+            cb_id_from_td_nodes.Checked = Sweet.lollipop.identify_from_td_nodes;
+            cb_td_ID_reduce_ambiguity.Checked = Sweet.lollipop.topdown_theoretical_reduce_ambiguity;
+            cb_remove_bad_connections.Checked = Sweet.lollipop.remove_bad_connections;
+            nUD_notch_tolerance.Value = (decimal)Sweet.lollipop.id_ppm_tolerance;
+            cb_ppm_tolerance.Checked = Sweet.lollipop.id_use_ppm_tolerance;
+            cb_annotated_PTMs_reduce_ambiguity.Checked = Sweet.lollipop.annotated_PTMs_reduce_ambiguity;
+
             initialize_every_time();
         }
 
@@ -330,7 +337,7 @@ namespace ProteoformSuiteGUI
                 Sweet.lollipop.family_build_folder_path, "", time_stamp,
                 cb_buildAsQuantitative.Checked ? (MdiParent as ProteoformSweet).resultsSummary.get_go_analysis() : null, cb_redBorder.Checked, cb_boldLabel.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString(), cb_scale_nodes.Checked);
+                cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -385,6 +392,36 @@ namespace ProteoformSuiteGUI
         private void cb_only_assign_common_known_mods_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.only_assign_common_or_known_mods = cb_only_assign_common_known_mods.Checked;
+        }
+
+        private void cb_id_from_td_nodes_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.identify_from_td_nodes = cb_id_from_td_nodes.Checked;
+        }
+
+        private void cb_remove_bad_connections_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.remove_bad_connections = cb_remove_bad_connections.Checked;
+        }
+
+        private void nUD_notch_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.id_ppm_tolerance = (double)nUD_notch_tolerance.Value;
+        }
+
+        private void cb_ppm_tolerance_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.id_use_ppm_tolerance = cb_ppm_tolerance.Checked;
+        }
+
+        private void cb_td_ID_reduce_ambiguity_CheckedChanged_1(object sender, EventArgs e)
+        {
+            Sweet.lollipop.topdown_theoretical_reduce_ambiguity = cb_td_ID_reduce_ambiguity.Checked;
+        }
+
+        private void cb_annotated_PTMs_reduce_ambiguity_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.annotated_PTMs_reduce_ambiguity = cb_annotated_PTMs_reduce_ambiguity.Checked;
         }
     }
 }

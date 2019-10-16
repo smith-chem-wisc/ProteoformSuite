@@ -308,7 +308,6 @@ namespace Test
             Assert.AreEqual(e.modified_mass, f.modified_mass);
             Assert.AreEqual(e.agg_rt, f.agg_rt);
             Assert.AreEqual(e.lysine_count, f.lysine_count);
-            Assert.AreEqual(e.accepted, f.accepted);
             Assert.AreEqual("E1", f.quant.accession);
             Assert.AreEqual(e.is_target, f.is_target);
             Assert.AreEqual(e.family, f.family);

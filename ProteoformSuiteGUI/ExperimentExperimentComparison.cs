@@ -51,7 +51,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
-            Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, Environment.CurrentDirectory, true);
+            Sweet.lollipop.ee_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ef();
             Sweet.lollipop.ee_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.ee_relations, Sweet.lollipop.ef_relations);
             FillTablesAndCharts();
@@ -125,7 +125,7 @@ namespace ProteoformSuiteGUI
 
             //Other stuff
             yMaxEE.Minimum = 0;
-            yMaxEE.Maximum = 1000;
+            yMaxEE.Maximum = 8000;
             yMaxEE.Value = 100; // scaling for y-axis maximum in the histogram of all EE pairs
 
             yMinEE.Minimum = -100;
@@ -161,6 +161,14 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
             cb_ee_peak_accept_rank.Checked = Sweet.lollipop.ee_accept_peaks_based_on_rank;
+
+            cb_use_ppm_notch.Checked = Sweet.lollipop.ee_use_notch;
+            rb_ppm.Checked = Sweet.lollipop.ee_notch_ppm;
+            rb_daltons.Checked = !Sweet.lollipop.ee_notch_ppm;
+
+            nUD_notch_tolerance.Minimum = 0;
+            nUD_notch_tolerance.Maximum = 30;
+            nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_ee);
         }
 
         #endregion Public Methods
@@ -358,6 +366,32 @@ namespace ProteoformSuiteGUI
         {
             Sweet.lollipop.ee_accept_peaks_based_on_rank = cb_ee_peak_accept_rank.Checked;
             change_peak_acceptance();
+        }
+
+        private void cb_use_ppm_notch_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.ee_use_notch = cb_use_ppm_notch.Checked;
+            label10.Visible = cb_use_ppm_notch.Checked;
+            nUD_notch_tolerance.Visible = cb_use_ppm_notch.Checked;
+            rb_daltons.Visible = cb_use_ppm_notch.Checked;
+            rb_ppm.Visible = cb_use_ppm_notch.Checked;
+        }
+
+        private void nUD_notch_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.notch_tolerance_ee = Convert.ToDouble(nUD_notch_tolerance.Value);
+        }
+
+        private void rb_daltons_CheckedChanged(object sender, EventArgs e)
+        {
+            rb_ppm.Checked = !rb_daltons.Checked;
+            Sweet.lollipop.et_notch_ppm = !rb_daltons.Checked;
+        }
+
+        private void rb_ppm_CheckedChanged(object sender, EventArgs e)
+        {
+            rb_ppm.Checked = !rb_daltons.Checked;
+            Sweet.lollipop.ee_notch_ppm = !rb_daltons.Checked;
         }
     }
 }

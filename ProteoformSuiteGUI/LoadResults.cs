@@ -156,6 +156,7 @@ namespace ProteoformSuiteGUI
             if (rb_standardOptions.Checked)
             {
                 for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[7]);
                 topdownSearch_panel.Visible = false;
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable1.Enabled = true;

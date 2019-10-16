@@ -220,7 +220,7 @@ namespace ProteoWPFSuite
         }
         private void updateFiguresOfMerit()
         {
-            tb_totalAggregatedProteoforms.Text = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(p => p.accepted).ToString();
+            tb_totalAggregatedProteoforms.Text = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count().ToString();
         }
 
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)

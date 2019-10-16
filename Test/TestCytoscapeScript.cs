@@ -246,7 +246,7 @@ namespace Test
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 null, false, false,
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
-                false, Lollipop.gene_name_labels[1], false);
+                false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
             for (int i = 1; i < edge_lines.Length; i++)
@@ -278,7 +278,7 @@ namespace Test
             ProteoformCommunity community = TestProteoformFamilies.construct_community_with_td_proteoforms(-1);
             Sweet.lollipop.target_proteoform_community = community;
             TopDownProteoform td = ConstructorsForTesting.TopDownProteoform("ASDF", 1000, 50);
-            td.gene_name = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
+            td.topdown_geneName = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
             ProteoformFamily fam = new ProteoformFamily(td);
             fam.construct_family();
             CytoscapeScript.write_cytoscape_script(new List<ProteoformFamily>() { fam }, new List<ProteoformFamily>() { fam },
@@ -321,7 +321,7 @@ namespace Test
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 null, false, false,
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
-                false, Lollipop.gene_name_labels[1], false);
+                false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
             for (int i = 1; i < edge_lines.Length; i++)
@@ -356,7 +356,7 @@ namespace Test
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 null, false, false,
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
-                false, Lollipop.gene_name_labels[1], false);
+                false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
             for (int i = 1; i < edge_lines.Length; i++)
@@ -390,7 +390,7 @@ namespace Test
             CytoscapeScript.write_cytoscape_script(community.families.SelectMany(f => f.experimental_proteoforms.Select(ex => ex.quant)).ToArray(), community.families,
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 null, false, false,
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, false, Lollipop.gene_name_labels[1], false);
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
             for (int i = 1; i < edge_lines.Length; i++)
