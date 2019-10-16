@@ -82,8 +82,8 @@ namespace ProteoWPFSuite
                 aggregatedProteoforms,
                 experimentTheoreticalComparison,
                 experimentExperimentComparison,
-                identifiedProteoforms,
                 proteoformFamilies,
+                identifiedProteoforms,    
                 quantification,
                 resultsSummary
             };
