@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _topdown_ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                    string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
+                    string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
             }
         }
         public GeneName topdown_geneName { get; set; }

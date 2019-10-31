@@ -1,7 +1,7 @@
 ﻿using Accord.Math;
 using Chemistry;
 using IO.MzML;
-using IO.Thermo;
+using ThermoRawFileReader;
 using MassSpectrometry;
 using System;
 using System.Collections.Generic;
@@ -21,9 +21,9 @@ namespace ProteoformSuiteInternal
     {
         #region Constants
 
-        public static readonly double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
-        public static readonly double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
-        public static readonly double PROTON_MASS = 1.007276474;
+        public static double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
+        public static double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public static double PROTON_MASS = 1.007276474;
 
         #endregion Constants
 
@@ -1307,7 +1307,7 @@ namespace ProteoformSuiteInternal
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
                     MsDataFile myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                        ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                        ThermoRawFileReaderData.LoadAllStaticData(raw_file.complete_path) :
                         null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
                     Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>

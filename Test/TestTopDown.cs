@@ -236,7 +236,7 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
@@ -257,7 +257,7 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
@@ -278,7 +278,7 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
@@ -299,7 +299,7 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
             Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
             Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));

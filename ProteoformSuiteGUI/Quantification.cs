@@ -72,9 +72,12 @@ namespace ProteoformSuiteGUI
 
             //Results dataframe for selected tusher analysis
             DataTable results;
-            results = ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, selected_tusher_analysis);
-            results.TableName = "Results_" + selected_tusher_analysis.sortedPermutedRelativeDifferences.Count.ToString() + "Perm";
-            DataTables.Add(results);
+            if (selected_tusher_analysis != null)
+            {
+                results = ResultsSummaryGenerator.experimental_results_dataframe(Sweet.lollipop.target_proteoform_community, selected_tusher_analysis);
+                results.TableName = "Results_" + selected_tusher_analysis.sortedPermutedRelativeDifferences.Count.ToString() + "Perm";
+                DataTables.Add(results);
+            }
 
             // Satisfactory proteoforms with and without imputation
             IEnumerable<ExperimentalProteoform> proteoforms;
@@ -106,7 +109,10 @@ namespace ProteoformSuiteGUI
                 DataTables.Add(results);
             }
             // Go term table
-            results = DisplayGoTermNumber.FormatGridView(selected_analysis.GoAnalysis.goTermNumbers.OrderBy(x => x.by).Select(x => new DisplayGoTermNumber(x)).ToList(), "GoTerms");
+            if (selected_analysis != null)
+            {
+                results = DisplayGoTermNumber.FormatGridView(selected_analysis.GoAnalysis.goTermNumbers.OrderBy(x => x.by).Select(x => new DisplayGoTermNumber(x)).ToList(), "GoTerms");
+            }
             DataTables.Add(results);
 
             return DataTables;

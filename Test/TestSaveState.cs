@@ -260,7 +260,7 @@ namespace Test
             Sweet.lollipop = new Lollipop();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
             Sweet.lollipop.qVals.Add(e.quant);
-            GoTermNumber g = new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
+            GoTermNumber g = new GoTermNumber(new goTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
             g.by = -1;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Add(g);
             Sweet.lollipop.topdown_proteoforms = new List<TopDownProteoform>() { ConstructorsForTesting.TopDownProteoform("td1", 1000, 10) };

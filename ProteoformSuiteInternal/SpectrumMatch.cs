@@ -42,7 +42,8 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _ptm_list.Count == 0 ?
                         "Unmodified" :
-                        string.Join("; ", _ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
+                        string.Join("; ", _ptm_list.Select(ptm => ptm.position > 0 ? UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
+
             }
         }
         public string ptm_description { get; set; }

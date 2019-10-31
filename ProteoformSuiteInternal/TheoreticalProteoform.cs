@@ -23,7 +23,7 @@ namespace ProteoformSuiteInternal
         public List<SpectrumMatch> bottom_up_PSMs { get; set; } = new List<SpectrumMatch>();
         public bool contaminant { get; set; }
 
-        public List<GoTerm> goTerms { get; private set; }
+        public List<goTerm> goTerms { get; private set; }
         public bool topdown_theoretical { get; set; }
         public bool new_topdown_proteoform { get; set; } //not in DB without topdown result loaded in...
 

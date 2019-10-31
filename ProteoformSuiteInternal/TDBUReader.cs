@@ -287,19 +287,20 @@ namespace ProteoformSuiteInternal
             string[] cells = Enumerable.ToArray(System.IO.File.ReadAllLines(file.complete_path));
             string[] header = cells[0].Split('\t');
 
-            int index_q_value = header.IndexOf("QValue");
-            int index_decoy = header.IndexOf("Decoy");
-            int index_full_sequence = header.IndexOf("Full Sequence");
-            int index_filename = header.IndexOf("File Name");
-            int index_scan_number = header.IndexOf("Scan Number");
-            int index_begin_end = header.IndexOf("Start and End Residues In Protein");
-            int index_protein_accession = header.IndexOf("Protein Accession");
-            int index_protein_name = header.IndexOf("Protein Name");
-            int index_base_sequence = header.IndexOf("Base Sequence");
-            int index_retention_time = header.IndexOf("Scan Retention Time");
-            int index_precursor_mass = header.IndexOf("Precursor Mass");
-            int index_peptide_monoisotopic_mass = header.IndexOf("Peptide Monoisotopic Mass");
+            int index_q_value = Array.IndexOf(header, "QValue");
+            int index_decoy = Array.IndexOf(header, "Decoy");
+            int index_full_sequence = Array.IndexOf(header, "Full Sequence");
+            int index_filename = Array.IndexOf(header,"File Name");
+            int index_scan_number = Array.IndexOf(header, "Scan Number");
+            int index_begin_end = Array.IndexOf(header, "Start and End Residues In Protein");
+            int index_protein_accession = Array.IndexOf(header, "Protein Accession");
+            int index_protein_name = Array.IndexOf(header, "Protein Name");
+            int index_base_sequence = Array.IndexOf(header, "Base Sequence");
+            int index_retention_time = Array.IndexOf(header, "Scan Retention Time");
+            int index_precursor_mass = Array.IndexOf(header, "Precursor Mass");
+            int index_peptide_monoisotopic_mass = Array.IndexOf(header, "Peptide Monoisotopic Mass");
             bool glycan = header.Contains("GlycanIDs");
+            int index_mods = Array.IndexOf(header, "Mods");
 
             //creates dictionary to find mods
             Dictionary<string, Modification> mods = new Dictionary<string, Modification>();
@@ -357,6 +358,7 @@ namespace ProteoformSuiteInternal
                             //for each  entry in ptm_list make a new Ptm and add it to the new_ptm_list 
                             foreach (KeyValuePair<int, Proteomics.Modification> entry in ptm_list)
                             {
+                                string mod_type = entry.Value.ModificationType;
                                 if (glycan && entry.Value.ModificationType == "N-Glycosylation")
                                 {
                                     string glycanFormula = entry.Value.OriginalId;
@@ -415,7 +417,7 @@ namespace ProteoformSuiteInternal
                             lock (bad_ptms)
                             {
                                 //error is somewahre in sequece
-                                bad_ptms.Add("Bad mod at " + cellStrings[index_filename] + " scan " +
+                               bad_ptms.Add(cellStrings[index_mods] + " at " + cellStrings[index_filename] + " scan " +
                                              cellStrings[index_scan_number]);
                                 add_topdown_hit = false;
                             }
