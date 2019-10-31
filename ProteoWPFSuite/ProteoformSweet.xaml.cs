@@ -442,7 +442,7 @@ namespace ProteoWPFSuite
         private void resultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-        }
+        } 
 
         private void printToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
