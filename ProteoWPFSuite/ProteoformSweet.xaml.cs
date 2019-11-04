@@ -623,7 +623,7 @@ namespace ProteoWPFSuite
         private void Btn_RunPage_Click(object sender, RoutedEventArgs e)
         {
             ClosingTabItem item = MDIContainer.SelectedValue as ClosingTabItem;
-            MessageBox.Show("This page is :" + item.Title);
+            // MessageBox.Show("This page is :" + item.Title);
 
             // Dynamically change the button's action according to page.
             // i.e. use the correct RunTheGamut that refers to page.
@@ -634,7 +634,9 @@ namespace ProteoWPFSuite
                     break;
 
                 case "Theoretical Database":
+                    Mouse.OverrideCursor = Cursors.Wait;
                     theoreticalDatabase.RunTheGamut(false);
+                    Mouse.OverrideCursor = null;
                     break;
 
                 case "Top Down":

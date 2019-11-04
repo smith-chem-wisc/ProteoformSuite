@@ -71,7 +71,7 @@ namespace ProteoWPFSuite
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        private void cmb_empty_TextChanged(object sender, EventArgs e) { }
+        private void cmb_empty_TextChanged(object sender, TextChangedEventArgs e) { }
 
         #endregion Private Methods
 
@@ -220,27 +220,27 @@ namespace ProteoWPFSuite
 
         #region CHECKBOXES Private Methods
 
-        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.combine_identical_sequences = (bool)ckbx_combineIdenticalSequences.IsChecked;
         }
 
-        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.combine_theoretical_proteoforms_byMass = (bool)ckbx_combineTheoreticalsByMass.IsChecked;
         }
 
-        private void ckbx_OxidMeth_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_OxidMeth_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.methionine_oxidation = (bool)ckbx_OxidMeth.IsChecked;
         }
 
-        private void ckbx_Carbam_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_Carbam_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.carbamidomethylation = (bool)ckbx_Carbam.IsChecked;
         }
 
-        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.methionine_cleavage = (bool)ckbx_Meth_Cleaved.IsChecked;
         }
@@ -275,7 +275,7 @@ namespace ProteoWPFSuite
             Sweet.lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
         }
 
-        private void cb_limitLargePtmSets_CheckedChanged(object sender, EventArgs e)
+        private void cb_limitLargePtmSets_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.theoretical_database.limit_triples_and_greater = (bool)cb_limitLargePtmSets.IsChecked;
         }
@@ -317,7 +317,7 @@ namespace ProteoWPFSuite
             initialize_table_bindinglist();
         }
 
-        private void tb_tableFilter_TextChanged(object sender, EventArgs e)
+        private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             List<TheoreticalProteoform> theoreticals_to_display = cmbx_DisplayWhichDB.SelectedItem.ToString() == "Target" ?
                  Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.ToList()
@@ -330,7 +330,7 @@ namespace ProteoWPFSuite
         }
 
         Regex substituteWhitespace = new Regex(@"\s+");
-        private void tb_modTypesToExclude_TextChanged(object sender, EventArgs e)
+        private void tb_modTypesToExclude_TextChanged(object sender, TextChangedEventArgs e)
         {
             Sweet.lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
@@ -366,7 +366,7 @@ namespace ProteoWPFSuite
            
         }
 
-        private void btn_clearFiles_Click(object sender, EventArgs e)
+        private void btn_clearFiles_Click(object sender, RoutedEventArgs e)
         {
             List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).ToList();
             Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
@@ -380,25 +380,25 @@ namespace ProteoWPFSuite
 
         #region Modification Names Private Methods
 
-        private void btn_saveModNames_Click(object sender, EventArgs e)
+        private void btn_saveModNames_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog d = new SaveFileDialog();
             d.Title = "Modification Names";
             d.Filter = "Modification Names (*.modnames) | *.modnames";
 
-            if ((bool)d.ShowDialog())
+            if ((bool) d.ShowDialog())
                 return;
 
             Sweet.lollipop.theoretical_database.save_unlocalized_names(d.FileName);
         }
 
-        private void btn_amendModNames_Click(object sender, EventArgs e)
+        private void btn_amendModNames_Click(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.theoretical_database.amend_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
             MessageBox.Show("Successfully amended stored modification names.", "Amend Stored Mod Names");
         }
 
-        private void btn_loadModNames_Click(object sender, EventArgs e)
+        private void btn_loadModNames_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog d = new OpenFileDialog();
             d.Title = "Modification Names";
@@ -413,7 +413,7 @@ namespace ProteoWPFSuite
             DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
         }
 
-        private void tb_modTableFilter_TextChanged(object sender, EventArgs e)
+        private void tb_modTableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             IEnumerable<object> selected_unmods = tb_modTableFilter.Text == "" ?
                 Sweet.lollipop.theoretical_database.unlocalized_lookup.Values :
@@ -424,7 +424,7 @@ namespace ProteoWPFSuite
 
         #endregion Modification Names Private Methods
 
-        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
+        private void cb_useRandomSeed_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.useRandomSeed_decoys = (bool)cb_useRandomSeed.IsChecked;
         }
@@ -434,19 +434,14 @@ namespace ProteoWPFSuite
             Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
         }
 
+        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.use_average_mass = (bool)cb_average_mass.IsChecked;
+        }
 
         public ProteoformSweet MDIParent { get; set; }
 
-        private void cmb_empty_TextChanged(object sender, TextChangedEventArgs e)
-        {
-        }
-
         private void btn_downloadUniProtPtmList_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_clearFiles_Click(object sender, RoutedEventArgs e)
         {
 
         }
@@ -466,91 +461,9 @@ namespace ProteoWPFSuite
 
         }
 
-        private void ckbx_Carbam_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_OxidMeth_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-        
-
-        
-
-        private void cb_useRandomSeed_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        
-
-        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        
-
-        private void cb_limitLargePtmSets_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void tb_modTypesToExclude_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void tb_modTypesToExclude_TextChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void btn_Make_Databases_Click(object sender, RoutedEventArgs e)
         {
             RunTheGamut(false);
-        }
-
-        private void btn_saveModNames_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_amendModNames_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_loadModNames_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void tb_modTableFilter_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.use_average_mass = (bool)cb_average_mass.IsChecked;
         }
 
         private void Cmb_loadTable_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
