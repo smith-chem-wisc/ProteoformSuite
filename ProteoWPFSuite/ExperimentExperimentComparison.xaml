@@ -174,7 +174,7 @@
                             </StackPanel>
                         </GroupBox>
                     </Grid>
-                    <Button x:Name="bt_compare_EE" Grid.Row="1" Content="Compare Experimental Proteoforms with Each Other" MinHeight="25" Click="bt_compare_EE_Click"></Button>
+                    <!--<Button x:Name="bt_compare_EE" Grid.Row="1" Content="Compare Experimental Proteoforms with Each Other" MinHeight="25" Click="bt_compare_EE_Click"></Button>-->
                 </Grid>
             </Grid>
             

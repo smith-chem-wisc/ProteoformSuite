@@ -38,7 +38,7 @@
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <GroupBox Grid.Row="0" Margin="5 5 5 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Header="Components Displayed">
                         <Grid Margin="2 10 2 10">
@@ -89,7 +89,7 @@
                         <ColumnDefinition Width="4*"/>
                         <ColumnDefinition Width="6*"/>
                     </Grid.ColumnDefinitions>
-                    <WindowsFormsHost Margin="5 0 5 0" Grid.Column="0" Grid.Row="1">
+                    <WindowsFormsHost Margin="5 0 5 0" Grid.Column="0" Grid.Row="0">
                         <winform:NumericUpDown x:Name="nUD_mass_tolerance" Value="0" DecimalPlaces="0" Increment="1" Maximum="100" Minimum="0" ValueChanged="nUD_mass_tolerance_ValueChanged"></winform:NumericUpDown>
                     </WindowsFormsHost>
                     <Label Grid.Column="1" Grid.Row="0" Margin="5 10 5 0">Mass Tolerance for Merging Artifacts (ppm)</Label>
@@ -101,7 +101,7 @@
                         <winform:NumericUpDown x:Name="nUD_max_fit" Value="0.2" DecimalPlaces="2" Increment="1" Maximum="100" Minimum="0" ValueChanged="nUD_max_fit_ValueChanged"></winform:NumericUpDown>
                     </WindowsFormsHost>
                     <Label Grid.Column="1" Grid.Row="2" Margin="5 10 5 0">
-                        Max Fit
+                        Max. Fit
                     </Label>
 
                 </Grid>

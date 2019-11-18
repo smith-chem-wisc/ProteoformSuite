@@ -152,9 +152,9 @@
 
                 </winform:RichTextBox>
             </WindowsFormsHost>
-            <Button Grid.Row="1" Padding="2" Margin="4" AllowDrop="True" x:Name="Families_update" Click="Families_update_Click">
+            <!--<Button Grid.Row="1" Padding="2" Margin="4" AllowDrop="True" x:Name="Families_update" Click="Families_update_Click">
                 Construct Families and Identify Proteoforms
-            </Button>
+            </Button>-->
         </Grid>
     </Grid>
     </Grid>

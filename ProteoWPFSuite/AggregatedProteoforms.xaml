@@ -84,7 +84,7 @@
                             <RadioButton x:Name="rb_displayHeavyQuantificationComponents" IsChecked="{Binding Path=RC, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Content="Heavy Quantification Components"></RadioButton>
                         </StackPanel>
                     </GroupBox>
-                    <Button x:Name="bt_aggregate" Click="bt_aggregate_Click" Content="Aggregate Proteoform Observations"></Button>
+                    <!--<Button x:Name="bt_aggregate" Click="bt_aggregate_Click" Content="Aggregate Proteoform Observations"></Button>-->
                 </StackPanel>
                 
             </Grid>

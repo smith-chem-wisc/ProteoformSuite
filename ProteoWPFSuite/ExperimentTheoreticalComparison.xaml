@@ -209,7 +209,7 @@
                         <!--Binding Here-->
                     </Grid>
                 </GroupBox>
-                <Button x:Name="bt_compare_ET" Grid.Row="4" Grid.ColumnSpan="3"  Click="bt_compare_et_Click" Content="Compare Theoretical Proteoforms with Experimental Proteoforms"></Button>
+                <!--<Button x:Name="bt_compare_ET" Grid.Row="4" Grid.ColumnSpan="3"  Click="bt_compare_et_Click" Content="Compare Theoretical Proteoforms with Experimental Proteoforms"></Button>-->
             </Grid>
             
         </Grid>
