@@ -17,12 +17,16 @@
                 <Label>Result Folder</Label>
                 <TextBox x:Name="tb_summarySaveFolder" Width="216" Height="22"></TextBox>
             </StackPanel>
-            <Button x:Name="btn_browseSummarySaveFolder" MaxHeight="37" Margin="5">Browse</Button>
-            <Button x:Name="btn_save" MaxHeight="37">Save All (Proteoform ID Dataframe, Cytoscape Scripts, Plots as Images)</Button>
+            <Button x:Name="btn_browseSummarySaveFolder" Click="btn_browseSummarySaveFolder_Click" MaxHeight="37" Margin="5">Browse</Button>
+            <Button x:Name="btn_save" Click="btn_save_Click" MaxHeight="37">Save All (Proteoform ID Dataframe, Cytoscape Scripts, Plots as Images)</Button>
             <GroupBox Header="Analysis for Cytoscape Visualization" >
-                <WindowsFormsHost>
+                <!--<WindowsFormsHost>
                     <winform:ComboBox></winform:ComboBox>
-                </WindowsFormsHost>
+                </WindowsFormsHost>-->
+                <ComboBox x:Name="cmbx_analysis"
+                          SelectedIndex="{Binding Path=CBX_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          SelectionChanged="Cmbx_analysis_SelectionChanged"
+                          />
             </GroupBox>
         </DockPanel>
         <DockPanel Grid.Row="1">
