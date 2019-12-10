@@ -177,7 +177,7 @@ namespace ProteoWPFSuite
         private void rb_neucode_CheckedChanged(object sender, RoutedEventArgs e)
         {
 
-            this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)rb_neucode.IsChecked);
+            this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(!(bool)rb_neucode.IsChecked);
             Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
 
             foreach (InputFile f in Sweet.lollipop.input_files)
