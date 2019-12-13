@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
 using ProteoformSuiteInternal;
 namespace ProteoWPFSuite
 {
@@ -22,56 +24,151 @@ namespace ProteoWPFSuite
     /// <TODO>
     /// Implement all methods
     /// </TODO>
-    public partial class ResultsSummary : UserControl,ISweetForm
+    public partial class ResultsSummary : UserControl,ISweetForm, ITabbedMDI
     {
+        #region Public Constructor
+
         public ResultsSummary()
         {
             InitializeComponent();
         }
 
+        #endregion Public Constructor
+
+        #region Public Property
+
+        public List<DataTable> DataTables { get; private set; }
+
+        public ProteoformSweet MDIParent { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public int CBX_select
+        {
+            get
+            {
+                return cbx_select;
+            }
+            set
+            {
+                if (value < 0)
+                    return;
+                cbx_select = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBX_select"));
+            }
+        }
+
+        #endregion Public Property
+
+        #region Public Methods
+
+        public List<DataTable> SetTables()
+        {
+            return null;
+        }
+
         public void create_summary()
-        { }
-        public IGoAnalysis get_go_analysis()
         {
-            return null;
-            //return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
-        }
-
-        public TusherAnalysis get_tusher_analysis()
-        {
-            return null;
-            //return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as TusherAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as TusherAnalysis : null;
-        }
-        public List<DataTable> DataTables => throw new NotImplementedException();
-
-        public void ClearListsTablesFigures(bool clear_following_forms)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void FillTablesAndCharts()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InitializeParameterSet()
-        {
-            throw new NotImplementedException();
+            rtb_summary.Text = ResultsSummaryGenerator.generate_full_report();
         }
 
         public bool ReadyToRunTheGamut()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void RunTheGamut(bool full_run)
         {
-            throw new NotImplementedException();
+            create_summary();
         }
 
-        public List<DataTable> SetTables()
+        public void InitializeParameterSet()
         {
-            throw new NotImplementedException();
+            tb_summarySaveFolder.Text = Sweet.lollipop.results_folder;
+            cmbx_analysis.Items.Clear();
+
+            //String[] cmbx_analysis_content = new string[] {
+            //    "Tusher Analysis (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)",
+            //    "Tusher Analysis (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)",
+            //    "Log2 Fold Change Analysis (" + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR)"
+            //};
+
+            // add cmbx_analysis_content to the combobox
+            // cmbx_analysis_content.ToList().ForEach(item => cmbx_analysis.Items.Add(item));
+            cmbx_analysis.Items.Add("Tusher Analysis (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)");
+            cmbx_analysis.Items.Add("Tusher Analysis (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)");
+            cmbx_analysis.Items.Add("Log2 Fold Change Analysis (" + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR)");
+
+            cmbx_analysis.SelectedIndex = 1;
+
+            CBX_select = 1;
+            cmbx_analysis.SelectedItem = cmbx_analysis.Items[cbx_select];
         }
+
+        public void ClearListsTablesFigures(bool clear_following_forms)
+        {
+            rtb_summary.Text = "";
+            tb_summarySaveFolder.Text = "";
+        }
+
+        public void FillTablesAndCharts()
+        {
+            create_summary();
+        }
+
+        public IGoAnalysis get_go_analysis()
+        {
+            //return null;
+            return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as IGoAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as IGoAnalysis : Sweet.lollipop.Log2FoldChangeAnalysis as IGoAnalysis;
+        }
+
+        public TusherAnalysis get_tusher_analysis()
+        {
+            //return null;
+            return cmbx_analysis.SelectedIndex == 0 ? Sweet.lollipop.TusherAnalysis1 as TusherAnalysis : cmbx_analysis.SelectedIndex == 1 ? Sweet.lollipop.TusherAnalysis2 as TusherAnalysis : null;
+        }
+
+        #endregion Public Methods
+
+        #region Private Fields
+
+        private int cbx_select;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+
+        #endregion Private Fields
+
+        #region Private Methods
+
+        private void btn_browseSummarySaveFolder_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.DialogResult dr = folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string temp_folder_path = folderBrowser.SelectedPath;
+                tb_summarySaveFolder.Text = temp_folder_path;
+                Sweet.lollipop.results_folder = temp_folder_path;
+            }
+        }
+
+        private void btn_save_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Directory.Exists(Sweet.lollipop.results_folder)) return;
+            string timestamp = Sweet.time_stamp();
+            ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp, get_go_analysis(), get_tusher_analysis());
+            MDIParent.save_all_plots(Sweet.lollipop.results_folder, timestamp);
+            using (StreamWriter file = new StreamWriter(System.IO.Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
+                file.WriteLine(Sweet.save_method());
+        }
+
+        private void Cmbx_analysis_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
+        }
+
+        #endregion Private Methods
+
+
     }
 }
