@@ -9,6 +9,9 @@ namespace ProteoformSuiteGUI
 {
     public partial class IdentifiedProteoforms : Form, ISweetForm
     {
+
+        private ExperimentalProteoform selected_pf;
+
         public IdentifiedProteoforms()
         {
             InitializeComponent();
@@ -59,6 +62,42 @@ namespace ProteoformSuiteGUI
                 DisplayExperimentalProteoform.FormatAggregatesTable(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)).ToList(), "IdentifiedExperimentals")
             };
             return DataTables;
+        }
+
+        private void dgv_identified_experimentals_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selected_pf = (ExperimentalProteoform)((DisplayExperimentalProteoform)this.dgv_identified_experimentals.Rows[e.RowIndex].DataBoundItem).display_object;
+            }
+            else
+            {
+                selected_pf = null;
+            }
+            display_bu_peptides();
+        }
+
+        private void dgv_td_proteoforms_experimentals_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selected_pf = (ExperimentalProteoform)((DisplayTopDownProteoform)this.dgv_td_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
+            }
+            else
+            {
+                selected_pf = null;
+            }
+            display_bu_peptides();
+        }
+
+
+        private void display_bu_peptides()
+        {
+            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() :
+                (selected_pf as TopDownProteoform != null ? Proteoform.get_possible_PSMs(selected_pf.accession, (selected_pf as TopDownProteoform).topdown_ptm_set,
+                (selected_pf as TopDownProteoform).topdown_begin, (selected_pf as TopDownProteoform).topdown_end, true).Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => Proteoform.get_possible_PSMs(p.accession, new PtmSet(p.ptm_list), p.begin, p.end, true))).Distinct() .ToList()
+                : Proteoform.get_possible_PSMs(selected_pf.linked_proteoform_references.First().accession, selected_pf.ptm_set, selected_pf.begin, selected_pf.end, false).Concat(selected_pf.ambiguous_identifications.SelectMany(p => Proteoform.get_possible_PSMs(p.theoretical_base.accession, p.ptm_set, p.begin, p.end, false))).Distinct().ToList());
+           DisplayUtility.FillDataGridView(dgv_bu_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
         }
 
         private void btn_compare_with_td_Click(object sender, EventArgs e)
@@ -126,10 +165,15 @@ namespace ProteoformSuiteGUI
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_identified_experimentals);
 
             IEnumerable<object> filter_topdown = tb_tableFilter.Text == "" ?
-                Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(p => p.topdown_id && p.linked_proteoform_references != null)).Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)) :
-                ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(p => p.topdown_id && p.linked_proteoform_references != null)).Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)), tb_tableFilter.Text);
+                Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(p => p.topdown_id)).Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)) :
+                ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(p => p.topdown_id)).Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)), tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_td_proteoforms, filter_topdown);
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
+        }
+
+        private void IdentifiedProteoforms_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

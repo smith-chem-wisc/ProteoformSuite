@@ -136,9 +136,41 @@ namespace ProteoformSuiteGUI
             get { return t.bottom_up_PSMs.Count; }
         }
 
+        public string bu_PSMs_PTMs_peptide_specific
+        {
+            get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0).Select(p => p.ptm_description).Distinct())); }
+        }
+
+        
         public string bu_PSMs_PTMs
         {
-            get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description))); }
+            get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                                                 .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct())); }
+        }
+
+
+        public bool bottom_up_evidence_for_all_PTMs
+        {
+            get
+            {
+                return t.bottom_up_evidence_for_all_PTMs;
+            }
+        }
+
+        public bool begin_peptide
+        {
+            get
+            {
+                return t.bottom_up_PSMs.Any(p => p.begin == t.begin);
+            }
+        }
+
+        public bool end_peptide
+        {
+            get
+            {
+                return t.bottom_up_PSMs.Any(p => p.end == t.end);
+            }
         }
 
         #endregion Public Properties

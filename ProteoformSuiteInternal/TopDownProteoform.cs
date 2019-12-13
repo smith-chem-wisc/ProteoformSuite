@@ -28,9 +28,9 @@ namespace ProteoformSuiteInternal
                 _topdown_ptm_set = value;
                 topdown_ptm_description = _topdown_ptm_set == null || _topdown_ptm_set.ptm_combination == null ?
                     "Unknown" :
-                    _topdown_ptm_set.ptm_combination.Count == 0 ?
+                    _topdown_ptm_set.ptm_combination.Count(m => m.modification.ModificationType != "Common Fixed") == 0 ?
                         "Unmodified" :
-                    string.Join("; ", _topdown_ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
+                    string.Join("; ", _topdown_ptm_set.ptm_combination.Where(ptm => ptm.modification.ModificationType != "Common Fixed").Select(ptm => ptm.position > 0 ? UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
             }
         }
         public GeneName topdown_geneName { get; set; }
@@ -111,8 +111,8 @@ namespace ProteoformSuiteInternal
 
         private void get_uniprot_mods()
         {
-            var mods = topdown_ptm_set.ptm_combination.Where(p => !Proteoform.modification_is_adduct(p.modification))
-                          .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
+            var mods = topdown_ptm_set.ptm_combination.Where(p => !Proteoform.modification_is_adduct(p.modification) && p.modification.ModificationType != "Common Fixed")
+                          .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position).ToList().Distinct().OrderBy(m => m).ToList();
             topdown_uniprot_mods = "";
             string add = "";
             if (Sweet.lollipop.theoretical_database.theoreticals_by_accession.ContainsKey(Sweet.lollipop.target_proteoform_community.community_number))
@@ -126,14 +126,13 @@ namespace ProteoformSuiteInternal
                         List<int> theo_ptms = matching_theoretical.First().ExpandedProteinList.SelectMany(p => p
                             .OneBasedPossibleLocalizedModifications)
                             .Where(p => p.Key >= topdown_begin && p.Key <= topdown_end
-                                                         && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                                                         && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod.Split('@')[0]))
                             .Select(m => m.Key).ToList();
                         if (theo_ptms.Count > 0)
                         {
-                            add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                            add += mod.Split('@')[0] + "@" + string.Join(", ", theo_ptms) + "; ";
                         }
-                        if (topdown_ptm_set.ptm_combination.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
-                                .Count(m => m == mod) > theo_ptms.Count)
+                        if(!theo_ptms.Select(i => mod.Split('@')[0] + "@" + i).Contains(mod))
                         {
                             topdown_novel_mods = true;
                         }
@@ -146,8 +145,8 @@ namespace ProteoformSuiteInternal
                         Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number].TryGetValue(accession.Split('_')[0].Split('-')[0], out var matching_ambig_theoretical);
                         if (matching_ambig_theoretical != null)
                         {
-                            var ambig_mods = ambig_id.ptm_list.Where(p => !Proteoform.modification_is_adduct(p.modification))
-                                       .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
+                            var ambig_mods = ambig_id.ptm_list.Where(p => !Proteoform.modification_is_adduct(p.modification) && p.modification.ModificationType != "Common Fixed")
+                                       .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position).ToList().Distinct().OrderBy(m => m).ToList();
 
                             topdown_uniprot_mods += " | ";
                             add = "";
@@ -157,14 +156,13 @@ namespace ProteoformSuiteInternal
                                 List<int> theo_ptms = matching_ambig_theoretical.First().ExpandedProteinList.SelectMany(p => p
                                     .OneBasedPossibleLocalizedModifications)
                                     .Where(p => p.Key >= ambig_id.begin && p.Key <= ambig_id.end
-                                                                 && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod))
+                                                                 && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod.Split('@')[0]))
                                     .Select(m => m.Key).ToList();
                                 if (theo_ptms.Count > 0)
                                 {
-                                    add += mod + " @ " + string.Join(", ", theo_ptms) + "; ";
+                                    add += mod.Split('@')[0] + "@" + string.Join(", ", theo_ptms) + "; ";
                                 }
-                                if (ambig_id.ptm_list.Where(ptm => !Proteoform.modification_is_adduct(ptm.modification)).Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))
-                                                          .Count(m => m == mod) > theo_ptms.Count)
+                                if (!theo_ptms.Select(i => mod.Split('@')[0] + "@" + i).Contains(mod))
                                 {
                                     topdown_novel_mods = true;
                                 }

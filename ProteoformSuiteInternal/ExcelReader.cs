@@ -44,7 +44,7 @@ namespace ProteoformSuiteInternal
         }
 
         //TD files have blank spaces in middle of rows/columns -- need this to account for those.
-        private static IEnumerable<Cell> GetRowCells(Row row)
+        public static IEnumerable<Cell> GetRowCells(Row row)
         {
             int currentCount = 0;
 
@@ -92,7 +92,7 @@ namespace ProteoformSuiteInternal
             return convertedValue;
         }
 
-        private static string GetCellValue(SpreadsheetDocument document, Cell cell)
+        public static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
             try

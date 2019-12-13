@@ -135,9 +135,9 @@ namespace ProteoformSuiteInternal
                     glycan_mods = new_mods;
                     continue;
                 }
-
                 all_known_modifications.AddRange(new_mods);
             }
+
             all_known_modifications = new HashSet<Modification>(all_known_modifications).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).Concat(variableModifications).ToList();
@@ -283,13 +283,14 @@ namespace ProteoformSuiteInternal
                 //Add full length product
                 int begin = 1;
                 int end = p.BaseSequence.Length;
-                List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
+                List<goTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new goTerm(reference)).ToList();
                 int startPosAfterCleavage = Convert.ToInt32(Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M"));
                 new_prots.Add(new ProteinWithGoTerms(
                     p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
                     p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
                     p.GeneNames.ToList(),
-                    p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= begin + startPosAfterCleavage && kv.Key <= end).ToDictionary(kv => kv.Key, kv => kv.Value),
+                    p.OneBasedPossibleLocalizedModifications.ToDictionary(kv => kv.Key, kv => kv.Value),
+                    //p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= begin + startPosAfterCleavage && kv.Key <= end).ToDictionary(kv => kv.Key, kv => kv.Value),
                     new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
                     p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences.ToList(), goTerms.ToList()));
 
@@ -308,7 +309,8 @@ namespace ProteoformSuiteInternal
                         continue;
                     bool feature_is_just_met_cleavage = Sweet.lollipop.methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
                     string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
-                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
+                    //Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
+                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.ToDictionary(kv => kv.Key, kv => kv.Value);
                     if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Sweet.lollipop.min_peptide_length)
                         new_prots.Add(new ProteinWithGoTerms(
                             subsequence,
@@ -362,7 +364,8 @@ namespace ProteoformSuiteInternal
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
             //Figure out the possible ptm sets
-            Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.ToDictionary(kv => kv.Key, kv => new List<Modification>(kv.Value));
+            Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.Where(m => m.Key >= prot.ProteolysisProducts.First().OneBasedBeginPosition && m.Key <= prot.ProteolysisProducts.First().OneBasedEndPosition)
+            .ToDictionary(kv => kv.Key, kv => new List<Modification>(kv.Value));
             foreach (Modification m in variableModifications)
             {
                 for (int i = 1; i <= prot.BaseSequence.Length; i++)

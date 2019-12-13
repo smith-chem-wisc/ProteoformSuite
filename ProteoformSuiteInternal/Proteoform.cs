@@ -37,6 +37,7 @@ namespace ProteoformSuiteInternal
         public int begin { get; set; }
         public int end { get; set; }
 
+
         public ProteoformFamily family { get; set; }
         public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
 
@@ -298,24 +299,76 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
-        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end)
+        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end, bool ptm_location_specific)
         {
             var bottom_up_PSMs = new List<SpectrumMatch>();
             //add BU PSMs
             Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0].Split('-')[0], out var psms);
             if (psms != null)
             {
-                bottom_up_PSMs.AddRange(psms.Where(s => s.begin >= begin && s.end <= end && s.ptm_list.All(m1 =>
-                                                           ptm_set.ptm_combination.Count(m2 =>
-                                                               UnlocalizedModification.LookUpId(m1.modification) ==
-                                                                UnlocalizedModification.LookUpId(m2.modification)) >=
-                                                            s.ptm_list.Count(m2 =>
-                                                                UnlocalizedModification.LookUpId(m1.modification) ==
-                                                                UnlocalizedModification.LookUpId(m2.modification)))));
-            }
+                if (ptm_location_specific)
+                {
 
+                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin >= begin && s.end <= end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
+                                                               ptm_set.ptm_combination.
+                                                               Count(m2 =>
+                                                                   UnlocalizedModification.LookUpId(m1.modification) +"@" + m1.position ==
+                                                                    UnlocalizedModification.LookUpId(m2.modification) +"@" + m2.position) >=
+                                                                s.ptm_list.Count(m2 =>
+                                                                    UnlocalizedModification.LookUpId(m1.modification) +"@" + m1.position ==
+                                                                    UnlocalizedModification.LookUpId(m2.modification) +"@" + m2.position))
+                                                                && ptm_set.ptm_combination.Where(m => UnlocalizedModification.bio_interest(m.modification) && m.position >= s.begin && m.position <= s.end)
+                                                                    .All(m => s.ptm_list.Select(m1 => UnlocalizedModification.LookUpId(m1.modification) + "@" + m1.position).Contains(UnlocalizedModification.LookUpId(m.modification) +"@" + m.position))).ToList();
+
+                }
+                else
+                {
+                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin >= begin && s.end <= end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
+                                                               ptm_set.ptm_combination.
+                                                               Count(m2 =>
+                                                                   UnlocalizedModification.LookUpId(m1.modification) ==
+                                                                    UnlocalizedModification.LookUpId(m2.modification)) >=
+                                                                s.ptm_list.Count(m2 =>
+                                                                    UnlocalizedModification.LookUpId(m1.modification) ==
+                                                                    UnlocalizedModification.LookUpId(m2.modification)))).ToList();
+                }
+            }
+          
             return bottom_up_PSMs.OrderByDescending(p => p.ptm_list.Count).ToList();
         }
+
+        public static bool get_bottom_up_evidence_for_all_PTMs(string accession, PtmSet ptm_set, int begin, int end, bool ptm_location_specific)
+        {
+            var bottom_up_pms = Proteoform.get_possible_PSMs(accession, ptm_set, begin, end, ptm_location_specific);
+            bool ok = true;
+            //check each ptm and see if BU psm corresponding to this PTM was detected
+            foreach (var ptm in ptm_set.ptm_combination.Where(p => UnlocalizedModification.bio_interest(p.modification)))
+            {
+                var same_ptm = bottom_up_pms.SelectMany(b => b.ptm_list).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position).Distinct().ToList();
+                if (same_ptm.Select(p => p.Split('@')[0]).Count(m => m == UnlocalizedModification.LookUpId(ptm.modification)) >= ptm_set.ptm_combination.Count(m => UnlocalizedModification.LookUpId(m.modification) ==(UnlocalizedModification.LookUpId(ptm.modification))))
+                {
+                    if (ptm_location_specific)
+                    {
+                        if(bottom_up_pms.SelectMany(b => b.ptm_list).Where(p => p.position == ptm.position).Select(m => UnlocalizedModification.LookUpId(m.modification)).Contains(UnlocalizedModification.LookUpId(ptm.modification)))
+                        {
+                            //ok
+                        }
+                        else
+                        {
+                            ok = false;
+                        }
+                    }
+                }
+                else
+                {
+                    ok = false;
+                }
+            }
+            return ok;
+        }
+
+
+
 
         #endregion Public Methods
 
@@ -364,6 +417,10 @@ namespace ProteoformSuiteInternal
 
                 new_set = new PtmSet(new_set.ptm_combination);
 
+                //if (Proteoform.get_bottom_up_evidence_for_all_PTMs(theoretical_base.accession.Split('_')[0].Split('-')[0], new_set, new_begin, new_end, false))
+                //    return false;
+
+
                 if (e.linked_proteoform_references == null)
                 {
                     identification_assigned = true;
@@ -403,8 +460,8 @@ namespace ProteoformSuiteInternal
                             != ExperimentalProteoform.get_sequence(theoretical_base, new_begin, new_end) || !e.ptm_set.same_ptmset(new_set, true);
 
 
-                        List<Modification> this_known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(v => v.MonoisotopicMass != 0).ToList();
-                        List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(v => v.MonoisotopicMass != 0).ToList();
+                        List<Modification> this_known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).Where(p => p.Key >= new_begin && p.Key <= new_end).SelectMany(kv => kv.Value).Where(v => v.MonoisotopicMass != 0).ToList();
+                        List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).Where(p => p.Key >= e.begin && p.Key <= e.end).SelectMany(kv => kv.Value).Where(v => v.MonoisotopicMass != 0).ToList();
                         if (!Sweet.lollipop.topdown_theoretical_reduce_ambiguity || (theoretical_base.topdown_theoretical && !(e.linked_proteoform_references.First() as TheoreticalProteoform).topdown_theoretical))
                         {
                             if (!Sweet.lollipop.annotated_PTMs_reduce_ambiguity ||
@@ -460,8 +517,11 @@ namespace ProteoformSuiteInternal
                                         && ExperimentalProteoform.get_sequence(p.theoretical_base, p.begin, p.end) == ExperimentalProteoform.get_sequence(new_id.theoretical_base, new_id.begin, new_id.end)
                                         && p.ptm_set.same_ptmset(new_id.ptm_set, true)))
                                     {
-                                        e.ambiguous_identifications.Add(new_id);
-                                        identification_assigned = true;
+                                        if (e.ambiguous_identifications.Count < 10)
+                                        {
+                                            e.ambiguous_identifications.Add(new_id);
+                                            identification_assigned = true;
+                                        }
                                     }
                                 }
                             }
@@ -477,7 +537,7 @@ namespace ProteoformSuiteInternal
                 if (identification_assigned)
                 {
                     List<AmbiguousIdentification> to_remove = new List<AmbiguousIdentification>();
-                    List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(m => m.MonoisotopicMass != 0).ToList();
+                    List<Modification> previous_id_known_mods = (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).Where(p => p.Key >= e.begin && p.Key <= e.end).SelectMany(kv => kv.Value).Where(m => m.MonoisotopicMass != 0).ToList();
                     if (theoretical_base.topdown_theoretical && Sweet.lollipop.topdown_theoretical_reduce_ambiguity)
                     {
                         to_remove.AddRange(e.ambiguous_identifications.Where(id => !id.theoretical_base.topdown_theoretical));
@@ -487,7 +547,7 @@ namespace ProteoformSuiteInternal
                     {
                         foreach (var ambiguous_id in e.ambiguous_identifications)
                         {
-                            List<Modification> ambiguous_id_known_mods = ambiguous_id.theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).Where(m => m.MonoisotopicMass != 0).ToList();
+                            List<Modification> ambiguous_id_known_mods = ambiguous_id.theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications).Where(p => p.Key >= ambiguous_id.begin && p.Key <= ambiguous_id.end).SelectMany(kv => kv.Value).Where(m => m.MonoisotopicMass != 0).ToList();
                             if (ambiguous_id.ptm_set.ptm_combination.Any(mod1 => !modification_is_adduct(mod1.modification) && !ambiguous_id_known_mods.Select(mod2 => UnlocalizedModification.LookUpId(mod2)).Contains(UnlocalizedModification.LookUpId(mod1.modification))))
                             {
                                 to_remove.Add(ambiguous_id);

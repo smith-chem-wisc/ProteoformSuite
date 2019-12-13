@@ -27,7 +27,10 @@ namespace ProteoformSuiteGUI
         #endregion Private Fields
 
         #region Public Properties
-
+        public string PFR_accession
+        {
+            get { return h.pfr_accession; }
+        }
         public string input_file_filename
         {
             get { return h.filename; }
@@ -79,9 +82,9 @@ namespace ProteoformSuiteGUI
             {
                 return h.ptm_list == null ?
                     "Unknown" :
-                    h.ptm_list.Count == 0 ?
+                    h.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) == 0 ?
                         "Unmodified" :
-                        string.Join("; ", h.ptm_list.Select(ptm => ptm.position > 0 ? ptm.modification.OriginalId + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
+                        string.Join("; ", h.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).Select(ptm => ptm.position > 0 ? UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
             }
         }
 
@@ -105,10 +108,6 @@ namespace ProteoformSuiteGUI
             get { return h.score; }
         }
 
-        public string PFR_accession
-        {
-            get { return h.pfr_accession; }
-        }
 
         #endregion Public Properties
 

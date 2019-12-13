@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using Proteomics;
+using Proteomics.Fragmentation;
+using MzLibUtil;
+using Proteomics.ProteolyticDigestion;
+using System.Threading.Tasks;
+
 
 namespace ProteoformSuiteGUI
 {
@@ -101,6 +107,114 @@ namespace ProteoformSuiteGUI
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
+
+
+            List<string> accessions = new List<string>();
+            using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\peptides_theo_count.tsv"))
+            {
+                writer.WriteLine("peptideseq\tbegin\tend\tpeptidePTMlist\ttheoreticals\ttheoreticalsPTMlists");
+                foreach (var accession in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession)
+                {
+                    if (Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number].ContainsKey(accession.Key))
+                    {
+                        var theoreticals = Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number][accession.Key];
+                        foreach (var peptide in accession.Value)
+                        {
+                            var theoreticals_with_this_peptide = theoreticals.Where(t => t.new_topdown_proteoform == false && t.bottom_up_PSMs.Contains(peptide));
+                            if (theoreticals_with_this_peptide.Count() > 0)
+                            {
+                                writer.WriteLine(peptide.pfr_accession + "\t" + peptide.begin + "\t" + peptide.end + "\t" +
+                                    (peptide.ptm_list.Count(p => UnlocalizedModification.bio_interest(p.modification)) == 0 ? "Unmodified" : String.Join(";", peptide.ptm_list.Where(p => UnlocalizedModification.bio_interest(p.modification)).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position)))
+                                    + "\t" + theoreticals_with_this_peptide.Count() + "\t" + String.Join("|", theoreticals_with_this_peptide.Select(t => t.accession))
+                                + "\t" + String.Join("|", theoreticals_with_this_peptide.Select(t => t.ptm_set.ptm_description)));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        accessions.Add(accession.Key);
+                    }
+                }
+            }
+
+            using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\peptides_td_count.tsv"))
+            {
+                writer.WriteLine("peptideseq\tbegin\tend\tpeptidePTMlist\ttheoreticals\ttheoreticalsPTMlists");
+
+                foreach (var accession in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession)
+                {
+                    var topdowns = Sweet.lollipop.topdown_proteoforms.Where(t => t.accession.Split('_')[0].Split('-')[0] == accession.Key && t.ambiguous_topdown_hits.Count == 0);
+                    foreach (var peptide in accession.Value)
+                    {
+                        var theoreticals_with_this_peptide = topdowns.Where(t => Proteoform.get_possible_PSMs(t.accession.Split('_')[0], t.topdown_ptm_set, t.topdown_begin,
+                           t.topdown_end, true).Contains(peptide));
+                        if (theoreticals_with_this_peptide.Count() > 0)
+                        {
+                            writer.WriteLine(peptide.pfr_accession + "\t" + peptide.begin + "\t" + peptide.end + "\t" + (peptide.ptm_list.Count(p => UnlocalizedModification.bio_interest(p.modification)) == 0 ? "Unmodified" : String.Join(";", peptide.ptm_list.Where(p => UnlocalizedModification.bio_interest(p.modification)).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position)))
+                                + "\t" + theoreticals_with_this_peptide.Count() + "\t" + String.Join("|", theoreticals_with_this_peptide.Select(t => t.accession))
+                                + "\t" + String.Join("|", theoreticals_with_this_peptide.Select(t => t.topdown_ptm_description)));
+                        }
+                    }
+                }
+            }
+
+            using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\peptides_other_peptides.tsv"))
+            {
+                writer.WriteLine("accession\tpeptideseq\tbegin\tend\tpeptidePTMlist\ttheoreticalsPTMlists");
+
+                foreach (var accession in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession)
+                {
+                    foreach (var peptide in accession.Value)
+                    {
+                        foreach (var mod in peptide.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)))
+                        {
+                            string m = UnlocalizedModification.LookUpId(mod.modification) + "@" + mod.position;
+                            var diff = accession.Value.Where(p => p != peptide && p.begin <= mod.position && p.end >= mod.position && !p.ptm_list.Where(q => UnlocalizedModification.bio_interest(q.modification)).Select(d => UnlocalizedModification.LookUpId(d.modification) + "@" + d.position).Contains(m)).ToList();
+                            if (diff.Count > 0)
+                            {
+                                writer.WriteLine(peptide.accession + "\t" + peptide.pfr_accession + "\t" + peptide.begin + "\t" + peptide.end + "\t" + (peptide.ptm_list.Count(p => UnlocalizedModification.bio_interest(p.modification)) == 0 ? "Unmodified" : String.Join(";", peptide.ptm_list.Where(p => UnlocalizedModification.bio_interest(p.modification)).Select(b => UnlocalizedModification.LookUpId(b.modification) + "@" + b.position))) +
+                                "\t" + String.Join("|", diff.Select(d => (d.ptm_list.Count(p => UnlocalizedModification.bio_interest(p.modification)) == 0 ? "Unmodified" : String.Join(";", d.ptm_list.Where(p => UnlocalizedModification.bio_interest(p.modification)).Select(a => UnlocalizedModification.LookUpId(a.modification) + "@" + a.position)))).Distinct()));
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            //var parameters = new DigestionParams(protease: "top-down", maxModsForPeptides: 3);
+            //var proteins = Sweet.lollipop.theoretical_database.theoretical_proteins.SelectMany(p => p.Value);
+            //var proteoforms = proteins.SelectMany(p => p.Digest(parameters, null, null));
+            //using (var writer = new System.IO.StreamWriter("C:\\users\\lschaffer2\\desktop\\theoreticalPTMlocalized.tsv"))
+            //{
+            //    writer.WriteLine("count\taccession\tpeptideseq\tpepbegin\tpepend\tpeptidePTMlist\tbegin\tend\ttheoreticalsPTMlists");
+            //    int count = 1;
+            //    foreach (var proteoform in proteoforms)
+            //    {
+            //        var list = new List<Ptm>();
+            //        int begin = proteoform.OneBasedStartResidueInProtein;
+            //        int end = proteoform.OneBasedEndResidueInProtein;
+            //        foreach (var entry in proteoform.AllModsOneIsNterminus)
+            //        {
+            //            Modification mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values
+            //                       .SelectMany(m => m).Where(m => m.IdWithMotif == entry.Value.IdWithMotif)
+            //                       .FirstOrDefault();
+            //            if (mod != null)
+            //            {
+            //                list.Add(new Ptm(entry.Key + begin - (entry.Key == 1 ? 1 : 2), entry.Value));
+            //            }
+            //        }
+            //        var peptides = Proteoform.get_possible_PSMs(proteoform.Protein.Accession, new PtmSet(list), begin, end, true);
+            //        var i_care = peptides.Where(p => p.begin == begin || p.end == end || p.ptm_list.Any(m => UnlocalizedModification.bio_interest(m.modification)));
+            //        foreach(var peptide in i_care)
+            //        {
+            //            if (!list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m => peptide.ptm_list.Select(m2 => UnlocalizedModification.LookUpId(m2.modification) + "@" + m2.position).Contains(UnlocalizedModification.LookUpId(m.modification) + "@" + m.position))) continue;
+            //            writer.WriteLine(proteoform.MonoisotopicMass + "\t" + peptide.accession + "\t" + peptide.pfr_accession + "\t" + peptide.begin + "\t" + peptide.end + "\t" + (peptide.ptm_list.Count(p => UnlocalizedModification.bio_interest(p.modification)) == 0 ? "Unmodified" : String.Join(";", peptide.ptm_list.Where(p => UnlocalizedModification.bio_interest(p.modification)).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position))) +
+            //                "\t" + begin + "\t" + end + "\t" + (list.Count(p => UnlocalizedModification.bio_interest(p.modification)) == 0 ? "Unmodified" : String.Join(";", list.Where(p => UnlocalizedModification.bio_interest(p.modification)).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position))));
+
+            //        }
+            //        count++;
+            //    }
+            //}
         }
 
         public void FillTablesAndCharts()

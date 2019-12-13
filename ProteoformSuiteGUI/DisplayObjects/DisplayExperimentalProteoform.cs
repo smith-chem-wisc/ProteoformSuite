@@ -158,9 +158,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count.ToString() : "N/A")
+                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end, false).Count.ToString() : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Count.ToString()))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end, false).Count.ToString()))
                            : "");
             }
         }
@@ -169,12 +169,35 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
-                           String.Join(", ", Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
-                       + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Count(p => p.ptm_list.Count > 0) == 0 ?
-                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
+                return (e.linked_proteoform_references != null ? (Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin,
+                               e.end, false).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                        ? "N/A"
+                        : String.Join(", ",
+                              Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin,
+                                 e.end, false).Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                                  .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()))
+                          + (e.ambiguous_identifications.Count > 0
+                              ? " | " + String.Join(" | ",
+                                    e.ambiguous_identifications.Select(i =>
+                                        Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], new PtmSet(i.ptm_set.ptm_combination),
+                                            i.begin, i.end, false).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                                            ? "N/A"
+                                            : String.Join(", ",
+                                                Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0],
+                                                        new PtmSet(i.ptm_set.ptm_combination), i.begin, i.end, false)
+                                                    .Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                                                     .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct())))
+                              : "")
+
                            : "");
+            }
+        }
+
+        public bool bottom_up_evidence_for_all_PTMs
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ? Proteoform.get_bottom_up_evidence_for_all_PTMs(e.linked_proteoform_references.First().accession, e.ptm_set, e.begin, e.end, false) : false;
             }
         }
 

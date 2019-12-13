@@ -6,7 +6,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Proteomics.RetentionTimePrediction;
+using MassSpectrometry;
+using Proteomics.Fragmentation;
+using Proteomics.ProteolyticDigestion;
 
 namespace ProteoformSuiteGUI
 {
@@ -100,7 +102,43 @@ namespace ProteoformSuiteGUI
             //need to refill theo database --> added theoreticsl
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
-          
+
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\nodes.tsv"))
+            {
+                foreach(var td in Sweet.lollipop.topdown_proteoforms.Where(t => t.topdown_level == 1))
+                {
+                    writer.WriteLine(td.accession);
+                }
+                foreach (var bu in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.SelectMany(v => v.Value))
+                {
+                    writer.WriteLine(bu.accession + "_" + bu.begin + "_" + bu.end +"_" + bu.ptm_description);
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\edges.tsv"))
+            {
+                foreach (var td in Sweet.lollipop.topdown_proteoforms.Where(td => td.ambiguous_topdown_hits.Count == 0))
+                {
+                    foreach (var bu in Proteoform.get_possible_PSMs(td.accession, td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Where(p => !p.shared_protein))
+                    {
+                       writer.WriteLine( td.accession + "\t" + bu.accession +"_" + bu.begin + "_" + bu.end + "_" + bu.ptm_description);
+                    }
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\shared_peptides.tsv"))
+            {
+                foreach(var bu in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Values.SelectMany(b => b))
+                {
+                    if(bu.shared_protein && bu.ambiguous_matches.Count == 0)
+                    {
+                        writer.WriteLine(bu.pfr_accession + "\t" + bu.accession);
+                    }
+                }
+            }
+
+
         }
 
         public void ClearListsTablesFigures(bool clear_following)
@@ -174,6 +212,22 @@ namespace ProteoformSuiteGUI
             rtb_sequence.ZoomFactor = 3;
 
             int length = p.sequence.Length + 1;
+
+            //List<Tuple<int, char>> annotations_to_add = new List<Tuple<int, char>>();
+            //// draw the fragment ion annotations on the base sequence
+            //foreach (var ion in p.topdown_hits.SelectMany(h => h.matched_fragment_ions))
+            //{
+            //    int residue = ion.NeutralTheoreticalProduct.TerminusFragment.AminoAcidPosition;
+            //    char annotation = ion.NeutralTheoreticalProduct.TerminusFragment.Terminus == FragmentationTerminus.C ? '`' : ',';
+            //    if (!annotations_to_add.Any(a => a.Item1 == residue && a.Item2 == annotation))
+            //    {
+            //        annotations_to_add.Add(new Tuple<int, char>(residue, annotation));
+            //        rtb_sequence.AppendText(" "); //will be replaced later
+            //        length++;
+            //    }
+            //}
+
+
             foreach (Ptm ptm in p.topdown_ptm_set.ptm_combination)
             {
                 int position_in_sequence = ptm.position + 1 - p.topdown_begin;
@@ -200,7 +254,16 @@ namespace ProteoformSuiteGUI
                 rtb_sequence.SelectionColor = colors[i];
                 length += ptm.modification.OriginalId.Length + 1;
             }
+
+
+         
+            //foreach(var annotation in annotations_to_add.OrderByDescending(a => a.Item1).ThenBy(a => a.Item2))
+            //{
+            //    rtb_sequence.SelectionStart = annotation.Item2 == '`' ? annotation.Item1 - 1 : annotation.Item1;
+            //    rtb_sequence
+            //}
         }
+
 
         private static void load_colors()
         {

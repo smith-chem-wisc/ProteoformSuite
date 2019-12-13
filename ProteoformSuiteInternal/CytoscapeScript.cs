@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
                    select f;
         }
 
-        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<GoTerm> go_terms, List<ProteoformFamily> all_families)
+        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<goTerm> go_terms, List<ProteoformFamily> all_families)
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
@@ -96,8 +96,8 @@ namespace ProteoformSuiteInternal
             if (stuff.Length <= 0) return "No objects were selected";
             if (families.Count <= 0 && typeof(TheoreticalProteoform).IsAssignableFrom(stuff[0].GetType()))
                 families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(GoTerm) == stuff[0].GetType())
-                families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(goTerm) == stuff[0].GetType())
+                families = get_families(stuff.OfType<goTerm>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(GoTermNumber) == stuff[0].GetType())
                 families = get_families(stuff.OfType<GoTermNumber>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(QuantitativeProteoformValues).IsAssignableFrom(stuff[0].GetType()))
