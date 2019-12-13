@@ -3,10 +3,206 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:winformchart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="900">
     <Grid>
+        <!--<WindowsFormsHost>
+            <winformchart:Chart x:Name="ct_EE_Histogram"></winformchart:Chart>
+        </WindowsFormsHost>-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="3"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!--outer left-->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <StackPanel Margin="0 5 0 5" Orientation="Horizontal">
+                    <Label Margin="0 0 5 0">Accepted Relations</Label>
+                    <TextBox Width="100" Margin="0 0 5 0" x:Name="tb_totalAcceptedEERelations"></TextBox>
+                    <Label Margin="0 0 5 0">Total Peaks</Label>
+                    <TextBox Width="100" Margin="0 0 5 0" x:Name="tb_TotalEEPeaks"></TextBox>
+                </StackPanel>
+            </Grid>
+            <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="3"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="3"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <WindowsFormsHost>
+                        <winform:DataGridView x:Name="dgv_EE_Peaks" Dock="Fill" ColumnHeadersHeightSizeMode="AutoSize">
+                            
+                        </winform:DataGridView>
+                        
+                    </WindowsFormsHost>
+
+                    <GridSplitter Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+
+                    <Grid Grid.Column="2">
+                        <WindowsFormsHost>
+                            <winformchart:Chart x:Name="ct_EE_peakList" Dock="Fill" Text="eePeakList">
+                                <winformchart:Chart.Series>
+                                    <winformchart:Series ChartType="Point" ChartArea="chartArea1" Legend="legend1" MarkerSize="10" Name="Peak Count"/>
+                                    <winformchart:Series ChartType="Line" ChartArea="chartArea1" Legend="legend1" Name="Nearby Relations"/>
+                                    <winformchart:Series ChartType="Point" ChartArea="chartArea1" Legend="legend1" MarkerSize="10" Name="Decoy Count"/>
+                                </winformchart:Chart.Series>
+                                <winformchart:Chart.Legends>
+                                    <winformchart:Legend Docking="Top" Name="legend1"/>
+                                </winformchart:Chart.Legends>
+                                <winformchart:Chart.ChartAreas>
+                                    <winformchart:ChartArea Name="chartArea1"/>
+                                </winformchart:Chart.ChartAreas>
+
+                            </winformchart:Chart>
+                        </WindowsFormsHost>
+                    </Grid>
+                    
+                </Grid>
+                <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <GroupBox Padding="5 5 5 5" Grid.Column="0" Grid.RowSpan="3" Header="EE Peak List Parameters" x:Name="groupBox1">
+                            
+                            <StackPanel VerticalAlignment="Stretch">
+                                <Label Content="Peak Width Base (Da)" x:Name="label3"></Label>
+                                <WindowsFormsHost Height="30">
+                                    <winform:NumericUpDown ValueChanged="nUD_PeakWidthBase_ValueChanged" Maximum="100" Minimum="0" x:Name="nUD_PeakWidthBase" Value="0.1" DecimalPlaces="4" Increment="0.005"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                                <Label Content="Peak Threshold (cts)"></Label>
+                                <WindowsFormsHost Height="30">
+                                    <winform:NumericUpDown ValueChanged="nUD_PeakCountMinThreshold_ValueChanged" Maximum="100" Minimum="0" Increment="1"  x:Name="nUD_PeakCountMinThreshold" Value="0" DecimalPlaces="0"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                                <CheckBox x:Name="cb_ee_peak_accept_rank" IsChecked="{Binding Path=CK_Auto,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Content="Auto-Accept Peaks Based on Delta Mass"></CheckBox>
+                                <Label Content="Max Accepted Peak FDR"></Label>
+                                <TextBox IsReadOnly="True" x:Name="tb_max_accepted_fdr"></TextBox>
+                                <Label>Maximum Retention Time Difference</Label>
+                                <WindowsFormsHost Height="30">
+                                    <winform:NumericUpDown ValueChanged="nUD_MaxRetTimeDifference_ValueChanged" Maximum="50" Minimum="0" Increment="0.1"  x:Name="nUD_MaxRetTimeDifference" Value="0.0" DecimalPlaces="1"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                            </StackPanel>
+                            
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="EE Histogram Boundary">
+                            <StackPanel VerticalAlignment="Stretch">
+                                <Label>Max Mass Difference (Da)</Label>
+                                <WindowsFormsHost Height="30">
+                                    <winform:NumericUpDown ValueChanged="nUD_EE_Upper_Bound_ValueChanged" Maximum="500" Minimum="0" Increment="1"  x:Name="nUD_EE_Upper_Bound" Value="0" DecimalPlaces="0"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Grid.Row="1" Header="Table Control">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="tb_peakTableFilter" Width="100" TextChanged="tb_peakTableFilter_TextChanged"/>
+                                    <Label>EE Peak Table Filter</Label>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="tb_relationTableFilter" Width="100" TextChanged="tb_relationTableFilter_TextChanged"/>
+                                    <Label>EE Relation Table Filter</Label>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Grid.Row="2" Header="No Man's Land">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Lower Bound Model Formula" />
+                                <TextBox IsReadOnly="True" Text="HPO3" x:Name="tb_noMansLowerBound"></TextBox>
+                                <Label Content="Upper Bound Model Formula" />
+                                <TextBox IsReadOnly="True" Text="CH2" x:Name="tb_noMansUpperBound"></TextBox>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="EE Histogram Scaling" Grid.RowSpan="2" Grid.Column="2">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <WindowsFormsHost Height="30" Grid.Row="0" Grid.Column="1">
+                                    <winform:NumericUpDown ValueChanged="yMaxEE_ValueChanged" Maximum="100" Minimum="-100" Increment="1"  x:Name="yMaxEE" Value="0" DecimalPlaces="0"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost Height="30" Grid.Row="2" Grid.Column="1">
+                                    <winform:NumericUpDown ValueChanged="yMinEE_ValueChanged" Maximum="100" Minimum="-100" Increment="1"  x:Name="yMinEE" Value="0" DecimalPlaces="0"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost Height="30" Grid.Row="1" Grid.Column="0">
+                                    <winform:NumericUpDown ValueChanged="xMinEE_ValueChanged" Maximum="100" Minimum="-100" Increment="1"  x:Name="xMinEE" Value="0.00" DecimalPlaces="2"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost Height="30" Grid.Row="1" Grid.Column="2">
+                                    <winform:NumericUpDown ValueChanged="xMaxEE_ValueChanged" Maximum="100" Minimum="-100" Increment="1"  x:Name="xMaxEE" Value="0.00" DecimalPlaces="2"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="EE Histogram Selection" Grid.Row="2" Grid.Column="2" Padding="5 0 0 0">
+                            <StackPanel VerticalAlignment="Center">
+                                <CheckBox x:Name="cb_view_decoy_histogram" IsChecked="{Binding Path=CK_View,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">View Experimental-False Histogram</CheckBox>
+                                <CheckBox Margin="0 5 0 0" x:Name="cb_Graph_lowerThreshold" IsChecked="{Binding Path=CK_Graph,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Show Threshold</CheckBox>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                    <!--<Button x:Name="bt_compare_EE" Grid.Row="1" Content="Compare Experimental Proteoforms with Each Other" MinHeight="25" Click="bt_compare_EE_Click"></Button>-->
+                </Grid>
+            </Grid>
             
+        </Grid>
+        <GridSplitter Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+        <!--outer right-->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <WindowsFormsHost>
+                <winform:DataGridView x:Name="dgv_EE_Relations" ColumnHeadersHeightSizeMode="AutoSize" Dock="Fill" TabStop="False">
+                    
+                </winform:DataGridView>
+            </WindowsFormsHost>
+            <WindowsFormsHost Grid.Row="1">
+                <winformchart:Chart Text="eeHistogram" x:Name="ct_EE_Histogram" Dock="Fill" TabStop="False">
+                    <winformchart:Chart.Series>
+                        <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Name="relations"/>
+                        <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Name="decoys"/>
+                    </winformchart:Chart.Series>
+                    <winformchart:Chart.ChartAreas>
+                        <winformchart:ChartArea Name="ChartArea1"/>
+                    </winformchart:Chart.ChartAreas>
+
+                </winformchart:Chart>
+            </WindowsFormsHost>
+        </Grid>
     </Grid>
 </UserControl>

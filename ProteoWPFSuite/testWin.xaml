@@ -8,12 +8,6 @@
         mc:Ignorable="d"
         xmlns:mzl="clr-namespace:MassSpectrometry;assembly=MassSpectrometry"
         Title="testWin" Height="450" Width="800" MinHeight="800" MinWidth="1200">
-    <Window.Resources>
-        <ObjectDataProvider x:Key="DissociationEnum" MethodName="GetValues"
-                        ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="mzl:DissociationType"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </Window.Resources>
+    
+    <local:Quantification></local:Quantification>
 </Window>

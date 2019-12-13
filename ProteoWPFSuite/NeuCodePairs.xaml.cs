@@ -34,7 +34,7 @@ namespace ProteoWPFSuite
         #region Public Methods
         public bool ReadyToRunTheGamut()
         {
-            throw new NotImplementedException();
+            return Sweet.lollipop.raw_neucode_pairs.Count > 0;
         }
         public void RunTheGamut(bool full_run)
         {
