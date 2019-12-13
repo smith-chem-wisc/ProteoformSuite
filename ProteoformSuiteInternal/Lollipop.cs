@@ -1,7 +1,7 @@
 ﻿using Accord.Math;
 using Chemistry;
 using IO.MzML;
-using IO.Thermo;
+using ThermoRawFileReader;
 using MassSpectrometry;
 using System;
 using System.Collections.Generic;
@@ -21,9 +21,9 @@ namespace ProteoformSuiteInternal
     {
         #region Constants
 
-        public static readonly double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
-        public static readonly double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
-        public static readonly double PROTON_MASS = 1.007276474;
+        public static double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
+        public static double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public static double PROTON_MASS = 1.007276474;
 
         #endregion Constants
 
@@ -482,10 +482,10 @@ namespace ProteoformSuiteInternal
             //get topdown hits that meet criteria
             List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
 
-            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
+            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.accession.Split('-')[0] + "_" + h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
             {
-                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.pfr_accession == pfr).ToList();
+                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.accession.Split('-')[0] + "_" + h.pfr_accession == pfr).ToList();
                 List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
                 //aggregate to td hit w/ highest c-score as root - 1st average for retention time
                 while (hits_by_pfr.Count > 0)
@@ -515,6 +515,20 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+
+            List<TopDownProteoform> to_remove = new List<TopDownProteoform>();
+            foreach(var proteoform in topdown_proteoforms)
+            {
+                //if all ambiguous matches are contained
+                if (topdown_proteoforms.Where(p => p != proteoform && Math.Abs(p.agg_rt - proteoform.agg_rt) <= Convert.ToDouble(td_retention_time_tolerance) && p.ambiguous_topdown_hits.Count <= proteoform.ambiguous_topdown_hits.Count)
+                .Any(p => p.ambiguous_topdown_hits.Select(r => r.pfr_accession.Split('|')[0]).Concat(new List<string>() { p.pfr_accession.Split('|')[0] })
+                .All(r => proteoform.ambiguous_topdown_hits.Select(h => h.pfr_accession.Split('|')[0]).Concat(new List<string>() { proteoform.pfr_accession.Split('|')[0] }).Contains(r))))
+                {
+                    to_remove.Add(proteoform);
+                }
+            }
+            topdown_proteoforms = topdown_proteoforms.Except(to_remove).ToList();
+
             return topdown_proteoforms;
         }
 
@@ -1307,7 +1321,7 @@ namespace ProteoformSuiteInternal
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
                     MsDataFile myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                        ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                        ThermoRawFileReaderData.LoadAllStaticData(raw_file.complete_path) :
                         null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
                     Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>

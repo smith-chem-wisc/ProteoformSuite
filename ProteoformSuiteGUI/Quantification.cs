@@ -57,7 +57,7 @@ namespace ProteoformSuiteGUI
 
         public List<DataTable> SetTables()
         {
-            //if (selected_tusher_analysis == null) return new List<DataTable>();
+            if (!ReadyToRunTheGamut() || selected_tusher_analysis == null) return new List<DataTable>();
 
             string suffix = selected_analysis as TusherAnalysis1 != null ?
                  Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + "Perm" :

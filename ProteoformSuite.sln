@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoformSuiteInternal", "ProteoformSuiteInternal\ProteoformSuiteInternal.csproj", "{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProteoformSuiteInternal", "ProteoformSuiteInternal\ProteoformSuiteInternal.csproj", "{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoformSuiteGUI", "ProteoformSuiteGUI\ProteoformSuiteGUI.csproj", "{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProteoformSuiteGUI", "ProteoformSuiteGUI\ProteoformSuiteGUI.csproj", "{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoWPFSuite", "ProteoWPFSuite\ProteoWPFSuite.csproj", "{5972A55B-68BA-4A5F-BF24-CAD06824C46A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProteoWPFSuite", "ProteoWPFSuite\ProteoWPFSuite.csproj", "{5972A55B-68BA-4A5F-BF24-CAD06824C46A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,16 +59,16 @@ Global
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|ARM.Build.0 = Debug|Any CPU
-		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|x64.ActiveCfg = Debug|x64
-		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|x64.Build.0 = Debug|x64
+		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|x64.Build.0 = Debug|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Debug|x86.Build.0 = Debug|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|ARM.ActiveCfg = Release|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|ARM.Build.0 = Release|Any CPU
-		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x64.ActiveCfg = Release|x64
-		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x64.Build.0 = Release|x64
+		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x64.ActiveCfg = Release|Any CPU
+		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x64.Build.0 = Release|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x86.ActiveCfg = Release|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x86.Build.0 = Release|Any CPU
 		{5972A55B-68BA-4A5F-BF24-CAD06824C46A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

@@ -312,12 +312,12 @@ namespace Test
         }
 
         [Test]
-        public void cytoscape_script_from_goterm()
+        public void cytoscape_script_from_GoTerm()
         {
             Sweet.lollipop = new Lollipop();
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
-            CytoscapeScript.write_cytoscape_script(new GoTerm[] { TestProteoformFamilies.p1_goterm }, community.families,
+            CytoscapeScript.write_cytoscape_script(new GoTerm[] { TestProteoformFamilies.p1_GoTerm }, community.families,
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 null, false, false,
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
@@ -347,12 +347,12 @@ namespace Test
         }
 
         [Test]
-        public void cytoscape_script_from_gotermnumber()
+        public void cytoscape_script_from_GoTermnumber()
         {
             Sweet.lollipop = new Lollipop();
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
-            CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { new GoTermNumber(TestProteoformFamilies.p1_goterm, 0, 0, 0, 0) }, community.families,
+            CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { new GoTermNumber(TestProteoformFamilies.p1_GoTerm, 0, 0, 0, 0) }, community.families,
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 null, false, false,
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,

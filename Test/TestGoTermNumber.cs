@@ -67,7 +67,7 @@ namespace Test
         }
 
         [Test]
-        public void get_interesting_goterm_families()
+        public void get_interesting_GoTerm_families()
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
@@ -137,7 +137,7 @@ namespace Test
         }
 
         [Test]
-        public void test_goterm_analysis()
+        public void test_GoTerm_analysis()
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
@@ -213,7 +213,7 @@ namespace Test
         }
 
         [Test]
-        public void test_goterm_analysis_with_custom_list()
+        public void test_GoTerm_analysis_with_custom_list()
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
