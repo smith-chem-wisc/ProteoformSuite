@@ -415,39 +415,32 @@ namespace ProteoWPFSuite
         private void exportTablesToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             List<DataTable> data_tables = current_form.SetTables();
-
             if (data_tables == null)
             {
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
                 return;
             }
-
-            ProteoformSuiteGUI.ExcelWriter writer = new ProteoformSuiteGUI.ExcelWriter();
-            writer.ExportToExcel(data_tables, (current_form as UserControl).GetType().Name);
-            SaveExcelFile(writer, (current_form as UserControl).GetType().Name + "_table.xlsx");
+            ExcelWriter writer = new ExcelWriter();
+            saveExcelDialog.FileName = (current_form as UserControl).GetType().Name + "_table.xlsx";
+            bool? dr = saveExcelDialog.ShowDialog();
+            if (dr == true)
+            {
+                writer.ExportToExcel(saveExcelDialog.FileName, data_tables);
+            }
         }
 
 
         private void exportAllTablesToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ProteoformSuiteGUI.ExcelWriter writer = new ProteoformSuiteGUI.ExcelWriter();
+            ExcelWriter writer = new ExcelWriter();
             if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
-            Parallel.ForEach(forms, form => form.SetTables());
-            writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<string, List<DataTable>>((sweet as UserControl).GetType().Name, sweet.DataTables)).ToList());
-            Parallel.ForEach(forms, form => writer.ExportToExcel(form.DataTables, (form as UserControl).GetType().Name));
-            if (MessageBox.Show("Finished preparing. Ready to save? This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
-            SaveExcelFile(writer, (current_form as ITabbedMDI).MDIParent.GetType().Name + "_table.xlsx"); //get the window hosting tabcontrol, which hosts usercontrol
-        }
-
-        private void SaveExcelFile(ProteoformSuiteGUI.ExcelWriter writer, string filename)
-        {
-            saveExcelDialog.FileName = filename;
+            saveExcelDialog.FileName = (current_form as ITabbedMDI).MDIParent.GetType().Name + "_table.xlsx";
             bool? dr = saveExcelDialog.ShowDialog();
             if (dr == true)
             {
-                MessageBox.Show(writer.SaveToExcel(saveExcelDialog.FileName));
+                Parallel.ForEach(forms, form => form.SetTables());
+                writer.ExportToExcel(saveExcelDialog.FileName, forms.Where(f => f.DataTables != null).SelectMany(f => f.DataTables).ToList());
             }
-            else return;
         }
 
         #endregion Export Table as Excel File -- Private Methods
