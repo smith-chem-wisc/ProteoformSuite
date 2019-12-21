@@ -551,6 +551,7 @@ namespace ProteoformSuiteInternal
         public static DataTable experimental_intensities_dataframe()
         {
             DataTable results = new DataTable();
+
             //determine intensitites and normalized intensitites... (just summing fractions for now...)
             List<string> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(x => x.lt_condition + "|" + x.biological_replicate + "|" + x.technical_replicate).Distinct().ToList();
             if (files.Count == 0) return results;
@@ -567,32 +568,55 @@ namespace ProteoformSuiteInternal
                     intensities_by_file[files[f]].Add(p, intensity);
                 }
             }
-            string conditionBiorept_with_least_missing_values = intensities_by_file.OrderBy(p => p.Value.Count(v => v.Value > 0)).First().Key;
-            if (conditionBiorept_with_least_missing_values == null) return results;
+            
             Dictionary<string, Dictionary<ExperimentalProteoform, double>> normalized_intensities_by_file = new Dictionary<string, Dictionary<ExperimentalProteoform, double>>();
 
-            foreach (var conditionBiorep in intensities_by_file)
+            //normalize by summed intensities for all pforms from a file
+            foreach(var f in intensities_by_file)
             {
-                normalized_intensities_by_file.Add(conditionBiorep.Key, new Dictionary<ExperimentalProteoform, double>());
-                List<double> foldChanges = new List<double>();
-                foreach (var p in Sweet.lollipop.target_proteoform_community.experimental_proteoforms)
+                normalized_intensities_by_file.Add(f.Key, new Dictionary<ExperimentalProteoform, double>());
+                foreach (var p in f.Value)
                 {
-                    double conditionBiorepIntensityThis = conditionBiorep.Value[p];
-                    double conditionBiorepIntensity1 = intensities_by_file[conditionBiorept_with_least_missing_values][p];
-                    if (conditionBiorepIntensity1 > 0 && conditionBiorepIntensityThis > 0)
-                    {
-                        foldChanges.Add(conditionBiorepIntensityThis / conditionBiorepIntensity1);
-                    }
-                }
-                double medianFoldChange = foldChanges.Median();
-                double normalizationFactor = 1.0 / medianFoldChange;
-
-
-                foreach (var proteoform in conditionBiorep.Value)
-                {
-                    normalized_intensities_by_file[conditionBiorep.Key].Add(proteoform.Key, proteoform.Value * normalizationFactor);
+                    double norm_divisor = f.Value.Sum(v => v.Value) / intensities_by_file.Average(a => a.Value.Sum(v => v.Value));
+                    normalized_intensities_by_file[f.Key].Add(p.Key, p.Value / norm_divisor);
                 }
             }
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\sums.tsv"))
+            {
+                foreach(var f in intensities_by_file)
+                {
+                    writer.WriteLine(f.Key + "\t" + f.Value.Sum(v => v.Value));
+                }
+            }
+
+                //normalize by median fold change
+                //string conditionBiorept_with_least_missing_values = intensities_by_file.OrderBy(p => p.Value.Count(v => v.Value > 0)).First().Key;
+                //if (conditionBiorept_with_least_missing_values == null) return results;
+                //foreach (var conditionBiorep in intensities_by_file)
+                //{
+                //    normalized_intensities_by_file.Add(conditionBiorep.Key, new Dictionary<ExperimentalProteoform, double>());
+                //    List<double> foldChanges = new List<double>();
+                //    foreach (var p in Sweet.lollipop.target_proteoform_community.experimental_proteoforms)
+                //    {
+                //        double conditionBiorepIntensityThis = conditionBiorep.Value[p];
+                //        double conditionBiorepIntensity1 = intensities_by_file[conditionBiorept_with_least_missing_values][p];
+                //        if (conditionBiorepIntensity1 > 0 && conditionBiorepIntensityThis > 0)
+                //        {
+                //            foldChanges.Add(conditionBiorepIntensityThis / conditionBiorepIntensity1);
+                //        }
+                //    }
+                //    double medianFoldChange = foldChanges.Median();
+                //    double normalizationFactor = 1.0 / medianFoldChange;
+
+
+                //    foreach (var proteoform in conditionBiorep.Value)
+                //    {
+                //        normalized_intensities_by_file[conditionBiorep.Key].Add(proteoform.Key, proteoform.Value * normalizationFactor);
+                //    }
+                //}
+
+
 
             results.Columns.Add("Proteoform Suite ID", typeof(string));
             results.Columns.Add("Proteoform Description", typeof(string));
@@ -660,7 +684,7 @@ namespace ProteoformSuiteInternal
                 }
                 for (int f = 0; f < files.Count; f++)
                 {
-                    array[index] = intensities_by_file[files[f]][e];
+                    array[index] = normalized_intensities_by_file[files[f]][e];
                     index++;
                 }
                 results.Rows.Add(array);
