@@ -582,14 +582,6 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\sums.tsv"))
-            {
-                foreach(var f in intensities_by_file)
-                {
-                    writer.WriteLine(f.Key + "\t" + f.Value.Sum(v => v.Value));
-                }
-            }
-
                 //normalize by median fold change
                 //string conditionBiorept_with_least_missing_values = intensities_by_file.OrderBy(p => p.Value.Count(v => v.Value > 0)).First().Key;
                 //if (conditionBiorept_with_least_missing_values == null) return results;

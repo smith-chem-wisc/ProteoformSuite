@@ -394,7 +394,6 @@ namespace ProteoformSuiteInternal
                                         .FirstOrDefault();
                                     if (mod != null)
                                     {
-
                                         list.Add(new Ptm(entry.Key + (begin.Count > i ? begin[i] : begin[0]) - (entry.Key == 1 ? 1 : 2), entry.Value));
                                     }
                                     else
@@ -465,7 +464,8 @@ namespace ProteoformSuiteInternal
                             {
                                 hit_to_add = td_hit;
                             }
-                            else if (td_hit.pfr_accession != hit_to_add.pfr_accession && !ambiguious_hits.Select(h => h.pfr_accession).Contains(td_hit.pfr_accession))
+                            else if (td_hit.pfr_accession != hit_to_add.pfr_accession 
+                                && !ambiguious_hits.Select(h =>  h.pfr_accession).Contains(td_hit.pfr_accession))
                                 {
                                     ambiguious_hits.Add(td_hit);
                                 }
@@ -476,11 +476,9 @@ namespace ProteoformSuiteInternal
                         {
                             foreach (var hit in ambiguious_hits)
                             {
-                                if (file.purpose == Purpose.TopDown || (hit.pfr_accession != hit_to_add.pfr_accession && hit.accession != hit_to_add.accession))
-                                {
-                                    hit_to_add.ambiguous_matches.Add(hit);
-                                }
-                                else
+                                if(file.purpose == Purpose.BottomUp &&  hit.pfr_accession.Split('_')[0] != hit_to_add.pfr_accession.Split('|')[0].Split('_')[0]
+                                       && hit.pfr_accession.Split('_')[3] == hit_to_add.pfr_accession.Split('|')[0].Split('_')[3])
+                                       //diff accession, same sequence, same PTMs
                                 {
                                     lock (td_hits)
                                     {
@@ -488,7 +486,10 @@ namespace ProteoformSuiteInternal
                                         hit_to_add.shared_protein = true;
                                         td_hits.Add(hit);
                                     }
-
+                                }
+                                else
+                                {
+                                    hit_to_add.ambiguous_matches.Add(hit);
                                 }
                             }
                             lock (td_hits) td_hits.Add(hit_to_add);

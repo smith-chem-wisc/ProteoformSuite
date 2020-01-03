@@ -482,10 +482,10 @@ namespace ProteoformSuiteInternal
             //get topdown hits that meet criteria
             List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
 
-            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.accession.Split('-')[0] + "_" + h.pfr_accession).Distinct().ToList();
+            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
             {
-                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.accession.Split('-')[0] + "_" + h.pfr_accession == pfr).ToList();
+                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.pfr_accession == pfr).ToList();
                 List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
                 //aggregate to td hit w/ highest c-score as root - 1st average for retention time
                 while (hits_by_pfr.Count > 0)
@@ -517,7 +517,7 @@ namespace ProteoformSuiteInternal
             });
 
             List<TopDownProteoform> to_remove = new List<TopDownProteoform>();
-            foreach(var proteoform in topdown_proteoforms)
+            foreach (var proteoform in topdown_proteoforms)
             {
                 //if all ambiguous matches are contained
                 if (topdown_proteoforms.Where(p => p != proteoform && Math.Abs(p.agg_rt - proteoform.agg_rt) <= Convert.ToDouble(td_retention_time_tolerance) && p.ambiguous_topdown_hits.Count <= proteoform.ambiguous_topdown_hits.Count)

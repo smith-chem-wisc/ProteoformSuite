@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Chemistry;
+using Proteomics.ProteolyticDigestion;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -17,7 +19,7 @@ namespace ProteoformSuiteInternal
         public int begin { get; set; } //position one based
         public int end { get; set; } //position one based
         public double theoretical_mass { get; set; }
-        public string accession { get; set; }
+        public string accession { get; set; } = "";
         public string name { get; set; }
         public GeneName gene_name { get; set; }
         public double pscore { get; set; }
@@ -30,9 +32,11 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                return ptm_description + "_" + sequence + "|" + string.Join("|", ambiguous_matches.Select(a => a.ptm_description + "_" + a.sequence));
+                return accession.Split('-')[0] + "_" + begin + "_" + end + "_" + full_sequence + "|" + string.Join("|", ambiguous_matches.Select(a => a.accession.Split('-')[0] + "_" + a.begin + "_" + a.end + "_" + a.full_sequence));
             }
         }
+
+        public string full_sequence { get; set; } = "";
 
         public List<Ptm> _ptm_list { get; set; } = new List<Ptm>(); //position one based. this list is empty if unmodified.
         public List<Ptm> ptm_list //the ptmset read in with td data
@@ -69,7 +73,7 @@ namespace ProteoformSuiteInternal
         public int charge { get; set; }
         public MsDataScan ms1_scan { get; set; }
 
-        public SpectrumMatch(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score, List<MatchedFragmentIon> matched_fragment_ions)
+        public SpectrumMatch(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string full_sequence, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score, List<MatchedFragmentIon> matched_fragment_ions)
         {
             this.file = file;
             this.tdResultType = tdResultType;
@@ -89,6 +93,28 @@ namespace ProteoformSuiteInternal
             this.score = score;
             this.pscore = pscore;
             this.matched_fragment_ions = matched_fragment_ions;
+         //   this.full_sequence = full_sequence;
+
+            Dictionary<int, Modification> allModsOneIsNTerminus = new Dictionary<int, Modification>();
+            Dictionary<int, List<Modification>> allModsOneIsNTerminus_dictionary = new Dictionary<int, List<Modification>>();
+            foreach (var ptm in ptm_list)
+            {
+                if(allModsOneIsNTerminus_dictionary.ContainsKey(ptm.position))
+                {
+                    allModsOneIsNTerminus_dictionary[ptm.position].Add(ptm.modification);
+                }
+                else
+                {
+                    allModsOneIsNTerminus_dictionary.Add(ptm.position, new List<Modification>() { ptm.modification });
+                }
+            }
+            foreach(var ptm in allModsOneIsNTerminus_dictionary)
+            {
+                allModsOneIsNTerminus.Add(ptm.Key - (begin - 2), new Modification(String.Join(",", ptm.Value.Select(m => UnlocalizedModification.LookUpId(m)).OrderBy(m => m)) + " on X"));
+            }
+            Protein protein = new Protein(sequence, accession);
+            PeptideWithSetModifications peptide = new PeptideWithSetModifications(protein, new DigestionParams(), 1, sequence.Length, CleavageSpecificity.Full, "", 0, allModsOneIsNTerminus, 0);
+            this.full_sequence = peptide.FullSequence;
         }
 
         public SpectrumMatch()

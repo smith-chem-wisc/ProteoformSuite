@@ -102,43 +102,6 @@ namespace ProteoformSuiteGUI
             //need to refill theo database --> added theoreticsl
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
-
-
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\nodes.tsv"))
-            {
-                foreach(var td in Sweet.lollipop.topdown_proteoforms.Where(t => t.topdown_level == 1))
-                {
-                    writer.WriteLine(td.accession);
-                }
-                foreach (var bu in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.SelectMany(v => v.Value))
-                {
-                    writer.WriteLine(bu.accession + "_" + bu.begin + "_" + bu.end +"_" + bu.ptm_description);
-                }
-            }
-
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\edges.tsv"))
-            {
-                foreach (var td in Sweet.lollipop.topdown_proteoforms.Where(td => td.ambiguous_topdown_hits.Count == 0))
-                {
-                    foreach (var bu in Proteoform.get_possible_PSMs(td.accession, td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Where(p => !p.shared_protein))
-                    {
-                       writer.WriteLine( td.accession + "\t" + bu.accession +"_" + bu.begin + "_" + bu.end + "_" + bu.ptm_description);
-                    }
-                }
-            }
-
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\shared_peptides.tsv"))
-            {
-                foreach(var bu in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Values.SelectMany(b => b))
-                {
-                    if(bu.shared_protein && bu.ambiguous_matches.Count == 0)
-                    {
-                        writer.WriteLine(bu.pfr_accession + "\t" + bu.accession);
-                    }
-                }
-            }
-
-
         }
 
         public void ClearListsTablesFigures(bool clear_following)

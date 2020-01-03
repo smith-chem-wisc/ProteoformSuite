@@ -51,10 +51,10 @@ namespace Test
             for (int i = 0; i < 2; i++)
             {
                 SpectrumMatch t = new SpectrumMatch();
+                t.accession = "td";
                 t.score = (10 + Convert.ToDouble(i));
                 t.ms2_retention_time = 50d;
                 t.ptm_list = new List<Ptm>();
-                t.pfr_accession = "12345";
                 t.sequence = "SEQUENCE";
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
@@ -77,13 +77,13 @@ namespace Test
 
             //Test no aggregation different pfr
             tdhList[1].ms2_retention_time = tdhList[0].ms2_retention_time;
-            tdhList[1].pfr_accession = "12346";
+            tdhList[1].full_sequence = "NEWSEQUENCE";
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(2, Sweet.lollipop.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
 
             //if hit score below threshold, don't aggregate
-            tdhList[1].pfr_accession = "12345";
+            tdhList[1].full_sequence = "SEQUENCE";
             tdhList[1].score = 1;
             Sweet.lollipop.min_score_td = 3;
             Sweet.lollipop.top_down_hits = tdhList;
@@ -236,8 +236,8 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
@@ -257,14 +257,14 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(12, Sweet.lollipop.topdown_proteoforms.Count());
-            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().agg_mass, 3));
 
             // carbamidomethylated is labeled in MM output - should have same result as without it 
             Sweet.lollipop = new Lollipop();
@@ -278,8 +278,8 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
@@ -299,14 +299,14 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
-            Assert.AreEqual("Bad mod at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
+            Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
+            Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(12, Sweet.lollipop.topdown_proteoforms.Count());
-            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
+            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().theoretical_mass, 3));
+            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().agg_mass, 3));
         }
 
         [Test]
@@ -331,13 +331,13 @@ namespace Test
             Assert.AreEqual("PTM localization ambiguity; ", ambiguous_td[0].topdown_level_description);
             Assert.AreEqual(2, ambiguous_td[1].topdown_level);
             Assert.AreEqual("PTM localization ambiguity; ", ambiguous_td[1].topdown_level_description);
-            Assert.AreEqual(2, ambiguous_td[2].topdown_level);
-            Assert.AreEqual("PTM identity ambiguity; ", ambiguous_td[2].topdown_level_description);
+            Assert.AreEqual(3, ambiguous_td[2].topdown_level);
+            Assert.AreEqual("PTM identity ambiguity; PTM localization ambiguity; ", ambiguous_td[2].topdown_level_description);
             Assert.AreEqual("Unambiguous", Sweet.lollipop.topdown_proteoforms.Where(h => h.ambiguous_topdown_hits.Count() == 0).Select(p => p.topdown_level_description).Distinct().First());
             Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.Where(h => h.ambiguous_topdown_hits.Count() == 0).Select(p => p.topdown_level).Distinct().First());
-            Assert.AreEqual("Phospho @ 32, 115, 247; ", Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count == 0).First().topdown_uniprot_mods);
-            Assert.IsFalse(Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count == 0).First().topdown_novel_mods);
-            Assert.AreEqual("N/A | Phospho @ 32, 115, 247; ", Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count > 0).First().topdown_uniprot_mods);
+            Assert.AreEqual("Phospho@32, 115, 247; ", Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count == 0).First().topdown_uniprot_mods);
+            Assert.IsTrue(Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count == 0).First().topdown_novel_mods);
+            Assert.AreEqual("N/A | N/A", Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count > 0).First().topdown_uniprot_mods);
             Assert.IsTrue(Sweet.lollipop.topdown_proteoforms.Where(p => p.accession.Contains("P0CX35") && p.ambiguous_topdown_hits.Count > 0).First().topdown_novel_mods);
         }
 
@@ -377,12 +377,12 @@ namespace Test
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(6, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(68, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-            Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
+            Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.ms2ScanNumber).First().theoretical_mass, 3));
+            Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.ms2ScanNumber).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(5, Sweet.lollipop.topdown_proteoforms.Count());
-            Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.pfr_accession).First().agg_mass, 3));
+            Assert.AreEqual(3755.495, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.topdown_hits.First().ms2ScanNumber).First().theoretical_mass, 3));
+            Assert.AreEqual(3755.485, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.topdown_hits.First().ms2ScanNumber).First().agg_mass, 3));
 
             //remove glycan from db... should be bad
             Sweet.lollipop.theoretical_database.uniprotModifications.Remove("H");
@@ -546,7 +546,6 @@ namespace Test
             hit.theoretical_mass = 1000;
             hit.reported_mass = 1000;
             hit.ms2_retention_time = 10;
-            hit.pfr_accession = "PFR";
             TopDownProteoform td1 = new TopDownProteoform("accession", new List<SpectrumMatch>() { hit });
             TopDownProteoform td2 = new TopDownProteoform(td1);
             Assert.AreNotEqual(td1, td2);

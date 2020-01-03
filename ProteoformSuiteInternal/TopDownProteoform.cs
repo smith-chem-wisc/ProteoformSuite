@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" :
                     _topdown_ptm_set.ptm_combination.Count(m => m.modification.ModificationType != "Common Fixed") == 0 ?
                         "Unmodified" :
-                    string.Join("; ", _topdown_ptm_set.ptm_combination.Where(ptm => ptm.modification.ModificationType != "Common Fixed").Select(ptm => ptm.position > 0 ? UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m).ToList());
+                    string.Join("; ", _topdown_ptm_set.ptm_combination.Where(ptm => ptm.modification.ModificationType != "Common Fixed").OrderBy(ptm => ptm.position).Select(ptm => ptm.position > 0 ? UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position : UnlocalizedModification.LookUpId(ptm.modification)).ToList());
             }
         }
         public GeneName topdown_geneName { get; set; }
@@ -48,6 +48,7 @@ namespace ProteoformSuiteInternal
             SpectrumMatch root = hits[0];
             this.name = root.name;
             this.pfr_accession = root.pfr_accession;
+            this.ambiguous_topdown_hits = root.ambiguous_matches;
             this.topdown_ptm_set = new PtmSet(root.ptm_list);
             this.uniprot_id = root.uniprot_id;
             this.sequence = root.sequence;
@@ -96,15 +97,15 @@ namespace ProteoformSuiteInternal
             this.agg_mass = topdown_hits.Select(h => (h.reported_mass- Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.agg_mass;
             this.agg_rt = topdown_hits.Select(h => h.ms2_retention_time).Average();
-            foreach (var ambiguous_id in topdown_hits.SelectMany(h => h.ambiguous_matches))
-            {
-                if ((this.pfr_accession == ambiguous_id.pfr_accession && this.accession.Split('_')[0].Split('-')[0] == ambiguous_id.accession.Split('_')[0].Split('-')[0])
-                    || ambiguous_topdown_hits.Any(h => h.pfr_accession == ambiguous_id.pfr_accession && h.accession.Split('_')[0].Split('-')[0] == ambiguous_id.accession.Split('_')[0].Split('-')[0]))
-                {
-                    continue;
-                }
-                ambiguous_topdown_hits.Add(ambiguous_id);
-            }
+            //foreach (var ambiguous_id in topdown_hits.SelectMany(h => h.ambiguous_matches))
+            //{
+            //    if ((this.pfr_accession == ambiguous_id.pfr_accession && this.accession.Split('_')[0].Split('-')[0] == ambiguous_id.accession.Split('_')[0].Split('-')[0])
+            //        || ambiguous_topdown_hits.Any(h => h.pfr_accession == ambiguous_id.pfr_accession && h.accession.Split('_')[0].Split('-')[0] == ambiguous_id.accession.Split('_')[0].Split('-')[0]))
+            //    {
+            //        continue;
+            //    }
+            //    ambiguous_topdown_hits.Add(ambiguous_id);
+            //}
             calculate_topdown_level();
             get_uniprot_mods();
         }
