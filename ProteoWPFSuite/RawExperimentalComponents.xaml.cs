@@ -22,7 +22,6 @@ namespace ProteoWPFSuite
             this.DataContext = this;
             CK_rb_displayIdentificationComponents = true;
             CK_rb_displayQuantificationComponents = false;
-            MessageBox.Show(CK_rb_displayIdentificationComponents+","+ CK_rb_displayQuantificationComponents+"," +rb_displayIdentificationComponents.IsChecked+","+rb_displayQuantificationComponents.IsChecked);
         }
         #endregion Public Constructor
 

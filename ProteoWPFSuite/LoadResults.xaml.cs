@@ -108,7 +108,7 @@ namespace ProteoWPFSuite
 
             // Initialize components in "2. Set Parameters" that fall under "1. Choose Analysis->MetaMorpheus Top-Down Search"
             // p.s. Formerly named cmbx_dissociation_types
-            cmb_dissociation_types.Items.Clear();
+            cmb_dissociation_types.ClearValue(ItemsControl.ItemsSourceProperty);
             cmb_dissociation_types.ItemsSource = new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD };
             cmb_dissociation_types.SelectedIndex = 0;
 

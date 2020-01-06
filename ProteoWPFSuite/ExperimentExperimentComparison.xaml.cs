@@ -33,7 +33,6 @@ namespace ProteoWPFSuite
                 {
                     return;
                 }
-                MessageBox.Show("Auto Works");
                 is_cb_ee_peak_accept_rank = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_Auto"));
                 if (is_cb_ee_peak_accept_rank==value || MDIParent == null)
@@ -56,7 +55,6 @@ namespace ProteoWPFSuite
                 {
                     return;
                 }
-                MessageBox.Show("View Works");
                 is_cb_view_decoy_histogram = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_View"));
                 ct_EE_Histogram.Series["relations"].Enabled = !(bool)is_cb_view_decoy_histogram;
@@ -75,7 +73,6 @@ namespace ProteoWPFSuite
                 {
                     return;
                 }
-                MessageBox.Show("Graph Works");
                 is_cb_Graph_lowerThreshold = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_Graph"));
                 if ((bool) is_cb_Graph_lowerThreshold)
