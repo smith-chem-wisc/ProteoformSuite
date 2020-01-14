@@ -871,6 +871,7 @@
             this.tb_filter1.Name = "tb_filter1";
             this.tb_filter1.Size = new System.Drawing.Size(201, 20);
             this.tb_filter1.TabIndex = 55;
+            this.tb_filter1.TextChanged += new System.EventHandler(this.tb_filter1_TextChanged);
             // 
             // panel_clearbtn
             // 
