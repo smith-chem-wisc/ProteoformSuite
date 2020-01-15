@@ -861,6 +861,7 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
         public TDBUReader bottomupReader = new TDBUReader();
         public double min_bu_peptides = 0;
+        public bool limit_triples_and_greater = true;
 
         //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         public bool useRandomSeed_decoys = true;
@@ -958,7 +959,7 @@ namespace ProteoformSuiteInternal
 
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
-        public static bool gene_centric_families = false;
+        public bool gene_centric_families = false;
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
@@ -1110,7 +1111,6 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
         public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>(); // quantitative values associated with each selected proteoform
         public bool significance_by_log2FC = false;
-        public bool significance_by_permutation = true;
 
         // Imputation
         public decimal backgroundShift = -1.8m;

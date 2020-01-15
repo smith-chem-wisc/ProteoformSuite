@@ -82,6 +82,7 @@ namespace ProteoWPFSuite
             get { return f.relations.Count; }
         }
 
+
         #endregion Public Properties
 
         #region Public Methods

@@ -269,7 +269,7 @@
                           SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectionChanged="Cmb_loadTable1_OnSelectionChanged"/>
 
-                <TextBox x:Name="tb_filter1" Grid.Row="0" Grid.Column="1" Height="28" Margin="2 10 2 0">
+                <TextBox x:Name="tb_filter1" TextChanged="tb_filter1_TextChanged" Grid.Row="0" Grid.Column="1" Height="28" Margin="2 10 2 0">
                     <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                             <Style.Resources>

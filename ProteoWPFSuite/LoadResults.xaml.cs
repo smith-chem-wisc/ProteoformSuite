@@ -21,7 +21,6 @@ namespace ProteoWPFSuite
         {
             InitializeComponent();
             this.DataContext = this;
-
             populate_file_lists();
         }
         #endregion Public Constructor
@@ -115,6 +114,11 @@ namespace ProteoWPFSuite
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+
+            tb_filter1.TextChanged -= tb_filter1_TextChanged;
+            tb_filter1.Text = "";
+            tb_filter1.TextChanged += tb_filter1_TextChanged;
+
         }
 
         public List<DataTable> SetTables()
@@ -238,6 +242,7 @@ namespace ProteoWPFSuite
                 cmb_loadTable1.IsEnabled = true;
                 for (int i = 0; i < 4; i++)
                     cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[7]);
                 cmb_loadTable1.SelectedIndex = 0;
 
                 // In "4. Start Analysis"
@@ -306,7 +311,7 @@ namespace ProteoWPFSuite
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[4]);
                 cmb_loadTable1.Items.Add(Lollipop.file_lists[2]);
                 cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable1.IsEnabled = false;
+                cmb_loadTable1.IsEnabled = true;
 
                 // In "4. Start Analysis"
                 btn_topdown_search.Visibility  = Visibility.Visible;
@@ -362,7 +367,6 @@ namespace ProteoWPFSuite
             int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb.Text);
 
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
             refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]).Select(f => new DisplayInputFile(f)));
@@ -433,7 +437,6 @@ namespace ProteoWPFSuite
             bool dr = (bool)openFileDialog.ShowDialog();
             if (dr == true)
             {
-                if (DisplayUtility.CheckForProteinFastas(cmb, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[selected_index], Lollipop.file_types[selected_index], Sweet.lollipop.input_files, true);
                 refresh_dgvs();
                 if (openFileDialog.FileNames.Any(f => Path.GetExtension(f) == ".raw")) ValidateThermoMsFileReaderVersion();
@@ -498,8 +501,7 @@ namespace ProteoWPFSuite
         {
             if (rb_standardOptions.IsChecked == true)
             {
-                this.MDIParent.resultsToolStripMenuItem.IsSubmenuOpen = true;
-                MessageBox.Show("Use the Results menu to step through processing results.\n\n" +
+                MessageBox.Show("Use the arrows at the top right of the screen to step through processing results.\n\n" +
                     "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
             }
         }
@@ -577,13 +579,13 @@ namespace ProteoWPFSuite
         #endregion CHANGED TABLE SELECTION Private Methods
 
         #region FILTERS Private Methods
-        //function moved to property get
-        /*private void tb_filter1_TextChanged(object sender, PropertyChangedEventArgs e)
+        private void tb_filter1_TextChanged(object sender, TextChangedEventArgs e)
         {
             int selected_index = Lollipop.file_lists.ToList().IndexOf(cmb_loadTable1.SelectedItem.ToString());
             DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[selected_index]), tb_filter1.Text).OfType<InputFile>().Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles1, Lollipop.file_types[selected_index]);
-        }*/
+        }
+
         #endregion FILTERS Private Methods
 
         #region CHANGE ALL CELLS Private methods

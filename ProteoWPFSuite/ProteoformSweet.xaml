@@ -23,22 +23,6 @@
                 <MenuItem Header="Close" x:Name="closeToolStripMenuItem" Click="closeToolStripMenuItem_Click"/>
 
             </MenuItem>
-            <MenuItem Header="Results" x:Name="resultsToolStripMenuItem" Visibility="Visible">
-                <MenuItem Header="Load Results" x:Name="loadResultsToolStripMenuItem" Click="LoadResultsToolStripMenuItem_Click"/>
-                <MenuItem Header="Theoretical Proteoform Database" x:Name="theoreticalProteoformDatabaseToolStripMenuItem" Click="theoreticalProteoformDatabaseToolStripMenuItem_Click"/>
-                <MenuItem x:Name="topdownResultsToolStripMenuItem" Header="Top-down Results" Click="topdownResultsToolStripMenuItem_Click"/>
-                <MenuItem x:Name="rawExperimentalProteoformsToolStripMenuItem" Header="Raw Experimental Components" Click="rawExperimentalProteoformsToolStripMenuItem_Click"/>
-                <MenuItem x:Name="neuCodeProteoformPairsToolStripMenuItem" Header="NeuCode Proteoform Pairs" Click="neuCodeProteoformPairsToolStripMenuItem_Click"/>
-                <MenuItem x:Name="aggregatedProteoformsToolStripMenuItem" Header="Aggregated Proteoforms" Click="aggregatedProteoformsToolStripMenuItem_Click"/>
-                <MenuItem x:Name="experimentTheoreticalComparisonToolStripMenuItem" Header="Experiment-Theoretical Comparison" Click="experimentTheoreticalComparisonToolStripMenuItem_Click"/>
-                <MenuItem x:Name="experimentExperimentComparisonToolStripMenuItem" Header="Experiment-Experimental Comparison" Click="experimentExperimentComparisonToolStripMenuItem_Click"/>
-                <MenuItem x:Name="proteoformFamilyAssignmentToolStripMenuItem" Header="Proteoform Family Assignment" Click="proteoformFamilyAssignmentToolStripMenuItem_Click"/>
-                <MenuItem x:Name="identifiedProteoformsToolStripMenuItem" Header="Identified Proteoforms" Click="identifiedProteoformsToolStripMenuItem_Click"/>
-                <MenuItem x:Name="quantificationToolStripMenuItem" Click="quantificationToolStripMenuItem_Click" Header="Quantification"/>
-                <MenuItem x:Name="resultsSummaryToolStripMenuItem" Header="Results Summary" Click="resultsSummaryToolStripMenuItem_Click"/>
-                <!--<MenuItem Header="test" Click="testWin"/>-->
-
-            </MenuItem>
             <MenuItem Header="Method">
                 <MenuItem Header="Save Method" Click="saveMethodToolStripMenuItem1_Click"/>
                 <MenuItem Header="Load Method" Click="loadSettingsToolStripMenuItem_Click"/>

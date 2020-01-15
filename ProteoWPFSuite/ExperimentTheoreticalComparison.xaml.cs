@@ -41,12 +41,9 @@ namespace ProteoWPFSuite
             //ct_ET_peakList.MouseClick += new MouseEventHandler(ct_ET_peakList_MouseClick);
             //dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); // makes the change immediate and automatic
             InitializeParameterSet();
+            CBGRAPHLOWERTHRESHOLD = true;
             //initialize properties
             this.DataContext = this;
-            CBUSEPPMNOTCH = true;
-            CBGRAPHLOWERTHRESHOLD = true;
-            CBBESTETPAIRONLY = true;
-            RBDALTONS = true;
         }
         #endregion
 

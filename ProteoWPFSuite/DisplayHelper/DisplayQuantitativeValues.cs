@@ -174,6 +174,7 @@ namespace ProteoWPFSuite
             get { return qval.proteoform.manual_validation_quant; }
         }
 
+
         #endregion Public Properties
 
         #region Public Methods

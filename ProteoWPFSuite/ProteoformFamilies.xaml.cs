@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
-using System.Windows.Controls;
-using ProteoformSuiteInternal;
 using System.Linq;
 using System.Windows;
-using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace ProteoWPFSuite
 {
@@ -77,7 +77,7 @@ namespace ProteoWPFSuite
                     return;
                 }
                 
-                Lollipop.gene_centric_families = (bool)value; //data binding
+                Sweet.lollipop.gene_centric_families = (bool)value; //data binding
             }
         }
         public bool? CK_cb_buildAsQuantitative
@@ -98,23 +98,6 @@ namespace ProteoWPFSuite
                 cb_boldLabel.IsEnabled = (bool)value;//data binding
                 cb_redBorder.IsChecked = true;
                 cb_boldLabel.IsChecked=true;
-            }
-        }
-        public bool? CK_cb_scale_nodes
-        {
-            get
-            {
-                return ck_cb_scale_nodes;
-            }
-            set
-            {
-                ck_cb_scale_nodes = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_scale_nodes"));
-                if (this.MDIParent == null)
-                {
-                    return;
-                }
-                
             }
         }
         #endregion
@@ -140,13 +123,6 @@ namespace ProteoWPFSuite
             cmbx_nodeLabel.SelectedIndex = 1;
             cmbx_geneLabel.SelectedIndex = 1;
 
-            CK_cb_only_assign_common_known_mods = true;
-            CK_cb_count_adducts_as_id = false;
-            CK_cb_geneCentric = true;
-            CK_cb_buildAsQuantitative = false;
-            CK_cb_scale_nodes = false;
-            cb_redBorder.IsChecked = true;
-            cb_boldLabel.IsChecked = true;
             InitializeParameterSet();
         }
 
@@ -173,17 +149,13 @@ namespace ProteoWPFSuite
         public void initialize_every_time()
         {
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
-            nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
             cb_buildAsQuantitative.IsEnabled = Sweet.lollipop.qVals.Count > 0;
             cb_buildAsQuantitative.IsChecked = false;
-            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
-            cb_geneCentric.IsChecked = Lollipop.gene_centric_families;
         }
 
         public void InitializeParameterSet()
         {
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked; //data binding
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
             cmbx_tableSelector.SelectedIndexChanged += cmbx_tableSelector_SelectedIndexChanged;
@@ -193,8 +165,17 @@ namespace ProteoWPFSuite
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
             cb_count_adducts_as_id.IsChecked = Sweet.lollipop.count_adducts_as_identifications;
-
             cb_only_assign_common_known_mods.IsChecked = Sweet.lollipop.only_assign_common_or_known_mods;
+            CK_cb_only_assign_common_known_mods = Sweet.lollipop.only_assign_common_or_known_mods;
+            CK_cb_count_adducts_as_id = Sweet.lollipop.count_adducts_as_identifications;
+            CK_cb_geneCentric = Sweet.lollipop.gene_centric_families;
+            CK_cb_buildAsQuantitative = false;
+            cb_redBorder.IsChecked = true;
+            cb_boldLabel.IsChecked = true;
+
+            nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
+            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
+            cb_geneCentric.IsChecked = Sweet.lollipop.gene_centric_families;
 
             initialize_every_time();
         }

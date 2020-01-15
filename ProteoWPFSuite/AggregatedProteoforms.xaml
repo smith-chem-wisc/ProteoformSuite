@@ -66,11 +66,11 @@
                     </GroupBox>
                     <DockPanel Height="28">
                         <CheckBox IsChecked="{Binding Path=CK1,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Margin="0 0 5 0" x:Name="cb_add_td_proteoforms">Add Top-Down Proteoforms</CheckBox><!--cb_add_td_proteoforms_CheckedChanged, chekced binding-->
-                        <CheckBox IsChecked="{Binding Path=CK2,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" x:Name="cb_validateProteoforms">Validate Proteoforms</CheckBox><!--cb_validateProteoforms_CheckedChanged-->
+                        <CheckBox IsChecked="{Binding Path=CK2,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" x:Name="cb_validateProteoforms" Height="28" VerticalAlignment="Top">Validate Proteoforms</CheckBox><!--cb_validateProteoforms_CheckedChanged-->
                     </DockPanel>
                     <DockPanel LastChildFill="True" Height="28">
                         <Label Margin="0 0 5 0" MinWidth="223">Total Accepted Aggregated Proteoforms</Label>
-                        <TextBox x:Name="tb_totalAggregatedProteoforms"></TextBox>
+                        <TextBox x:Name="tb_totalAggregatedProteoforms" IsReadOnly="True"></TextBox>
                     </DockPanel> 
                     <DockPanel LastChildFill="True" Margin="0 5 0 0" Height="28">
                         <Label Margin="0 0 5 0" MinWidth="223">Aggregated Proteoform Table Filter</Label>

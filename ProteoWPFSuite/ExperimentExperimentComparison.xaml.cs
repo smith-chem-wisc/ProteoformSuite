@@ -92,7 +92,6 @@ namespace ProteoWPFSuite
             this.ct_EE_peakList.MouseClick += new System.Windows.Forms.MouseEventHandler(ct_EE_peakList_MouseClick);
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(EE_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
             CK_Graph = true;
-            CK_Auto = true;
             InitializeParameterSet();
             
         }

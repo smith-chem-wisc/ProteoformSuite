@@ -135,7 +135,7 @@ namespace ProteoformSuiteGUI
 
             ckbx_combineIdenticalSequences.Checked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.Checked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
-            cb_limitLargePtmSets.Checked = Sweet.lollipop.theoretical_database.limit_triples_and_greater;
+            cb_limitLargePtmSets.Checked = Sweet.lollipop.limit_triples_and_greater;
             cb_useRandomSeed.Checked = Sweet.lollipop.useRandomSeed_decoys;
             nud_randomSeed.Value = Sweet.lollipop.randomSeed_decoys;
             ckbx_OxidMeth.Checked = Sweet.lollipop.methionine_oxidation;
@@ -263,7 +263,7 @@ namespace ProteoformSuiteGUI
 
         private void cb_limitLargePtmSets_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.theoretical_database.limit_triples_and_greater = cb_limitLargePtmSets.Checked;
+            Sweet.lollipop.limit_triples_and_greater = cb_limitLargePtmSets.Checked;
         }
 
         #endregion CHECKBOXES Private Methods

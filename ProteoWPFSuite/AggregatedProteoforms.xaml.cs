@@ -363,6 +363,7 @@ namespace ProteoWPFSuite
             else nud_minObservations.Value = nud_minObservations.Maximum;
             Sweet.lollipop.agg_minBiorepsWithObservations = (int)nud_minObservations.Value;
             CK1 = Sweet.lollipop.add_td_proteoforms;
+            ck2 = Sweet.lollipop.validate_proteoforms;
         }
 
         public void ClearListsTablesFigures(bool clear_following)

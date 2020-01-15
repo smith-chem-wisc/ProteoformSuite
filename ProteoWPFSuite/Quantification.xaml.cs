@@ -23,7 +23,6 @@ namespace ProteoWPFSuite
         private bool? redborder;
         private bool? boldlabel;
         private bool? significancebyfoldchange;
-        private bool? signficanceByPermutation;
         private bool? usefoldchangecutoff;
         private bool? useaveragepermutationfoldchange;
         private bool? usebioreppermutationfoldchange;
@@ -69,31 +68,6 @@ namespace ProteoWPFSuite
                 Sweet.lollipop.significance_by_log2FC = (bool)rb_significanceByFoldChange.IsChecked;
                 rb_signficanceByPermutation.IsChecked = !rb_significanceByFoldChange.IsChecked;
                 if ((bool)rb_significanceByFoldChange.IsChecked)
-                {
-                    plots();
-                }
-                updateGoTermsTable();
-                fill_quantitative_values_table();
-            }
-        }
-        public bool? SIGNFICANCEBYPERMUTATION
-        {
-            get
-            {
-                return significancebyfoldchange;
-            }
-            set
-            {
-                signficanceByPermutation = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNFICANCEBYPERMUTATION"));
-                if (MDIParent == null || init)
-                {
-                    return;
-                }
-                
-                Sweet.lollipop.significance_by_permutation = (bool)rb_signficanceByPermutation.IsChecked;
-                rb_significanceByFoldChange.IsChecked = !rb_signficanceByPermutation.IsChecked;
-                if ((bool)rb_signficanceByPermutation.IsChecked)
                 {
                     plots();
                 }
@@ -359,18 +333,7 @@ namespace ProteoWPFSuite
             cmbx_nodeLabel.SelectedIndex = 1;
             cmbx_edgeLabel.SelectedIndex = 1;
 
-            SIGNIFICANCEBYFOLDCHANGE = true;
-            SIGNFICANCEBYPERMUTATION = false;
-            USEFOLDCHANGECUTOFF = false;
-            USEAVERAGEPERMUTATIONFOLDCHANGE = false;
-            USEBIOREPPERMUTATIONFOLDCHANGE = false;
-            USELOCALFDRCUTOFF = false;
-            QUANTIFIEDSAMPLESET = false;
-            DETECTEDSAMPLESET = false;
-            CUSTOMBACKGROUNDSET = false;
-            ALLTHEORETICALPROTEINS = false;
-            REDBORDER = false;
-            BOLDLABEL = false;
+            InitializeParameterSet();
         }
 
         #endregion Constructor
@@ -525,7 +488,7 @@ namespace ProteoWPFSuite
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             if (cmbx_geneLabel.Items.Count > 0)
                 cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
-            cb_geneCentric.IsChecked = Lollipop.gene_centric_families;
+            cb_geneCentric.IsChecked = Sweet.lollipop.gene_centric_families;
 
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
@@ -606,9 +569,6 @@ namespace ProteoWPFSuite
             nud_intensity.Value = get_go_analysis().GoAnalysis.minProteoformIntensity;
             nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
 
-            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked;
-
             string[] relative_difference_selections = new string[]
             {
                 "Observed vs. Expected" ,
@@ -637,9 +597,14 @@ namespace ProteoWPFSuite
             cmbx_quantitativeValuesTableSelection.SelectedIndexChanged += cmbx_quantitativeValuesTableSelection_SelectedIndexChanged;
 
             //Set parameters
-            SIGNIFICANCEBYFOLDCHANGE = Sweet.lollipop.significance_by_log2FC;
+            USELOCALFDRCUTOFF = Sweet.lollipop.useLocalFdrCutoff;
+            DETECTEDSAMPLESET = get_go_analysis().GoAnalysis.allDetectedProteins;
+            CUSTOMBACKGROUNDSET = false;
+            ALLTHEORETICALPROTEINS = get_go_analysis().GoAnalysis.allTheoreticalProteins;
+            REDBORDER = false;
+            BOLDLABEL = false;
 
-            SIGNFICANCEBYPERMUTATION = Sweet.lollipop.significance_by_permutation;
+            SIGNIFICANCEBYFOLDCHANGE = Sweet.lollipop.significance_by_log2FC;
 
             USEAVERAGEPERMUTATIONFOLDCHANGE = Sweet.lollipop.useAveragePermutationFoldChange;
             
@@ -905,7 +870,7 @@ namespace ProteoWPFSuite
 
             foreach (QuantitativeProteoformValues qValue in Sweet.lollipop.qVals)
             {
-                if ((get_tusher_values(qValue).significant && Sweet.lollipop.significance_by_permutation) || (qValue.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC))
+                if ((get_tusher_values(qValue).significant && !Sweet.lollipop.significance_by_log2FC) || (qValue.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC))
                     ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(qValue.Log2FoldChangeValues.logfold2change, -Math.Log10(qValue.Log2FoldChangeValues.pValue_uncorrected));
                 else
                     ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.Log2FoldChangeValues.logfold2change, -Math.Log10(qValue.Log2FoldChangeValues.pValue_uncorrected));
@@ -989,7 +954,7 @@ namespace ProteoWPFSuite
             int max_test_stat_unit = 0;
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (get_tusher_values(pf.quant).significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                if (get_tusher_values(pf.quant).significant && !Sweet.lollipop.significance_by_log2FC || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(get_tusher_values(pf.quant).correspondingAvgSortedRelDiff, get_tusher_values(pf.quant).relative_difference);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(get_tusher_values(pf.quant).correspondingAvgSortedRelDiff, get_tusher_values(pf.quant).relative_difference);
@@ -1031,7 +996,7 @@ namespace ProteoWPFSuite
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (get_tusher_values(pf.quant).significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                if (get_tusher_values(pf.quant).significant && !Sweet.lollipop.significance_by_log2FC || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(get_tusher_values(pf.quant).scatter, get_tusher_values(pf.quant).relative_difference);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(get_tusher_values(pf.quant).scatter, get_tusher_values(pf.quant).relative_difference);
@@ -1132,7 +1097,7 @@ namespace ProteoWPFSuite
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
                 decimal rel_diff = get_tusher_values(pf.quant).relative_difference;
-                if (get_tusher_values(pf.quant).significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                if (get_tusher_values(pf.quant).significant && !Sweet.lollipop.significance_by_log2FC || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(get_tusher_values(pf.quant).roughSignificanceFDR, rel_diff);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(get_tusher_values(pf.quant).roughSignificanceFDR, rel_diff);
@@ -1615,7 +1580,7 @@ namespace ProteoWPFSuite
 
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked;
+            Sweet.lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked;
         }
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e)

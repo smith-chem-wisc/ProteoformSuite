@@ -21,9 +21,7 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <Button x:Name="bt_td_relations" Content="Aggregate Top-Down Proteoforms" Margin="15 15 15 15" Click="bt_td_relations_Click"/>
-            </StackPanel>
+            <StackPanel Grid.Column="0"/>
             <Grid Grid.Column="1" Margin="0 0 0 0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>

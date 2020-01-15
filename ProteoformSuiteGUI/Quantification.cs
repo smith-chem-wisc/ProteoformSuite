@@ -190,7 +190,7 @@ namespace ProteoformSuiteGUI
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             if (cmbx_geneLabel.Items.Count > 0)
                 cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
-            cb_geneCentric.Checked = Lollipop.gene_centric_families;
+            cb_geneCentric.Checked = Sweet.lollipop.gene_centric_families;
 
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
@@ -272,7 +272,7 @@ namespace ProteoformSuiteGUI
             nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
 
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Lollipop.gene_centric_families = cb_geneCentric.Checked;
+            Sweet.lollipop.gene_centric_families = cb_geneCentric.Checked;
 
             string[] relative_difference_selections = new string[]
             {
@@ -307,7 +307,7 @@ namespace ProteoformSuiteGUI
             rb_significanceByFoldChange.CheckedChanged += cb_significanceByFoldChange_CheckedChanged;
 
             rb_signficanceByPermutation.CheckedChanged -= cb_significanceByPermutation_CheckedChanged;
-            rb_signficanceByPermutation.Checked = Sweet.lollipop.significance_by_permutation;
+            rb_signficanceByPermutation.Checked = !Sweet.lollipop.significance_by_log2FC;
             rb_signficanceByPermutation.CheckedChanged += cb_significanceByPermutation_CheckedChanged;
 
             cb_useAveragePermutationFoldChange.CheckedChanged -= cb_useAveragePermutationFoldChange_CheckedChanged;
@@ -577,7 +577,7 @@ namespace ProteoformSuiteGUI
 
             foreach (QuantitativeProteoformValues qValue in Sweet.lollipop.qVals)
             {
-                if ((get_tusher_values(qValue).significant && Sweet.lollipop.significance_by_permutation) || (qValue.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC))
+                if ((get_tusher_values(qValue).significant && !Sweet.lollipop.significance_by_log2FC) || (qValue.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC))
                     ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(qValue.Log2FoldChangeValues.logfold2change, -Math.Log10(qValue.Log2FoldChangeValues.pValue_uncorrected));
                 else
                     ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.Log2FoldChangeValues.logfold2change, -Math.Log10(qValue.Log2FoldChangeValues.pValue_uncorrected));
@@ -657,7 +657,7 @@ namespace ProteoformSuiteGUI
             int max_test_stat_unit = 0;
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (get_tusher_values(pf.quant).significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                if (get_tusher_values(pf.quant).significant && !Sweet.lollipop.significance_by_log2FC || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(get_tusher_values(pf.quant).correspondingAvgSortedRelDiff, get_tusher_values(pf.quant).relative_difference);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(get_tusher_values(pf.quant).correspondingAvgSortedRelDiff, get_tusher_values(pf.quant).relative_difference);
@@ -699,7 +699,7 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (get_tusher_values(pf.quant).significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                if (get_tusher_values(pf.quant).significant && !Sweet.lollipop.significance_by_log2FC || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(get_tusher_values(pf.quant).scatter, get_tusher_values(pf.quant).relative_difference);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(get_tusher_values(pf.quant).scatter, get_tusher_values(pf.quant).relative_difference);
@@ -796,7 +796,7 @@ namespace ProteoformSuiteGUI
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
                 decimal rel_diff = get_tusher_values(pf.quant).relative_difference;
-                if (get_tusher_values(pf.quant).significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                if (get_tusher_values(pf.quant).significant && !Sweet.lollipop.significance_by_log2FC || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(get_tusher_values(pf.quant).roughSignificanceFDR, rel_diff);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(get_tusher_values(pf.quant).roughSignificanceFDR, rel_diff);
@@ -1282,7 +1282,7 @@ namespace ProteoformSuiteGUI
 
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.gene_centric_families = cb_geneCentric.Checked;
+            Sweet.lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e)
@@ -1312,7 +1312,7 @@ namespace ProteoformSuiteGUI
 
         private void rb_signficanceByPermutation_CheckedChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.significance_by_permutation = rb_signficanceByPermutation.Checked;
+            Sweet.lollipop.significance_by_log2FC = !rb_signficanceByPermutation.Checked;
             rb_significanceByFoldChange.Checked = !rb_signficanceByPermutation.Checked;
             if (rb_signficanceByPermutation.Checked)
             {

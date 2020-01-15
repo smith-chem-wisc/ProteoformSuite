@@ -53,13 +53,13 @@ namespace ProteoformSuiteGUI
             cb_buildAsQuantitative.Enabled = Sweet.lollipop.qVals.Count > 0;
             cb_buildAsQuantitative.Checked = false;
             cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
-            cb_geneCentric.Checked = Lollipop.gene_centric_families;
+            cb_geneCentric.Checked = Sweet.lollipop.gene_centric_families;
         }
 
         public void InitializeParameterSet()
         {
             Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-            Lollipop.gene_centric_families = cb_geneCentric.Checked;
+            Sweet.lollipop.gene_centric_families = cb_geneCentric.Checked;
 
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
@@ -373,7 +373,7 @@ namespace ProteoformSuiteGUI
 
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.gene_centric_families = cb_geneCentric.Checked;
+            Sweet.lollipop.gene_centric_families = cb_geneCentric.Checked;
         }
 
         private void cb_count_adducts_as_id_CheckedChanged(object sender, EventArgs e)

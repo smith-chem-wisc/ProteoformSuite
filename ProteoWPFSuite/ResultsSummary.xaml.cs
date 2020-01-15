@@ -31,6 +31,7 @@ namespace ProteoWPFSuite
         public ResultsSummary()
         {
             InitializeComponent();
+            InitializeParameterSet();
         }
 
         #endregion Public Constructor

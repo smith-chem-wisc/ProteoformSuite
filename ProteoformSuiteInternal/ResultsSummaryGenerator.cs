@@ -60,7 +60,7 @@ namespace ProteoformSuiteInternal
                     null,
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
             message += Environment.NewLine;
 
             if (Sweet.lollipop.qVals.Count > 0)
@@ -70,7 +70,7 @@ namespace ProteoformSuiteInternal
                     go_analysis as IGoAnalysis,
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
 
                 message += CytoscapeScript.write_cytoscape_script(tusher_analysis == null ? Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis) :
@@ -81,7 +81,7 @@ namespace ProteoformSuiteInternal
                     go_analysis as IGoAnalysis,
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
             }
 
@@ -91,7 +91,7 @@ namespace ProteoformSuiteInternal
                     directory, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_").Replace(@"\", "_").Replace(@"/", "_") + "_", timestamp,
                     go_analysis as IGoAnalysis, true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
                 message += Environment.NewLine;
             }
             message += "Remember to install the package \"enhancedGraphics\" under App -> App Manager to view piechart nodes for quantitative data";
@@ -207,11 +207,11 @@ namespace ProteoformSuiteInternal
             List<ProteoformFamily> identified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() == 1).ToList();
             List<ProteoformFamily> ambiguous_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() > 1).ToList();
             List<ProteoformFamily> unidentified_families = Sweet.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() == 0 && f.proteoforms.Count > 1).ToList();
-            report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
+            report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 " + (Sweet.lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += identified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
-            report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
+            report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 " + (Sweet.lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
-            report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no " + (Lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
+            report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no " + (Sweet.lollipop.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += unidentified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Unidentified Families" + Environment.NewLine;
             report += Sweet.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1 && f.experimental_proteoforms.Count(e => e.topdown_id) == 0).ToString() + "\tOrphaned Experimental Proteoforms (Intact-mass proteoforms not joined with another proteoform)" + Environment.NewLine;
             report += Environment.NewLine;

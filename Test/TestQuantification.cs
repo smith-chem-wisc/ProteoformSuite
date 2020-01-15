@@ -981,7 +981,6 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
-            Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange = 10;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR = 0.5m;
@@ -1065,7 +1064,6 @@ namespace Test
         public void get_interesting_pfs()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.significance_by_log2FC = true;
             ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
@@ -1080,7 +1078,6 @@ namespace Test
             List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(exps.Where(e => e.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis).ToList();
             Assert.AreEqual(2, interesting.Count);
 
-            Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             ex = ConstructorsForTesting.ExperimentalProteoform("E1");
             fx = ConstructorsForTesting.ExperimentalProteoform("E2");
@@ -1100,7 +1097,6 @@ namespace Test
         [Test]
         public void get_interesting_families()
         {
-            Sweet.lollipop.significance_by_permutation = true;
             Sweet.lollipop.significance_by_log2FC = false;
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());

@@ -327,7 +327,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_two_theoretical_pf_groups_with_same_accession()
         {
             Sweet.lollipop = new Lollipop();
-            Lollipop.gene_centric_families = false;
+            Sweet.lollipop.gene_centric_families = false;
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
 
@@ -496,7 +496,7 @@ namespace Test
         [Test]
         public void gene_centric_family()
         {
-            Lollipop.gene_centric_families = true;
+            Sweet.lollipop.gene_centric_families = true;
             Lollipop.preferred_gene_label = Lollipop.gene_name_labels[1];
 
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();

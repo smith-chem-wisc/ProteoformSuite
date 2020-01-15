@@ -133,9 +133,10 @@
                 <GroupBox Header="Modification Names" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1">
                     <StackPanel VerticalAlignment="Top">
                         <Label Content="Total Theoretical Proteoforms:"></Label>
-                        <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True" Foreground="#FFE0E0E0" Background="#FFF0F0F0">0</TextBox>
+                        <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True">0</TextBox>
                         <Label Content="Database displayed:"></Label>
-                        <ComboBox x:Name="cmbx_DisplayWhichDB" Height="25" SelectionChanged="Cmbx_DisplayWhichDB_OnSelectionChanged"></ComboBox>
+                        <ComboBox x:Name="cmbx_DisplayWhichDB" Height="25" 
+                            SelectionChanged="Cmbx_DisplayWhichDB_OnSelectionChanged"></ComboBox>
                         <Label Content="Database Filter by Text:"></Label>
                         <TextBox x:Name="tb_tableFilter" Height="25" TextChanged="tb_tableFilter_TextChanged"></TextBox>
                     </StackPanel>

@@ -19,9 +19,8 @@ namespace ProteoWPFSuite
         public RawExperimentalComponents()
         {
             InitializeComponent();
+            InitializeParameterSet();
             this.DataContext = this;
-            CK_rb_displayIdentificationComponents = true;
-            CK_rb_displayQuantificationComponents = false;
         }
         #endregion Public Constructor
 
@@ -109,6 +108,8 @@ namespace ProteoWPFSuite
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
             nUD_max_fit.Value = (decimal)Sweet.lollipop.max_fit;
             nUD_min_liklihood_ratio.Value = (decimal)Sweet.lollipop.min_likelihood_ratio;
+            CK_rb_displayIdentificationComponents = true;
+            CK_rb_displayQuantificationComponents = false;
             FillTablesAndCharts();
         }
 
@@ -166,10 +167,7 @@ namespace ProteoWPFSuite
             DisplayComponent.FormatComponentsTable(dgv_rawComponents);
 
             rtb_raw_components_counts.Text = ResultsSummaryGenerator.raw_components_report();
-            
-            NeuCodePairs pairs_form = this.MDIParent.neuCodePairs;
-            if (Sweet.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
-                pairs_form.RunTheGamut(false);
+
         }
 
         #endregion Public Methods
