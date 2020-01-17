@@ -21,7 +21,6 @@ namespace ProteoWPFSuite
         private bool? ck_cb_count_adducts_as_id;
         private bool? ck_cb_geneCentric;
         private bool? ck_cb_buildAsQuantitative;
-        private bool? ck_cb_scale_nodes;
         public bool? CK_cb_only_assign_common_known_mods
         {
             get
@@ -32,11 +31,10 @@ namespace ProteoWPFSuite
             {
                 ck_cb_only_assign_common_known_mods = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_only_assign_common_known_mods"));
-                if (this.MDIParent==null)
-                {
-                    return;
-                }
-                
+                //if (this.MDIParent==null)
+                //{
+                //    return;
+                //}
                 //implement prev function
                 Sweet.lollipop.only_assign_common_or_known_mods = (bool)value;
             }
@@ -50,12 +48,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                ck_cb_count_adducts_as_id = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_count_adducts_as_id"));
-                if (this.MDIParent == null)
+                if (ck_cb_count_adducts_as_id == value)
                 {
                     return;
                 }
+
+                ck_cb_count_adducts_as_id = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_count_adducts_as_id"));
                 
                 Sweet.lollipop.count_adducts_as_identifications = (bool) value; //data binding
                 update_figures_of_merit();
@@ -70,12 +69,12 @@ namespace ProteoWPFSuite
             }
             set
             {
-                ck_cb_geneCentric = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_geneCentric"));
-                if (this.MDIParent == null)
+                if (ck_cb_geneCentric == value)
                 {
                     return;
                 }
+                ck_cb_geneCentric = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_geneCentric"));
                 
                 Sweet.lollipop.gene_centric_families = (bool)value; //data binding
             }
@@ -88,13 +87,13 @@ namespace ProteoWPFSuite
             }
             set
             {
-                ck_cb_buildAsQuantitative = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_buildAsQuantitative"));
-
-                if (this.MDIParent == null)
+                if (ck_cb_buildAsQuantitative == value)
                 {
                     return;
-                }cb_redBorder.IsEnabled = (bool)value;//data binding
+                }
+                ck_cb_buildAsQuantitative = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_buildAsQuantitative"));
+                cb_redBorder.IsEnabled = (bool)value;//data binding
                 cb_boldLabel.IsEnabled = (bool)value;//data binding
                 cb_redBorder.IsChecked = true;
                 cb_boldLabel.IsChecked=true;

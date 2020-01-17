@@ -38,12 +38,12 @@ namespace ProteoWPFSuite
             }
             set
             {
-                ck_Identi = value;
-                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
-                if (MDIParent == null)
+                if (ck_Identi == value)
                 {
                     return;
                 }
+                ck_Identi = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayIdentificationComponents"));
                 FillTablesAndCharts();
                 dgv_chargeStates.DataSource = null;
             }
@@ -56,12 +56,12 @@ namespace ProteoWPFSuite
             }
             set
             {
-                ck_Quanti = value;
-                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
-                if (MDIParent == null)
+                if (ck_Quanti == value)
                 {
                     return;
                 }
+                ck_Quanti = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CK_rb_displayQuantificationComponents"));
                 //nothing changes here
             }
         }

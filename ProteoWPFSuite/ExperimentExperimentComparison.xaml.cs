@@ -29,17 +29,17 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(is_cb_ee_peak_accept_rank == value || MDIParent==null)
+                if(is_cb_ee_peak_accept_rank == value) //|| MDIParent==null)
                 {
                     return;
                 }
                 is_cb_ee_peak_accept_rank = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_Auto"));
-                if (is_cb_ee_peak_accept_rank==value || MDIParent == null)
+                Sweet.lollipop.ee_accept_peaks_based_on_rank = (bool)is_cb_ee_peak_accept_rank;
+                if(MDIParent == null)
                 {
                     return;
                 }
-                Sweet.lollipop.ee_accept_peaks_based_on_rank = (bool)is_cb_ee_peak_accept_rank;
                 change_peak_acceptance();
             }
         }
@@ -51,7 +51,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(is_cb_view_decoy_histogram == value || MDIParent==null)
+                if(is_cb_view_decoy_histogram == value) //|| MDIParent==null)
                 {
                     return;
                 }
@@ -69,7 +69,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(is_cb_Graph_lowerThreshold == value || MDIParent==null)
+                if(is_cb_Graph_lowerThreshold == value) //|| MDIParent==null)
                 {
                     return;
                 }
@@ -92,6 +92,7 @@ namespace ProteoWPFSuite
             this.ct_EE_peakList.MouseClick += new System.Windows.Forms.MouseEventHandler(ct_EE_peakList_MouseClick);
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(EE_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
             CK_Graph = true;
+            CK_View = false;
             InitializeParameterSet();
             
         }
