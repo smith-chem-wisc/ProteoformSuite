@@ -68,7 +68,7 @@ namespace ProteoWPFSuite
                 if (cbusenotch == value)// || MDIParent==null)
                     return;
                 cbusenotch = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBUSEPPMNOTCH"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBUSENOTCH"));
                 Sweet.lollipop.et_use_notch = (bool)cbusenotch;
                 NotchStack.Visibility = ((bool)cbusenotch) ? Visibility.Visible : Visibility.Collapsed;
                 NotchNUD.Visibility = ((bool)cbusenotch) ? Visibility.Visible : Visibility.Collapsed;
@@ -258,8 +258,12 @@ namespace ProteoWPFSuite
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             if (full_run)
             {
-                shift_masses(); //check for shifts from presets (need to have peaks formed first)
-                RunTheGamut(false);
+                List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
+                if (peaks_to_shift.Count > 0)
+                {
+                    shift_masses(); //check for shifts from presets (need to have peaks formed first)
+                    RunTheGamut(false);
+                }
             }
             FillTablesAndCharts();
         }
@@ -392,22 +396,6 @@ namespace ProteoWPFSuite
         private void update_figures_of_merit()
         {
             relationUtility.updateFiguresOfMerit(Sweet.lollipop.et_peaks, tb_IdentifiedProteoforms, tb_TotalPeaks, tb_max_accepted_fdr);
-        }
-
-        private void bt_compare_et_Click(object sender, EventArgs e)
-        {
-            if (ReadyToRunTheGamut())
-            {
-                System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-                RunTheGamut(false);
-                xMaxET.Value = (decimal)Sweet.lollipop.et_high_mass_difference;
-                xMinET.Value = (decimal)Sweet.lollipop.et_low_mass_difference;
-                System.Windows.Input.Mouse.OverrideCursor = null;
-            }
-            else if (Sweet.lollipop.target_proteoform_community.has_e_proteoforms)
-                MessageBox.Show("Go back and create a theoretical database.");
-            else
-                MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void shift_masses()
@@ -615,8 +603,11 @@ namespace ProteoWPFSuite
             dgv_ET_Relations.Refresh();
             dgv_ET_Peak_List.Refresh();
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            System.Windows.Forms.DataVisualization.Charting.StripLine lowerCountBound_stripline = new System.Windows.Forms.DataVisualization.Charting.StripLine() { BorderColor = Color.Red, IntervalOffset = Sweet.lollipop.min_peak_count_et };
-            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            if ((bool)cbgraphlowerthreshold.HasValue && (bool)cbgraphlowerthreshold)
+            {
+                System.Windows.Forms.DataVisualization.Charting.StripLine lowerCountBound_stripline = new System.Windows.Forms.DataVisualization.Charting.StripLine() { BorderColor = Color.Red, IntervalOffset = Sweet.lollipop.min_peak_count_et };
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            }
             update_figures_of_merit();
             (this.MDIParent).proteoformFamilies.ClearListsTablesFigures(true);
         }

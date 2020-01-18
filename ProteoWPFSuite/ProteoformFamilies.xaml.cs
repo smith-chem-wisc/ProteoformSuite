@@ -21,6 +21,109 @@ namespace ProteoWPFSuite
         private bool? ck_cb_count_adducts_as_id;
         private bool? ck_cb_geneCentric;
         private bool? ck_cb_buildAsQuantitative;
+        private bool? ck_cb_idFromTdNodes;
+        private bool? ck_cb_removeBadConnections;
+        private bool? ck_cb_useTdToReduceAmbiguity;
+        private bool? ck_cb_useAnnotatedPTMsToReduceAmbiguity;
+        private bool? ck_cb_usePpmTolerance;
+
+        public bool? CK_cb_idFromTdNodes
+        {
+            get
+            {
+                return ck_cb_idFromTdNodes;
+            }
+            set
+            {
+                ck_cb_idFromTdNodes = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_idFromTdNodes"));
+                //if (this.MDIParent==null)
+                //{
+                //    return;
+                //}
+                //implement prev function
+                Sweet.lollipop.identify_from_td_nodes = (bool)value;
+            }
+        }
+
+        public bool? CK_cb_removeBadConnections
+        {
+            get
+            {
+                return ck_cb_removeBadConnections;
+            }
+            set
+            {
+                ck_cb_removeBadConnections = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_removeBadConnections"));
+                //if (this.MDIParent==null)
+                //{
+                //    return;
+                //}
+                //implement prev function
+                Sweet.lollipop.remove_bad_connections = (bool)value;
+            }
+        }
+
+        public bool? CK_cb_useTdToReduceAmbiguity
+        {
+            get
+            {
+                return ck_cb_useTdToReduceAmbiguity;
+            }
+            set
+            {
+                ck_cb_useTdToReduceAmbiguity = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_useTdToReduceAmbiguity"));
+                //if (this.MDIParent==null)
+                //{
+                //    return;
+                //}
+                //implement prev function
+                Sweet.lollipop.topdown_theoretical_reduce_ambiguity = (bool)value;
+            }
+        }
+
+
+        public bool? CK_cb_useAnnotatedPTMsToReduceAmbiguity
+        {
+            get
+            {
+                return ck_cb_useAnnotatedPTMsToReduceAmbiguity;
+            }
+            set
+            {
+                ck_cb_useAnnotatedPTMsToReduceAmbiguity = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_useAnnotatedPTMsToReduceAmbiguity"));
+                //if (this.MDIParent==null)
+                //{
+                //    return;
+                //}
+                //implement prev function
+                Sweet.lollipop.annotated_PTMs_reduce_ambiguity = (bool)value;
+            }
+        }
+
+        public bool? CK_cb_usePpmTolerance
+        {
+            get
+            {
+                return ck_cb_usePpmTolerance;
+            }
+            set
+            {
+                ck_cb_usePpmTolerance = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_cb_usePpmTolerance"));
+                //if (this.MDIParent==null)
+                //{
+                //    return;
+                //}
+                //implement prev function
+                Sweet.lollipop.id_use_ppm_tolerance = (bool)value;
+            }
+        }
+
+
         public bool? CK_cb_only_assign_common_known_mods
         {
             get
@@ -163,18 +266,21 @@ namespace ProteoWPFSuite
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
 
-            cb_count_adducts_as_id.IsChecked = Sweet.lollipop.count_adducts_as_identifications;
-            cb_only_assign_common_known_mods.IsChecked = Sweet.lollipop.only_assign_common_or_known_mods;
             CK_cb_only_assign_common_known_mods = Sweet.lollipop.only_assign_common_or_known_mods;
             CK_cb_count_adducts_as_id = Sweet.lollipop.count_adducts_as_identifications;
             CK_cb_geneCentric = Sweet.lollipop.gene_centric_families;
             CK_cb_buildAsQuantitative = false;
             cb_redBorder.IsChecked = true;
             cb_boldLabel.IsChecked = true;
+            CK_cb_idFromTdNodes = Sweet.lollipop.identify_from_td_nodes;
+            CK_cb_removeBadConnections = Sweet.lollipop.remove_bad_connections;
+            CK_cb_useTdToReduceAmbiguity = Sweet.lollipop.topdown_theoretical_reduce_ambiguity;
+            CK_cb_useAnnotatedPTMsToReduceAmbiguity = Sweet.lollipop.annotated_PTMs_reduce_ambiguity;
+            CK_cb_usePpmTolerance = Sweet.lollipop.id_use_ppm_tolerance;
+            nUD_ppm_ID_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.id_ppm_tolerance);
 
             nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
             cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
-            cb_geneCentric.IsChecked = Sweet.lollipop.gene_centric_families;
 
             initialize_every_time();
         }
@@ -520,6 +626,11 @@ namespace ProteoWPFSuite
         private void dgv_proteoform_family_members_CellContentClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void nUD_ppm_ID_tolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.id_ppm_tolerance = Convert.ToDouble(nUD_ppm_ID_tolerance.Value);
         }
     }
     #endregion
