@@ -35,7 +35,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <TextBox x:Name="tb_topdown" TextChanged="tb_topdown_TextChanged"></TextBox>
+            <TextBox x:Name="tb_topdown" IsReadOnly="True"></TextBox>
             <WindowsFormsHost Grid.Row="1">
                 <winform:DataGridView x:Name="dgv_td_proteoforms" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize">
                     

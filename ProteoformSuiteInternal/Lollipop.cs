@@ -959,7 +959,7 @@ namespace ProteoformSuiteInternal
 
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
-        public bool gene_centric_families = false;
+        public bool gene_centric_families = true;
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
@@ -973,7 +973,7 @@ namespace ProteoformSuiteInternal
         public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",
-            "Mass-Based Spiral",
+           // "Mass-Based Spiral",
             "Circle by Mass",
             //"Mass X-Axis"
         };

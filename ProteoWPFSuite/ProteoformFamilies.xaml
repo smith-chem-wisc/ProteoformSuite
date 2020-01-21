@@ -36,43 +36,36 @@
                 </WindowsFormsHost>
             </DockPanel>
 
-            <DockPanel Margin="0 5 0 0">
-                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Table Filter</Label>
-                <TextBox DockPanel.Dock="Right" Margin="0 0 5 0" Width="350" x:Name="tb_tableFilter" TextChanged="tb_tableFilter_TextChanged"></TextBox>
-            </DockPanel>
-
-            <DockPanel Margin="0 5 0 0">
-                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Color Scheme</Label>
-                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
-                    <winform:ComboBox x:Name="cmbx_colorScheme" Dock="Fill"  TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
-                </WindowsFormsHost>
-            </DockPanel>
-
-            <DockPanel Margin="0 5 0 0">
+                <DockPanel Margin="0 5 0 0">
+                    <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Table Filter</Label>
+                    <TextBox DockPanel.Dock="Right" Margin="0 0 5 0" Width="350" x:Name="tb_tableFilter" TextChanged="tb_tableFilter_TextChanged"></TextBox>
+                </DockPanel>
+            
+                <DockPanel Margin="0 5 0 0">
                 <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Layout</Label>
                 <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
-                    <winform:ComboBox x:Name="cmbx_nodeLayout" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                        <winform:ComboBox x:Name="cmbx_nodeLayout" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged" ></winform:ComboBox>
                 </WindowsFormsHost>
             </DockPanel>
 
             <DockPanel Margin="0 5 0 0">
                 <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Label Positioning</Label>
                 <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
-                    <winform:ComboBox x:Name="cmbx_nodeLabelPositioning" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                        <winform:ComboBox x:Name="cmbx_nodeLabelPositioning" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
                 </WindowsFormsHost>
             </DockPanel>
 
             <DockPanel Margin="0 5 0 0">
                 <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Label Informing</Label>
                 <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0">
-                    <winform:ComboBox x:Name="cmbx_nodeLabel" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                        <winform:ComboBox x:Name="cmbx_nodeLabel" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
                 </WindowsFormsHost>
             </DockPanel>
 
             <DockPanel Margin="0 5 0 0">
                 <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Edge Label Information</Label>
                 <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
-                    <winform:ComboBox x:Name="cmbx_edgeLabel" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                        <winform:ComboBox x:Name="cmbx_edgeLabel" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
                 </WindowsFormsHost>
             </DockPanel>
 
@@ -80,7 +73,7 @@
                 <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Prefered
                         Gene Label</Label>
                 <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
-                    <winform:ComboBox x:Name="cmbx_geneLabel" Dock="Fill" TextChanged="cmbx_empty_TextChanged" SelectedIndexChanged="cmbx_geneLabel_SelectedIndexChanged"></winform:ComboBox>
+                        <winform:ComboBox x:Name="cmbx_geneLabel" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged" SelectedIndexChanged="cmbx_geneLabel_SelectedIndexChanged"></winform:ComboBox>
                 </WindowsFormsHost>
             </DockPanel>
         </StackPanel>
@@ -89,7 +82,7 @@
     <!--Bottom-->
     <Grid Grid.Row="2" Grid.Column="0">
         <WindowsFormsHost>
-            <winform:DataGridView x:Name="dgv_proteoform_family_members" CellContentClick="dgv_proteoform_family_members_CellContentClick" AllowUserToAddRows="False" AllowUserToDeleteRows="False" AllowUserToOrderColumns="True" >
+            <winform:DataGridView x:Name="dgv_proteoform_family_members" AllowUserToAddRows="False" AllowUserToDeleteRows="False" AllowUserToOrderColumns="True" >
 
 
             </winform:DataGridView>
@@ -140,7 +133,7 @@
                                 <GroupBox Header="Highlights for Significant Differences" Margin="0 5 5 5">
                             <StackPanel>
                                 <CheckBox Margin="0 5 5 0" x:Name="cb_redBorder" IsEnabled="False">Red Node Border</CheckBox>
-                                <CheckBox Margin="0 5 5 0" x:Name="cb_boldLabel" IsEnabled="False">Red Node Border</CheckBox>
+                                    <CheckBox Margin="0 5 5 0" x:Name="cb_boldLabel" IsEnabled="False">Bold Label</CheckBox>
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>

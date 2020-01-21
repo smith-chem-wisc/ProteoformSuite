@@ -210,7 +210,6 @@ namespace ProteoWPFSuite
             InitializeComponent();
             this.DataContext = this;
             //Initialize display options
-            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
             cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
             cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
             cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
@@ -218,7 +217,6 @@ namespace ProteoWPFSuite
             cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
             cmbx_tableSelector.Items.AddRange(table_names);
 
-            cmbx_colorScheme.SelectedIndex = 1;
             cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_edgeLabel.SelectedIndex = 1;
@@ -252,12 +250,16 @@ namespace ProteoWPFSuite
         {
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             cb_buildAsQuantitative.IsEnabled = Sweet.lollipop.qVals.Count > 0;
-            cb_buildAsQuantitative.IsChecked = false;
+            CK_cb_buildAsQuantitative = false;
+            nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
+            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
+            CK_cb_geneCentric = Sweet.lollipop.gene_centric_families;
+            cb_redBorder.IsChecked = true;
+            cb_boldLabel.IsChecked = true;
         }
 
         public void InitializeParameterSet()
         {
-            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
             cmbx_tableSelector.SelectedIndex = 0;
             cmbx_tableSelector.SelectedIndexChanged += cmbx_tableSelector_SelectedIndexChanged;
@@ -415,14 +417,6 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_main, filter == "" ? Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ExpandedProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect) : ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ExpandedProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect), filter));
         }
 
-        private void dgv_proteoform_families_CellContentClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
-        {
-            if ((cmbx_tableSelector.SelectedIndex == 0 || cmbx_tableSelector.SelectedIndex > 4) && e.RowIndex >= 0)
-            {
-                display_family_members(e.RowIndex, e.ColumnIndex);
-            }
-        }
-
         private void dgv_proteoform_families_CellMouseClick(object sender, System.Windows.Forms.DataGridViewCellMouseEventArgs e)
         {
             if ((cmbx_tableSelector.SelectedIndex == 0 || cmbx_tableSelector.SelectedIndex > 4) && e.RowIndex >= 0)
@@ -552,7 +546,7 @@ namespace ProteoWPFSuite
         {
             string time_stamp = Sweet.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.family_build_folder_path, "", time_stamp, (bool)ck_cb_buildAsQuantitative ? MDIParent.resultsSummary.get_go_analysis() : null, (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding, (bool)ck_cb_geneCentric, cmbx_geneLabel.SelectedItem.ToString());//data binding
+            string message = CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.family_build_folder_path, "", time_stamp, (bool)ck_cb_buildAsQuantitative ? MDIParent.resultsSummary.get_go_analysis() : null, (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked, "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding, (bool)ck_cb_geneCentric, cmbx_geneLabel.SelectedItem.ToString());//data binding
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -564,7 +558,7 @@ namespace ProteoWPFSuite
             string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families,
             Sweet.lollipop.family_build_folder_path, "", time_stamp,
             (bool)cb_buildAsQuantitative.IsChecked ? (this.MDIParent as ProteoformSweet).resultsSummary.get_go_analysis() : null, (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
-                cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                     "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
                 (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
@@ -623,10 +617,6 @@ namespace ProteoWPFSuite
             Sweet.lollipop.only_assign_common_or_known_mods = cb_only_assign_common_known_mods.Checked; //data binding
         }
         */
-        private void dgv_proteoform_family_members_CellContentClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
-        {
-
-        }
 
         private void nUD_ppm_ID_tolerance_ValueChanged(object sender, EventArgs e)
         {

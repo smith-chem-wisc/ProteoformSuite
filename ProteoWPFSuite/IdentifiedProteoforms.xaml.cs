@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace ProteoWPFSuite
             DisplayUtility.FillDataGridView(dgv_identified_experimentals, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_identified_experimentals);
-            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id && e.linked_proteoform_references != null)).Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
+            DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
             tb_not_td.Text = "Identified Experimental Proteoforms Not in Top-Down";
             tb_topdown.Text = "Top-Down Proteoforms";
@@ -60,7 +60,7 @@ namespace ProteoWPFSuite
         {
             DataTables = new List<DataTable>
             {
-                DisplayTopDownProteoform.FormatTopDownTable( Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id && e.linked_proteoform_references != null)).Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)).ToList(), "TopdownProteoforms", true),
+                DisplayTopDownProteoform.FormatTopDownTable( Sweet.lollipop.topdown_proteoforms.Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)).ToList(), "TopdownProteoforms", true),
                 DisplayExperimentalProteoform.FormatAggregatesTable(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)).ToList(), "IdentifiedExperimentals")
             };
             return DataTables;
@@ -68,11 +68,6 @@ namespace ProteoWPFSuite
                
         
         public ProteoformSweet MDIParent { get; set; }
-
-        private void tb_topdown_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
 
         private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -83,8 +78,8 @@ namespace ProteoWPFSuite
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_identified_experimentals);
 
             IEnumerable<object> filter_topdown = tb_tableFilter.Text == "" ?
-                Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(p => p.topdown_id && p.linked_proteoform_references != null)).Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)) :
-                ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms.Where(p => p.topdown_id && p.linked_proteoform_references != null)).Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)), tb_tableFilter.Text);
+                Sweet.lollipop.topdown_proteoforms.Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)) :
+                ExtensionMethods.filter(Sweet.lollipop.topdown_proteoforms.Select(p => new DisplayTopDownProteoform(p as TopDownProteoform)), tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_td_proteoforms, filter_topdown);
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
         }

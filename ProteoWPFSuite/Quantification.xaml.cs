@@ -20,9 +20,8 @@ namespace ProteoWPFSuite
         private bool init=true;//freezes during initializing params
 
         private bool? userandomseed;
-        private bool? redborder;
-        private bool? boldlabel;
         private bool? significancebyfoldchange;
+        private bool? signficicancebypermutation;
         private bool? usefoldchangecutoff;
         private bool? useaveragepermutationfoldchange;
         private bool? usebioreppermutationfoldchange;
@@ -31,6 +30,7 @@ namespace ProteoWPFSuite
         private bool? detectedsampleset;
         private bool? custombackgroundset;
         private bool? alltheoreticalproteins;
+        private bool? ck_cb_geneCentric;
         public bool? USERANDOMSEED
         {
             get
@@ -58,25 +58,63 @@ namespace ProteoWPFSuite
             }
             set
             {
+                if(this.significancebyfoldchange == value)
+                {
+                    return;
+                }
                 this.significancebyfoldchange = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNIFICANCEBYFOLDCHANGE"));
                 //if (MDIParent == null || init)
                 //{
                 //    return;
                 //}
-                
-                Sweet.lollipop.significance_by_log2FC = (bool)rb_significanceByFoldChange.IsChecked;
-                rb_signficanceByPermutation.IsChecked = !rb_significanceByFoldChange.IsChecked;
 
+                Sweet.lollipop.significance_by_log2FC = (bool)significancebyfoldchange;
+                SIGNFICANCEBYPERMUTATION = !SIGNIFICANCEBYFOLDCHANGE;
                 if (init) return;
-                if ((bool)rb_significanceByFoldChange.IsChecked)
-                {
-                    plots();
-                }
+                plots();
                 updateGoTermsTable();
                 fill_quantitative_values_table();
             }
         }
+
+        public bool? GENECENTRIC
+        {
+            get
+            {
+                return ck_cb_geneCentric;
+            }
+            set
+            {
+                if (ck_cb_geneCentric == value)
+                {
+                    return;
+                }
+                ck_cb_geneCentric = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GENECENTRIC"));
+
+                Sweet.lollipop.gene_centric_families = (bool)value; //data binding
+            }
+        }
+
+        public bool? SIGNFICANCEBYPERMUTATION
+        {
+            get
+            {
+                return signficicancebypermutation;
+            }
+            set
+            {
+                if(signficicancebypermutation == value)
+                {
+                    return;
+                }
+                signficicancebypermutation = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SIGNIFICANCEBYPERMUTATION"));
+                SIGNIFICANCEBYFOLDCHANGE = !SIGNFICANCEBYPERMUTATION;
+            }
+        }
+
         public bool? USEFOLDCHANGECUTOFF
         {
             get
@@ -92,12 +130,12 @@ namespace ProteoWPFSuite
                 //{
                 //    return;
                 //}
-                
 
-                nud_foldChangeCutoff.Enabled = (bool)cb_useFoldChangeCutoff.IsChecked;
-                cb_useAveragePermutationFoldChange.IsEnabled = (bool)cb_useFoldChangeCutoff.IsChecked;
-                cb_useBiorepPermutationFoldChange.IsEnabled = (bool)cb_useFoldChangeCutoff.IsChecked;
-                Sweet.lollipop.useFoldChangeCutoff = (bool)cb_useFoldChangeCutoff.IsChecked;
+
+                nud_foldChangeCutoff.Enabled = (bool)usefoldchangecutoff;
+                cb_useAveragePermutationFoldChange.IsEnabled = (bool)usefoldchangecutoff;
+                cb_useBiorepPermutationFoldChange.IsEnabled = (bool)usefoldchangecutoff;
+                Sweet.lollipop.useFoldChangeCutoff = (bool)usefoldchangecutoff;
 
                 if (init) return;
                 get_tusher_analysis().reestablishSignficance(get_go_analysis());
@@ -119,11 +157,11 @@ namespace ProteoWPFSuite
                 //    return;
                 //}
                 
-                if ((bool)cb_useAveragePermutationFoldChange.IsChecked)
+                if ((bool)useaveragepermutationfoldchange)
                 {
-                    cb_useBiorepPermutationFoldChange.IsChecked = !cb_useAveragePermutationFoldChange.IsChecked;
-                    Sweet.lollipop.useBiorepPermutationFoldChange = (bool)!cb_useAveragePermutationFoldChange.IsChecked;
-                    Sweet.lollipop.useAveragePermutationFoldChange = (bool)cb_useAveragePermutationFoldChange.IsChecked;
+                    USEBIOREPPERMUTATIONFOLDCHANGE = !useaveragepermutationfoldchange;
+                    Sweet.lollipop.useBiorepPermutationFoldChange = (bool)!useaveragepermutationfoldchange;
+                    Sweet.lollipop.useAveragePermutationFoldChange = (bool)useaveragepermutationfoldchange;
 
                     if (init) return;
                     get_tusher_analysis().reestablishSignficance(get_go_analysis());
@@ -149,8 +187,8 @@ namespace ProteoWPFSuite
                 if ((bool)usebioreppermutationfoldchange)
                 {
                     USEAVERAGEPERMUTATIONFOLDCHANGE = (bool)!usebioreppermutationfoldchange;
-                    Sweet.lollipop.useAveragePermutationFoldChange = (bool)!cb_useBiorepPermutationFoldChange.IsChecked;
-                    Sweet.lollipop.useBiorepPermutationFoldChange = (bool)cb_useBiorepPermutationFoldChange.IsChecked;
+                    Sweet.lollipop.useAveragePermutationFoldChange = (bool)!useaveragepermutationfoldchange;
+                    Sweet.lollipop.useBiorepPermutationFoldChange = (bool)useaveragepermutationfoldchange;
 
                     if (init) return;
 
@@ -173,7 +211,7 @@ namespace ProteoWPFSuite
                 //{
                 //    return;
                 //}
-                
+
                 Sweet.lollipop.useLocalFdrCutoff = (bool)uselocalfdrcutoff;
 
                 if (init) return;
@@ -182,31 +220,6 @@ namespace ProteoWPFSuite
                 plots();
                 nud_Offset.Enabled = (bool)!uselocalfdrcutoff;
                 nud_localFdrCutoff.Enabled = (bool)uselocalfdrcutoff;
-            }
-        }
-
-        public bool? REDBORDER
-        {
-            get
-            {
-                return redborder;
-            }
-            set
-            {
-                this.redborder = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("REDBORDER"));        
-            }
-        }
-        public bool? BOLDLABEL
-        {
-            get
-            {
-                return boldlabel;
-            }
-            set
-            {
-                boldlabel = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BOLDLABEL"));
             }
         }
         public bool? QUANTIFIEDSAMPLESET
@@ -222,13 +235,13 @@ namespace ProteoWPFSuite
 
                 if (init) return;
 
-                goTermBackgroundChanged();
                 if ((bool)quantifiedsampleset)
                 {
                     get_go_analysis().GoAnalysis.backgroundProteinsList = "";
                     tb_goTermCustomBackground.Text = "";
                     backgroundUpdated = false;
                 }
+                goTermBackgroundChanged();
             }
         }
         public bool? DETECTEDSAMPLESET
@@ -248,8 +261,8 @@ namespace ProteoWPFSuite
 
                 if (init) return;
 
-                get_go_analysis().GoAnalysis.allDetectedProteins = (bool)rb_detectedSampleSet.IsChecked;
-                if ((bool)rb_detectedSampleSet.IsChecked)
+                get_go_analysis().GoAnalysis.allDetectedProteins = (bool)detectedsampleset;
+                if ((bool)detectedsampleset)
                 {
                     get_go_analysis().GoAnalysis.backgroundProteinsList = "";
                     tb_goTermCustomBackground.Text = "";
@@ -274,8 +287,8 @@ namespace ProteoWPFSuite
                 //}
                 
 
-                tb_goTermCustomBackground.IsEnabled = (bool)rb_customBackgroundSet.IsChecked;
-                btn_customBackgroundBrowse.IsEnabled = (bool)rb_customBackgroundSet.IsChecked;
+                tb_goTermCustomBackground.IsEnabled = (bool)custombackgroundset;
+                btn_customBackgroundBrowse.IsEnabled = (bool)custombackgroundset;
 
                 if (init) return;
 
@@ -300,8 +313,8 @@ namespace ProteoWPFSuite
 
                 if (init) return;
 
-                get_go_analysis().GoAnalysis.allTheoreticalProteins = (bool)rb_allTheoreticalProteins.IsChecked;
-                if ((bool)rb_allTheoreticalProteins.IsChecked)
+                get_go_analysis().GoAnalysis.allTheoreticalProteins = (bool)alltheoreticalproteins;
+                if ((bool)alltheoreticalproteins)
                 {
                     get_go_analysis().GoAnalysis.backgroundProteinsList = "";
                     tb_goTermCustomBackground.Text = "";
@@ -319,16 +332,14 @@ namespace ProteoWPFSuite
             InitializeComponent();
             this.DataContext = this;
             //Initialize display options
-            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
             cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
             cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
             cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels.ToArray());
             cmbx_nodeLabel.Items.AddRange(Lollipop.node_labels.ToArray());
             cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
-            REDBORDER = true;//binding here
-            BOLDLABEL = true;//binding here
+            cb_redBorder.IsChecked = true;//binding here
+            cb_boldLabel.IsChecked = true;//binding here
 
-            cmbx_colorScheme.SelectedIndex = 1;
             cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_geneLabel.SelectedIndex = 1;
@@ -490,7 +501,7 @@ namespace ProteoWPFSuite
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             if (cmbx_geneLabel.Items.Count > 0)
                 cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(Lollipop.preferred_gene_label);
-            cb_geneCentric.IsChecked = Sweet.lollipop.gene_centric_families;
+            GENECENTRIC = Sweet.lollipop.gene_centric_families;
 
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
@@ -603,8 +614,8 @@ namespace ProteoWPFSuite
             DETECTEDSAMPLESET = get_go_analysis().GoAnalysis.allDetectedProteins;
             CUSTOMBACKGROUNDSET = false;
             ALLTHEORETICALPROTEINS = get_go_analysis().GoAnalysis.allTheoreticalProteins;
-            REDBORDER = false;
-            BOLDLABEL = false;
+            cb_redBorder.IsChecked = true;
+            cb_boldLabel.IsChecked = true;
 
             SIGNIFICANCEBYFOLDCHANGE = Sweet.lollipop.significance_by_log2FC;
 
@@ -669,7 +680,7 @@ namespace ProteoWPFSuite
             //rb_quantifiedSampleSet.IsEnabled = true;
 
             //rb_allTheoreticalProteins.IsEnabled = false;
-            rb_allTheoreticalProteins.IsChecked = get_go_analysis().GoAnalysis.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
+            ALLTHEORETICALPROTEINS = get_go_analysis().GoAnalysis.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             //rb_allTheoreticalProteins.IsEnabled = true;
 
             USERANDOMSEED= Sweet.lollipop.useRandomSeed_quant;
@@ -745,7 +756,7 @@ namespace ProteoWPFSuite
         private void BackgroundChanged()
         {
             //problem occur when initializing
-            if (nud_bkgdShift == null)
+            if (init)
             {
                 return;
             }
@@ -1059,7 +1070,7 @@ namespace ProteoWPFSuite
             }
             plotBiorepIntensities();
             volcanoPlot();
-            if ((bool)cb_useLocalFdrCutoff.IsChecked)
+            if ((bool)USELOCALFDRCUTOFF)
                 plotObservedRelativeDifferenceVsFdr();
             else if (new int[] { 0, 3 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedVsExpectedRelativeDifference();
@@ -1473,7 +1484,7 @@ namespace ProteoWPFSuite
             {
                 get_go_analysis().GoAnalysis.backgroundProteinsList = fileOpen.FileName;
                 tb_goTermCustomBackground.Text = fileOpen.FileName;
-                if ((bool)rb_customBackgroundSet.IsChecked)
+                if ((bool)custombackgroundset)
                 {
                     backgroundUpdated = false;
                     goTermBackgroundChanged();
@@ -1519,8 +1530,8 @@ namespace ProteoWPFSuite
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
-                cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
+             "Smarties", cmbx_nodeLabel.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1532,8 +1543,8 @@ namespace ProteoWPFSuite
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
-                cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
+               "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1544,8 +1555,8 @@ namespace ProteoWPFSuite
             object[] selected = DisplayUtility.get_selected_objects(dgv_quantification_results);
             string message = CytoscapeScript.write_cytoscape_script(selected, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
-                cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
+                "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1557,8 +1568,8 @@ namespace ProteoWPFSuite
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(go_families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
-                cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
+                "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1570,19 +1581,9 @@ namespace ProteoWPFSuite
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(selected_families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
-                cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)cb_geneCentric.IsChecked, cmbx_geneLabel.SelectedItem.ToString());
+                "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
-        }
-
-        private void cmbx_geneLabel_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Lollipop.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
-        }
-
-        private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.gene_centric_families = (bool)cb_geneCentric.IsChecked;
         }
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e)
