@@ -499,6 +499,7 @@ namespace ProteoWPFSuite
 
                 case "Raw Experimental Components":
                     showForm(rawExperimentalComponents);
+                    rawExperimentalComponents.InitializeParameterSet();
                     break;
 
                 case "Neu Code Pairs":
@@ -533,6 +534,7 @@ namespace ProteoWPFSuite
                     break;
 
                 case "Results Summary":
+                    resultsSummary.InitializeParameterSet();
                     resultsSummary.create_summary();
                     showForm(resultsSummary);
                     break;

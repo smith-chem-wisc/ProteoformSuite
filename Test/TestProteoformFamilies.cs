@@ -189,6 +189,7 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.gene_centric_families = false;
             ProteoformCommunity community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = community;
             Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
@@ -434,6 +435,7 @@ namespace Test
         public void construct_families_with_or_without_td_nodes()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.gene_centric_families = false;
             Sweet.lollipop.ee_accept_peaks_based_on_rank = false;
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms(-100);

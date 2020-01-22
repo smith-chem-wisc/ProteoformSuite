@@ -367,8 +367,8 @@ namespace ProteoWPFSuite
         #region Public Methods
 
         public List<DataTable> SetTables()
-        {
-            //if (selected_tusher_analysis == null) return new List<DataTable>();
+        { 
+            if (Sweet.lollipop.qVals.Count == 0) return null; //haven't run quant page...
 
             string suffix = selected_analysis as TusherAnalysis1 != null ?
                  Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + "Perm" :

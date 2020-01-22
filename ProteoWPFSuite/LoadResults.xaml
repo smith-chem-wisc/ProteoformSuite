@@ -86,7 +86,7 @@
                         x:Name="rb_unlabeled" 
                         IsChecked="True" 
                         HorizontalAlignment="Left"
-                        Content="NeuCode Unlabeled" />
+                        Content="Unlabeled" />
                 </StackPanel>
 
                 <StackPanel x:Name="panel_fullrun" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left">

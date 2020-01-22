@@ -240,6 +240,7 @@ namespace Test
         public void cytoscape_script_from_theoreticals()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.gene_centric_families = false;
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
             CytoscapeScript.write_cytoscape_script(community.families.SelectMany(f => f.theoretical_proteoforms.Where(t => t.ExpandedProteinList.Select(p => p.FullName).Contains(TestProteoformFamilies.p1_fullName))).ToArray(), community.families,
@@ -315,6 +316,7 @@ namespace Test
         public void cytoscape_script_from_goterm()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.gene_centric_families = false;
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
             Sweet.lollipop.target_proteoform_community = community;
             CytoscapeScript.write_cytoscape_script(new GoTerm[] { TestProteoformFamilies.p1_goterm }, community.families,

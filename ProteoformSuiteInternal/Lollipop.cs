@@ -973,7 +973,7 @@ namespace ProteoformSuiteInternal
         public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",
-           // "Mass-Based Spiral",
+            "Mass-Based Spiral",
             "Circle by Mass",
             //"Mass X-Axis"
         };

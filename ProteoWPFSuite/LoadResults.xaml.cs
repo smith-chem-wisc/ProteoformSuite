@@ -69,8 +69,21 @@ namespace ProteoWPFSuite
                 if (ck_rbneucode == value)
                     return;
                 ck_rbneucode = value;
+                rb_neucode.IsChecked = (bool)ck_rbneucode;
+                rb_unlabeled.IsChecked = (bool)!ck_rbneucode;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbneucode"));
-                rb_neucode_CheckedChanged(this.rb_neucode, new RoutedEventArgs());
+
+                this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(!(bool)ck_rbneucode);
+                Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
+
+                foreach (InputFile f in Sweet.lollipop.input_files)
+                {
+                    if ((bool)rb_neucode.IsChecked)
+                        f.label = Labeling.NeuCode;
+                    if ((bool)rb_unlabeled.IsChecked)
+                        f.label = Labeling.Unlabeled;
+                }
+                populate_file_lists();
             }
         }
         public int CB_select
@@ -94,8 +107,7 @@ namespace ProteoWPFSuite
         public void InitializeParameterSet()
         {
             // Initialize components in "2. Set Parameters"
-            rb_neucode.IsChecked    = Sweet.lollipop.neucode_labeled;
-            rb_unlabeled.IsChecked  = !rb_neucode.IsChecked;
+            CK_rbneucode = Sweet.lollipop.neucode_labeled;
 
             // Initialize components in "2. Set Parameters" that fall under "1. Choose Analysis->Chemical Calibration"
             cb_calibrate_raw_files.IsChecked        = Sweet.lollipop.calibrate_raw_files;
@@ -178,25 +190,6 @@ namespace ProteoWPFSuite
         #endregion Public Methods
 
         #region GENERAL TABLE OPTIONS Private Methods
-        private void rb_neucode_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-            this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(!(bool)rb_neucode.IsChecked);
-            Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
-
-            foreach (InputFile f in Sweet.lollipop.input_files)
-            {
-                if ((bool)rb_neucode.IsChecked)
-                    f.label = Labeling.NeuCode;
-                if ((bool)rb_unlabeled.IsChecked)
-                    f.label = Labeling.Unlabeled;
-            }
-            populate_file_lists();
-        }
-
-        private void rb_unlabeled_CheckedChanged(object sender, RoutedEventArgs e)
-        { }
-
         private void rb_standardOptions_CheckedChanged(object sender, RoutedEventArgs e)
         {
             populate_file_lists();
