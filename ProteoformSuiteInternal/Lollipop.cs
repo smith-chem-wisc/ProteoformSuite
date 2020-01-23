@@ -861,6 +861,7 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
         public TDBUReader bottomupReader = new TDBUReader();
         public double min_bu_peptides = 0;
+        public bool limit_triples_and_greater = true;
 
         //public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         public bool useRandomSeed_decoys = true;
@@ -958,7 +959,7 @@ namespace ProteoformSuiteInternal
 
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
-        public static bool gene_centric_families = false;
+        public bool gene_centric_families = true;
         public static string preferred_gene_label = "";
         public int deltaM_edge_display_rounding = 2;
         public bool only_assign_common_or_known_mods = true;
@@ -1110,7 +1111,6 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
         public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>(); // quantitative values associated with each selected proteoform
         public bool significance_by_log2FC = false;
-        public bool significance_by_permutation = true;
 
         // Imputation
         public decimal backgroundShift = -1.8m;
@@ -1121,6 +1121,8 @@ namespace ProteoformSuiteInternal
 
         // Log2FC statistics
         public Log2FoldChangeAnalysis Log2FoldChangeAnalysis = new Log2FoldChangeAnalysis();
+        public double benjiHoch_fdr = 0.05;
+        public double minFoldChange = 1.0;
 
         // Relative difference calculations with balanced permutations
         public TusherAnalysis1 TusherAnalysis1 = new TusherAnalysis1();
@@ -1142,7 +1144,7 @@ namespace ProteoformSuiteInternal
         };
 
         public string fold_change_conjunction = fold_change_conjunction_options[0];
-        public int minBiorepsWithFoldChange = -1;
+        public int minBiorepsWithFoldChange = 1;
         public bool useAveragePermutationFoldChange = true;
         public bool useBiorepPermutationFoldChange = false;
 

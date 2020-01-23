@@ -39,7 +39,6 @@ namespace ProteoWPFSuite
                 return gtn.Description;
             }
         }
-
         public string ID
         {
             get { return "GO: " + gtn.Id; }

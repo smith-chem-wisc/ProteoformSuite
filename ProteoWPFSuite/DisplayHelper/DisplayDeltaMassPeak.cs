@@ -32,7 +32,10 @@ namespace ProteoWPFSuite
         public bool Accepted
         {
             get { return (display_object as DeltaMassPeak).Accepted; }
-            set { Sweet.lollipop.change_peak_acceptance(display_object as DeltaMassPeak, value, true); }
+            set
+            {
+                Sweet.lollipop.change_peak_acceptance(display_object as DeltaMassPeak, value, true);
+            }
         }
 
         public double DecoyRelationCount
@@ -59,7 +62,6 @@ namespace ProteoWPFSuite
             set
             {
                 (display_object as DeltaMassPeak).mass_shifter = value;
-                Sweet.shift_peak_action(display_object as DeltaMassPeak);
             }
         }
 

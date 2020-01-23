@@ -20,13 +20,14 @@ namespace ProteoWPFSuite
         private RelationUtility relationUtility;
         private List<ProteoformRelation> et_histogram_from_unmod = new List<ProteoformRelation>();
 
-        private bool? cbuseppmnotch;
+        private bool? cbusenotch;
         private bool? cbbestetpaironly;
         private bool? rbdaltons;
         private bool? rbppm;
         private bool? cbviewdecoyhistogram;
         private bool? cbdiscoveryhistogram;
         private bool? cbgraphlowerthreshold;
+        private bool? cbaddtopdowntheoreticals;
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion
 
@@ -41,12 +42,11 @@ namespace ProteoWPFSuite
             //ct_ET_peakList.MouseClick += new MouseEventHandler(ct_ET_peakList_MouseClick);
             //dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); // makes the change immediate and automatic
             InitializeParameterSet();
+            CBGRAPHLOWERTHRESHOLD = true;
+            CBDISCOVERYHISTOGRAM = false;
+            CBVIEWDECOYHISTOGRAM = false;
             //initialize properties
             this.DataContext = this;
-            CBUSEPPMNOTCH = true;
-            CBGRAPHLOWERTHRESHOLD = true;
-            CBBESTETPAIRONLY = true;
-            RBDALTONS = true;
         }
         #endregion
 
@@ -57,21 +57,36 @@ namespace ProteoWPFSuite
         /// <summary>
         /// binding for cb_et_peak_accept_rank_check;
         /// </summary>
-        public bool? CBUSEPPMNOTCH
+        public bool? CBUSENOTCH
         {
             get
             {
-                return cbuseppmnotch;
+                return cbusenotch;
             }
             set
             {
-                if (cbuseppmnotch == value || MDIParent==null)
+                if (cbusenotch == value)// || MDIParent==null)
                     return;
-                cbuseppmnotch = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBUSEPPMNOTCH"));
-                Sweet.lollipop.et_use_notch = (bool)cbuseppmnotch;
-                NotchStack.Visibility = ((bool) cbuseppmnotch)? Visibility.Visible : Visibility.Collapsed;
-                NotchNUD.Visibility = ((bool)cbuseppmnotch) ? Visibility.Visible : Visibility.Collapsed;
+                cbusenotch = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBUSENOTCH"));
+                Sweet.lollipop.et_use_notch = (bool)cbusenotch;
+                NotchStack.Visibility = ((bool)cbusenotch) ? Visibility.Visible : Visibility.Collapsed;
+                NotchNUD.Visibility = ((bool)cbusenotch) ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public bool? CBADDTOPDOWNTHEORETICALS
+        {
+            get
+            {
+                return cbaddtopdowntheoreticals;
+            }
+            set
+            {
+                if (cbaddtopdowntheoreticals == value) return;
+                cbaddtopdowntheoreticals = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBADDTOPDOWNTHEORETICALS"));
+                Sweet.lollipop.add_td_theoreticals = (bool)cbaddtopdowntheoreticals;
             }
         }
         public bool? CBBESTETPAIRONLY
@@ -82,7 +97,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (cbbestetpaironly ==value || MDIParent == null)
+                if (cbbestetpaironly ==value) //|| MDIParent == null)
                     return;
                 cbbestetpaironly = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBBESTETPAIRONLY"));
@@ -97,7 +112,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if(rbdaltons==value || MDIParent == null)
+                if(rbdaltons==value) //|| MDIParent == null)
                 {
                     return;
                 }
@@ -115,7 +130,7 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (rbppm == value || MDIParent == null)
+                if (rbppm == value) //|| MDIParent == null)
                 {
                     return;
                 }
@@ -136,12 +151,16 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (cbviewdecoyhistogram == value || MDIParent==null)
+                if (cbviewdecoyhistogram == value) //|| MDIParent==null)
                     return;
                 cbviewdecoyhistogram = value;
+                if((bool)cbviewdecoyhistogram)
+                {
+                    CBDISCOVERYHISTOGRAM = false;
+                }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBVIEWDECOYHISTOGRAM"));
-                ct_ET_Histogram.Series["relations"].Enabled = !(bool)cb_view_decoy_histogram.IsChecked;
-                ct_ET_Histogram.Series["decoys"].Enabled = (bool) cb_view_decoy_histogram.IsChecked;
+                ct_ET_Histogram.Series["relations"].Enabled = !(bool)cbviewdecoyhistogram;
+                ct_ET_Histogram.Series["decoys"].Enabled = (bool)cbviewdecoyhistogram;
             }
         }
 
@@ -156,9 +175,14 @@ namespace ProteoWPFSuite
             }
             set
             {
-                if (cbdiscoveryhistogram == value || MDIParent==null)
+                if (cbdiscoveryhistogram == value) //|| MDIParent==null)
                     return;
                 cbdiscoveryhistogram = value;
+                if ((bool)cbdiscoveryhistogram)
+                {
+                    CBVIEWDECOYHISTOGRAM = false;
+                }
+
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBDISCOVERYHISTOGRAM"));
                 if ((bool)cbdiscoveryhistogram)
                 {
@@ -169,7 +193,7 @@ namespace ProteoWPFSuite
                         ProteoformCommunity community = new ProteoformCommunity();
                         et_histogram_from_unmod = community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.ToArray(), Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).ToArray(), ProteoformComparison.ExperimentalTheoretical, Environment.CurrentDirectory, false);
                     }
-                    DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", true);
+                    DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", false);
 
                     // Show the raw relations in the table
                     tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
@@ -185,7 +209,7 @@ namespace ProteoWPFSuite
                 }
                 else
                 {
-                    DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", true);
+                    DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", false);
                     DisplayUtility.FillDataGridView(dgv_ET_Relations, Sweet.lollipop.et_relations.Select(r => new DisplayProteoformRelation(r)).ToList());
                     CBGRAPHLOWERTHRESHOLD = true;
                     tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
@@ -210,9 +234,9 @@ namespace ProteoWPFSuite
                     return;
                 cbgraphlowerthreshold = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBGRAPHLOWERTHRESHOLD"));
-                /*if (cb_Graph_lowerThreshold.Checked)
-                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
-            else if (!cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();*/
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                if ((bool)cbgraphlowerthreshold)
+                    ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new System.Windows.Forms.DataVisualization.Charting.StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
             }
         }
 
@@ -234,8 +258,12 @@ namespace ProteoWPFSuite
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
             if (full_run)
             {
-                shift_masses(); //check for shifts from presets (need to have peaks formed first)
-                RunTheGamut(false);
+                List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
+                if (peaks_to_shift.Count > 0)
+                {
+                    shift_masses(); //check for shifts from presets (need to have peaks formed first)
+                    RunTheGamut(false);
+                }
             }
             FillTablesAndCharts();
         }
@@ -249,10 +277,11 @@ namespace ProteoWPFSuite
             DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false, false);
             GraphETRelations();
             GraphETPeaks();
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             if ((bool)cbgraphlowerthreshold) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new System.Windows.Forms.DataVisualization.Charting.StripLine() { BorderColor = System.Drawing.Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
-            else ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             update_figures_of_merit();
             CBDISCOVERYHISTOGRAM = false;
+            CBVIEWDECOYHISTOGRAM = false;
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event
         }
 
@@ -348,14 +377,17 @@ namespace ProteoWPFSuite
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
-            CBUSEPPMNOTCH = Sweet.lollipop.et_use_notch;
+            CBUSENOTCH = Sweet.lollipop.et_use_notch;
             RBPPM = Sweet.lollipop.et_notch_ppm;
             RBDALTONS = !Sweet.lollipop.et_notch_ppm;
             CBBESTETPAIRONLY = Sweet.lollipop.et_bestETRelationOnly;
+            CBADDTOPDOWNTHEORETICALS = Sweet.lollipop.add_td_theoreticals;
 
             nUD_notch_tolerance.Minimum = 0;
             nUD_notch_tolerance.Maximum = 30;
             nUD_notch_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.notch_tolerance_et);
+
+            nUD_minBottomUpPeptides.Value = Convert.ToInt16(Sweet.lollipop.min_bu_peptides);
         }
         #endregion
 
@@ -364,22 +396,6 @@ namespace ProteoWPFSuite
         private void update_figures_of_merit()
         {
             relationUtility.updateFiguresOfMerit(Sweet.lollipop.et_peaks, tb_IdentifiedProteoforms, tb_TotalPeaks, tb_max_accepted_fdr);
-        }
-
-        private void bt_compare_et_Click(object sender, EventArgs e)
-        {
-            if (ReadyToRunTheGamut())
-            {
-                System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-                RunTheGamut(false);
-                xMaxET.Value = (decimal)Sweet.lollipop.et_high_mass_difference;
-                xMinET.Value = (decimal)Sweet.lollipop.et_low_mass_difference;
-                System.Windows.Input.Mouse.OverrideCursor = null;
-            }
-            else if (Sweet.lollipop.target_proteoform_community.has_e_proteoforms)
-                MessageBox.Show("Go back and create a theoretical database.");
-            else
-                MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void shift_masses()
@@ -518,11 +534,11 @@ namespace ProteoWPFSuite
 
         private void GraphETRelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", true);
+            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.et_relations, "relations", false);
             ct_ET_Histogram.Series["relations"].Enabled = true;
             if (Sweet.lollipop.ed_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"], "decoys", true);
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Sweet.lollipop.ed_relations[Sweet.lollipop.decoy_community_name_prefix + "0"], "decoys", false);
                 ct_ET_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.IsEnabled = true;
             }
@@ -533,13 +549,6 @@ namespace ProteoWPFSuite
             ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
             ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
         }
-        
-        private void cb_view_decoy_histogram_CheckedChanged(object sender, EventArgs e)
-        {
-            ct_ET_Histogram.Series["relations"].Enabled = !(bool)cbviewdecoyhistogram;
-            ct_ET_Histogram.Series["decoys"].Enabled = (bool)cbviewdecoyhistogram;
-        }
-
         private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
         {
             Sweet.lollipop.et_low_mass_difference = Convert.ToDouble(nUD_ET_Lower_Bound.Value);
@@ -594,8 +603,11 @@ namespace ProteoWPFSuite
             dgv_ET_Relations.Refresh();
             dgv_ET_Peak_List.Refresh();
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            System.Windows.Forms.DataVisualization.Charting.StripLine lowerCountBound_stripline = new System.Windows.Forms.DataVisualization.Charting.StripLine() { BorderColor = Color.Red, IntervalOffset = Sweet.lollipop.min_peak_count_et };
-            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            if ((bool)cbgraphlowerthreshold.HasValue && (bool)cbgraphlowerthreshold)
+            {
+                System.Windows.Forms.DataVisualization.Charting.StripLine lowerCountBound_stripline = new System.Windows.Forms.DataVisualization.Charting.StripLine() { BorderColor = Color.Red, IntervalOffset = Sweet.lollipop.min_peak_count_et };
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            }
             update_figures_of_merit();
             (this.MDIParent).proteoformFamilies.ClearListsTablesFigures(true);
         }
@@ -626,6 +638,10 @@ namespace ProteoWPFSuite
         private void nUD_ppm_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.notch_tolerance_et = Convert.ToDouble(nUD_notch_tolerance.Value);
+        }
+        private void nUD_minBottomUpPeptides_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.min_bu_peptides = Convert.ToDouble(nUD_minBottomUpPeptides.Value);
         }
     }
 

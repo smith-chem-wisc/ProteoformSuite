@@ -86,7 +86,7 @@
                         x:Name="rb_unlabeled" 
                         IsChecked="True" 
                         HorizontalAlignment="Left"
-                        Content="NeuCode Unlabeled" />
+                        Content="Unlabeled" />
                 </StackPanel>
 
                 <StackPanel x:Name="panel_fullrun" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -234,7 +234,7 @@
                             Grid.Row="2"
                             Margin="5"
                             Content="Fixed Carbamidomethyl Mod" 
-                            Click="cb_calibrate_raw_files_CheckedChanged" />
+                            />
                         
                         <Label Grid.Row="3">Dissociation Type:</Label>
                         <ComboBox 
@@ -269,7 +269,7 @@
                           SelectedIndex="{Binding Path=CB_select, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                           SelectionChanged="Cmb_loadTable1_OnSelectionChanged"/>
 
-                <TextBox x:Name="tb_filter1" Grid.Row="0" Grid.Column="1" Height="28" Margin="2 10 2 0">
+                <TextBox x:Name="tb_filter1" TextChanged="tb_filter1_TextChanged" Grid.Row="0" Grid.Column="1" Height="28" Margin="2 10 2 0">
                     <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                             <Style.Resources>

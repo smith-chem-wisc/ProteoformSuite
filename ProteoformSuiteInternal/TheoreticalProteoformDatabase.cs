@@ -33,9 +33,6 @@ namespace ProteoformSuiteInternal
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary_notches = new Dictionary<double, List<PtmSet>>();
 
-        //Settings
-        public bool limit_triples_and_greater = true;
-
         //Constants
         private double ptmset_max_number_of_a_kind = 3;
 
@@ -380,7 +377,7 @@ namespace ProteoformSuiteInternal
             //if top-down protein sequence, only add PTMs from that top-down proteoforms (will happen in add_topdown_theoreticals method)
             if (!prot.topdown_protein)
             {
-                List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
+                List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, Sweet.lollipop.limit_triples_and_greater);
 
                 //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
                 foreach (PtmSet ptm_set in unique_ptm_groups)

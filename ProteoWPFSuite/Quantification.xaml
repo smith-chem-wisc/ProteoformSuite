@@ -144,7 +144,6 @@
             </WindowsFormsHost>
             <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
             <StackPanel Grid.Row="2">
-                <Button x:Name="btn_refreshCalculation" Content="Refresh Calculations" Margin="2" Click="btn_refreshCalculation_Click"></Button>
                 <StackPanel Orientation="Horizontal">
                     <RadioButton x:Name="rb_significanceByFoldChange" Margin="0 0 5 0" IsChecked="{Binding Path=SIGNIFICANCEBYFOLDCHANGE,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Significance by Fold Change Analysis</RadioButton>
                     <RadioButton x:Name="rb_signficanceByPermutation" IsChecked="{Binding Path=SIGNFICANCEBYPERMUTATION,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Significance by Permutation Analysis</RadioButton>
@@ -327,7 +326,7 @@
                                 </Label>
                                 <TextBox IsReadOnly="True" x:Name="tb_recentTimeStamp"></TextBox>
                             </DockPanel>
-                            <CheckBox Margin="1" x:Name="cb_geneCentric" IsChecked="True">Build Gene-Centric Families</CheckBox>
+                            <CheckBox Margin="1" x:Name="cb_geneCentric" IsChecked="{Binding Path=GENECENTRIC,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Build Gene-Centric Families</CheckBox>
                             <Button Margin="1" x:Name="btn_buildAllFamilies" Click="btn_buildAllQuantifiedFamilies_Click">Build All Quantified Families</Button>
                             <Button Margin="1" x:Name="btn_buildFamiliesWithSignificantChange" Click="btn_buildFamiliesWithSignificantChange_Click">Build All Quantified Families w/ Significant Change</Button>
                             <Button Margin="1" x:Name="btn_buildSelectedQuantFamilies" Click="btn_buildSelectedQuantFamilies_Click">Build Selected Quantified Families</Button>
@@ -341,10 +340,6 @@
                             </GroupBox>
                         </StackPanel>
                         <StackPanel Margin="1">
-                            <Label>Node Color Scheme</Label>
-                            <WindowsFormsHost Height="25">
-                                <winform:ComboBox Dock="Fill" x:Name="cmbx_colorScheme" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
-                            </WindowsFormsHost>
                             <Label>Node Layout</Label>
                             <WindowsFormsHost Height="25">
                                 <winform:ComboBox Dock="Fill" x:Name="cmbx_nodeLayout" DropDownStyle="DropDownList" FormattingEnabled="True" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>

@@ -56,7 +56,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return String.Join("; ", t.ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
+                return string.Join("; ", t.ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
             }
         }
 
@@ -117,12 +117,27 @@ namespace ProteoWPFSuite
 
         public string groupedAccessions
         {
-            get { return String.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
+            get { return string.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
         }
 
         public bool topdown_theoretical
         {
             get { return t.topdown_theoretical; }
+        }
+
+        public bool new_topdown_proteoform
+        {
+            get { return t.new_topdown_proteoform; }
+        }
+
+        public int bu_PSMs_count
+        {
+            get { return t.bottom_up_PSMs.Count; }
+        }
+
+        public string bu_PSMs_PTMs
+        {
+            get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description))); }
         }
 
         #endregion Public Properties
@@ -167,7 +182,9 @@ namespace ProteoWPFSuite
             if (property_name == nameof(gene_name)) { return "Gene Name"; }
             if (property_name == nameof(groupedAccessions)) { return "Grouped Accessions"; }
             if (property_name == nameof(topdown_theoretical)) { return "Top-Down Theoretical"; }
-            return null;
+            if (property_name == nameof(new_topdown_proteoform)) { return "Not in Original Database"; }
+            if (property_name == nameof(bu_PSMs_PTMs)) return "Modified Bottom-Up PSMs";
+            if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count"; return null;
         }
 
         private static bool visible(string property_name, bool current)

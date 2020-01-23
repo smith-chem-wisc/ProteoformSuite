@@ -15,8 +15,6 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, string>, double> conditionBiorep_avgLog2I { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to impute bft-intensities
         public Dictionary<Tuple<string, string>, double> conditionBiorep_stdevLog2I { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to impute bft-intensities
         public Dictionary<Tuple<string, string>, double> conditionBiorepIntensitySums { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to normalize columns
-        public double benjiHoch_fdr { get; set; } = 0.05;
-        public double minFoldChange { get; set; } = 1.0;
         public List<ProteinWithGoTerms> inducedOrRepressedProteins { get; set; } = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
         public GoAnalysis GoAnalysis { get; set; } = new GoAnalysis();
         public QuantitativeDistributions QuantitativeDistributions { get; set; }
@@ -80,14 +78,14 @@ namespace ProteoformSuiteInternal
             int rank = 1;
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms.OrderBy(x => x.quant.Log2FoldChangeValues.pValue_uncorrected))
             {
-                pf.quant.Log2FoldChangeValues.benjiHoch_value = (double)rank++ / Sweet.lollipop.satisfactoryProteoforms.Count * benjiHoch_fdr;
+                pf.quant.Log2FoldChangeValues.benjiHoch_value = (double)rank++ / Sweet.lollipop.satisfactoryProteoforms.Count * Sweet.lollipop.benjiHoch_fdr;
                 if (pf.quant.Log2FoldChangeValues.pValue_uncorrected < pf.quant.Log2FoldChangeValues.benjiHoch_value)
                     benjiHoch_criticalValue = pf.quant.Log2FoldChangeValues.benjiHoch_value;
             }
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                pf.quant.Log2FoldChangeValues.significant = Math.Abs(pf.quant.Log2FoldChangeValues.logfold2change) >= minFoldChange && pf.quant.Log2FoldChangeValues.benjiHoch_value <= benjiHoch_criticalValue; // every test at or below the critical value is significant, even if the p-value is greater than its benjiHoch value
+                pf.quant.Log2FoldChangeValues.significant = Math.Abs(pf.quant.Log2FoldChangeValues.logfold2change) >= Sweet.lollipop.minFoldChange && pf.quant.Log2FoldChangeValues.benjiHoch_value <= benjiHoch_criticalValue; // every test at or below the critical value is significant, even if the p-value is greater than its benjiHoch value
             }
 
             inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), GoAnalysis);

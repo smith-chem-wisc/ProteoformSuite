@@ -18,6 +18,7 @@ namespace ProteoWPFSuite
         public TopDown()
         {
             InitializeComponent();
+            InitializeParameterSet();
         }
 
         public void InitializeParameterSet()
@@ -91,7 +92,7 @@ namespace ProteoWPFSuite
                 if (Sweet.lollipop.topdown_proteoforms_no_theoretical.Count() > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms_no_theoretical.Select(t => t.accession.Split('_')[0]).Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms_no_theoretical.Select(t => t.accession.Split('_')[0]).Concat(Sweet.lollipop.topdown_proteoforms.SelectMany(t => t.ambiguous_topdown_hits).Select(p => p.accession.Split('_')[0])).Distinct()));
                 }
                 if (warning_methods.Count > 1)
                 {

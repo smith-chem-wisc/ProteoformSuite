@@ -31,6 +31,7 @@ namespace ProteoWPFSuite
         public ResultsSummary()
         {
             InitializeComponent();
+            InitializeParameterSet();
         }
 
         #endregion Public Constructor
@@ -40,23 +41,6 @@ namespace ProteoWPFSuite
         public List<DataTable> DataTables { get; private set; }
 
         public ProteoformSweet MDIParent { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public int CBX_select
-        {
-            get
-            {
-                return cbx_select;
-            }
-            set
-            {
-                if (value < 0)
-                    return;
-                cbx_select = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CBX_select"));
-            }
-        }
 
         #endregion Public Property
 
@@ -97,12 +81,9 @@ namespace ProteoWPFSuite
             // cmbx_analysis_content.ToList().ForEach(item => cmbx_analysis.Items.Add(item));
             cmbx_analysis.Items.Add("Tusher Analysis (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)");
             cmbx_analysis.Items.Add("Tusher Analysis (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)");
-            cmbx_analysis.Items.Add("Log2 Fold Change Analysis (" + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR)");
+            cmbx_analysis.Items.Add("Log2 Fold Change Analysis (" + Sweet.lollipop.benjiHoch_fdr.ToString() + " FDR)");
 
             cmbx_analysis.SelectedIndex = 1;
-
-            CBX_select = 1;
-            cmbx_analysis.SelectedItem = cmbx_analysis.Items[cbx_select];
         }
 
         public void ClearListsTablesFigures(bool clear_following_forms)
@@ -132,7 +113,6 @@ namespace ProteoWPFSuite
 
         #region Private Fields
 
-        private int cbx_select;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
 
         #endregion Private Fields

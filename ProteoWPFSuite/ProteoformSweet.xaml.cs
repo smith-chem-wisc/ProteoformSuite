@@ -98,8 +98,9 @@ namespace ProteoWPFSuite
             temp.Title = form.GetType().Name;
             temp.Content = form;
             MDIContainer.Items.Add(temp);
-            MDIContainer.SelectedItem = temp;
-            current_form = form as ISweetForm;*/
+            MDIContainer.SelectedItem = temp;*/
+
+            current_form = form as ISweetForm;
             MDIContainer.SelectedIndex = ClosingTabItem.tabTable[form.GetType().Name];
         }
         //Initial all tabs
@@ -132,7 +133,6 @@ namespace ProteoWPFSuite
 
         public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
         {
-            neuCodeProteoformPairsToolStripMenuItem.IsEnabled = setting;
             ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["NeuCodePairs"]];
             temp.Focusable=setting;
             temp.freeze = !setting;
@@ -144,7 +144,6 @@ namespace ProteoWPFSuite
 
         public void enable_quantificationToolStripMenuItem(bool setting)
         {
-            quantificationToolStripMenuItem.IsEnabled = setting;
             ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["Quantification"]];
             temp.Focusable = setting;
             temp.freeze = !setting;
@@ -156,8 +155,6 @@ namespace ProteoWPFSuite
 
         public void enable_topDownToolStripMenuItem(bool setting)
         {
-            topdownResultsToolStripMenuItem.IsEnabled = setting;
-            quantificationToolStripMenuItem.IsEnabled = setting;
             ClosingTabItem temp = (ClosingTabItem)MDIContainer.Items[ClosingTabItem.tabTable["TopDown"]];
             temp.Focusable = setting;
             temp.freeze = !setting;
@@ -169,75 +166,7 @@ namespace ProteoWPFSuite
 
         #endregion RESULTS TOOL STRIP Public Method
 
-        #region RESULTS TOOL STRIP Private Methods
-
-        private void LoadResultsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            loadResults.InitializeParameterSet();
-            showForm(loadResults);
-        }
-
-        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            theoreticalDatabase.reload_database_list();
-            showForm(theoreticalDatabase);
-        }
-
-        private void topdownResultsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(topDown);
-
-        private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            showForm(rawExperimentalComponents);
-            rawExperimentalComponents.InitializeParameterSet();
-        }
-
-        private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            showForm(neuCodePairs);
-            if (neuCodePairs.ReadyToRunTheGamut())
-                neuCodePairs.RunTheGamut(false); // There's no update/run button in NeuCodePairs, so just fill the tables
-        }
-
-        private void aggregatedProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(aggregatedProteoforms);
-
-        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentTheoreticalComparison);
-
-        private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, RoutedEventArgs e) => showForm(experimentExperimentComparison);
-
-        private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            showForm(proteoformFamilies);
-            //proteoformFamilies.initialize_every_time();
-        }
-
-        private void identifiedProteoformsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            showForm(identifiedProteoforms);
-            if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut(false);
-        }
-
-        private void quantificationToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            quantification.initialize_every_time();
-            showForm(quantification);
-        }
-
-        private void resultsSummaryToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            resultsSummary.InitializeParameterSet();
-            resultsSummary.create_summary();
-            showForm(resultsSummary);
-        }
-
-
-        #endregion RESULTS TOOL STRIP Private Methods
-
         #region FILE TOOL STRIP Private Methods
-
-        private void printToolStripMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("printToolStripMenuItem_Click");
-        }
 
         private void closeToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -418,11 +347,11 @@ namespace ProteoWPFSuite
 
             if (data_tables == null)
             {
-                MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
+                MessageBox.Show("There is no table on this page to export. Please navigate to another page or click Run Page.");
                 return;
             }
 
-            ProteoformSuiteGUI.ExcelWriter writer = new ProteoformSuiteGUI.ExcelWriter();
+            ExcelWriter writer = new ExcelWriter();
             writer.ExportToExcel(data_tables, (current_form as UserControl).GetType().Name);
             SaveExcelFile(writer, (current_form as UserControl).GetType().Name + "_table.xlsx");
         }
@@ -430,7 +359,7 @@ namespace ProteoWPFSuite
 
         private void exportAllTablesToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ProteoformSuiteGUI.ExcelWriter writer = new ProteoformSuiteGUI.ExcelWriter();
+            ExcelWriter writer = new ExcelWriter();
             if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
             Parallel.ForEach(forms, form => form.SetTables());
             writer.BuildHyperlinkSheet(forms.Select(sweet => new Tuple<string, List<DataTable>>((sweet as UserControl).GetType().Name, sweet.DataTables)).ToList());
@@ -439,7 +368,7 @@ namespace ProteoWPFSuite
             SaveExcelFile(writer, (current_form as ITabbedMDI).MDIParent.GetType().Name + "_table.xlsx"); //get the window hosting tabcontrol, which hosts usercontrol
         }
 
-        private void SaveExcelFile(ProteoformSuiteGUI.ExcelWriter writer, string filename)
+        private void SaveExcelFile(ExcelWriter writer, string filename)
         {
             saveExcelDialog.FileName = filename;
             bool? dr = saveExcelDialog.ShowDialog();
@@ -460,7 +389,7 @@ namespace ProteoWPFSuite
             if (Sweet.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
 
             if (Sweet.lollipop.et_relations.Count > 0) save_as_png(experimentTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
-            //if (Sweet.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            if (Sweet.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
             if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
@@ -556,9 +485,7 @@ namespace ProteoWPFSuite
             switch (item.Title)
             {
                 case "Load Results":
-                    //loadResults.InitializeParameterSet();
                     showForm(loadResults);
-                    //loadResults.InitializeParameterSet();
                     break;
 
                 case "Theoretical Database":
@@ -577,8 +504,6 @@ namespace ProteoWPFSuite
 
                 case "Neu Code Pairs":
                     showForm(neuCodePairs);
-                    if (neuCodePairs.ReadyToRunTheGamut())
-                        neuCodePairs.RunTheGamut(false); // There's no update/run button in NeuCodePairs, so just fill the tables
                     break;
 
                 case "Aggregated Proteoforms":
@@ -595,7 +520,7 @@ namespace ProteoWPFSuite
 
                 case "Proteoform Families":
                     showForm(proteoformFamilies);
-                    //proteoformFamilies.initialize_every_time();
+                    proteoformFamilies.initialize_every_time();
                     break;
 
                 case "Identified Proteoforms":
@@ -640,7 +565,7 @@ namespace ProteoWPFSuite
                     break;
 
                 case "Top Down":
-                    // not yet
+                    topDown.RunTheGamut(false);
                     break;
 
                 case "Raw Experimental Components":

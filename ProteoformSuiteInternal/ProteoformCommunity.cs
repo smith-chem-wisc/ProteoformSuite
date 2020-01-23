@@ -359,7 +359,7 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
-            if (Lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
+            if (Sweet.lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;

@@ -69,7 +69,7 @@ namespace ProteoWPFSuite
 
         public string charge_states
         {
-            get { return String.Join(", ", c.charge_states.Select(cs => cs.charge_count)); }
+            get { return string.Join(", ", c.charge_states.Select(cs => cs.charge_count)); }
         }
 
         public double intensity_sum

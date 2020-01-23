@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace ProteoformSuiteGUI
+namespace ProteoformSuiteInternal
 {
     public class ExcelWriter
     {
