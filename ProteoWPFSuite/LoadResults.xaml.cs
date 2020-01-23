@@ -73,8 +73,8 @@ namespace ProteoWPFSuite
                 rb_unlabeled.IsChecked = (bool)!ck_rbneucode;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbneucode"));
 
-                this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(!(bool)ck_rbneucode);
-                Sweet.lollipop.neucode_labeled = (bool)rb_neucode.IsChecked;
+                this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)ck_rbneucode);
+                Sweet.lollipop.neucode_labeled = (bool)ck_rbneucode;
 
                 foreach (InputFile f in Sweet.lollipop.input_files)
                 {

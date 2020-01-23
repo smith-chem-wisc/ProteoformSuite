@@ -428,26 +428,6 @@ namespace ProteoWPFSuite
 
         public ProteoformSweet MDIParent { get; set; }
 
-        private void btn_downloadUniProtPtmList_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_NaturalIsotopes_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_NeuCode_Lt_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_NeuCode_Hv_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Cmb_loadTable_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // We do this to prevent firing TabControl's SelectionChanged event unintendedly

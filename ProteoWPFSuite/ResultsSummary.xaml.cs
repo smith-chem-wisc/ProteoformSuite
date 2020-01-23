@@ -42,8 +42,6 @@ namespace ProteoWPFSuite
 
         public ProteoformSweet MDIParent { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         #endregion Public Property
 
         #region Public Methods
@@ -83,7 +81,7 @@ namespace ProteoWPFSuite
             // cmbx_analysis_content.ToList().ForEach(item => cmbx_analysis.Items.Add(item));
             cmbx_analysis.Items.Add("Tusher Analysis (" + Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)");
             cmbx_analysis.Items.Add("Tusher Analysis (" + Sweet.lollipop.TusherAnalysis2.sortedPermutedRelativeDifferences.Count.ToString() + " Permutations)");
-            cmbx_analysis.Items.Add("Log2 Fold Change Analysis (" + Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr.ToString() + " FDR)");
+            cmbx_analysis.Items.Add("Log2 Fold Change Analysis (" + Sweet.lollipop.benjiHoch_fdr.ToString() + " FDR)");
 
             cmbx_analysis.SelectedIndex = 1;
         }

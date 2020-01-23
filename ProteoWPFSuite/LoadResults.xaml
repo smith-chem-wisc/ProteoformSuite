@@ -234,7 +234,7 @@
                             Grid.Row="2"
                             Margin="5"
                             Content="Fixed Carbamidomethyl Mod" 
-                            Click="cb_calibrate_raw_files_CheckedChanged" />
+                            />
                         
                         <Label Grid.Row="3">Dissociation Type:</Label>
                         <ComboBox 

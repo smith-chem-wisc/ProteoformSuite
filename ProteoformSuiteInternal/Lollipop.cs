@@ -1121,6 +1121,8 @@ namespace ProteoformSuiteInternal
 
         // Log2FC statistics
         public Log2FoldChangeAnalysis Log2FoldChangeAnalysis = new Log2FoldChangeAnalysis();
+        public double benjiHoch_fdr = 0.05;
+        public double minFoldChange = 1.0;
 
         // Relative difference calculations with balanced permutations
         public TusherAnalysis1 TusherAnalysis1 = new TusherAnalysis1();
@@ -1142,7 +1144,7 @@ namespace ProteoformSuiteInternal
         };
 
         public string fold_change_conjunction = fold_change_conjunction_options[0];
-        public int minBiorepsWithFoldChange = -1;
+        public int minBiorepsWithFoldChange = 1;
         public bool useAveragePermutationFoldChange = true;
         public bool useBiorepPermutationFoldChange = false;
 

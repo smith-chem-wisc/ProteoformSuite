@@ -150,24 +150,22 @@ namespace ProteoWPFSuite
             }
             set
             {
+                if (useaveragepermutationfoldchange == value) return;
                 useaveragepermutationfoldchange = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEAVERAGEPERMUTATIONFOLDCHANGE"));
                 //if (MDIParent == null || init)
                 //{
                 //    return;
                 //}
-                
-                if ((bool)useaveragepermutationfoldchange)
-                {
-                    USEBIOREPPERMUTATIONFOLDCHANGE = !useaveragepermutationfoldchange;
-                    Sweet.lollipop.useBiorepPermutationFoldChange = (bool)!useaveragepermutationfoldchange;
-                    Sweet.lollipop.useAveragePermutationFoldChange = (bool)useaveragepermutationfoldchange;
 
-                    if (init) return;
-                    get_tusher_analysis().reestablishSignficance(get_go_analysis());
-                    plots();
-                }
+                USEBIOREPPERMUTATIONFOLDCHANGE = !useaveragepermutationfoldchange;
+                Sweet.lollipop.useAveragePermutationFoldChange = (bool)useaveragepermutationfoldchange;
+
+                if (init) return;
+                get_tusher_analysis().reestablishSignficance(get_go_analysis());
+                plots();
             }
+
         }
         public bool? USEBIOREPPERMUTATIONFOLDCHANGE
         {
@@ -177,24 +175,24 @@ namespace ProteoWPFSuite
             }
             set
             {
+                if (usebioreppermutationfoldchange == value)
+                {
+                    return;
+                }
                 usebioreppermutationfoldchange = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("USEBIOREPPERMUTATIONFOLDCHANGE"));
                 //if (MDIParent==null || init)
                 //{
                 //    return;
                 //}
-                
-                if ((bool)usebioreppermutationfoldchange)
-                {
-                    USEAVERAGEPERMUTATIONFOLDCHANGE = (bool)!usebioreppermutationfoldchange;
-                    Sweet.lollipop.useAveragePermutationFoldChange = (bool)!useaveragepermutationfoldchange;
-                    Sweet.lollipop.useBiorepPermutationFoldChange = (bool)useaveragepermutationfoldchange;
 
-                    if (init) return;
+                USEAVERAGEPERMUTATIONFOLDCHANGE = (bool)!usebioreppermutationfoldchange;
+                Sweet.lollipop.useBiorepPermutationFoldChange = (bool)usebioreppermutationfoldchange;
 
-                    get_tusher_analysis().reestablishSignficance(get_go_analysis());
-                    plots();
-                }
+                if (init) return;
+
+                get_tusher_analysis().reestablishSignficance(get_go_analysis());
+                plots();
             }
         }
         public bool? USELOCALFDRCUTOFF
@@ -630,11 +628,11 @@ namespace ProteoWPFSuite
             //nud_foldChangeCutoff.ValueChanged += nud_permutationFoldChangeCutoff_ValueChanged;
 
             nud_benjiHochFDR.ValueChanged -= nud_benjiHochFDR_ValueChanged;
-            nud_benjiHochFDR.Value = (decimal)Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr;
+            nud_benjiHochFDR.Value = (decimal)Sweet.lollipop.benjiHoch_fdr;
             nud_benjiHochFDR.ValueChanged += nud_benjiHochFDR_ValueChanged;
 
             nUD_min_fold_change.ValueChanged -= nUD_min_fold_change_ValueChanged;
-            nUD_min_fold_change.Value = (decimal)Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange;
+            nUD_min_fold_change.Value = (decimal)Sweet.lollipop.minFoldChange;
             nUD_min_fold_change.ValueChanged += nUD_min_fold_change_ValueChanged;
 
             nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
@@ -652,8 +650,6 @@ namespace ProteoWPFSuite
             cmbx_foldChangeConjunction.Items.AddRange(Lollipop.fold_change_conjunction_options);
             cmbx_foldChangeConjunction.SelectedIndex = Lollipop.fold_change_conjunction_options.ToList().IndexOf(Sweet.lollipop.fold_change_conjunction);
             cmbx_foldChangeConjunction.SelectedIndexChanged += cmbx_foldChangeConjunction_SelectedIndexChanged;
-
-            USEAVERAGEPERMUTATIONFOLDCHANGE = Sweet.lollipop.useAveragePermutationFoldChange;
             
             USEBIOREPPERMUTATIONFOLDCHANGE = Sweet.lollipop.useBiorepPermutationFoldChange;
             
@@ -686,6 +682,10 @@ namespace ProteoWPFSuite
             USERANDOMSEED= Sweet.lollipop.useRandomSeed_quant;
             nud_foldChangeCutoff.Enabled = Sweet.lollipop.useFoldChangeCutoff;
             nud_randomSeed.Enabled = Sweet.lollipop.useRandomSeed_quant;
+            nud_randomSeed.Value = Sweet.lollipop.randomSeed_quant;
+
+
+            nud_foldChangeObservations.Value = Sweet.lollipop.minBiorepsWithFoldChange;
 
             //rb_quantifiedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
             //rb_detectedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
@@ -761,6 +761,7 @@ namespace ProteoWPFSuite
                 return;
             }
             Sweet.lollipop.backgroundShift = nud_bkgdShift.Value;
+            Sweet.lollipop.backgroundWidth = nud_bkgdWidth.Value;
             if (Sweet.lollipop.qVals.Count <= 0)
             {
                 return;
@@ -797,6 +798,7 @@ namespace ProteoWPFSuite
 
         private void set_nud_minObs_maximum()
         {
+            nud_foldChangeObservations.Maximum = Sweet.lollipop.countOfBioRepsInOneCondition;
             List<InputFile> files = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).ToList();
             if (Sweet.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
                 nud_minObservations.Maximum = Sweet.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
@@ -923,7 +925,7 @@ namespace ProteoWPFSuite
             {
                 return;
             }
-            Sweet.lollipop.Log2FoldChangeAnalysis.benjiHoch_fdr = (double)nud_benjiHochFDR.Value;
+            Sweet.lollipop.benjiHoch_fdr = (double)nud_benjiHochFDR.Value;
             Sweet.lollipop.Log2FoldChangeAnalysis.establish_benjiHoch_significance();
             volcanoPlot();
         }
@@ -1594,7 +1596,7 @@ namespace ProteoWPFSuite
 
         private void nUD_min_fold_change_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange = (double)nUD_min_fold_change.Value;
+            Sweet.lollipop.minFoldChange = (double)nUD_min_fold_change.Value;
             Sweet.lollipop.Log2FoldChangeAnalysis.establish_benjiHoch_significance();
             volcanoPlot();
         }
