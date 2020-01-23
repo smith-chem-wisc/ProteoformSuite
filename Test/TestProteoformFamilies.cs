@@ -185,11 +185,11 @@ namespace Test
         public static DatabaseReference p1_dbRef = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
         public static GoTerm p1_goterm = new GoTerm(p1_dbRef);
         public static string pf1_accession = "T1_asdf";
-        public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals()
+        public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals(bool gene_centric_families)
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.gene_centric_families = false;
+            Sweet.lollipop.gene_centric_families = gene_centric_families;
             ProteoformCommunity community = new ProteoformCommunity();
             Sweet.lollipop.target_proteoform_community = community;
             Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
@@ -328,8 +328,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_two_theoretical_pf_groups_with_same_accession()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.gene_centric_families = false;
-            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals(false);
             Sweet.lollipop.target_proteoform_community = community;
 
             Assert.AreEqual(2, community.families.Count);
@@ -491,17 +490,15 @@ namespace Test
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.theoretical_database.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[0];
-            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals(false);
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
         [Test]
         public void gene_centric_family()
         {
-            Sweet.lollipop.gene_centric_families = true;
             Lollipop.preferred_gene_label = Lollipop.gene_name_labels[1];
-
-            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals(true);
             Assert.AreEqual(1, community.families.Count);
 
             //Only the distinct gene names are kept in list
@@ -512,7 +509,7 @@ namespace Test
         public void community_clear_et()
         {
             Sweet.lollipop = new Lollipop();
-            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals(false);
             Assert.IsNotEmpty(Sweet.lollipop.et_relations);
             Assert.IsNotEmpty(Sweet.lollipop.ee_relations);
             Assert.IsNotEmpty(community.families);
@@ -541,7 +538,7 @@ namespace Test
         [Test]
         public void community_clear_ee()
         {
-            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals(false);
             Assert.IsNotEmpty(Sweet.lollipop.et_relations);
             Assert.IsNotEmpty(Sweet.lollipop.ee_relations);
             Assert.IsNotEmpty(community.families);
@@ -597,9 +594,9 @@ namespace Test
         public void community_clear_families()
         {
             Sweet.lollipop = new Lollipop();
-            ProteoformCommunity target = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity target = construct_two_families_with_potentially_colliding_theoreticals(false);
             Sweet.lollipop = new Lollipop();
-            ProteoformCommunity decoy = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity decoy = construct_two_families_with_potentially_colliding_theoreticals(false);
             Sweet.lollipop.target_proteoform_community = target;
             Sweet.lollipop.decoy_proteoform_communities.Add(Sweet.lollipop.decoy_community_name_prefix + "0", decoy);
             Assert.IsNotEmpty(Sweet.lollipop.target_proteoform_community.families);

@@ -1381,7 +1381,7 @@ namespace Test
                 e.quant.Log2FoldChangeValues.pValue_uncorrected = ExtensionMethods.Student2T((double)i / 10, 10);
                 Sweet.lollipop.satisfactoryProteoforms.Add(e);
             }
-            Sweet.lollipop.Log2FoldChangeAnalysis.minFoldChange = 0;
+            Sweet.lollipop.minFoldChange = 0;
             Sweet.lollipop.Log2FoldChangeAnalysis.establish_benjiHoch_significance();
 
             Assert.AreEqual(77, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.Log2FoldChangeValues.significant));
