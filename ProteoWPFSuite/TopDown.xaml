@@ -71,18 +71,42 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="3"/>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
                 <WindowsFormsHost Grid.Row="0">
                     <winform:DataGridView x:Name="dgv_TD_proteoforms" CellContentClick="dgv_TD_proteoforms_CellContentClick">
 
                     </winform:DataGridView>
                 </WindowsFormsHost>
-            </Grid>
-            <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
-            <!--<Grid Grid.Row="2">
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <WindowsFormsHost>
+                        <winform:DataGridView x:Name="dgv_BU_peptides" CellContentClick="dgv_BU_peptides_CellContentClick">
+                        </winform:DataGridView>
+                    </WindowsFormsHost>
+                    <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+                    <ScrollViewer Name="BUBaseSequenceAnnotationScrollViewer" Grid.Row="2" MaxHeight="120" 
+                                              VerticalScrollBarVisibility="Auto">
+                        <Grid Name="BUbaseSequenceAnnotationCanvasGrid" ScrollViewer.CanContentScroll="True">
+                            <Canvas x:Name="BUbaseSequenceAnnotationCanvas"/>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+                <GridSplitter Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+                <!--<Grid Grid.Row="2">
                 <WindowsFormsHost Grid.Row="3" Margin="2 2 2 2">
                     <winform:RichTextBox  x:Name="rtb_sequence"></winform:RichTextBox>
                 </WindowsFormsHost>
             </Grid>-->
+            </Grid>
+            <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
             <ScrollViewer Name="BaseSequenceAnnotationScrollViewer" Grid.Row="2" MaxHeight="120" 
                                               VerticalScrollBarVisibility="Auto">
                 <Grid Name="baseSequenceAnnotationCanvasGrid" ScrollViewer.CanContentScroll="True">

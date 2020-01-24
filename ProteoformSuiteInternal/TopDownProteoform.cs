@@ -116,6 +116,7 @@ namespace ProteoformSuiteInternal
                           .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position).ToList().Distinct().OrderBy(m => m).ToList();
             topdown_uniprot_mods = "";
             string add = "";
+            List<string> to_add = new List<string>();
             if (Sweet.lollipop.theoretical_database.theoreticals_by_accession.ContainsKey(Sweet.lollipop.target_proteoform_community.community_number))
             {
                 Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number].TryGetValue(accession.Split('_')[0].Split('-')[0], out var matching_theoretical);
@@ -128,21 +129,26 @@ namespace ProteoformSuiteInternal
                             .OneBasedPossibleLocalizedModifications)
                             .Where(p => p.Key >= topdown_begin && p.Key <= topdown_end
                                                          && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod.Split('@')[0]))
-                            .Select(m => m.Key).ToList();
+                            .Select(m => m.Key).Distinct().OrderBy(p => p).ToList();
                         if (theo_ptms.Count > 0)
                         {
-                            add += mod.Split('@')[0] + "@" + string.Join(", ", theo_ptms) + "; ";
+                           to_add.Add(mod.Split('@')[0] + "@" + string.Join(", ", theo_ptms) + "; ");
                         }
                         if(!theo_ptms.Select(i => mod.Split('@')[0] + "@" + i).Contains(mod))
                         {
                             topdown_novel_mods = true;
                         }
                     }
+                    foreach(var add_string in to_add.Distinct())
+                    {
+                        add += add_string;
+                    }
                     topdown_uniprot_mods += add;
                     if (add.Length == 0) topdown_uniprot_mods += "N/A";
 
                     foreach (var ambig_id in ambiguous_topdown_hits)
                     {
+                        to_add = new List<string>();
                         Sweet.lollipop.theoretical_database.theoreticals_by_accession[Sweet.lollipop.target_proteoform_community.community_number].TryGetValue(accession.Split('_')[0].Split('-')[0], out var matching_ambig_theoretical);
                         if (matching_ambig_theoretical != null)
                         {
@@ -158,15 +164,19 @@ namespace ProteoformSuiteInternal
                                     .OneBasedPossibleLocalizedModifications)
                                     .Where(p => p.Key >= ambig_id.begin && p.Key <= ambig_id.end
                                                                  && p.Value.Select(m => UnlocalizedModification.LookUpId(m)).Contains(mod.Split('@')[0]))
-                                    .Select(m => m.Key).ToList();
+                                    .Select(m => m.Key).Distinct().OrderBy(p => p).ToList();
                                 if (theo_ptms.Count > 0)
                                 {
-                                    add += mod.Split('@')[0] + "@" + string.Join(", ", theo_ptms) + "; ";
+                                    to_add.Add(mod.Split('@')[0] + "@" + string.Join(", ", theo_ptms) + "; ");
                                 }
                                 if (!theo_ptms.Select(i => mod.Split('@')[0] + "@" + i).Contains(mod))
                                 {
                                     topdown_novel_mods = true;
                                 }
+                            }
+                            foreach (var add_string in to_add.Distinct())
+                            {
+                                add += add_string;
                             }
                         }
                         topdown_uniprot_mods += add;

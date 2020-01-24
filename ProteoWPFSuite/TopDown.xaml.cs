@@ -139,6 +139,7 @@ namespace ProteoWPFSuite
             tb_unique_PFRs.Clear();
             tb_tableFilter.Clear();
             baseSequenceAnnotationCanvas.Children.Clear();
+            BUbaseSequenceAnnotationCanvas.Children.Clear();
             if (clear_following)
             {
                 for (int i = MDIParent.forms.IndexOf(this) + 1; i < MDIParent.forms.Count; i++)
@@ -183,32 +184,54 @@ namespace ProteoWPFSuite
             if (e.RowIndex >= 0)
             {
                 TopDownProteoform p = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
-                get_proteoform_sequence(p);
+
+                Dictionary<string, List<SpectrumMatch>> baseSequenceGroups = new Dictionary<string, List<SpectrumMatch>>();
+                baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.topdown_hits.First() });
+                foreach (var h in p.ambiguous_topdown_hits)
+                {
+                    if (baseSequenceGroups.ContainsKey(h.sequence))
+                    {
+                        baseSequenceGroups[h.sequence].Add(h);
+                    }
+                    else
+                    {
+                        baseSequenceGroups.Add(h.sequence, new List<SpectrumMatch>() { h });
+                    }
+                }
+                var matched_fragment_ions = p.ambiguous_topdown_hits.Concat(p.topdown_hits).SelectMany(h => h.matched_fragment_ions).ToList();
+                get_proteoform_sequence(baseSequenceAnnotationCanvas, baseSequenceGroups, matched_fragment_ions);
+                display_bu_peptides(p);
             }
         }
 
-        private void get_proteoform_sequence(TopDownProteoform p)
+
+        private void display_bu_peptides(TopDownProteoform selected_pf)
         {
-            baseSequenceAnnotationCanvas.Children.Clear();
+            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() : Proteoform.get_possible_PSMs(selected_pf.accession, (selected_pf as TopDownProteoform).topdown_ptm_set,
+                 (selected_pf as TopDownProteoform).topdown_begin, (selected_pf as TopDownProteoform).topdown_end, true)
+                .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => Proteoform.get_possible_PSMs(p.accession, new PtmSet(p.ptm_list), p.begin, p.end, true))).Distinct().ToList();
+            DisplayUtility.FillDataGridView(dgv_BU_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
+            DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides);
+        }
 
-            Dictionary<string, List<SpectrumMatch>> baseSequenceGroups = new Dictionary<string, List<SpectrumMatch>>();
-            baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.topdown_hits.First() } );
-            foreach(var h in p.ambiguous_topdown_hits)
+        private void dgv_BU_peptides_CellContentClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
             {
-                if(baseSequenceGroups.ContainsKey(h.sequence))
-                {
-                    baseSequenceGroups[h.sequence].Add(h);
-                }
-                else
-                {
-                    baseSequenceGroups.Add(h.sequence, new List<SpectrumMatch>() { h });
-                }
+                SpectrumMatch bu_peptide = (SpectrumMatch)((DisplayObject)this.dgv_BU_peptides.Rows[e.RowIndex].DataBoundItem).display_object;
+                Dictionary<string, List<SpectrumMatch>> baseSequenceGroups = new Dictionary<string, List<SpectrumMatch>>();
+                baseSequenceGroups.Add(bu_peptide.sequence, new List<SpectrumMatch>() { bu_peptide });
+                get_proteoform_sequence(BUbaseSequenceAnnotationCanvas, baseSequenceGroups, bu_peptide.matched_fragment_ions);
             }
+        }
 
+        private void get_proteoform_sequence(Canvas canvas, Dictionary<string, List<SpectrumMatch>> baseSequenceGroups, List<MatchedFragmentIon> matched_fragment_ions)
+        {
+            canvas.Children.Clear();
             double xSpacing = 25;
             double ySpacing = 40;
-            double minXMargin = baseSequenceGroups.First().Key.Length * xSpacing > baseSequenceAnnotationCanvas.ActualWidth - xSpacing ?
-                40 : (baseSequenceAnnotationCanvas.ActualWidth - xSpacing - baseSequenceGroups.First().Key.Length * xSpacing) / 2;
+            double minXMargin = baseSequenceGroups.First().Key.Length * xSpacing > canvas.ActualWidth - xSpacing ?
+                40 : (canvas.ActualWidth - xSpacing - baseSequenceGroups.First().Key.Length * xSpacing) / 2;
 
             double x = minXMargin;
             double y = 10;
@@ -224,20 +247,20 @@ namespace ProteoWPFSuite
                 List<TextBlock> drawnAminoAcids = new List<TextBlock>();
                 for (int r = 0; r < baseSequence.Length; r++)
                 {
-                    if (x > baseSequenceAnnotationCanvas.ActualWidth - minXMargin)
+                    if (x > canvas.ActualWidth - minXMargin)
                     {
                         x = minXMargin;
                         y += ySpacing;
                     }
 
-                    var drawnAminoAcid = BaseSequenceAnnotation.DrawText(baseSequenceAnnotationCanvas, new Point(x, y), baseSequence[r].ToString(), Brushes.Black);
+                    var drawnAminoAcid = BaseSequenceAnnotation.DrawText(canvas, new Point(x, y), baseSequence[r].ToString(), Brushes.Black);
                     drawnAminoAcids.Add(drawnAminoAcid);
 
                     x += xSpacing;
                 }
 
                 // draw the fragment ion annotations on the base sequence
-                foreach (MatchedFragmentIon ion in p.ambiguous_topdown_hits.Concat(p.topdown_hits).SelectMany(h => h.matched_fragment_ions))
+                foreach (MatchedFragmentIon ion in matched_fragment_ions)
                 {
                     int zeroBasedAminoAcidIndex = ion.NeutralTheoreticalProduct.TerminusFragment.AminoAcidPosition - 1;
 
@@ -245,7 +268,7 @@ namespace ProteoWPFSuite
                     {
                         if (i == zeroBasedAminoAcidIndex)
                         {
-                            AnnotateFragmentIon(drawnAminoAcids[i], ion, p);
+                            AnnotateFragmentIon(drawnAminoAcids[i], ion, canvas);
                         }
                     }
                 }
@@ -264,18 +287,18 @@ namespace ProteoWPFSuite
                             .Contains(UnlocalizedModification.LookUpId(mod.modification) + "@" + mod.position));
                         }
 
-                        int zeroBasedAminoAcidIndex = mod.position - 2;
+                        int zeroBasedAminoAcidIndex = mod.position - fullSequence.begin;
 
                         if (zeroBasedAminoAcidIndex == -1)
                         {
                             // n-term mod
-                            AnnotateModification(drawnAminoAcids[0], mod.modification, isAmbiguousMod);
+                            AnnotateModification(drawnAminoAcids[0], mod.modification, isAmbiguousMod, canvas);
                             continue;
                         }
                         else if (zeroBasedAminoAcidIndex == baseSequence.Length)
                         {
                             // c-term mod
-                            AnnotateModification(drawnAminoAcids[baseSequence.Length - 1], mod.modification, isAmbiguousMod);
+                            AnnotateModification(drawnAminoAcids[baseSequence.Length - 1], mod.modification, isAmbiguousMod, canvas);
                             continue;
                         }
 
@@ -284,7 +307,7 @@ namespace ProteoWPFSuite
                         {
                             if (i == zeroBasedAminoAcidIndex)
                             {
-                                AnnotateModification(drawnAminoAcids[i], mod.modification, isAmbiguousMod);
+                                AnnotateModification(drawnAminoAcids[i], mod.modification, isAmbiguousMod, canvas);
                             }
                         }
                     }
@@ -298,15 +321,15 @@ namespace ProteoWPFSuite
                 x = minXMargin;
             }
 
-            baseSequenceAnnotationCanvasGrid.Height = y + ySpacing;
+            canvas.Height = y + ySpacing;
         }
 
-        private void AnnotateModification(TextBlock residue, Modification mod, bool ambiguousMods)
+        private void AnnotateModification(TextBlock residue, Modification mod, bool ambiguousMods, Canvas canvas)
         {
             double top = Canvas.GetTop(residue) + 3;
             double left = Canvas.GetLeft(residue) - 0;
             var color = ModificationAnnotationColors.ContainsKey(UnlocalizedModification.LookUpId(mod)) ? ModificationAnnotationColors[UnlocalizedModification.LookUpId(mod)] : Brushes.MediumPurple;
-            BaseSequenceAnnotation.DrawModification(baseSequenceAnnotationCanvas, new Point(left, top), color, mod, ambiguousMods);
+            BaseSequenceAnnotation.DrawModification(canvas, new Point(left, top), color, mod, ambiguousMods);
         }
 
         private void SetUpDictionaries()
@@ -338,7 +361,7 @@ namespace ProteoWPFSuite
             
         }
 
-        private void AnnotateFragmentIon(TextBlock residue, MatchedFragmentIon ion, TopDownProteoform psm)
+        private void AnnotateFragmentIon(TextBlock residue, MatchedFragmentIon ion, Canvas canvas)
         {
             string annotation = ion.NeutralTheoreticalProduct.ProductType + "" + ion.NeutralTheoreticalProduct.TerminusFragment.FragmentNumber;
             Color color = productTypeToColor[ion.NeutralTheoreticalProduct.ProductType];
@@ -353,7 +376,7 @@ namespace ProteoWPFSuite
                 double top = Canvas.GetTop(residue);
                 double left = Canvas.GetLeft(residue);
 
-                BaseSequenceAnnotation.DrawCTerminalIon(baseSequenceAnnotationCanvas,
+                BaseSequenceAnnotation.DrawCTerminalIon(canvas,
                     new Point(left - 2, top - 9 + productTypeToYOffset[ion.NeutralTheoreticalProduct.ProductType]),
                     color, annotation);
             }
@@ -362,7 +385,7 @@ namespace ProteoWPFSuite
                 double top = Canvas.GetTop(residue);
                 double left = Canvas.GetLeft(residue);
 
-                BaseSequenceAnnotation.DrawNTerminalIon(baseSequenceAnnotationCanvas,
+                BaseSequenceAnnotation.DrawNTerminalIon(canvas,
                     new Point(left + 23, top - 11 + productTypeToYOffset[ion.NeutralTheoreticalProduct.ProductType]),
                     color, annotation);
             }
