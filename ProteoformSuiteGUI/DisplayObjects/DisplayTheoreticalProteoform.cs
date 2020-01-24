@@ -1,13 +1,14 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using ProteoformSuiteInternal;
+using System.Windows.Forms;
 
-namespace ProteoWPFSuite
+namespace ProteoformSuiteGUI
 {
-    class DisplayTheoreticalProteoform : DisplayObject
+    public class DisplayTheoreticalProteoform : DisplayObject
     {
         #region Public Constructors
 
@@ -140,14 +141,11 @@ namespace ProteoWPFSuite
             get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0).Select(p => p.ptm_description).Distinct())); }
         }
 
-
+        
         public string bu_PSMs_PTMs
         {
-            get
-            {
-                return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
-                                               .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()));
-            }
+            get { return (String.Join(", ", t.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                                                 .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct())); }
         }
 
 
@@ -179,14 +177,14 @@ namespace ProteoWPFSuite
 
         #region Public Methods
 
-        public static void FormatTheoreticalProteoformTable(System.Windows.Forms.DataGridView dgv)
+        public static void FormatTheoreticalProteoformTable(DataGridView dgv)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.ReadOnly = true;
             dgv.AllowUserToAddRows = false;
 
-            foreach (System.Windows.Forms.DataGridViewColumn c in dgv.Columns)
+            foreach (DataGridViewColumn c in dgv.Columns)
             {
                 string h = header(c.Name);
                 string n = number_format(c.Name);
@@ -219,14 +217,7 @@ namespace ProteoWPFSuite
             if (property_name == nameof(topdown_theoretical)) { return "Top-Down Theoretical"; }
             if (property_name == nameof(new_topdown_proteoform)) { return "Not in Original Database"; }
             if (property_name == nameof(bu_PSMs_PTMs)) return "Modified Bottom-Up PSMs";
-            if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
-            if (property_name == nameof(bu_PSMs_PTMs_peptide_specific)) return "Peptide-Specific Modified Bottom-Up PSMs";
-            if (property_name == nameof(bottom_up_evidence_for_all_PTMs)) return "Bottom-Up Evidence for All PTMs";
-            if(property_name == nameof(begin_peptide)) return "Bottom-Up Evidence for Begin";
-            if (property_name == nameof(end_peptide)) return "Bottom-Up Evidence for End";
-
-
-            return null;
+            if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count"; return null;
         }
 
         private static bool visible(string property_name, bool current)

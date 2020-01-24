@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 
-namespace ProteoWPFSuite
+namespace ProteoformSuiteGUI
 {
     public class DisplayTopDownProteoform : DisplayObject
     {
@@ -27,6 +28,13 @@ namespace ProteoWPFSuite
 
         #region Public Properties
 
+        public int matched_ions
+        {
+            get
+            {
+                return t.topdown_hits.Sum(h => h.matched_fragment_ions.Count);
+            }
+        }
         public string Accession
         {
             get
@@ -113,7 +121,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return t.topdown_begin + " to " + t.topdown_end + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.begin + " to " + h.end)) : "");
+               return t.topdown_begin + " to " + t.topdown_end + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.begin + " to " + h.end)) : "");
             }
         }
 
@@ -143,6 +151,7 @@ namespace ProteoWPFSuite
             }
         }
 
+
         public string bu_PSMs_count
         {
             get
@@ -150,7 +159,7 @@ namespace ProteoWPFSuite
                 return Proteoform.get_possible_PSMs(t.accession.Split('_')[0], t.topdown_ptm_set, t.topdown_begin, t.topdown_end, true).Count.ToString()
                        + (t.ambiguous_topdown_hits.Count > 0
                            ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(i => Proteoform.get_possible_PSMs(i.accession.Split('_')[0], new PtmSet(i.ptm_list), i.begin, i.end, true).Count.ToString()))
-                    : "");
+                    :"");
             }
         }
 
@@ -220,7 +229,7 @@ namespace ProteoWPFSuite
             //only unambiguous PSMs for now....
             get
             {
-
+                
                 return (get_psms(t.accession.Split('_')[0], t.topdown_begin, t.topdown_end).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
                     ? "N/A"
                     : String.Join(", ",
@@ -358,11 +367,11 @@ namespace ProteoWPFSuite
 
             foreach (var td in td_psm_with_location)
             {
-                if (bu_psm_with_location.Contains(td))
+                if(bu_psm_with_location.Contains(td))
                 {
                     same_location = true;
                 }
-                else if (bu_psm_no_location.Contains(td.Split('@')[0]))
+                else if(bu_psm_no_location.Contains(td.Split('@')[0]))
                 {
                     different_location = true;
                 }
@@ -378,7 +387,7 @@ namespace ProteoWPFSuite
             {
                 if (!td_psm_with_location.Contains(bu))
                 {
-                    if (td_psm_no_location.Contains(bu.Split('@')[0]))
+                    if(td_psm_no_location.Contains(bu.Split('@')[0]))
                     {
                         different_location_bu = true;
                     }
@@ -425,7 +434,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return Math.Round(t.modified_mass - t.theoretical_mass, 4) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => Math.Round(h.reported_mass - h.theoretical_mass, 4))) : "");
+                return Math.Round(t.modified_mass - t.theoretical_mass, 4) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h =>Math.Round(h.reported_mass - h.theoretical_mass, 4))) : "");
             }
         }
 
@@ -458,18 +467,19 @@ namespace ProteoWPFSuite
             }
         }
 
+
         #endregion Public Properties
 
         #region Public Methods
 
-        public static void FormatTopDownTable(System.Windows.Forms.DataGridView dgv, bool identified_topdown)
+        public static void FormatTopDownTable(DataGridView dgv, bool identified_topdown)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            foreach (System.Windows.Forms.DataGridViewColumn c in dgv.Columns)
+            foreach (DataGridViewColumn c in dgv.Columns)
             {
                 string h = header(c.Name);
                 string n = number_format(c.Name);
@@ -496,20 +506,13 @@ namespace ProteoWPFSuite
             if (name == nameof(PFR_accession)) { return "PFR Accession"; }
             if (name == nameof(bu_PSMs)) return "Modified Bottom-Up PSMs";
             if (name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
-            if (name == nameof(different_ambiguity)) return "Different Ambiguity in Bottom-Up PSMs";
-            if (name == nameof(bu_PSMs_all_from_protein)) return "All Modified Bottom-Up PSMs from Protein";
-            if (name == nameof(BU_PSMS_separatepeptides)) return "Bottom-Up PSMs Separate Peptides";
-            if (name == nameof(begin_peptide)) return "Bottom-Up Evidence for Begin";
-            if (name == nameof(end_peptide)) return "Bottom-Up Evidence for End";
-            if (name == nameof(bottom_up_evidence_for_all_PTMs)) return "Bottom-Up Evidence for All PTMs";
-            if (name == nameof(seq_ptm_specific)) return "Sequence Specific";
-            if (name == nameof(all_peptides_from_protein)) return "All Peptides From Protein";
             if (name == nameof(gene_name)) return "Gene Name";
             if (name == nameof(grouped_accessions)) return "Accessions";
             if (name == nameof(begin_and_end)) return "Begin and End";
             if (name == nameof(uniprot_mods)) return "UniProt-Annotated Modifications";
             if (name == nameof(potentially_novel)) return "Potentially Novel Mods";
             if (name == nameof(linked_proteoform_references)) return "Linked Proteoform References";
+
 
             return null;
         }

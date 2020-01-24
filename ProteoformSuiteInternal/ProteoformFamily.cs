@@ -153,6 +153,7 @@ namespace ProteoformSuiteInternal
                     && e.ptm_set.ptm_combination.Any(m => Proteoform.modification_is_adduct(m.modification))
                     && experimental_proteoforms.Any(l =>
                         l.linked_proteoform_references != null
+                        && l.begin == e.begin && l.end == e.end
                         && l.gene_name.get_prefered_name(Lollipop.preferred_gene_label) == e.gene_name.get_prefered_name(Lollipop.preferred_gene_label)
                         && l.ptm_set.ptm_combination.Count < e.ptm_set.ptm_combination.Count
                         && e.ptm_set.ptm_combination.Where(m => l.ptm_set.ptm_combination.Count(p => UnlocalizedModification.LookUpId(p.modification) == UnlocalizedModification.LookUpId(m.modification)) != e.ptm_set.ptm_combination.Count(p => UnlocalizedModification.LookUpId(p.modification) == UnlocalizedModification.LookUpId(m.modification)))

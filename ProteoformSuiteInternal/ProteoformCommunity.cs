@@ -194,10 +194,10 @@ namespace ProteoformSuiteInternal
                 pf2_with_allowed_lysines.ExpandedProteinList.Any(p =>
                     p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0])
                         .Contains(td.accession.Split('_')[0].Split('-')[0]))).ToList();
-            bool good_BU_PSMs = topdown_proteoforms_same_accession.Count > 0 || 
+            bool good_BU_PSMs = //topdown_proteoforms_same_accession.Count > 0 || 
                                 pf2_with_allowed_lysines.bottom_up_PSMs.Count >= Sweet.lollipop.min_bu_peptides;
           
-            return good_BU_PSMs;
+            return good_BU_PSMs || pf2_with_allowed_lysines.topdown_theoretical;
         }
 
         public static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)

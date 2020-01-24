@@ -6,9 +6,9 @@ using System.Numerics;
 
 namespace ProteoformSuiteInternal
 {
-    public class GoTermNumber : GoTerm
+    public class GoTermNumber : goTerm
     {
-        public GoTerm goTerm { get; set; }
+        public goTerm goTerm { get; set; }
 
         public int q_significantProteinsWithThisGoTerm { get; private set; }
         public int k_significantProteins { get; private set; }
@@ -29,7 +29,7 @@ namespace ProteoformSuiteInternal
         /// <param name="k_significantProteins"></param>
         /// <param name="m_backgroundProteinsWithThisGoTerm"></param>
         /// <param name="t_backgroundProteins"></param>
-        public GoTermNumber(GoTerm g, int q_significantProteinsWithThisGoTerm, int k_significantProteins, int m_backgroundProteinsWithThisGoTerm, int t_backgroundProteins) 
+        public GoTermNumber(goTerm g, int q_significantProteinsWithThisGoTerm, int k_significantProteins, int m_backgroundProteinsWithThisGoTerm, int t_backgroundProteins) 
             : base(g.Id, g.Description, g.Aspect)
         {
             this.q_significantProteinsWithThisGoTerm = q_significantProteinsWithThisGoTerm;

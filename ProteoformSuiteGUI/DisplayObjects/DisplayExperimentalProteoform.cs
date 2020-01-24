@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+using TheoreticalProteoform = ProteoformSuiteInternal.TheoreticalProteoform;
 
-namespace ProteoWPFSuite
+namespace ProteoformSuiteGUI
 {
     public class DisplayExperimentalProteoform : DisplayObject
     {
@@ -121,17 +123,14 @@ namespace ProteoWPFSuite
 
         public string ptm_description
         {
-            get
-            {
-                return (e.linked_proteoform_references != null ? e.ptm_set.ptm_description : "") +
-                       (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.ptm_set.ptm_description)) : "");
-            }
+            get { return (e.linked_proteoform_references != null ? e.ptm_set.ptm_description : "" ) + 
+                         (e.ambiguous_identifications.Count > 0 ? " | " +  String.Join(" | ", e.ambiguous_identifications.Select(p => p.ptm_set.ptm_description)) : "" ); }
         }
 
 
         public string begin_and_end
         {
-            get { return e.linked_proteoform_references != null ? e.begin.ToString() + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.begin + " to " + p.end)) : "") : ""; }
+            get { return e.linked_proteoform_references != null ? e.begin.ToString() + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.begin + " to " + p.end)) : "")  : "" ; }
         }
 
         public string Sequence
@@ -273,7 +272,7 @@ namespace ProteoWPFSuite
             get
             {
                 return e.family != null ? e.family.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() > 1 ? "Ambiguous" : "Identified" : "";
-            }
+                    }
         }
 
 
@@ -315,14 +314,14 @@ namespace ProteoWPFSuite
 
         #region Public Methods
 
-        public static void FormatAggregatesTable(System.Windows.Forms.DataGridView dgv)
+        public static void FormatAggregatesTable(DataGridView dgv)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = true;
 
-            foreach (System.Windows.Forms.DataGridViewColumn c in dgv.Columns)
+            foreach (DataGridViewColumn c in dgv.Columns)
             {
                 string h = header(c.Name);
                 string n = number_format(c.Name);
@@ -362,7 +361,6 @@ namespace ProteoWPFSuite
             if (property_name == nameof(novel_mods)) return "Potentially Novel Mods";
             if (property_name == nameof(bu_PSMs)) return "Modified Bottom-Up PSMs";
             if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
-            if (property_name == nameof(bottom_up_evidence_for_all_PTMs)) return "Bottom-Up Evidence for All PTMs";
             if (property_name == nameof(grouped_accessions)) return "Grouped Accessions";
             if (property_name == nameof(new_intact_mass_id)) return "New Intact-Mass ID";
             if (property_name == nameof(linked_proteoform_references)) return "Linked Proteoform References";

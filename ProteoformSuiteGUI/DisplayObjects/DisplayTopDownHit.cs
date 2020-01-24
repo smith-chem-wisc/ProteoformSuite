@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 
-namespace ProteoWPFSuite
+namespace ProteoformSuiteGUI
 {
     public class DisplayTopDownHit : DisplayObject
     {
@@ -30,7 +31,6 @@ namespace ProteoWPFSuite
         {
             get { return h.pfr_accession; }
         }
-
         public string input_file_filename
         {
             get { return h.filename; }
@@ -108,17 +108,18 @@ namespace ProteoWPFSuite
             get { return h.score; }
         }
 
+
         #endregion Public Properties
 
         #region Public Methods
 
-        public static void FormatTopDownHitsTable(System.Windows.Forms.DataGridView dgv)
+        public static void FormatTopDownHitsTable(DataGridView dgv)
         {
             if (dgv.Columns.Count <= 0) return;
 
             dgv.AllowUserToAddRows = false;
 
-            foreach (System.Windows.Forms.DataGridViewColumn c in dgv.Columns)
+            foreach (DataGridViewColumn c in dgv.Columns)
             {
                 string h = header(c.Name);
                 string n = number_format(c.Name);

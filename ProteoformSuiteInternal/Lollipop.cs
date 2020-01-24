@@ -21,9 +21,9 @@ namespace ProteoformSuiteInternal
     {
         #region Constants
 
-        public static readonly double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
-        public static readonly double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
-        public static readonly double PROTON_MASS = 1.007276474;
+        public static double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
+        public static double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public static double PROTON_MASS = 1.007276474;
 
         #endregion Constants
 
@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Deconvolution Results for Identification (.xlsx, .tsv, .txt)",
+            "Deconvolution Results for Identification (.xlsx, .tsv, .txt, .csv)",
             "Deconvolution Results for Quantification (.xlsx, .tsv. txt)",
             "Protein Databases (.xml, .xml.gz, .fasta)",
             "Top-Down Hit Results (.xlsx, .psmtsv )",
@@ -61,7 +61,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly List<string>[] acceptable_extensions = new[]
         {
-            new List<string> { ".xlsx", ".tsv", ".txt" },
+            new List<string> { ".xlsx", ".tsv", ".txt", ".csv" },
             new List<string> { ".xlsx", ".tsv", ".txt"  },
             new List<string> { ".xml", ".gz", ".fasta" },
             new List<string> { ".xlsx" , ".psmtsv"},
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_filters = new[]
         {
-            "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt, *.csv) | *.xlsx;*.tsv;*.txt;*.csv",
             "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
             "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
@@ -515,6 +515,20 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+
+            List<TopDownProteoform> to_remove = new List<TopDownProteoform>();
+            foreach (var proteoform in topdown_proteoforms)
+            {
+                //if all ambiguous matches are contained
+                if (topdown_proteoforms.Where(p => p != proteoform && Math.Abs(p.agg_rt - proteoform.agg_rt) <= Convert.ToDouble(td_retention_time_tolerance) && p.ambiguous_topdown_hits.Count <= proteoform.ambiguous_topdown_hits.Count)
+                .Any(p => p.ambiguous_topdown_hits.Select(r => r.pfr_accession.Split('|')[0]).Concat(new List<string>() { p.pfr_accession.Split('|')[0] })
+                .All(r => proteoform.ambiguous_topdown_hits.Select(h => h.pfr_accession.Split('|')[0]).Concat(new List<string>() { proteoform.pfr_accession.Split('|')[0] }).Contains(r))))
+                {
+                    to_remove.Add(proteoform);
+                }
+            }
+            topdown_proteoforms = topdown_proteoforms.Except(to_remove).ToList();
+
             return topdown_proteoforms;
         }
 

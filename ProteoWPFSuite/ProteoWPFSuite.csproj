@@ -304,6 +304,7 @@
     <Compile Include="ExperimentTheoreticalComparison.xaml.cs">
       <DependentUpon>ExperimentTheoreticalComparison.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperClass\BaseSequenceAnnotation.cs" />
     <Compile Include="HelperClass\ClosingTabHeader.xaml.cs">
       <DependentUpon>ClosingTabHeader.xaml</DependentUpon>
     </Compile>

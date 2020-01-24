@@ -78,11 +78,17 @@
                 </WindowsFormsHost>
             </Grid>
             <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
-            <Grid Grid.Row="2">
+            <!--<Grid Grid.Row="2">
                 <WindowsFormsHost Grid.Row="3" Margin="2 2 2 2">
                     <winform:RichTextBox  x:Name="rtb_sequence"></winform:RichTextBox>
                 </WindowsFormsHost>
-            </Grid>
+            </Grid>-->
+            <ScrollViewer Name="BaseSequenceAnnotationScrollViewer" Grid.Row="2" MaxHeight="120" 
+                                              VerticalScrollBarVisibility="Auto">
+                <Grid Name="baseSequenceAnnotationCanvasGrid" ScrollViewer.CanContentScroll="True">
+                    <Canvas x:Name="baseSequenceAnnotationCanvas"/>
+                </Grid>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </UserControl>
