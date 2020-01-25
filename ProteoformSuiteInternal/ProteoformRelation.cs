@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
         public ProteoformComparison RelationType { get; set; }
-
+        public bool Identification { get; set; } = false;
         /// <summary>
         /// Is this relation in an accepted peak?
         /// ProteoformRelation.accepted may not be the same as DeltaMassPeak.peak_accepted, which denotes whether the peak is accepted.
@@ -70,7 +70,6 @@ namespace ProteoformSuiteInternal
 
             if (CH2 == null || HPO3 == null)
             {
-                Loaders.LoadElements();
                 CH2 = ChemicalFormula.ParseFormula("C1 H2");
                 HPO3 = ChemicalFormula.ParseFormula("H1 O3 P1");
             }
@@ -81,19 +80,84 @@ namespace ProteoformSuiteInternal
             }
 
 
-            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
-                && pf2 as TheoreticalProteoform != null)
+            List<PtmSet> candidate_sets = new List<PtmSet>();
+            if (Sweet.lollipop.et_use_notch && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
             {
-                List<PtmSet> candidate_sets = new List<PtmSet>();
-
-                if (Sweet.lollipop.et_use_notch || Sweet.lollipop.peak_width_base_et > 0.09)
+                if (Sweet.lollipop.et_use_notch && !Sweet.lollipop.et_notch_ppm)
                 {
-                    double mass = delta_mass - (Sweet.lollipop.et_use_notch
-                        ? Sweet.lollipop.notch_tolerance_et
-                        : Sweet.lollipop.peak_width_base_et);
-                    while(mass <= delta_mass + (Sweet.lollipop.et_use_notch
-                              ? Sweet.lollipop.notch_tolerance_et
-                              : Sweet.lollipop.peak_width_base_et))
+                    double mass = delta_mass - Sweet.lollipop.notch_tolerance_et;
+                    while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_et)
+                    {
+                        Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
+                            Math.Round(mass, 1), out List<PtmSet> candidates);
+                        if (candidates != null)
+                        {
+                            candidate_sets.AddRange(candidates);
+                        }
+
+                        mass += 0.1;
+                    }
+
+                    candidate_sets = candidate_sets.Distinct().ToList();
+                }
+                else
+                {
+                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
+                }
+
+                if (candidate_sets != null)
+                {
+                    candidate_sets = candidate_sets.Where(s => Sweet.lollipop.et_notch_ppm
+                        ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
+                          Sweet.lollipop.notch_tolerance_et
+                        : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_et).ToList();
+                    candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
+                }
+            }
+
+            else if (Sweet.lollipop.ee_use_notch &&
+                     (relation_type == ProteoformComparison.ExperimentalExperimental ||
+                      relation_type == ProteoformComparison.ExperimentalFalse))
+            {
+                if (Sweet.lollipop.ee_use_notch && !Sweet.lollipop.ee_notch_ppm)
+                {
+                    double mass = delta_mass - Sweet.lollipop.notch_tolerance_ee;
+                    while (mass <= delta_mass + Sweet.lollipop.notch_tolerance_ee)
+                    {
+                        Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(
+                            Math.Round(mass, 1), out List<PtmSet> candidates);
+                        if (candidates != null)
+                        {
+                            candidate_sets.AddRange(candidates);
+                        }
+
+                        mass += 0.1;
+                    }
+
+                    candidate_sets = candidate_sets.Distinct().ToList();
+                }
+                else 
+                {
+                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary_notches.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
+                }
+
+                if (candidate_sets != null)
+                {
+                    candidate_sets = candidate_sets.Where(s => Sweet.lollipop.ee_notch_ppm
+                        ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
+                          Sweet.lollipop.notch_tolerance_ee
+                        : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_ee).ToList();
+                    candidate_ptmset = candidate_sets.OrderBy(s => s.ptm_rank_sum).FirstOrDefault();
+                }
+            }
+            else if
+            (relation_type == ProteoformComparison.ExperimentalTheoretical ||
+             relation_type == ProteoformComparison.ExperimentalDecoy)
+            {
+                if (Sweet.lollipop.peak_width_base_et > 0.09)
+                {
+                    double mass = delta_mass - Sweet.lollipop.peak_width_base_et;
+                    while (mass <= delta_mass + Sweet.lollipop.peak_width_base_et)
                     {
                         Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(
                             Math.Round(mass, 1), out List<PtmSet> candidates);
@@ -101,63 +165,59 @@ namespace ProteoformSuiteInternal
                         {
                             candidate_sets.AddRange(candidates);
                         }
+
                         mass += 0.1;
                     }
 
                     candidate_sets = candidate_sets.Distinct().ToList();
-
                 }
                 else
                 {
-                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out candidate_sets);
+                    Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(
+                        Math.Round(delta_mass, 1), out candidate_sets);
                 }
 
-                if (candidate_sets != null && candidate_sets.Count > 0)
+                if (pf2 as TheoreticalProteoform != null && candidate_sets != null && candidate_sets.Count > 0)
                 {
-                    TheoreticalProteoform t = pf2 as TheoreticalProteoform;
-                    double mass_tolerance = t.modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                     List<PtmSet> narrower_range_of_candidates = new List<PtmSet>();
                     if (Sweet.lollipop.et_use_notch)
                     {
-                        var sets_in_notches = candidate_sets.Where(s => s.ptm_combination.Count < 2 ||
-                                                                                 (s.ptm_combination.Count < 3 &&
-                                                                                  s.ptm_combination.Count -
-                                                                                  s.ptm_combination.Count(p =>
-                                                                                      p.modification.ModificationType ==
-                                                                                      "Deconvolution Error") <=
-                                                                                  1)).ToList();
-                        narrower_range_of_candidates = sets_in_notches.Where(s => Sweet.lollipop.et_notch_ppm
-                                ? Math.Abs(s.mass - delta_mass) * 1e6 / pf1.modified_mass <
-                                  Sweet.lollipop.notch_tolerance_et
-                                : Math.Abs(s.mass - delta_mass) < Sweet.lollipop.notch_tolerance_et).ToList();
+                        narrower_range_of_candidates = candidate_sets;
                     }
                     else
                     {
-                        narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < Sweet.lollipop.peak_width_base_et).ToList();
+                        narrower_range_of_candidates = candidate_sets
+                            .Where(s => Math.Abs(s.mass - delta_mass) < Sweet.lollipop.peak_width_base_et).ToList();
                     }
 
+                    TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                     candidate_ptmset = Proteoform.generate_possible_added_ptmsets(narrower_range_of_candidates,
-                            Sweet.lollipop.theoretical_database.all_mods_with_mass, t, pf2.begin, pf2.end, pf2.ptm_set,
+                            Sweet.lollipop.theoretical_database.all_mods_with_mass, t, pf2.begin, pf2.end,
+                            pf2.ptm_set,
                             Sweet.lollipop.mod_rank_first_quartile, false).OrderBy(x =>
                             x.ptm_rank_sum +
                             Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) *
                             10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                         .FirstOrDefault();
+
                 }
             }
 
             // Start the model (0 Da) at the mass defect of CH2 or HPO3 itself, allowing the peak width tolerance on either side
-            double half_peak_width = RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
-                Sweet.lollipop.peak_width_base_et / 2 :
-                Sweet.lollipop.peak_width_base_ee / 2;
-            double low_decimal_bound = half_peak_width + ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) <= CH2.MonoisotopicMass ? CH2.MonoisotopicMass : Math.Abs(delta_mass));
-            double high_decimal_bound = 1 - half_peak_width + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
-            double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
+                double half_peak_width = RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
+                    Sweet.lollipop.peak_width_base_et / 2 :
+                    Sweet.lollipop.peak_width_base_ee / 2;
+                double low_decimal_bound = half_peak_width + ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) <= CH2.MonoisotopicMass ? CH2.MonoisotopicMass : Math.Abs(delta_mass));
+                double high_decimal_bound = 1 - half_peak_width + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
+                double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
 
             outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound
                 || high_decimal_bound <= low_decimal_bound;
-            if (Sweet.lollipop.et_use_notch)
+            if (Sweet.lollipop.et_use_notch && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
                 outside_no_mans_land = true;
+            if (Sweet.lollipop.ee_use_notch && (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse))
+                outside_no_mans_land = true;
+
         }
 
         #endregion Public Constructors

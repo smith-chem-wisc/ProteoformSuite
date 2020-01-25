@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MathNet.Numerics.Statistics;
 
 namespace ProteoformSuiteInternal
 {
@@ -14,8 +15,6 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, string>, double> conditionBiorep_avgLog2I { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to impute bft-intensities
         public Dictionary<Tuple<string, string>, double> conditionBiorep_stdevLog2I { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to impute bft-intensities
         public Dictionary<Tuple<string, string>, double> conditionBiorepIntensitySums { get; set; } = new Dictionary<Tuple<string, string>, double>(); // used to normalize columns
-        public double benjiHoch_fdr { get; set; } = 0.05;
-        public double minFoldChange { get; set; } = 1.0;
         public List<ProteinWithGoTerms> inducedOrRepressedProteins { get; set; } = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
         public GoAnalysis GoAnalysis { get; set; } = new GoAnalysis();
         public QuantitativeDistributions QuantitativeDistributions { get; set; }
@@ -79,14 +78,14 @@ namespace ProteoformSuiteInternal
             int rank = 1;
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms.OrderBy(x => x.quant.Log2FoldChangeValues.pValue_uncorrected))
             {
-                pf.quant.Log2FoldChangeValues.benjiHoch_value = (double)rank++ / Sweet.lollipop.satisfactoryProteoforms.Count * benjiHoch_fdr;
+                pf.quant.Log2FoldChangeValues.benjiHoch_value = (double)rank++ / Sweet.lollipop.satisfactoryProteoforms.Count * Sweet.lollipop.benjiHoch_fdr;
                 if (pf.quant.Log2FoldChangeValues.pValue_uncorrected < pf.quant.Log2FoldChangeValues.benjiHoch_value)
                     benjiHoch_criticalValue = pf.quant.Log2FoldChangeValues.benjiHoch_value;
             }
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                pf.quant.Log2FoldChangeValues.significant = Math.Abs(pf.quant.Log2FoldChangeValues.logfold2change) >= minFoldChange && pf.quant.Log2FoldChangeValues.benjiHoch_value <= benjiHoch_criticalValue; // every test at or below the critical value is significant, even if the p-value is greater than its benjiHoch value
+                pf.quant.Log2FoldChangeValues.significant = Math.Abs(pf.quant.Log2FoldChangeValues.logfold2change) >= Sweet.lollipop.minFoldChange && pf.quant.Log2FoldChangeValues.benjiHoch_value <= benjiHoch_criticalValue; // every test at or below the critical value is significant, even if the p-value is greater than its benjiHoch value
             }
 
             inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), GoAnalysis);
@@ -97,23 +96,77 @@ namespace ProteoformSuiteInternal
         public void normalize_bft_intensities(List<ExperimentalProteoform> satisfactoryProteoforms)
         {
             // Calculate avgLog2Intensity and stdevLog2Intensity for each file-condition --> for normalize
-            Dictionary<Tuple<string, string>, List<double>> conditionBiorep_intensities = new Dictionary<Tuple<string, string>, List<double>>();
-            List<BiorepIntensity> allOriginalIntensities = satisfactoryProteoforms.SelectMany(pf => pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Concat(pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities)).ToList();
-            foreach (BiorepIntensity bft in allOriginalIntensities)
-            {
-                Tuple<string, string> key2 = new Tuple<string, string>(bft.condition, bft.biorep);
-                bool yes = conditionBiorep_intensities.TryGetValue(key2, out List<double> intensities2);
-                if (yes) intensities2.Add(bft.intensity_sum);
-                else conditionBiorep_intensities.Add(key2, new List<double> { bft.intensity_sum });
-            }
-            conditionBiorepIntensitySums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum()); // this is the linear intensity sum
-            foreach (BiorepIntensity bft in allOriginalIntensities)
-            {
-                double norm_divisor = conditionBiorepIntensitySums[new Tuple<string, string>(bft.condition, bft.biorep)] /
-                    (Sweet.lollipop.neucode_labeled ? conditionBiorepIntensitySums.Where(kv => kv.Key.Item2 == bft.biorep).Average(kv => kv.Value) : conditionBiorepIntensitySums.Average(kv => kv.Value));
-                bft.intensity_sum = bft.intensity_sum / norm_divisor;
-            }
-            #endregion Public Method
+
+            //if (Sweet.lollipop.neucode_labeled)
+            //{
+                Dictionary<Tuple<string, string>, List<double>> conditionBiorep_intensities = new Dictionary<Tuple<string, string>, List<double>>();
+                List<BiorepIntensity> allOriginalIntensities = satisfactoryProteoforms.SelectMany(pf => pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Concat(pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities)).ToList();
+                foreach (BiorepIntensity bft in allOriginalIntensities)
+                {
+                    Tuple<string, string> key2 = new Tuple<string, string>(bft.condition, bft.biorep);
+                    bool yes = conditionBiorep_intensities.TryGetValue(key2, out List<double> intensities2);
+                    if (yes) intensities2.Add(bft.intensity_sum);
+                    else conditionBiorep_intensities.Add(key2, new List<double> { bft.intensity_sum });
+                }
+                conditionBiorepIntensitySums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum()); // this is the linear intensity sum
+                foreach (BiorepIntensity bft in allOriginalIntensities)
+                {
+                    double norm_divisor = conditionBiorepIntensitySums[new Tuple<string, string>(bft.condition, bft.biorep)] /
+                        (Sweet.lollipop.neucode_labeled ? conditionBiorepIntensitySums.Where(kv => kv.Key.Item2 == bft.biorep).Average(kv => kv.Value) : conditionBiorepIntensitySums.Average(kv => kv.Value));
+                    bft.intensity_sum = bft.intensity_sum / norm_divisor;
+                }
+            //}
+
+            //else
+            //{
+            //    Dictionary<Tuple<string, string>, List<double>> conditionBiorep_intensities = new Dictionary<Tuple<string, string>, List<double>>();
+            //    List<BiorepIntensity> allOriginalIntensities = satisfactoryProteoforms.SelectMany(pf => pf.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Concat(pf.quant.Log2FoldChangeValues.denominatorOriginalIntensities)).ToList();
+            //    foreach (BiorepIntensity bft in allOriginalIntensities)
+            //    {
+            //        Tuple<string, string> key2 = new Tuple<string, string>(bft.condition, bft.biorep);
+            //        bool yes = conditionBiorep_intensities.TryGetValue(key2, out List<double> intensities2);
+            //        if (yes) intensities2.Add(bft.intensity_sum);
+            //        else conditionBiorep_intensities.Add(key2, new List<double> { bft.intensity_sum });
+            //    }
+            //    conditionBiorepIntensitySums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum()); // this is the linear intensity sum
+
+
+            //    Tuple<string, string> conditionBiorept_with_least_missing_values = conditionBiorep_intensities.OrderBy(p => p.Value.Count(v => v > 0)).First().Key;
+            //    foreach (var conditionBiorep in conditionBiorep_intensities.Keys)
+            //    {
+            //        if (conditionBiorep != conditionBiorept_with_least_missing_values)
+            //        {
+            //            List<double> foldChanges = new List<double>();
+            //            foreach (var p in satisfactoryProteoforms)
+            //            {
+            //                double conditionBiorepIntensityThis = p.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Where(i => i.condition ==
+            //                conditionBiorep.Item1 && i.biorep == conditionBiorep.Item2).Sum(i => i.intensity_sum)
+            //                + p.quant.Log2FoldChangeValues.denominatorOriginalIntensities.Where(i => i.condition ==
+            //               conditionBiorep.Item1 && i.biorep == conditionBiorep.Item2).Sum(i => i.intensity_sum);
+            //                double conditionBiorepIntensity1 = p.quant.Log2FoldChangeValues.numeratorOriginalIntensities.Where(i => i.condition ==
+            //                conditionBiorept_with_least_missing_values.Item1 && i.biorep == conditionBiorept_with_least_missing_values.Item2).Sum(i => i.intensity_sum)
+            //                + p.quant.Log2FoldChangeValues.denominatorOriginalIntensities.Where(i => i.condition ==
+            //               conditionBiorept_with_least_missing_values.Item1 && i.biorep == conditionBiorept_with_least_missing_values.Item2).Sum(i => i.intensity_sum);
+            //                if (conditionBiorepIntensity1 > 0 && conditionBiorepIntensityThis > 0)
+            //                {
+            //                    foldChanges.Add(conditionBiorepIntensityThis / conditionBiorepIntensity1);
+            //                }
+            //            }
+            //            double medianFoldChange = foldChanges.Median();
+            //            double normalizationFactor = 1.0 / medianFoldChange;
+
+
+            //            foreach (BiorepIntensity bft in allOriginalIntensities)
+            //            {
+            //                if (bft.condition == conditionBiorep.Item1 && bft.biorep == conditionBiorep.Item2)
+            //                {
+            //                    bft.intensity_sum = bft.intensity_sum * normalizationFactor;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
+        #endregion Public Method
     }
 }

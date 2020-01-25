@@ -24,8 +24,9 @@ namespace ProteoformSuiteInternal
             name = string.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
             fragment = string.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
             contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
-            //  psm_list = theoreticals_with_contaminants_first.SelectMany(p => p.psm_list).ToList();
             topdown_theoretical = theoreticals_with_contaminants_first.Any(t => t.topdown_theoretical);
+            new_topdown_proteoform = theoreticals_with_contaminants_first.Any(t => t.new_topdown_proteoform);
+            bottom_up_PSMs = theoreticals_with_contaminants_first.SelectMany(t => t.bottom_up_PSMs).Distinct().ToList();
         }
 
         #endregion Public Constructor

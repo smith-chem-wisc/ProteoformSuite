@@ -22,27 +22,26 @@ namespace ProteoWPFSuite
         public TheoreticalDatabase()
         {
             InitializeComponent();
+            InitializeParameterSet();
+            initial_load = false;
         }
         #endregion Public Constructor
+
         #region Private Fields
 
         OpenFileDialog openAccessionListDialog = new OpenFileDialog();
         bool initial_load = true;
 
         #endregion Private Fields
+
         #region Public Property
 
         public List<DataTable> DataTables { get; private set; }
 
         #endregion Public Property
-        #region Private Methods
 
-        private void TheoreticalDatabase_Load(object sender, EventArgs e)
-        {
-            InitializeParameterSet();
-            initial_load = false;
-        }
-    
+        #region Private Methods
+        
         //new trick in wpf
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
@@ -51,8 +50,11 @@ namespace ProteoWPFSuite
             Mouse.OverrideCursor = null;
         }
 
-        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
+        private void Cmbx_DisplayWhichDB_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
             if (!initial_load)
             {
                 string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
@@ -64,7 +66,7 @@ namespace ProteoWPFSuite
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        private void cmb_empty_TextChanged(object sender, EventArgs e) { }
+        private void cmb_empty_TextChanged(object sender, TextChangedEventArgs e) { }
 
         #endregion Private Methods
 
@@ -113,12 +115,13 @@ namespace ProteoWPFSuite
             cmbx_DisplayWhichDB.ItemsSource = new BindingList<string>(databases);
             cb_useRandomSeed.IsChecked = Sweet.lollipop.useRandomSeed_decoys;
             nud_randomSeed.Value = Sweet.lollipop.randomSeed_decoys;
+            cmbx_DisplayWhichDB.SelectedIndex = 0;
         }
 
         public void InitializeParameterSet()
         {
-            btn_NeuCode_Lt.IsChecked = Sweet.lollipop.neucode_labeled;
-            btn_NaturalIsotopes.IsChecked = !Sweet.lollipop.neucode_labeled;
+            //btn_NeuCode_Lt.IsChecked = Sweet.lollipop.neucode_labeled;
+            //btn_NaturalIsotopes.IsChecked = !Sweet.lollipop.neucode_labeled;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -132,9 +135,10 @@ namespace ProteoWPFSuite
             nUD_MinPeptideLength.Maximum = 20;
             nUD_MinPeptideLength.Value = Sweet.lollipop.min_peptide_length;
 
+            cb_average_mass.IsChecked = Sweet.lollipop.use_average_mass;
             ckbx_combineIdenticalSequences.IsChecked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.IsChecked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
-            cb_limitLargePtmSets.IsChecked = Sweet.lollipop.theoretical_database.limit_triples_and_greater;
+            cb_limitLargePtmSets.IsChecked = Sweet.lollipop.limit_triples_and_greater;
             cb_useRandomSeed.IsChecked = Sweet.lollipop.useRandomSeed_decoys;
             nud_randomSeed.Value = Sweet.lollipop.randomSeed_decoys;
             ckbx_OxidMeth.IsChecked = Sweet.lollipop.methionine_oxidation;
@@ -143,7 +147,8 @@ namespace ProteoWPFSuite
             ckbx_combineIdenticalSequences.IsChecked = Sweet.lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.IsChecked = Sweet.lollipop.combine_theoretical_proteoforms_byMass;
 
-            tb_modTypesToExclude.Text = string.Join(",", Sweet.lollipop.mod_types_to_exclude);
+            tb_modTypesToExclude.Text =
+                String.Join(",", Sweet.lollipop.mod_types_to_exclude);
 
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
@@ -158,13 +163,20 @@ namespace ProteoWPFSuite
 
         public void RunTheGamut(bool full_run)
         {
-            ClearListsTablesFigures(true);
-            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
-            FillTablesAndCharts();
-            if (!full_run && BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            if (ReadyToRunTheGamut())
             {
-                MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    string.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary.Distinct()));
+                ClearListsTablesFigures(true);
+                Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
+                FillTablesAndCharts();
+                if (!full_run && Sweet.lollipop.bottomupReader.bad_ptms.Count() > 0)
+                {
+                    MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
+                        string.Join(", ", Sweet.lollipop.bottomupReader.bad_ptms.Distinct()));
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please list at least one protein database.");
             }
         }
 
@@ -212,41 +224,29 @@ namespace ProteoWPFSuite
 
         #region CHECKBOXES Private Methods
 
-        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.combine_identical_sequences = (bool)ckbx_combineIdenticalSequences.IsChecked;
         }
 
-        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.combine_theoretical_proteoforms_byMass = (bool)ckbx_combineTheoreticalsByMass.IsChecked;
         }
 
-        private void ckbx_OxidMeth_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_OxidMeth_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.methionine_oxidation = (bool)ckbx_OxidMeth.IsChecked;
         }
 
-        private void ckbx_Carbam_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_Carbam_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.carbamidomethylation = (bool)ckbx_Carbam.IsChecked;
         }
 
-        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.methionine_cleavage = (bool)ckbx_Meth_Cleaved.IsChecked;
-        }
-
-        private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
-        {
         }
 
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
@@ -264,9 +264,9 @@ namespace ProteoWPFSuite
             Sweet.lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
         }
 
-        private void cb_limitLargePtmSets_CheckedChanged(object sender, EventArgs e)
+        private void cb_limitLargePtmSets_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            Sweet.lollipop.theoretical_database.limit_triples_and_greater = (bool)cb_limitLargePtmSets.IsChecked;
+            Sweet.lollipop.limit_triples_and_greater = (bool)cb_limitLargePtmSets.IsChecked;
         }
 
         #endregion CHECKBOXES Private Methods
@@ -276,6 +276,7 @@ namespace ProteoWPFSuite
         private void dgv_loadFiles_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
+         
         }
 
         private void dgv_loadFiles_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
@@ -286,7 +287,6 @@ namespace ProteoWPFSuite
         private void drag_drop(System.Windows.Forms.DragEventArgs e, ComboBox cmb, System.Windows.Forms.DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (DisplayUtility.CheckForProteinFastas(cmb, files)) return; // todo: implement protein fasta usage
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
@@ -295,15 +295,16 @@ namespace ProteoWPFSuite
         public void reload_database_list()
         {
             cmb_loadTable.Items.Clear();
-            Lollipop.file_lists.ToList().ForEach(itm => cmb_loadTable.Items.Add(itm));//might be a problem
+            // Lollipop.file_lists.ToList().ForEach(itm => cmb_loadTable.Items.Add(itm));//might be a problem // edit: it WAS a problem
+            for (int i = 0; i < 4; i++)
+                cmb_loadTable.Items.Add(Lollipop.file_lists[i]);
             cmb_loadTable.SelectedIndex = 2;
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             initialize_table_bindinglist();
-
         }
 
-        private void tb_tableFilter_TextChanged(object sender, EventArgs e)
+        private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             List<TheoreticalProteoform> theoreticals_to_display = cmbx_DisplayWhichDB.SelectedItem.ToString() == "Target" ?
                  Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.ToList()
@@ -316,21 +317,25 @@ namespace ProteoWPFSuite
         }
 
         Regex substituteWhitespace = new Regex(@"\s+");
-        private void tb_modTypesToExclude_TextChanged(object sender, EventArgs e)
+        private void tb_modTypesToExclude_TextChanged(object sender, TextChangedEventArgs e)
         {
             Sweet.lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
-
+        /*
         private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
         {
-            //DELETE THIS BUTTON
-        }
+            Lollipop.enter_uniprot_ptmlist(Environment.CurrentDirectory);
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            btn_downloadUniProtPtmList.IsEnabled = false;
+            SetMakeDatabaseButton();
+        }*/
 
         #endregion LOAD DATABASES GRID VIEW Private Methods
 
         #region ADD/CLEAR Private Methods
 
-        private void btn_addFiles_Click(object sender, EventArgs e)
+        private void btn_addFiles_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = cmb_loadTable.SelectedItem.ToString();
@@ -339,54 +344,55 @@ namespace ProteoWPFSuite
             
             if ((bool)openFileDialog.ShowDialog())
             {
-                if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
+                // if (DisplayUtility.CheckForProteinFastas(cmb_loadTable, openFileDialog.FileNames)) return; // todo: implement protein fasta usage
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Sweet.lollipop.input_files, true);
             }
 
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
- 
+           
         }
 
-        private void btn_clearFiles_Click(object sender, EventArgs e)
+        private void btn_clearFiles_Click(object sender, RoutedEventArgs e)
         {
             List<InputFile> files_to_remove = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).ToList();
             Sweet.save_actions.RemoveAll(a => files_to_remove.Any(f => a.Contains(f.complete_path)));
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(files_to_remove).ToList();
             DisplayUtility.FillDataGridView(dgv_loadFiles, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            //SetMakeDatabaseButton();
         }
 
         #endregion ADD/CLEAR Private Methods
 
         #region Modification Names Private Methods
 
-        private void btn_saveModNames_Click(object sender, EventArgs e)
+        private void btn_saveModNames_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog d = new SaveFileDialog();
             d.Title = "Modification Names";
             d.Filter = "Modification Names (*.modnames) | *.modnames";
 
-            if ((bool)d.ShowDialog())
+            if (!(bool) d.ShowDialog())
                 return;
 
             Sweet.lollipop.theoretical_database.save_unlocalized_names(d.FileName);
         }
 
-        private void btn_amendModNames_Click(object sender, EventArgs e)
+        private void btn_amendModNames_Click(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.theoretical_database.amend_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
             MessageBox.Show("Successfully amended stored modification names.", "Amend Stored Mod Names");
         }
 
-        private void btn_loadModNames_Click(object sender, EventArgs e)
+        private void btn_loadModNames_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog d = new OpenFileDialog();
             d.Title = "Modification Names";
             d.Filter = "Modification Names (*.modnames) | *.modnames";
             d.Multiselect = false;
 
-            if ((bool)d.ShowDialog())
+            if (!(bool)d.ShowDialog())
                 return;
 
             Sweet.lollipop.theoretical_database.load_unlocalized_names(d.FileName);
@@ -394,7 +400,7 @@ namespace ProteoWPFSuite
             DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
         }
 
-        private void tb_modTableFilter_TextChanged(object sender, EventArgs e)
+        private void tb_modTableFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             IEnumerable<object> selected_unmods = tb_modTableFilter.Text == "" ?
                 Sweet.lollipop.theoretical_database.unlocalized_lookup.Values :
@@ -405,7 +411,7 @@ namespace ProteoWPFSuite
 
         #endregion Modification Names Private Methods
 
-        private void cb_useRandomSeed_CheckedChanged(object sender, EventArgs e)
+        private void cb_useRandomSeed_CheckedChanged(object sender, RoutedEventArgs e)
         {
             Sweet.lollipop.useRandomSeed_decoys = (bool)cb_useRandomSeed.IsChecked;
         }
@@ -415,131 +421,18 @@ namespace ProteoWPFSuite
             Sweet.lollipop.randomSeed_decoys = Convert.ToInt32(nud_randomSeed.Value);
         }
 
+        private void cb_mostAbundantMass_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.use_average_mass = (bool)cb_average_mass.IsChecked;
+        }
 
         public ProteoformSweet MDIParent { get; set; }
-        
-        
-        
 
-        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
+        private void Cmb_loadTable_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
-        }
-
-        private void cmb_empty_TextChanged(object sender, TextChangedEventArgs e)
-        {
-        }        
-
-        private void btn_addFiles_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_downloadUniProtPtmList_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_clearFiles_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_NaturalIsotopes_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_NeuCode_Lt_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_NeuCode_Hv_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_Carbam_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_OxidMeth_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_Meth_Cleaved_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-        
-
-        
-
-        private void cb_useRandomSeed_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        
-
-        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        
-
-        private void cb_limitLargePtmSets_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void tb_modTypesToExclude_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void tb_modTypesToExclude_TextChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_Make_Databases_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_saveModNames_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_amendModNames_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btn_loadModNames_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void tb_modTableFilter_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void tb_tableFilter_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
+            // We do this to prevent firing TabControl's SelectionChanged event unintendedly
+            // Reference: https://stackoverflow.com/questions/3659858/in-c-sharp-wpf-why-is-my-tabcontrols-selectionchanged-event-firing-too-often
+            e.Handled = true;
         }
     }
 }

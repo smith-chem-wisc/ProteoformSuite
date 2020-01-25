@@ -11,15 +11,14 @@ namespace ProteoWPFSuite
     /// <summary>
     /// Interaction logic for TopDown.xaml
     /// </summary>
-    public partial class TopDown : UserControl, ISweetForm
+    public partial class TopDown : UserControl, ISweetForm, ITabbedMDI
     {
         private static Color[] colors = new Color[20];
         private static List<string> mods = new List<string>();
-        private ProteoformSweet parMDI;
         public TopDown()
         {
             InitializeComponent();
-            //this.parMDI = ((MainWindow)MDIHelpers.getParentWindow(this)).MDIParentControl;
+            InitializeParameterSet();
         }
 
         public void InitializeParameterSet()
@@ -35,6 +34,8 @@ namespace ProteoWPFSuite
         }
 
         public List<DataTable> DataTables { get; private set; }
+        public ProteoformSweet MDIParent { get; set; }
+
         public List<DataTable> SetTables()
         {
             DataTables = new List<DataTable>
@@ -83,24 +84,24 @@ namespace ProteoWPFSuite
             if (!full_run)
             {
                 List<string> warning_methods = new List<string>() { "Warning:" };
-                if (Sweet.lollipop.topdownReader.bad_topdown_ptms.Count > 0)
+                if (Sweet.lollipop.topdownReader.bad_ptms.Count > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_topdown_ptms.Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdownReader.bad_ptms.Distinct()));
                 }
-                if (Sweet.lollipop.topdown_proteoforms.Count(t => !t.accepted) > 0)
+                if (Sweet.lollipop.topdown_proteoforms_no_theoretical.Count() > 0)
                 {
                     warning_methods.Add("Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: ");
-                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms.Where(t => !t.accepted).Select(t => t.accession.Split('_')[0]).Distinct()));
+                    warning_methods.Add(string.Join(", ", Sweet.lollipop.topdown_proteoforms_no_theoretical.Select(t => t.accession.Split('_')[0]).Concat(Sweet.lollipop.topdown_proteoforms.SelectMany(t => t.ambiguous_topdown_hits).Select(p => p.accession.Split('_')[0])).Distinct()));
                 }
                 if (warning_methods.Count > 1)
                 {
-                    MessageBox.Show(string.Join("\n\n", warning_methods));
+                    MessageBox.Show(String.Join("\n\n", warning_methods));
                 }
             }
             //need to refill theo database --> added theoreticsl
             
-            parMDI.theoreticalDatabase.FillTablesAndCharts();
+            MDIParent.theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
         }
         public void ClearListsTablesFigures(bool clear_following)
@@ -119,9 +120,9 @@ namespace ProteoWPFSuite
             rtb_sequence.Clear();
             if (clear_following)
             {
-                for (int i = parMDI.forms.IndexOf(this) + 1; i < parMDI.forms.Count; i++)
+                for (int i = MDIParent.forms.IndexOf(this) + 1; i < MDIParent.forms.Count; i++)
                 {
-                    ISweetForm sweet = parMDI.forms[i];
+                    ISweetForm sweet = MDIParent.forms[i];
                     if (sweet as RawExperimentalComponents == null)
                         sweet.ClearListsTablesFigures(false);
                 }

@@ -102,7 +102,6 @@ namespace Test
             e.modified_mass = modified_mass;
             e.agg_mass = modified_mass;
             e.lysine_count = lysine_count;
-            e.accepted = true;
             return e;
         }
 
@@ -124,16 +123,19 @@ namespace Test
         //TOPDOWN pROTEOFORM
         public static TopDownProteoform TopDownProteoform(string accession, double modified_mass, double retention_time)
         {
-            TopDownHit h = new TopDownHit();
+            SpectrumMatch h = new SpectrumMatch();
             h.reported_mass = modified_mass;
             h.theoretical_mass = modified_mass;
             h.ms2_retention_time = retention_time;
             h.sequence = "MSSSSSSSSSS";
             h.begin = 10;
             h.end = 20;
-            TopDownProteoform td = new TopDownProteoform(accession, new List<TopDownHit>() { h } );
+            h.pfr_accession = "";
+            h.name = "";
+            h.uniprot_id = "";
+            TopDownProteoform td = new TopDownProteoform(accession, new List<SpectrumMatch>() { h } );
+            td.topdown_geneName = new GeneName(new List<Tuple<string, string>> { new Tuple<string, string>("genename", "genename") });
             (td as ExperimentalProteoform).topdown_id = true;
-            td.accepted = true;
             return td;
         }
 

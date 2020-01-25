@@ -5,50 +5,100 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ProteoWPFSuite"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="1000" Width="Auto" Height="Auto">
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="15*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Width="Auto" HorizontalContentAlignment="Left" VerticalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.ColumnSpan="2" Width="Auto" HorizontalContentAlignment="Left" VerticalAlignment="Stretch">
             <MenuItem Header="File">
-                <MenuItem Header="Export Table"/>
-                <MenuItem Header="Export All Tables" Click="exportAllTablesToolStripMenuItem_Click"/>
-                <MenuItem Header="Print" Click="printToolStripMenuItem_Click"/>
-                <MenuItem Header="Close" Click="closeToolStripMenuItem_Click"/>
-            </MenuItem>
-            <MenuItem Header="Results">
-                <MenuItem Header="Load Results" Click="LoadResultsToolStripMenuItem_Click"/>
-                <MenuItem Header="Theoretical Proteoform Database"/>
-                <MenuItem x:Name="topdownResultsToolStripMenuItem" Header="Top-down Results"/>
-                <MenuItem Header="Raw Experimental Components"/>
-                <MenuItem x:Name="neuCodeProteoformPairsToolStripMenuItem" Header="NeuCode Proteoform Pairs"/>
-                <MenuItem Header="Aggregated Proteoforms"/>
-                <MenuItem Header="Experiment-Theoretical Comparison"/>
-                <MenuItem Header="Experiment-Experimental Comparison"/>
-                <MenuItem Header="Proteoform Family Assignment"/>
-                <MenuItem Header="Identified Proteoforms"/>
-                <MenuItem x:Name="quantificationToolStripMenuItem" Header="Quantification"/>
-                <MenuItem Header="Results Summary"/>
-                <MenuItem Header="test" Click="testWin"/>
-                
+                <MenuItem Header="Export Table" x:Name="exportTablesToolStripMenuItem" Click="exportTablesToolStripMenuItem_Click"/>
+                <MenuItem Header="Export All Tables" x:Name="exportAllTablesToolStripMenuItem" Click="exportAllTablesToolStripMenuItem_Click"/>
+                <MenuItem Header="Close" x:Name="closeToolStripMenuItem" Click="closeToolStripMenuItem_Click"/>
+
             </MenuItem>
             <MenuItem Header="Method">
-                <MenuItem Header="Save Method" />
-                <MenuItem Header="Load Method" />
+                <MenuItem Header="Save Method" Click="saveMethodToolStripMenuItem1_Click"/>
+                <MenuItem Header="Load Method" Click="loadSettingsToolStripMenuItem_Click"/>
             </MenuItem>
+
         </Menu>
-        <TabControl Grid.Row="1" Name="MDI_Parent">
-            <TabControl.ItemContainerStyle>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Content="Run Page" 
+                    x:Name="btn_RunPage"
+                    Margin="0 5 20 5" 
+                    Padding="20 0 20 0" 
+                    Height="30" 
+                    FontWeight="Bold" 
+                    Click="Btn_RunPage_Click"/>
+
+            <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore"  PreviewMouseDown="pressColor" PreviewMouseUp="restore">
+                <Button Click="Button_Click_Left" Height="25" Width="25" HorizontalAlignment="Right">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Polygon Points= "10,0 0,8 10,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
+                                    <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Border>
+            <Border BorderBrush="Gainsboro" MouseEnter="changeColor" MouseLeave="restore" MouseUp="restore" PreviewMouseDown="pressColor" PreviewMouseUp="restore">
+                <Button Click="Button_Click_Right" Height="25" Width="25">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Width="10" Height="10" Stroke="Black" Fill="Black" VerticalAlignment="Center"/>
+                                    <Polygon Points= "0,0 10,8 0,15" Stroke="Black" Fill="Black"  VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <TabControl x:Name="MDIContainer" SelectionChanged="MDIContainer_OnSelectionChanged" Grid.Row="1" Grid.ColumnSpan="2" Width="Auto" Height="Auto">
+            <!--<TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
-                    <Setter Property="Height" Value="Auto" />
-                    <Setter Property="Width" Value="Auto"/>
-                    <Setter Property="FontSize" Value="14px"/>
+                    <Setter Property="Height" Value="28" />
+                    <Setter Property="Width" Value="300"/>
+                    <Setter Property="FontSize" Value="12px"/>
                 </Style>
-            </TabControl.ItemContainerStyle>
-            <TabItem Header="Test"></TabItem>
+            </TabControl.ItemContainerStyle>-->
+            <TabControl.Template>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto"  VerticalScrollBarVisibility="Hidden">
+                            <TabPanel x:Name="HeaderPanel"
+                                      Panel.ZIndex ="1" 
+                                      KeyboardNavigation.TabIndex="1"
+                                      Grid.Column="0"
+                                      Grid.Row="0"
+                                      Margin="2,2,2,0"
+                                      IsItemsHost="true" />  
+                        </ScrollViewer>
+                        <ContentPresenter x:Name="PART_SelectedContentHost"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          Margin="{TemplateBinding Padding}"
+                                          ContentSource="SelectedContent" Grid.Row="1" />
+                    </Grid>
+                </ControlTemplate>
+            </TabControl.Template>
         </TabControl>
     </Grid>
-    
+
 </UserControl>

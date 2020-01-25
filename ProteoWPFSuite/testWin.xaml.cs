@@ -19,15 +19,6 @@ namespace ProteoWPFSuite
         public testWin()
         {
             InitializeComponent();
-            ProteoformSweet ctn = new ProteoformSweet();
-            Window wdo = new Window
-            {
-                Title = "Proteo Display",
-                Content = new ProteoformSweet(),
-                MinHeight = 450,
-                MinWidth = 800
-            };
-            wdo.Show();
             
             
         }

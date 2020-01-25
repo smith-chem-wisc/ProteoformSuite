@@ -31,14 +31,14 @@ namespace ProteoformSuiteInternal
         public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
 
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
-
-        //Settings
-        public bool limit_triples_and_greater = true;
+        public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary_notches = new Dictionary<double, List<PtmSet>>();
 
         //Constants
         private double ptmset_max_number_of_a_kind = 3;
 
         public Dictionary<char, double> aaIsotopeMassList;
+
+        public Dictionary<string, List<SpectrumMatch>> bottom_up_psm_by_accession = new Dictionary<string, List<SpectrumMatch>>();
 
         #endregion Public Fields
 
@@ -57,7 +57,7 @@ namespace ProteoformSuiteInternal
             //Read the UniProt-XML and ptmlist
             List<Modification> all_known_modifications = get_mods(current_directory);
           
-            Parallel.ForEach(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
+            foreach(var database in Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).ToList())
             {
                 if(database.extension == ".xml")
                 {
@@ -72,12 +72,12 @@ namespace ProteoformSuiteInternal
                         theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                    ProteinDbLoader.UniprotOrganismRegex, out var dbErrors).ToArray());
                 }
-            });
+            }
 
             Sweet.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
             unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<Modification> { new Ptm().modification }));
-            load_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
+            load_unlocalized_names(Path.Combine(current_directory, "Mods", "stored_mods.modnames"));
 
 
             //this is for ptmsets --> used in RELATIONS
@@ -89,6 +89,28 @@ namespace ProteoformSuiteInternal
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
             possible_ptmset_dictionary = make_ptmset_dictionary();
+
+            //read in bottom-up PSMs
+            bottom_up_psm_by_accession.Clear();
+            foreach (var file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
+            {
+                var bottom_up_psms = Sweet.lollipop.bottomupReader.ReadTDFile(file);
+                foreach (var psm in bottom_up_psms)
+                {
+                    string accession = psm.accession.Split('_')[0].Split('-')[0];
+                    bottom_up_psm_by_accession.TryGetValue(accession, out var psms);
+                    if (psms == null)
+                    {
+                        bottom_up_psm_by_accession.Add(accession, new List<SpectrumMatch>() { psm });
+                    }
+                    else
+                    {
+                        psms.Add(psm);
+                    }
+                }
+            }
+
+            //make theoreticals
             make_theoretical_proteoforms();
         }
 
@@ -166,7 +188,25 @@ namespace ProteoformSuiteInternal
                     double midpoint = Math.Round(Math.Round(set.mass, 1) - 0.5 + i * 0.1, 1);
                     if (possible_ptmsets.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
                     else possible_ptmsets.Add(midpoint, new List<PtmSet> { set });
+
                 }
+                if (set.ptm_combination.Count < 2 || (set.ptm_combination.Count < 3 &&
+                                                      set.ptm_combination.Count -
+                                                      set.ptm_combination.Count(p =>
+                                                          p.modification.ModificationType ==
+                                                          "Deconvolution Error") <=
+                                                      1))
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        double midpoint = Math.Round(Math.Round(set.mass, 1) - 0.5 + i * 0.1, 1);
+                        if (possible_ptmset_dictionary_notches.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
+                        else possible_ptmset_dictionary_notches.Add(midpoint, new List<PtmSet> { set });
+
+                    }
+
+                }
+
             }
             return possible_ptmsets;
         }
@@ -337,7 +377,7 @@ namespace ProteoformSuiteInternal
             //if top-down protein sequence, only add PTMs from that top-down proteoforms (will happen in add_topdown_theoreticals method)
             if (!prot.topdown_protein)
             {
-                List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
+                List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, Sweet.lollipop.limit_triples_and_greater);
 
                 //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
                 foreach (PtmSet ptm_set in unique_ptm_groups)
@@ -354,7 +394,6 @@ namespace ProteoformSuiteInternal
                             decoy_number < 0,
                             check_contaminants,
                             theoretical_proteins);
-                    t.topdown_theoretical = prot.topdown_protein;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
                 }
@@ -370,10 +409,23 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.OrderBy(t => t.modified_mass))
             {
                 List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
-                if (candidate_theoreticals.Count > 0)
+                bool accessions_in_database = true;
+                foreach(var hit in topdown.ambiguous_topdown_hits)
                 {
-                    topdown.gene_name = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
-                    topdown.geneID = string.Join("; ", candidate_theoreticals.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct());
+                    var ambiguous_hit_theoretical = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(hit.accession.Split('_')[0].Split('-')[0])).ToList();
+                    if(ambiguous_hit_theoretical.Count > 0)
+                    {
+                        hit.gene_name = new GeneName(ambiguous_hit_theoretical.SelectMany(t => t.GeneNames));
+                    }
+                    else
+                    {
+                        accessions_in_database = false;
+                    }
+                }
+
+                if (candidate_theoreticals.Count > 0 && accessions_in_database)
+                {
+                    topdown.topdown_geneName = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
                     if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
                     {
                         int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
@@ -384,8 +436,9 @@ namespace ProteoformSuiteInternal
                         new_proteins.Add(p);
                     }
                 }
-                else topdown.accepted = false;
+                else Sweet.lollipop.topdown_proteoforms_no_theoretical.Add(topdown);
             }
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.topdown_proteoforms.Except(Sweet.lollipop.topdown_proteoforms_no_theoretical).ToList();
             expanded_proteins = expanded_proteins.Concat(new_proteins).ToArray();
         }
 
@@ -394,7 +447,9 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0].Split('-')[0])
                 && p.sequence == seq).OrderBy(t => t.accession).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
-                if (!new_theoreticals.Any(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)))
+                var same_ptmset_theos = new_theoreticals.Where(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)).ToList();
+                foreach (var x in same_ptmset_theos) x.topdown_theoretical = true;
+                if (same_ptmset_theos.Count == 0)
                 {
                     //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
                     PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
@@ -411,6 +466,7 @@ namespace ProteoformSuiteInternal
                         false,
                         theoretical_proteins);
                     t.topdown_theoretical = true;
+                    t.new_topdown_proteoform = true;
                     new_theoreticals.Add(t);
                     ptm_set_counter++;
                 }
@@ -557,6 +613,8 @@ namespace ProteoformSuiteInternal
                     TheoreticalProteoform t = new TheoreticalProteoform(p.accession + "_DECOY_" + decoyNumber,
                         p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'),
                         p.ptm_set, false, p.contaminant, theoretical_proteins);
+                    t.topdown_theoretical = p.topdown_theoretical;
+                    t.new_topdown_proteoform = p.new_topdown_proteoform;
                     decoy_proteoforms.Add(t);
                 }
 

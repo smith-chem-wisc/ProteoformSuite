@@ -87,7 +87,7 @@ namespace Test
         }
 
         [Test]
-        public void TestDeltaMassPeakConstructorWithNotches()
+        public void TestETDeltaMassPeakConstructorWithNotches()
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.et_use_notch = true;
@@ -165,6 +165,88 @@ namespace Test
             Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
         }
 
+
+        [Test]
+        public void TestEFDeltaMassPeakConstructorWithNotches()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.ee_use_notch = true;
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            ConstructorsForTesting.read_mods();
+            Sweet.lollipop.ee_max_mass_difference = 250;
+
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("acession1");
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("accession2");
+            pf1.modified_mass = 1000;
+            pf2.modified_mass = 1000;
+            ProteoformComparison relation_type = ProteoformComparison.ExperimentalExperimental;
+            double delta_mass = 1 - 1e-7;
+
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("acession3");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("acession4");
+            pf3.modified_mass = 1000;
+            pf4.modified_mass = 1000;
+            ProteoformComparison relation_type2 = ProteoformComparison.ExperimentalExperimental;
+            double delta_mass2 = 1;
+
+
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("acession5");
+            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("acession6");
+            pf5.modified_mass = 1000;
+            pf6.modified_mass = 1000;
+            ProteoformComparison relation_type3 = ProteoformComparison.ExperimentalExperimental;
+            double delta_mass3 = 1 + 1e-7;
+
+            ExperimentalProteoform pf55 = ConstructorsForTesting.ExperimentalProteoform("acession5");
+            ExperimentalProteoform pf65 = ConstructorsForTesting.ExperimentalProteoform("acession6");
+            pf55.modified_mass = 1000;
+            pf65.modified_mass = 1000;
+            ProteoformComparison relation_type35 = ProteoformComparison.ExperimentalExperimental;
+            double delta_mass35 = 1 + 2e-7;
+
+            TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 1 });
+            List<ProteoformRelation> theList = new List<ProteoformRelation>();
+
+            theList.Add(new ProteoformRelation(pf1, pf2, relation_type, delta_mass, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf5, pf6, relation_type3, delta_mass3, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf55, pf65, relation_type35, delta_mass35, TestContext.CurrentContext.TestDirectory));
+
+            ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2, TestContext.CurrentContext.TestDirectory);
+
+            //base_relation.nearby_relations = base_relation.set_nearby_group(theList, theList.Select(r => r.InstanceId).ToList());
+            Console.WriteLine("Creating deltaMassPeak");
+            DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, new HashSet<ProteoformRelation>(theList));
+            Console.WriteLine("Created deltaMassPeak");
+
+            Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);
+            Assert.AreEqual(4, deltaMassPeak.grouped_relations.Count);
+            Assert.AreEqual("[fake1]", deltaMassPeak.possiblePeakAssignments_string);
+            Assert.AreEqual(1.0, deltaMassPeak.DeltaMass);
+            Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
+
+            decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
+
+            ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("experimental1");
+            ExperimentalProteoform pf8 = ConstructorsForTesting.ExperimentalProteoform("experimental2");
+            pf7.modified_mass = 1000;
+            pf8.modified_mass = 1000;
+            ProteoformComparison relation_type4 = ProteoformComparison.ExperimentalFalse;
+            double delta_mass4 = 1;
+            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4, TestContext.CurrentContext.TestDirectory);
+
+            decoy_relations["decoyDatabase1"].Add(decoy_relation);
+
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
+
+            decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
+        }
 
         [Test]
         public void TestAcceptDeltaMassPeaks()

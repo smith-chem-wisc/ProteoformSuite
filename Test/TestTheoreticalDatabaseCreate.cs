@@ -56,7 +56,7 @@ namespace Test
             Sweet.lollipop.min_peptide_length = 7;
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
-            Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
+            Sweet.lollipop.limit_triples_and_greater = false;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, database) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
 
@@ -92,7 +92,7 @@ namespace Test
             Sweet.lollipop.min_peptide_length = 7;
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
-            Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
+            Sweet.lollipop.limit_triples_and_greater = false;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
 
@@ -189,8 +189,43 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             var mods = ConstructorsForTesting.read_mods();
-            Assert.AreEqual(449, mods.Keys.Count);
+            Assert.AreEqual(471, mods.Keys.Count);
             //Assert.True(mods.Values.All(v => v.Count == 1));
+        }
+
+        [Test]
+        public void test_bottom_up_PSMs()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.et_high_mass_difference = 2;
+            Sweet.lollipop.et_low_mass_difference = -2;
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testHits.psmtsv") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Assert.AreEqual(10, Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count);
+
+            Sweet.lollipop.min_bu_peptides = 0;
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
+            e.modified_mass = 1816.0128; //Q3E770 - no bottomup-peptides
+            var relations = Sweet.lollipop.target_proteoform_community.relate(new ExperimentalProteoform[] { e }, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, false);
+            Assert.AreEqual(1, relations.Count);
+            Sweet.lollipop.min_bu_peptides = 1;
+            relations = Sweet.lollipop.target_proteoform_community.relate(new ExperimentalProteoform[] { e }, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, false);
+            Assert.AreEqual(0, relations.Count);
+            e.modified_mass = 29260.9826; //P0CX35
+            Sweet.lollipop.min_bu_peptides = 1;
+            relations = Sweet.lollipop.target_proteoform_community.relate(new ExperimentalProteoform[] { e }, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, false);
+            Assert.AreEqual(0, relations.Count); //modified peptide, no mod theoretical with this accession so returns 0
+            e.modified_mass = 59841.6191; //P32329
+            relations = Sweet.lollipop.target_proteoform_community.relate(new ExperimentalProteoform[] { e }, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, false);
+            Assert.AreEqual(1, relations.Count);
+
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("Q3E770", new PtmSet(new List<Ptm>()), 3, 20).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("P0CX35", new PtmSet(new List<Ptm>()), 3, 20).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("P0CX35", Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[80].Where(p => p.ptm_description.Contains("Phospho")).First(), 2, 500).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("P0CX35", Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[80].Where(p => p.ptm_description.Contains("Phospho")).First(), 1, 5).Count());
         }
 
         [Test]
@@ -333,7 +368,7 @@ namespace Test
             Sweet.lollipop.min_peptide_length = 7;
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
-            Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
+            Sweet.lollipop.limit_triples_and_greater = false;
             Sweet.lollipop.use_average_mass = true;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, database) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
@@ -367,42 +402,6 @@ namespace Test
             Assert.AreEqual(29358.61, Math.Round(modified.modified_mass, 2));
             Assert.AreEqual(29278.63, Math.Round(modified.unmodified_mass, 2));
         }
-
-        //[Test]
-        //public void bottom_up_peptides()
-        //{
-        //    Sweet.lollipop = new Lollipop();
-        //    Sweet.lollipop.max_ptms = 0;
-        //    Sweet.lollipop.methionine_oxidation = false;
-        //    Sweet.lollipop.decoy_databases = 1;
-        //    Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "BU_result_sliced-raw_5ppmAroundZero.mzid") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
-        //    Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-        //    Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-        //    Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "BU_result_sliced-raw_5ppmAroundZero.mzid"), Sweet.lollipop.theoretical_database.theoreticals_by_accession.Values.ToList()));
-
-        //    Assert.AreEqual(2, Sweet.lollipop.BottomUpPSMList.Count);
-        //    Assert.AreEqual(1, Sweet.lollipop.BottomUpPSMList.Count(p => p.modifications.Count > 0));
-        //    Assert.AreEqual(1, Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().modifications.Count);
-        //    Assert.AreEqual("(3R,4R)-3,4-dihydroxyproline", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().modifications.First().modification.id);
-        //    Assert.AreEqual("EGFQVADGP[(3R,4R)-3,4-dihydroxyproline]LYR", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().sequence_with_modifications);
-        //    Assert.AreEqual("(3R,4R)-3,4-dihydroxyproline@10", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().ptm_descriptions);
-        //    Assert.AreEqual("Unmodified", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count == 0).First().ptm_descriptions);
-        //    Assert.AreEqual("EGFQVADGPLYR", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count == 0).First().sequence_with_modifications);
-        //    Assert.AreEqual(1, BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count);
-        //    Assert.AreEqual("PTM not in database", BottomUpReader.bottom_up_PTMs_not_in_dictionary.First());
-
-        //    //accession matches one of the accessions of proteins collapsed into theoretical proteoforms (combine identical sequences/masses)
-        //    Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(t => t.psm_list.Count > 0));
-        //    Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[0].psm_list.Count);
-        //    Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[1].psm_list.Count);
-        //    Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[2].psm_list.Count);
-        //    //should also add to decoy communities
-        //    Assert.AreEqual(3, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Count(t => t.psm_list.Count > 0));
-        //    Assert.AreEqual(2, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[0].psm_list.Count);
-        //    Assert.AreEqual(2, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[1].psm_list.Count);
-        //    Assert.AreEqual(2, Sweet.lollipop.decoy_proteoform_communities.First().Value.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[2].psm_list.Count);
-
-        //}
 
         [Test]
         public void parallel_enter_theoreticals_doesnt_crash()

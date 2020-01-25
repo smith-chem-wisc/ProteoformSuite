@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace ProteoWPFSuite
 {
-    class DisplayExperimentalProteoform : DisplayObject
+    public class DisplayExperimentalProteoform : DisplayObject
     {
         #region Public Constructors
 
@@ -37,24 +37,25 @@ namespace ProteoWPFSuite
             get { return e.agg_mass; }
         }
 
-        public double agg_intensity
-        {
-            get { return e.agg_intensity; }
-        }
 
         public double agg_rt
         {
             get { return e.agg_rt; }
         }
 
+        public double agg_intensity
+        {
+            get { return e.agg_intensity; }
+        }
+
+        public bool topdown_id
+        {
+            get { return e.topdown_id; }
+        }
+
         public double lysine_count
         {
             get { return e.lysine_count; }
-        }
-
-        public bool Accepted
-        {
-            get { return e.accepted; }
         }
 
         public bool mass_shifted
@@ -67,29 +68,81 @@ namespace ProteoWPFSuite
             get { return e.aggregated.Count; }
         }
 
-        public int light_verification_count
+
+        public string Description
         {
-            get { return e.lt_verification_components.Count; }
+            get
+            {
+                return (e.linked_proteoform_references != null
+                           ? (e.linked_proteoform_references[0] as TheoreticalProteoform).description
+                           : "") + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => (p.theoretical_base as TheoreticalProteoform).description))
+                           : "");
+            }
         }
 
-        public int heavy_verification_count
+        public string gene_name
         {
-            get { return e.hv_verification_components.Count; }
+            get
+            {
+                return (e.linked_proteoform_references != null
+                           ? (e.linked_proteoform_references[0] as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop.preferred_gene_label)
+                           : "") + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label)))
+                           : "");
+            }
         }
 
-        public int light_observation_count
+
+        public string GeneID
         {
-            get { return e.lt_quant_components.Count; }
+            get
+            {
+                return (e.linked_proteoform_references != null
+                           ? string.Join("; ", (e.linked_proteoform_references[0] as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())
+                           : "") + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(t => string.Join("; ", (t.theoretical_base as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())))
+                           : "");
+            }
         }
 
-        public int heavy_observation_count
+        public string grouped_accessions
         {
-            get { return e.hv_quant_components.Count; }
+            get
+            {
+                return (e.linked_proteoform_references != null
+                    ? string.Join(", ", (e.linked_proteoform_references[0] as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct())
+                    : "") + (e.ambiguous_identifications.Count > 0
+                          ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => string.Join(", ", p.theoretical_base.ExpandedProteinList.SelectMany(a => a.AccessionList).Select(a => a.Split('_')[0]).Distinct())))
+                          : "");
+            }
         }
+
 
         public string ptm_description
         {
-            get { return e.linked_proteoform_references != null ? e.ptm_set.ptm_description : ""; }
+            get
+            {
+                return (e.linked_proteoform_references != null ? e.ptm_set.ptm_description : "") +
+                       (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.ptm_set.ptm_description)) : "");
+            }
+        }
+
+
+        public string begin_and_end
+        {
+            get { return e.linked_proteoform_references != null ? e.begin.ToString() + " to " + e.end + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => p.begin + " to " + p.end)) : "") : ""; }
+        }
+
+        public string Sequence
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ? ExperimentalProteoform.get_sequence(e.linked_proteoform_references.First() as TheoreticalProteoform, e.begin, e.end)
+                    + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => ExperimentalProteoform.get_sequence(i.theoretical_base as TheoreticalProteoform, i.begin, i.end)))
+                        : "") : "";
+            }
         }
 
         public string uniprot_mods
@@ -102,89 +155,51 @@ namespace ProteoWPFSuite
             get { return e.novel_mods; }
         }
 
-        public int Begin
-        {
-            get { return e.begin; }
-        }
-
-        public int End
-        {
-            get { return e.end; }
-        }
-
-        public string gene_name
+        public string bu_PSMs_count
         {
             get
             {
-                return e.gene_name != null ?
-                    (e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) != null ?
-                    e.gene_name.get_prefered_name(Lollipop.preferred_gene_label) :
-                    "")
-                    : "";
+                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count.ToString() : "N/A")
+                       + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Count.ToString()))
+                           : "");
             }
         }
 
-        public string GeneID
+        public string bu_PSMs
         {
             get
             {
-                return e.linked_proteoform_references != null ?
-                    string.Join("; ", (e.linked_proteoform_references.First() as TheoreticalProteoform).ExpandedProteinList.SelectMany(p => p.DatabaseReferences.Where(r => r.Type == "GeneID").Select(r => r.Id)).Distinct())
-                : "";
+                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
+                           String.Join(", ", Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
+                       + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Count(p => p.ptm_list.Count > 0) == 0 ?
+                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
+                           : "");
             }
         }
 
-        public string theoretical_accession
+        public int Level
         {
             get
             {
-                return e.linked_proteoform_references != null ?
-                   (e.linked_proteoform_references[0] as TheoreticalProteoform).accession :
-                    "";
+                return e.proteoform_level;
             }
         }
 
-        public string Fragment
+        public string Ambiguity
         {
             get
             {
-                return e.linked_proteoform_references != null ?
-                   (e.linked_proteoform_references[0] as TheoreticalProteoform).fragment :
-                    "";
+                return e.proteoform_level_description;
             }
         }
 
-        public string manual_validation_id
-        {
-            get { return e.manual_validation_id; }
-        }
-
-        public string manual_validation_verification
-        {
-            get { return e.manual_validation_verification; }
-        }
-
-        public string manual_validation_quant
-        {
-            get { return e.manual_validation_quant; }
-        }
-
-        //needs to be at same time and mass
-        public bool topdown_id
-        {
-            get { return e.topdown_id; }
-        }
-
-        public string mass_error
-        {
-            get { return e.linked_proteoform_references != null ? e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString() : "N/A" ; }
-        }
-
-        public bool Adduct
+        public bool new_intact_mass_id
         {
             get
             {
-                return e.adduct;
+                return e.new_intact_mass_id;
             }
         }
 
@@ -196,6 +211,15 @@ namespace ProteoWPFSuite
             }
         }
 
+        public bool Adduct
+        {
+            get
+            {
+                return e.adduct;
+            }
+        }
+
+
         public bool Contaminant
         {
             get
@@ -205,9 +229,39 @@ namespace ProteoWPFSuite
             }
         }
 
+        public string mass_error
+        {
+            get
+            {
+                return (e.linked_proteoform_references != null ? e.calculate_mass_error(e.linked_proteoform_references.First() as TheoreticalProteoform, e.ptm_set, e.begin, e.end).ToString() : "N/A")
+                       + (e.ambiguous_identifications.Count > 0
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => e.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.ptm_set, i.begin, i.end).ToString()))
+                           : "");
+            }
+        }
+
         public string family_id
         {
             get { return e.family != null ? e.family.family_id.ToString() : ""; }
+        }
+
+        public string Family
+        {
+            get
+            {
+                return e.family != null ? e.family.gene_names.Select(p => p.get_prefered_name(Lollipop.preferred_gene_label)).Where(n => n != null).Distinct().Count() > 1 ? "Ambiguous" : "Identified" : "";
+            }
+        }
+
+
+        public string linked_proteoform_references
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ? string.Join(", ", (e.linked_proteoform_references.Select(p => p.accession))) + (e.ambiguous_identifications.Count > 0
+                        ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(p => string.Join(", ", p.linked_proteoform_references.Select(a => a.accession))))
+                        : "") : "";
+            }
         }
 
         public string mz_values
@@ -226,6 +280,12 @@ namespace ProteoWPFSuite
                 return e.topdown_id ? "" :
                     string.Join(", ", (e.aggregated.OrderByDescending(c => c.intensity_sum).First()).charge_states.Select(cs => cs.charge_count));
             }
+        }
+
+
+        public string manual_validation_id
+        {
+            get { return e.manual_validation_id; }
         }
 
         #endregion Public Properties
@@ -266,24 +326,22 @@ namespace ProteoWPFSuite
             if (property_name == nameof(agg_intensity)) return "Aggregated Deconvolution Intensity";
             if (property_name == nameof(agg_rt)) return "Aggregated RT";
             if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
-            if (property_name == nameof(heavy_verification_count)) return "Heavy Verification Component Count";
-            if (property_name == nameof(light_verification_count)) return "Light Verification Component Count";
-            if (property_name == nameof(heavy_observation_count)) return "Heavy Quantitative Component Count";
-            if (property_name == nameof(light_observation_count)) return "Light Quantitative Component Count";
             if (property_name == nameof(lysine_count)) return "Lysine Count";
             if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
             if (property_name == nameof(ptm_description)) return "PTM Description";
             if (property_name == nameof(gene_name)) return "Gene Name";
-            if (property_name == nameof(theoretical_accession)) return "Theoretical Accession";
             if (property_name == nameof(manual_validation_id)) return "Abundant Component for Manual Validation of Identification";
-            if (property_name == nameof(manual_validation_verification)) return "Abundant Component for Manual Validation of Identification Verification";
-            if (property_name == nameof(manual_validation_quant)) return "Abundant Component for Manual Validation of Quantification";
             if (property_name == nameof(topdown_id)) return "Top-Down Proteoform";
             if (property_name == nameof(family_id)) return "Family ID";
             if (property_name == nameof(mass_error)) return "Mass Error";
             if (property_name == nameof(mz_values)) return "M/z values";
             if (property_name == nameof(uniprot_mods)) return "UniProt-Annotated Modifications";
             if (property_name == nameof(novel_mods)) return "Potentially Novel Mods";
+            if (property_name == nameof(bu_PSMs)) return "Modified Bottom-Up PSMs";
+            if (property_name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
+            if (property_name == nameof(grouped_accessions)) return "Grouped Accessions";
+            if (property_name == nameof(new_intact_mass_id)) return "New Intact-Mass ID";
+            if (property_name == nameof(linked_proteoform_references)) return "Linked Proteoform References";
             return null;
         }
 
