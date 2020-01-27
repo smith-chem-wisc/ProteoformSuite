@@ -56,10 +56,13 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return t.pfr_accession + (t.ambiguous_topdown_hits.Count > 0
-                           ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(p => p.pfr_accession))
-                           : "");
+                return t.pfr_accession;
             }
+        }
+
+        public string original_PFR_accession
+        {
+            get { return t.topdown_hits.First().original_pfr_accession; }
         }
 
         public string Description
@@ -510,7 +513,7 @@ namespace ProteoWPFSuite
             if (name == nameof(uniprot_mods)) return "UniProt-Annotated Modifications";
             if (name == nameof(potentially_novel)) return "Potentially Novel Mods";
             if (name == nameof(linked_proteoform_references)) return "Linked Proteoform References";
-
+            if (name == nameof(original_PFR_accession)) return "Original PFR/full-sequence";
             return null;
         }
 

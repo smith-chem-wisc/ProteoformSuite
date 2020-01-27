@@ -442,7 +442,7 @@ namespace ProteoformSuiteInternal
                             SpectrumMatch td_hit = new SpectrumMatch(aaIsotopeMassList, file,
                                 TopDownResultType.TightAbsoluteMass,
                                 accessions.Count > hit ? accessions[hit] : accessions[0],
-                                full_sequences.Length > hit ? full_sequences[hit] : full_sequences[0],
+                                cellStrings[index_full_sequence],
                                 accessions.Count > hit ? accessions[hit] : accessions[0],
                                 names.Count > hit ? names[hit] : names[0],
                                 base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0],

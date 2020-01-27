@@ -32,9 +32,12 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                return accession.Split('-')[0] + "_" + begin + "_" + end + "_" + full_sequence + "|" + string.Join("|", ambiguous_matches.Select(a => a.accession.Split('-')[0] + "_" + a.begin + "_" + a.end + "_" + a.full_sequence));
+                return accession.Split('-')[0] + "_" + begin + "_" + end + "_" + full_sequence + (ambiguous_matches.Count > 0 ? 
+                    "|" + string.Join("|", ambiguous_matches.Select(a => a.accession.Split('-')[0] + "_" + a.begin + "_" + a.end + "_" + a.full_sequence)) : "");
             }
         }
+
+        public string original_pfr_accession { get; set; }
 
         public string full_sequence { get; set; } = "";
 
@@ -93,7 +96,7 @@ namespace ProteoformSuiteInternal
             this.score = score;
             this.pscore = pscore;
             this.matched_fragment_ions = matched_fragment_ions;
-         //   this.full_sequence = full_sequence;
+            this.original_pfr_accession = full_sequence;
 
             Dictionary<int, Modification> allModsOneIsNTerminus = new Dictionary<int, Modification>();
             Dictionary<int, List<Modification>> allModsOneIsNTerminus_dictionary = new Dictionary<int, List<Modification>>();
