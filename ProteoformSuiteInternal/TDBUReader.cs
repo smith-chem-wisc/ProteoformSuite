@@ -50,21 +50,22 @@ namespace ProteoformSuiteInternal
                     true); //This returns the entire sheet except for the header. Each row of cells is one List<string>
 
             //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
-            Parallel.ForEach(cells, cellStrings =>
+            Parallel.For(1, cells.Count, index =>
             {
+                var cellStrings = cells[index];
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 TopDownResultType tdResultType = (cellStrings[15] == "BioMarker")
-                    ? TopDownResultType.Biomarker
-                    : ((cellStrings[15] == "Tight Absolute Mass")
-                        ? TopDownResultType.TightAbsoluteMass
-                        : TopDownResultType.Unknown);
+                               ? TopDownResultType.Biomarker
+                               : ((cellStrings[15] == "Tight Absolute Mass")
+                                   ? TopDownResultType.TightAbsoluteMass
+                                   : TopDownResultType.Unknown);
                 if (tdResultType != TopDownResultType.Unknown) //uknown result type!
                 {
                     List<Ptm>
-                        ptm_list =
-                            new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
-                    //N-term modifications
-                    if (cellStrings[10].Length > 0) //N Terminal Modification Code
+                                   ptm_list =
+                                       new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
+                                                        //N-term modifications
+                               if (cellStrings[10].Length > 0) //N Terminal Modification Code
                     {
                         string[] ptms = cellStrings[10].Split('|');
 
@@ -249,7 +250,7 @@ namespace ProteoformSuiteInternal
 
                     if (add_topdown_hit)
                     {
-                        SpectrumMatch td_hit = new SpectrumMatch(aaIsotopeMassList, file, tdResultType, cellStrings[2],
+                        SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file, tdResultType, cellStrings[2],
                             cellStrings[0], cellStrings[1], cellStrings[3], cellStrings[4],
                             Int32.TryParse(cellStrings[5], out int i) ? i : 0,
                             Int32.TryParse(cellStrings[6], out i) ? i : 0, ptm_list,
@@ -258,9 +259,9 @@ namespace ProteoformSuiteInternal
                             Int32.TryParse(cellStrings[17], out i) ? i : 0,
                             Double.TryParse(cellStrings[18], out d) ? d : 0, cellStrings[14].Split('.')[0],
                             Double.TryParse(cellStrings[20], out d) ? d : 0,
-                            Double.TryParse(cellStrings[22], out d) ? d : 0, new List<MatchedFragmentIon>());
+                            Double.TryParse(cellStrings[22], out d) ? d : 0, new List<MatchedFragmentIon>(), "N");
 
-                        if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 && td_hit.pscore > 0 &&
+                        if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&
                             td_hit.reported_mass > 0 && td_hit.score > 0
                             && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0 && (td_hit.end - td_hit.begin + 1 == td_hit.sequence.Length))
                         {
@@ -269,6 +270,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+
             return td_hits;
         }
 
@@ -300,6 +302,7 @@ namespace ProteoformSuiteInternal
             bool glycan = header.Contains("GlycanIDs");
             int index_mods = Array.IndexOf(header, "Mods");
             int index_matched_ion_mz_ratios = Array.IndexOf(header, "Matched Ion Mass-To-Charge Ratios");
+            int index_score = Array.IndexOf(header, "Score");
 
             //creates dictionary to find mods
             Dictionary<string, Modification> mods = new Dictionary<string, Modification>();
@@ -322,8 +325,9 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            Parallel.ForEach(cells.Skip(1), row =>
+            Parallel.For(1, cells.Length, index =>
             {
+                string row = cells[index];
                 var cellStrings = row.Split('\t').ToList();
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 double qValue = Convert.ToDouble(cellStrings[index_q_value].Split('|')[0]);
@@ -337,9 +341,9 @@ namespace ProteoformSuiteInternal
                     //splits the string to get the value of starting index
                     foreach (var x in start_and_end_residue_array)
                     {
-                        string[] index = x.Trim(new char[] {'[', ']'}).Split(' ');
-                        begin.Add(Int32.TryParse(index[0], out int j) ? j : 0);
-                        end.Add(Int32.TryParse(index[2], out int i) ? i : 0);
+                        string[] start_end = x.Trim(new char[] {'[', ']'}).Split(' ');
+                        begin.Add(Int32.TryParse(start_end[0], out int j) ? j : 0);
+                        end.Add(Int32.TryParse(start_end[2], out int i) ? i : 0);
                     }
 
                     List<List<Ptm>> new_ptm_list = new List<List<Ptm>>();
@@ -439,7 +443,7 @@ namespace ProteoformSuiteInternal
 
                         for (int hit = 0; hit < counts.Max(); hit++)
                         {
-                            SpectrumMatch td_hit = new SpectrumMatch(aaIsotopeMassList, file,
+                            SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file,
                                 TopDownResultType.TightAbsoluteMass,
                                 accessions.Count > hit ? accessions[hit] : accessions[0],
                                 cellStrings[index_full_sequence],
@@ -453,11 +457,12 @@ namespace ProteoformSuiteInternal
                                 Int32.TryParse(cellStrings[index_scan_number], out int i) ? i : 0,
                                 Double.TryParse(cellStrings[index_retention_time], out m) ? m : 0,
                                 cellStrings[index_filename].Split('.')[0],
-                                Double.TryParse(cellStrings[index_precursor_mass], out m) ? m : 0,
-                                Sweet.lollipop.min_score_td + 1,
-                                ReadFragmentIonsFromString(cellStrings[index_matched_ion_mz_ratios], base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0]));
+                                qValue,
+                                Convert.ToDouble(cellStrings[index_score]),
+                                ReadFragmentIonsFromString(cellStrings[index_matched_ion_mz_ratios], base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0]),
+                                decoy.Count > hit? decoy[hit] : decoy[0]);
                             if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&
-                                td_hit.pscore > 0 && td_hit.reported_mass > 0 && td_hit.score > 0
+                                 td_hit.reported_mass > 0 && td_hit.score > 0
                                 && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
                             {
                             if (hit == 0)

@@ -159,9 +159,9 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end, false).Count.ToString() : "N/A")
+                return (e.linked_proteoform_references != null ? e.bottom_up_PSMs.Count.ToString() : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end, false).Count.ToString()))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => i.bottom_up_PSMs.Count.ToString()))
                            : "");
             }
         }
@@ -170,22 +170,18 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return (e.linked_proteoform_references != null ? (Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin,
-                               e.end, false).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                return (e.linked_proteoform_references != null ? e.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
                         ? "N/A"
                         : String.Join(", ",
-                              Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin,
-                                 e.end, false).Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
-                                  .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()))
+                              e.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                                  .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct())
                           + (e.ambiguous_identifications.Count > 0
                               ? " | " + String.Join(" | ",
                                     e.ambiguous_identifications.Select(i =>
-                                        Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], new PtmSet(i.ptm_set.ptm_combination),
-                                            i.begin, i.end, false).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                                        i.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
                                             ? "N/A"
                                             : String.Join(", ",
-                                                Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0],
-                                                        new PtmSet(i.ptm_set.ptm_combination), i.begin, i.end, false)
+                                                i.bottom_up_PSMs
                                                     .Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
                                                      .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct())))
                               : "")
@@ -198,7 +194,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return e.linked_proteoform_references != null ? Proteoform.get_bottom_up_evidence_for_all_PTMs(e.linked_proteoform_references.First().accession, e.ptm_set, e.begin, e.end, false) : false;
+                return e.linked_proteoform_references != null ? Proteoform.get_bottom_up_evidence_for_all_PTMs(e.bottom_up_PSMs, e.ptm_set, false) : false;
             }
         }
 

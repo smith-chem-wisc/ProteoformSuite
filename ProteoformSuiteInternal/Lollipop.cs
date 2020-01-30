@@ -480,7 +480,7 @@ namespace ProteoformSuiteInternal
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
-            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
+            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.qValue).ThenBy(h => h.reported_mass).ToList();
 
             List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
@@ -520,7 +520,7 @@ namespace ProteoformSuiteInternal
             foreach (var proteoform in topdown_proteoforms)
             {
                 //if all ambiguous matches are contained
-                if (topdown_proteoforms.Where(p => p != proteoform && Math.Abs(p.agg_rt - proteoform.agg_rt) <= Convert.ToDouble(td_retention_time_tolerance) && p.ambiguous_topdown_hits.Count <= proteoform.ambiguous_topdown_hits.Count)
+                if (topdown_proteoforms.Where(p => p != proteoform && p.pfr_accession != proteoform.pfr_accession && Math.Abs(p.agg_rt - proteoform.agg_rt) <= Convert.ToDouble(td_retention_time_tolerance) && p.ambiguous_topdown_hits.Count <= proteoform.ambiguous_topdown_hits.Count)
                 .Any(p => p.ambiguous_topdown_hits.Select(r => r.pfr_accession.Split('|')[0]).Concat(new List<string>() { p.pfr_accession.Split('|')[0] })
                 .All(r => proteoform.ambiguous_topdown_hits.Select(h => h.pfr_accession.Split('|')[0]).Concat(new List<string>() { proteoform.pfr_accession.Split('|')[0] }).Contains(r))))
                 {
@@ -529,6 +529,20 @@ namespace ProteoformSuiteInternal
             }
             topdown_proteoforms = topdown_proteoforms.Except(to_remove).ToList();
 
+
+            //add bottomup peptides
+            if(Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count > 0)
+            {
+                Parallel.ForEach(topdown_proteoforms, p =>
+                {
+                    p.root.bottom_up_PSMs = Proteoform.get_possible_PSMs(p.accession, p.topdown_ptm_set, p.topdown_begin, p.topdown_end, true);
+                    foreach(var ambiguous in p.ambiguous_topdown_hits)
+                    {
+                       ambiguous.bottom_up_PSMs = Proteoform.get_possible_PSMs(ambiguous.accession, new PtmSet(ambiguous.ptm_list), ambiguous.begin, ambiguous.end, true);
+                    }
+                    p.bu_PTMs_all_from_protein = p.setter_bu_PTMs_all_from_protein();
+                });
+            }
             return topdown_proteoforms;
         }
 
@@ -630,7 +644,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    SpectrumMatch best_hit = (pf as TopDownProteoform).topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).First();
+                    SpectrumMatch best_hit = (pf as TopDownProteoform).topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.qValue).First();
                     pf.manual_validation_id = "File: " + best_hit.filename
                          + "; Scan: " + best_hit.ms2ScanNumber
                         + "; RT (min): " + best_hit.ms2_retention_time;
@@ -641,7 +655,7 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
-            foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
+            foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.qValue)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
             {
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
@@ -801,7 +815,7 @@ namespace ProteoformSuiteInternal
                 e.lt_quant_components.Clear();
                 e.hv_quant_components.Clear();
             });
-            List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderBy(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Min(h => h.pscore) : 1e6).ThenByDescending(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(e => e.agg_intensity).ToList();
+            List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderBy(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Min(h => h.qValue) : 1e6).ThenByDescending(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(e => e.agg_intensity).ToList();
             remaining_quantification_components = new HashSet<Component>(raw_quantification_components);
 
             ExperimentalProteoform p = proteoforms.FirstOrDefault();
@@ -1564,6 +1578,7 @@ namespace ProteoformSuiteInternal
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
+                    (p as ExperimentalProteoform).bottom_up_PSMs.Clear();
                     p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1594,6 +1609,7 @@ namespace ProteoformSuiteInternal
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
+                    (p as ExperimentalProteoform).bottom_up_PSMs.Clear();
                     p.gene_name = null;
                     ProteoformRelation relation = null;
                     p.relation_to_id = relation;

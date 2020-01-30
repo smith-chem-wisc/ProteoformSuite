@@ -11,6 +11,7 @@ namespace ProteoformSuiteInternal
 {
     public class SpectrumMatch
     {
+        public int hit_ID { get; set; }
         public int ms2ScanNumber { get; set; }
         public double ms2_retention_time { get; set; }
         public string filename { get; set; }
@@ -20,13 +21,15 @@ namespace ProteoformSuiteInternal
         public int end { get; set; } //position one based
         public double theoretical_mass { get; set; }
         public string accession { get; set; } = "";
+
         public string name { get; set; }
         public GeneName gene_name { get; set; }
-        public double pscore { get; set; }
         public double reported_mass { get; set; } //reported in TD results file
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
+        
+        public double qValue { get; set; }
 
         public string pfr_accession
         {
@@ -66,6 +69,9 @@ namespace ProteoformSuiteInternal
         public List<SpectrumMatch> ambiguous_matches = new List<SpectrumMatch>();
         public List<MatchedFragmentIon> matched_fragment_ions = new List<MatchedFragmentIon>();
 
+        public List<SpectrumMatch> bottom_up_PSMs = new List<SpectrumMatch>();
+        public bool target { get; set; }
+
         //for calibration
         public string biological_replicate { get; set; } = "";
         public string technical_replicate { get; set; } = "";
@@ -76,8 +82,9 @@ namespace ProteoformSuiteInternal
         public int charge { get; set; }
         public MsDataScan ms1_scan { get; set; }
 
-        public SpectrumMatch(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string full_sequence, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pscore, double score, List<MatchedFragmentIon> matched_fragment_ions)
+        public SpectrumMatch(int hit_ID, Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string full_sequence, string uniprot_id, string name, string sequence, int begin, int end, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double qValue, double score, List<MatchedFragmentIon> matched_fragment_ions, string target)
         {
+            this.hit_ID = hit_ID;
             this.file = file;
             this.tdResultType = tdResultType;
             this.accession = accession;
@@ -94,9 +101,10 @@ namespace ProteoformSuiteInternal
             this.ms2_retention_time = retention_time;
             this.filename = filename;
             this.score = score;
-            this.pscore = pscore;
+            this.qValue = qValue;
             this.matched_fragment_ions = matched_fragment_ions;
             this.original_pfr_accession = full_sequence;
+            this.target = target == "N" ? true : false;
 
             Dictionary<int, Modification> allModsOneIsNTerminus = new Dictionary<int, Modification>();
             Dictionary<int, List<Modification>> allModsOneIsNTerminus_dictionary = new Dictionary<int, List<Modification>>();

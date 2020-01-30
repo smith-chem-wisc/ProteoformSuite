@@ -70,6 +70,8 @@ namespace ProteoformSuiteInternal
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<AmbiguousIdentification> ambiguous_identifications { get; set; } = new List<AmbiguousIdentification>();
 
+        public List<SpectrumMatch> bottom_up_PSMs = new List<SpectrumMatch>();
+
         #endregion Public Properties
 
         #region Public Constructors

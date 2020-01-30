@@ -31,7 +31,7 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                return Proteoform.get_bottom_up_evidence_for_all_PTMs(accession, ptm_set, begin, end, false);
+                return Proteoform.get_bottom_up_evidence_for_all_PTMs(bottom_up_PSMs, ptm_set, false);
             }
         }
 

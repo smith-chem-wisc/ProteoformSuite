@@ -49,6 +49,14 @@ namespace ProteoformSuiteInternal
                     writer.Write(datatable_tostring(topdown_results_dataframe()));
                 }
             }
+
+            if(Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count > 0)
+            {
+                //using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "bottomup_results_" + timestamp + ".tsv")))
+                //{
+                //    writer.Write(datatable_tostring(bottomup_results_dataframe()));
+                //}
+            }
         }
 
         private static void save_cytoscripts(string directory, string timestamp, IGoAnalysis go_analysis, TusherAnalysis tusher_analysis)
@@ -499,17 +507,17 @@ namespace ProteoformSuiteInternal
                         : ""),
                     e.uniprot_mods,
                     e.novel_mods,
-                    (e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end, false).Count.ToString() : "N/A"
+                    (e.linked_proteoform_references != null ? e.bottom_up_PSMs.Count.ToString() : "N/A"
                            + (e.ambiguous_identifications.Count > 0
-                               ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end, false).Count.ToString()))
+                               ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => i.bottom_up_PSMs.Count.ToString()))
                                : "")),
-                   ((e.linked_proteoform_references != null ? Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end, false).Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
-                           String.Join(", ", Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession.Split('_')[0], e.ptm_set, e.begin, e.end, false).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
+                   ((e.linked_proteoform_references != null ? e.bottom_up_PSMs.Count(p => p.ptm_list.Count > 0) == 0 ? "N/A" :
+                           String.Join(", ", e.bottom_up_PSMs.Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct()) : "N/A")
                        + (e.ambiguous_identifications.Count > 0
-                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end, false).Count(p => p.ptm_list.Count > 0) == 0 ?
-                                 "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end, false).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
+                           ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => i.bottom_up_PSMs.Count(p => p.ptm_list.Count > 0) == 0 ?
+                                 "N/A" : String.Join(", ", i.bottom_up_PSMs.Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
                            : "")),
-                 Proteoform.get_bottom_up_evidence_for_all_PTMs(e.linked_proteoform_references.First().accession, e.ptm_set, e.begin, e.end, false) + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_bottom_up_evidence_for_all_PTMs(i.theoretical_base.accession.Split('_')[0], i.ptm_set, i.begin, i.end, false ))) : ""),
+                 Proteoform.get_bottom_up_evidence_for_all_PTMs(e.bottom_up_PSMs, e.ptm_set, false) + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_bottom_up_evidence_for_all_PTMs(i.bottom_up_PSMs, i.ptm_set, false ))) : ""),
                 e.proteoform_level,
                    e.proteoform_level_description,
                    e.new_intact_mass_id,
@@ -608,32 +616,6 @@ namespace ProteoformSuiteInternal
                 //    }
                 //}
 
-            //normalize by median fold change
-            //string conditionBiorept_with_least_missing_values = intensities_by_file.OrderBy(p => p.Value.Count(v => v.Value > 0)).First().Key;
-            //if (conditionBiorept_with_least_missing_values == null) return results;
-            //foreach (var conditionBiorep in intensities_by_file)
-            //{
-            //    normalized_intensities_by_file.Add(conditionBiorep.Key, new Dictionary<ExperimentalProteoform, double>());
-            //    List<double> foldChanges = new List<double>();
-            //    foreach (var p in Sweet.lollipop.target_proteoform_community.experimental_proteoforms)
-            //    {
-            //        double conditionBiorepIntensityThis = conditionBiorep.Value[p];
-            //        double conditionBiorepIntensity1 = intensities_by_file[conditionBiorept_with_least_missing_values][p];
-            //        if (conditionBiorepIntensity1 > 0 && conditionBiorepIntensityThis > 0)
-            //        {
-            //            foldChanges.Add(conditionBiorepIntensityThis / conditionBiorepIntensity1);
-            //        }
-            //    }
-            //    double medianFoldChange = foldChanges.Median();
-            //    double normalizationFactor = 1.0 / medianFoldChange;
-
-
-            //    foreach (var proteoform in conditionBiorep.Value)
-            //    {
-            //        normalized_intensities_by_file[conditionBiorep.Key].Add(proteoform.Key, proteoform.Value * normalizationFactor);
-            //    }
-            //}
-
             results.Columns.Add("Proteoform Suite ID", typeof(string));
             results.Columns.Add("Proteoform Description", typeof(string));
             results.Columns.Add("Gene Name", typeof(string));
@@ -728,6 +710,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Top-Down Hits", typeof(int));
             results.Columns.Add("PFR Accession", typeof(string));
+            results.Columns.Add("Original PFR Accession/full-sequence", typeof(string));
             results.Columns.Add("Description", typeof(string));
             results.Columns.Add("Gene Name", typeof(string));
             results.Columns.Add("Accession", typeof(string));
@@ -736,10 +719,9 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Sequence", typeof(string));
             results.Columns.Add("UniProt-Annotated Modifications");
             results.Columns.Add("Potentially Novel Modifications");
-            results.Columns.Add("Bottom-Up PSM Count", typeof(string));
-            results.Columns.Add("Bottom-Up PTMs", typeof(string));
             results.Columns.Add("Top-Down PTM Type Unlocalized", typeof(string));
             results.Columns.Add("Best C-score", typeof(double));
+            results.Columns.Add("Best Q-Value", typeof(double));
             results.Columns.Add("Level Number", typeof(string));
             results.Columns.Add("Level Description", typeof(string));
             results.Columns.Add("Top-Down Mass Error", typeof(string));
@@ -757,6 +739,18 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Proteoform Suite Mass Error", typeof(string));
             results.Columns.Add("Same ID as Top-down ID", typeof(bool));
 
+            results.Columns.Add("Bottom-Up PSM Count", typeof(string));
+            results.Columns.Add("Different BU PSM Count for Amibguous IDs", typeof(bool));
+            results.Columns.Add("Bottom-Up Modifications from Proteoform", typeof(string));
+            results.Columns.Add("Bottom-Up Modifications from Protein", typeof(string));
+            results.Columns.Add("Peptide-Specific Bottom-Up Modifications", typeof(string));
+            results.Columns.Add("Bottom-Up Evidence for Begin", typeof(bool));
+            results.Columns.Add("Bottom-Up Evidence for End", typeof(bool));
+            results.Columns.Add("Bottom-Up Evidence for All PTMs", typeof(bool));
+            results.Columns.Add("Top-Down and Bottom-Up Modification Overlap Description", typeof(string));
+            results.Columns.Add("Top-Down and Bottom-Up Modification Overlap Description from Protein", typeof(string));
+
+
 
             foreach (TopDownProteoform td in Sweet.lollipop.topdown_proteoforms)
             {
@@ -766,6 +760,7 @@ namespace ProteoformSuiteInternal
                     td.agg_rt,
                     td.topdown_hits.Count(),
                     td.pfr_accession,
+                    td.root.full_sequence,
                     td.name + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.name)) : ""),
                     td.topdown_geneName.primary + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.gene_name.primary)) : "" ),
                     td.accession.Split('_')[0].Split('-')[0] + (td.ambiguous_topdown_hits.Count > 0 ? String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0].Split('-')[0])) : ""),
@@ -774,23 +769,10 @@ namespace ProteoformSuiteInternal
                     td.sequence + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.sequence)) : ""),
                     td.topdown_uniprot_mods,
                     td.topdown_novel_mods,
-                    Proteoform.get_possible_PSMs(td.accession.Split('_')[0].Split('-')[0], td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Count.ToString()
-                       + (td.ambiguous_topdown_hits.Count > 0
-                           ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(i => Proteoform.get_possible_PSMs(i.accession.Split('_')[0], new PtmSet(i.ptm_list), i.begin, i.end, true).Count.ToString()))
-                    : ""),
-                    Proteoform.get_possible_PSMs(td.accession.Split('_')[0], td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Count(p => p.ptm_list.Count > 0) == 0
-                    ? "N/A" : String.Join(", ", Proteoform.get_possible_PSMs(td.accession.Split('_')[0], td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())
-                      + (td.ambiguous_topdown_hits.Count > 0? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(i => Proteoform.get_possible_PSMs(i.accession.Split('_')[0], new PtmSet(i.ptm_list), i.begin, i.end, true).Count(p => p.ptm_list.Count > 0) == 0
-                                        ? "N/A"
-                                        : String.Join(", ",
-                                            Proteoform.get_possible_PSMs(i.accession.Split('_')[0],
-                                                    new PtmSet(i.ptm_list), i.begin, i.end, true)
-                                                .Where(p => p.ptm_list.Count > 0)
-                                                .Select(p => p.ptm_description).Distinct())))
-                          : ""),
                     (td.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)))
                      + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.ptm_list.Count == 0 ? "Unmodified" : string.Join("; ", h.ptm_list.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)))) : ""),
                     td.topdown_hits.Max(h => h.score),
+                    td.topdown_hits.Min(h => h.qValue),
                     td.topdown_level,
                     td.topdown_level_description,
                     Math.Round(td.modified_mass - td.theoretical_mass,4) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => Math.Round(h.reported_mass - h.theoretical_mass))) : ""),
@@ -824,7 +806,21 @@ namespace ProteoformSuiteInternal
                                                                           ? " | " + String.Join(" | ", td.ambiguous_identifications.Select(i => td.calculate_mass_error(i.theoretical_base as TheoreticalProteoform, i.ptm_set, i.begin, i.end).ToString()))
                                                                           : ""),
                    
-                    td.correct_id
+                    td.correct_id,
+
+                     td.root.bottom_up_PSMs.Count.ToString()
+                       + (td.ambiguous_topdown_hits.Count > 0
+                           ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(i => Proteoform.get_possible_PSMs(i.accession.Split('_')[0], new PtmSet(i.ptm_list), i.begin, i.end, true).Count.ToString()))
+                    : ""),
+                     td.different_ambiguity,
+                     td.bu_PTMs,
+                     td.bu_PTMs_all_from_protein,
+                     td.bu_PTMs_separatepeptides,
+                     td.root.bottom_up_PSMs.Any(p => p.begin == td.topdown_begin),
+                     td.root.bottom_up_PSMs.Any(p => p.end == td.topdown_end),
+                     Proteoform.get_bottom_up_evidence_for_all_PTMs(td.root.bottom_up_PSMs, td.topdown_ptm_set, true),
+                     TopDownProteoform.get_description(td.root.bottom_up_PSMs, td.accession, true, td.topdown_ptm_set) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, true, new PtmSet(h.ptm_list)))) : ""),
+                     TopDownProteoform.get_description(td.root.bottom_up_PSMs, td.accession, false, td.topdown_ptm_set) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, false, new PtmSet(h.ptm_list)))) : "")
                     );
             }
 
@@ -840,6 +836,11 @@ namespace ProteoformSuiteInternal
                 result_string.AppendLine(string.Join("\t", row.ItemArray));
             }
             return results;
+        }
+
+        public static DataTable bottomup_results_dataframe()
+        {
+            return null;
         }
 
         public static DataTable biological_replicate_intensities(IGoAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation, bool include_normalized_intensity)

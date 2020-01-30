@@ -337,19 +337,18 @@ namespace ProteoformSuiteInternal
             return bottom_up_PSMs.OrderByDescending(p => p.ptm_list.Count).ToList();
         }
 
-        public static bool get_bottom_up_evidence_for_all_PTMs(string accession, PtmSet ptm_set, int begin, int end, bool ptm_location_specific)
+        public static bool get_bottom_up_evidence_for_all_PTMs(List<SpectrumMatch> bottom_up_psms, PtmSet ptm_set, bool ptm_location_specific)
         {
-            var bottom_up_pms = Proteoform.get_possible_PSMs(accession, ptm_set, begin, end, ptm_location_specific);
             bool ok = true;
             //check each ptm and see if BU psm corresponding to this PTM was detected
             foreach (var ptm in ptm_set.ptm_combination.Where(p => UnlocalizedModification.bio_interest(p.modification)))
             {
-                var same_ptm = bottom_up_pms.SelectMany(b => b.ptm_list).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position).Distinct().ToList();
+                var same_ptm = bottom_up_psms.SelectMany(b => b.ptm_list).Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position).Distinct().ToList();
                 if (same_ptm.Select(p => p.Split('@')[0]).Count(m => m == UnlocalizedModification.LookUpId(ptm.modification)) >= ptm_set.ptm_combination.Count(m => UnlocalizedModification.LookUpId(m.modification) ==(UnlocalizedModification.LookUpId(ptm.modification))))
                 {
                     if (ptm_location_specific)
                     {
-                        if(bottom_up_pms.SelectMany(b => b.ptm_list).Where(p => p.position == ptm.position).Select(m => UnlocalizedModification.LookUpId(m.modification)).Contains(UnlocalizedModification.LookUpId(ptm.modification)))
+                        if(bottom_up_psms.SelectMany(b => b.ptm_list).Where(p => p.position == ptm.position).Select(m => UnlocalizedModification.LookUpId(m.modification)).Contains(UnlocalizedModification.LookUpId(ptm.modification)))
                         {
                             //ok
                         }
@@ -416,9 +415,6 @@ namespace ProteoformSuiteInternal
                 }
 
                 new_set = new PtmSet(new_set.ptm_combination);
-
-                //if (Proteoform.get_bottom_up_evidence_for_all_PTMs(theoretical_base.accession.Split('_')[0].Split('-')[0], new_set, new_begin, new_end, false))
-                //    return false;
 
 
                 if (e.linked_proteoform_references == null)

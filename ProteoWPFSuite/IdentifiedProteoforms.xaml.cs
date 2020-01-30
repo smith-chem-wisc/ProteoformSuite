@@ -173,9 +173,9 @@ namespace ProteoWPFSuite
         private void display_bu_peptides()
         {
             List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() :
-                (selected_pf as TopDownProteoform != null ? Proteoform.get_possible_PSMs(selected_pf.accession, (selected_pf as TopDownProteoform).topdown_ptm_set,
-                (selected_pf as TopDownProteoform).topdown_begin, (selected_pf as TopDownProteoform).topdown_end, true).Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => Proteoform.get_possible_PSMs(p.accession, new PtmSet(p.ptm_list), p.begin, p.end, true))).Distinct().ToList()
-                : Proteoform.get_possible_PSMs(selected_pf.linked_proteoform_references.First().accession, selected_pf.ptm_set, selected_pf.begin, selected_pf.end, false).Concat(selected_pf.ambiguous_identifications.SelectMany(p => Proteoform.get_possible_PSMs(p.theoretical_base.accession, p.ptm_set, p.begin, p.end, false))).Distinct().ToList());
+                (selected_pf as TopDownProteoform) != null ? (selected_pf as TopDownProteoform).root.bottom_up_PSMs
+                .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs).Distinct()).ToList()
+                : selected_pf.bottom_up_PSMs.Concat(selected_pf.ambiguous_identifications.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
             DisplayUtility.FillDataGridView(dgv_bottomUp, bu_psms.Select(c => new DisplayTopDownHit(c)));
             DisplayTopDownHit.FormatTopDownHitsTable(dgv_bottomUp);
         }

@@ -165,6 +165,12 @@ namespace ProteoformSuiteInternal
 
                 if (e.linked_proteoform_references != null)
                 {
+                    e.bottom_up_PSMs = Proteoform.get_possible_PSMs(e.linked_proteoform_references.First().accession, e.ptm_set, e.begin, e.end, false);
+                    foreach(var a in e.ambiguous_identifications)
+                    {
+                        a.bottom_up_PSMs = Proteoform.get_possible_PSMs(a.theoretical_base.accession, a.ptm_set, a.begin, a.end, false);
+                    }
+
                     var mods = e.ptm_set.ptm_combination.Where(p => !Proteoform.modification_is_adduct(p.modification))
                            .Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList().Distinct().OrderBy(m => m).ToList();
                     e.uniprot_mods = "";

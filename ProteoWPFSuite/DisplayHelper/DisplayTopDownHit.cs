@@ -98,9 +98,9 @@ namespace ProteoWPFSuite
             get { return h.name; }
         }
 
-        public double pscore
+        public double qValue
         {
-            get { return h.pscore; }
+            get { return h.qValue; }
         }
 
         public double Score
@@ -150,7 +150,7 @@ namespace ProteoWPFSuite
             if (property_name == nameof(theoretical_mass)) { return "Theoretical Mass"; }
             if (property_name == nameof(uniprot_id)) { return "Uniprot ID"; }
             if (property_name == nameof(retention_time)) { return "Retention Time"; }
-            if (property_name == nameof(pscore)) { return "P-Score"; }
+            if (property_name == nameof(qValue)) { return "Q-Value"; }
             if (property_name == nameof(ptm_description)) { return "PTM Description"; }
             if (property_name == nameof(PFR_accession)) { return "PFR Accession"; }
             return null;

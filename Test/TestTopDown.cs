@@ -58,7 +58,7 @@ namespace Test
                 t.sequence = "SEQUENCE";
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
-                t.pscore = 1 / (i + 1);
+                t.qValue = 1 / (i + 1);
             }
             Sweet.lollipop.clear_td();
             Sweet.lollipop.top_down_hits = tdhList;
@@ -103,7 +103,7 @@ namespace Test
                 t.ms2_retention_time = 50;
                 t.accession = "accession";
                 t.sequence = "sequence";
-                t.pscore = (double)1 / (i + 1);
+                t.qValue = (double)1 / (i + 1);
                 t.ptm_list = new List<Ptm>();
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);

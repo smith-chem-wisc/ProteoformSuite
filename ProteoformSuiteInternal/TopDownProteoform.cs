@@ -14,6 +14,9 @@ namespace ProteoformSuiteInternal
         public int topdown_end { get; set; } //position one based
         public double theoretical_mass { get; set; }
         public List<SpectrumMatch> topdown_hits;
+
+        public SpectrumMatch root;
+
         private PtmSet _topdown_ptm_set = new PtmSet(new List<Ptm>());
 
         public PtmSet topdown_ptm_set //the ptmset read in with td data
@@ -42,10 +45,101 @@ namespace ProteoformSuiteInternal
         public string topdown_level_description;
         public string topdown_uniprot_mods;
         public bool topdown_novel_mods;
+        public bool different_ambiguity //if different bottom-up PSMs for different amgiuous IDs
+        {
+            get
+            {
+                List<int> PSM_counts = ambiguous_topdown_hits.Select(i => i.bottom_up_PSMs.Count).ToList();
+                PSM_counts.Add(root.bottom_up_PSMs.Count);
+                PSM_counts = PSM_counts.Distinct().ToList();
+                return PSM_counts.Count > 1;
+            }
+        }
+
+        public string bu_PTMs
+        {
+            get
+            {
+                return (root.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                    ? "N/A"
+                    : String.Join(", ",
+                          root.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                              .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()))
+                      + (ambiguous_topdown_hits.Count > 0
+                          ? " | " + String.Join(" | ",
+                                ambiguous_topdown_hits.Select(i =>
+                                    i.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                                        ? "N/A"
+                                        : String.Join(", ",
+                                            i.bottom_up_PSMs
+                                                .Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                                                 .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct())))
+                          : "");
+
+            }
+        }
+
+        public string bu_PTMs_all_from_protein { get; set; }
+        public string setter_bu_PTMs_all_from_protein()
+        {
+            //only unambiguous PSMs for now....
+
+            return (get_all_psms_from_sequence(accession.Split('_')[0], topdown_begin, topdown_end).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                ? "N/A"
+                : String.Join(", ",
+                      (get_all_psms_from_sequence(accession.Split('_')[0], topdown_begin, topdown_end).Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                          .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()))
+                  + (ambiguous_topdown_hits.Count > 0
+                      ? " | " + String.Join(" | ",
+                            ambiguous_topdown_hits.Select(i =>
+                                (get_all_psms_from_sequence(i.accession.Split('_')[0], i.begin, i.end).Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                                    ? "N/A"
+                                    : String.Join(", ",
+                                            get_all_psms_from_sequence(i.accession.Split('_')[0], i.begin, i.end)
+                                            .Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0)
+                                            .SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification)).Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()))))
+                      : ""));
+
+        }
+
+        public string bu_PTMs_separatepeptides
+        {
+            get
+            {
+                            return (root.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                ? "N/A"
+                : String.Join(", ",
+                     root.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).Select(p => p.ptm_description).Distinct()))
+                  + (ambiguous_topdown_hits.Count > 0
+                      ? " | " + String.Join(" | ",
+                            ambiguous_topdown_hits.Select(i =>
+                                i.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                                    ? "N/A"
+                                    : String.Join(", ",
+                                        i.bottom_up_PSMs
+                                            .Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0)
+                                            .Select(p => p.ptm_description).Distinct())))
+              : "");
+            }
+
+        }
+
+        private List<SpectrumMatch> get_all_psms_from_sequence(string accession, int begin, int end)
+        {
+            var bottom_up_PSMs = new List<SpectrumMatch>();
+            //add BU PSMs
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0].Split('-')[0], out var psms);
+            if (psms != null)
+            {
+                bottom_up_PSMs.AddRange(psms.Where(p => p.begin >= begin && p.end <= end && p.ambiguous_matches.Count == 0));
+            }
+            return bottom_up_PSMs.ToList();
+        }
+
 
         public TopDownProteoform(string accession, List<SpectrumMatch> hits) : base(accession, null, true)
         {
-            SpectrumMatch root = hits[0];
+            this.root = hits[0];
             this.name = root.name;
             this.pfr_accession = root.pfr_accession;
             this.ambiguous_topdown_hits = root.ambiguous_matches;
@@ -186,6 +280,83 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        public static string get_description(List<SpectrumMatch> bottom_up_psms, string accession, bool proteoform_specific_PSMs, PtmSet set)
+        {
+            var modified_psms = new List<SpectrumMatch>();
+            var all_psms = new List<SpectrumMatch>();
+            if (!proteoform_specific_PSMs)
+            {
+                var bottom_up_PSMs = new List<SpectrumMatch>();
+                //add BU PSMs
+                Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0].Split('-')[0], out var psms);
+                if (psms != null)
+                {
+                    bottom_up_PSMs.AddRange(psms.Where(p => p.ambiguous_matches.Count == 0));
+                }
+                modified_psms = bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0).ToList();
+                all_psms = bottom_up_PSMs.ToList();
+            }
+            else
+            {
+                modified_psms = bottom_up_psms.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).ToList();
+                all_psms = bottom_up_psms.Where(p => p.ambiguous_matches.Count == 0).ToList();
+
+            }
+            if (all_psms.Count == 0)
+            {
+                return "no BU PSMs";
+            }
+            if (modified_psms.Count == 0) return "no modified BU PSMs";
+            List<string> td_psm_with_location = set.ptm_combination.Where(m => UnlocalizedModification.bio_interest(m.modification)).Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).ToList();
+            List<string> bu_psm_with_location = modified_psms.SelectMany(b => b.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification)).Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).Distinct().ToList();
+            List<string> td_psm_no_location = set.ptm_combination.Where(m => UnlocalizedModification.bio_interest(m.modification)).Select(p => UnlocalizedModification.LookUpId(p.modification)).ToList();
+            List<string> bu_psm_no_location = modified_psms.SelectMany(b => b.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification)).Select(p => UnlocalizedModification.LookUpId(p.modification)).Distinct().ToList();
+            string description = "";
+            bool different_location = false;
+            bool same_location = false;
+            bool bu_doesnt_contain_this_ptm = false;
+
+            foreach (var td in td_psm_with_location)
+            {
+                if (bu_psm_with_location.Contains(td))
+                {
+                    same_location = true;
+                }
+                else if (bu_psm_no_location.Contains(td.Split('@')[0]))
+                {
+                    different_location = true;
+                }
+                else
+                {
+                    bu_doesnt_contain_this_ptm = true;
+                }
+            }
+            bool different_location_bu = false;
+            bool different_ptm_bu = false;
+
+            foreach (var bu in bu_psm_with_location)
+            {
+                if (!td_psm_with_location.Contains(bu))
+                {
+                    if (td_psm_no_location.Contains(bu.Split('@')[0]))
+                    {
+                        different_location_bu = true;
+                    }
+                    else
+                    {
+                        different_ptm_bu = true;
+                    }
+                }
+            }
+            if (bu_doesnt_contain_this_ptm) description += "Other TD PTM. ";
+            if (different_ptm_bu) description += "Other BU PTM. ";
+            if (same_location) description += "Same location PTM. ";
+            if (different_location && !different_location_bu) description += "Additional TD location. ";
+            if (!different_location && different_location_bu) description += "Additional BU locations. ";
+            if (different_location && different_location_bu) description += "Different locations";
+
+            return description;
+        }
         private void calculate_topdown_level()
         {
             topdown_level_description = "";

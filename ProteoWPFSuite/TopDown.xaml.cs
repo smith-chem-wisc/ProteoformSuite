@@ -124,6 +124,7 @@ namespace ProteoWPFSuite
             
             MDIParent.theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
+
         }
         public void ClearListsTablesFigures(bool clear_following)
         {
@@ -186,7 +187,7 @@ namespace ProteoWPFSuite
                 TopDownProteoform p = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
 
                 Dictionary<string, List<SpectrumMatch>> baseSequenceGroups = new Dictionary<string, List<SpectrumMatch>>();
-                baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.topdown_hits.First() });
+                baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.root});
                 foreach (var h in p.ambiguous_topdown_hits)
                 {
                     if (baseSequenceGroups.ContainsKey(h.sequence))
@@ -207,9 +208,8 @@ namespace ProteoWPFSuite
 
         private void display_bu_peptides(TopDownProteoform selected_pf)
         {
-            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() : Proteoform.get_possible_PSMs(selected_pf.accession, (selected_pf as TopDownProteoform).topdown_ptm_set,
-                 (selected_pf as TopDownProteoform).topdown_begin, (selected_pf as TopDownProteoform).topdown_end, true)
-                .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => Proteoform.get_possible_PSMs(p.accession, new PtmSet(p.ptm_list), p.begin, p.end, true))).Distinct().ToList();
+            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() : selected_pf.root.bottom_up_PSMs
+                .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
             DisplayUtility.FillDataGridView(dgv_BU_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
             DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides);
         }
@@ -263,7 +263,7 @@ namespace ProteoWPFSuite
                 foreach (MatchedFragmentIon ion in matched_fragment_ions)
                 {
                     int zeroBasedAminoAcidIndex = ion.NeutralTheoreticalProduct.TerminusFragment.AminoAcidPosition - 1;
-
+                    if (ion.NeutralTheoreticalProduct.TerminusFragment.Terminus == FragmentationTerminus.C) zeroBasedAminoAcidIndex++;
                     for (int i = 0; i < drawnAminoAcids.Count; i++)
                     {
                         if (i == zeroBasedAminoAcidIndex)
