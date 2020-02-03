@@ -52,10 +52,16 @@ namespace ProteoformSuiteInternal
 
             if(Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count > 0)
             {
-                //using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "bottomup_results_" + timestamp + ".tsv")))
-                //{
-                //    writer.Write(datatable_tostring(bottomup_results_dataframe()));
-                //}
+                Dictionary<string, List<TopDownProteoform>> topdowns_by_accession = new Dictionary<string, List<TopDownProteoform>>();
+                using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "bottomup_results_" + timestamp + ".tsv")))
+                {
+                    writer.Write(datatable_tostring(bottomup_results_dataframe()));
+                }
+
+                using (StreamWriter writer = new StreamWriter(Path.Combine(directory, "shared_peptide_bottomup_results_" + timestamp + ".tsv")))
+                {
+                    writer.Write(datatable_tostring(shared_peptide_results_dataframe()));
+                }
             }
         }
 
@@ -840,7 +846,125 @@ namespace ProteoformSuiteInternal
 
         public static DataTable bottomup_results_dataframe()
         {
-            return null;
+            DataTable results = new DataTable();
+            results.Columns.Add("Protein Accession", typeof(string));
+            results.Columns.Add("Peptide Sequence", typeof(string));
+            results.Columns.Add("Begin", typeof(int));
+            results.Columns.Add("End", typeof(int));
+            results.Columns.Add("PTM List", typeof(string));
+            results.Columns.Add("Shared", typeof(bool));
+            results.Columns.Add("Full Sequence PFR", typeof(string));
+            results.Columns.Add("Level1 Top-down proteoform Count", typeof(int));
+            results.Columns.Add("Unambiguous Intact-Mass proteoform Count", typeof(int));
+            results.Columns.Add("Level1 Top-down proteoform IDs", typeof(string));
+            results.Columns.Add("Unambiguous Intact-Mass proteoform IDs", typeof(string));
+            results.Columns.Add("Level1 Top-down proteoform PTM description", typeof(string));
+            results.Columns.Add("Unambiguous Intact-Mass proteoform PTM description", typeof(string));
+            results.Columns.Add("Level1 Top-down proteoform begin and end", typeof(string));
+            results.Columns.Add("Unambiguous Intact-Mass proteoform being and end", typeof(string));
+
+            var intact_mass_IDs = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => !e.topdown_id && e.linked_proteoform_references != null && e.ambiguous_identifications.Count == 0);
+            Parallel.ForEach(Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession, accession =>
+                {
+                    //right now just unambiguous TD ID's...
+                    var topdowns_with_accession = Sweet.lollipop.topdown_proteoforms.Where(t => t.root.bottom_up_PSMs.Count > 0 && t.root.bottom_up_PSMs.First().accession == accession.Key && t.ambiguous_topdown_hits.Count == 0);
+                    //t.accession.Split('_')[0].Split('-')[0] == accession.Key && t.ambiguous_topdown_hits.Count == 0);
+                     var intactMass_with_accession = intact_mass_IDs.Where(e => e.bottom_up_PSMs.Count > 0 && e.bottom_up_PSMs.First().accession == accession.Key);
+                   // e.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0] == accession.Key);
+                    var rows = new List<object[]>();
+                    foreach (var peptide in accession.Value)
+                    {
+                        if (peptide.ambiguous_matches.Count > 0) continue;
+                        var topdown_with_this_peptide = topdowns_with_accession.Where(t => t.root.bottom_up_PSMs.Contains(peptide));
+                        var intactMass_with_this_peptide = intactMass_with_accession.Where(e => e.bottom_up_PSMs.Contains(peptide));
+                        rows.Add(new object[15]{
+                            peptide.accession,
+                            peptide.sequence,
+                            peptide.begin,
+                            peptide.end,
+                            peptide.ptm_description,
+                            peptide.shared_protein,
+                            peptide.pfr_accession,
+                            topdown_with_this_peptide.Count(),
+                            intactMass_with_this_peptide.Count(),
+                            String.Join("|", topdown_with_this_peptide.Select(t => t.accession)),
+                            String.Join("|", intactMass_with_this_peptide.Select(t => t.accession)),
+                            String.Join("|", topdown_with_this_peptide.Select(t => t.topdown_ptm_description)),
+                            String.Join("|", intactMass_with_this_peptide.Select(t => t.ptm_set.ptm_description)),
+                            String.Join("|", topdown_with_this_peptide.Select(t => t.topdown_begin + " to " + t.topdown_end)),
+                            String.Join("|", intactMass_with_this_peptide.Select(t => t.begin + " to " + t.end))
+                            });
+                    }
+                    lock (results)
+                    {
+                        foreach (var row in rows)
+                        {
+                            results.Rows.Add(row);
+                        }
+                    }
+                });
+
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(string.Join("\t", row.ItemArray));
+            }
+            return results;
+        }
+
+
+        public static DataTable shared_peptide_results_dataframe()
+        {
+            DataTable results = new DataTable();
+            results.Columns.Add("Peptide Full Sequence", typeof(string));
+            results.Columns.Add("Number Proteins in Protein Group", typeof(string));
+            results.Columns.Add("Different TD Matches for Different Proteins", typeof(bool));
+            results.Columns.Add("# Top-down proteoform matches for protein", typeof(string));
+            results.Columns.Add("Top-down proteoform matches for protein", typeof(string));
+
+            Dictionary<string, List<SpectrumMatch>> by_pfr = new Dictionary<string, List<SpectrumMatch>>();
+            foreach (var p in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Values.SelectMany(b => b))
+            {
+                if (!p.shared_protein || p.ambiguous_matches.Count > 0) continue;
+                List<SpectrumMatch> list;
+                by_pfr.TryGetValue(p.original_pfr_accession, out list);
+                if (list != null) list.Add(p);
+                else
+                {
+                    by_pfr.Add(p.original_pfr_accession, new List<SpectrumMatch>() { p });
+                }
+            }
+            foreach (var pfr in by_pfr.Keys)
+            {
+                var peptides_with_this_pfr = by_pfr[pfr];
+                List<int> td_counts = peptides_with_this_pfr.Select(b => Sweet.lollipop.topdown_proteoforms.Count(p => p.accession.Split('_')[0].Split('-')[0] == b.accession)).ToList();
+                results.Rows.Add(
+                  pfr,
+                  peptides_with_this_pfr.Count(),
+                  (td_counts.Any(c => c > 0) && td_counts.Any(c => c == 0)),
+                  String.Join("|", td_counts),
+                   String.Join("|", peptides_with_this_pfr.Select(b => b.accession))
+                  );
+            }
+
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(string.Join("\t", row.ItemArray));
+            }
+            return results;
         }
 
         public static DataTable biological_replicate_intensities(IGoAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation, bool include_normalized_intensity)
