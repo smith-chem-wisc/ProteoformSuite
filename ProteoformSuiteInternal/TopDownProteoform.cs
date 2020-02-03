@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public List<SpectrumMatch> topdown_hits;
 
-        public SpectrumMatch root;
+        public List<SpectrumMatch> topdown_bottom_up_PSMs = new List<SpectrumMatch>();
 
         private PtmSet _topdown_ptm_set = new PtmSet(new List<Ptm>());
 
@@ -50,7 +50,7 @@ namespace ProteoformSuiteInternal
             get
             {
                 List<int> PSM_counts = ambiguous_topdown_hits.Select(i => i.bottom_up_PSMs.Count).ToList();
-                PSM_counts.Add(root.bottom_up_PSMs.Count);
+                PSM_counts.Add(topdown_bottom_up_PSMs.Count);
                 PSM_counts = PSM_counts.Distinct().ToList();
                 return PSM_counts.Count > 1;
             }
@@ -60,10 +60,10 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                return (root.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                return (topdown_bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
                     ? "N/A"
                     : String.Join(", ",
-                          root.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
+                          topdown_bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).SelectMany(p => p.ptm_list).Where(m => UnlocalizedModification.bio_interest(m.modification))
                               .Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position).OrderBy(m => m).Distinct()))
                       + (ambiguous_topdown_hits.Count > 0
                           ? " | " + String.Join(" | ",
@@ -106,10 +106,10 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                            return (root.bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+                            return (topdown_bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
                 ? "N/A"
                 : String.Join(", ",
-                     root.bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).Select(p => p.ptm_description).Distinct()))
+                     topdown_bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).Select(p => p.ptm_description).Distinct()))
                   + (ambiguous_topdown_hits.Count > 0
                       ? " | " + String.Join(" | ",
                             ambiguous_topdown_hits.Select(i =>
@@ -139,7 +139,7 @@ namespace ProteoformSuiteInternal
 
         public TopDownProteoform(string accession, List<SpectrumMatch> hits) : base(accession, null, true)
         {
-            this.root = hits[0];
+            var root = hits[0];
             this.name = root.name;
             this.pfr_accession = root.pfr_accession;
             this.ambiguous_topdown_hits = root.ambiguous_matches;

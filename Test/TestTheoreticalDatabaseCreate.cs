@@ -189,7 +189,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             var mods = ConstructorsForTesting.read_mods();
-            Assert.AreEqual(471, mods.Keys.Count);
+            Assert.AreEqual(478, mods.Keys.Count);
             //Assert.True(mods.Values.All(v => v.Count == 1));
         }
 

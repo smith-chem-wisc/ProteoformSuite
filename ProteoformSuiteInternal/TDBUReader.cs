@@ -50,7 +50,7 @@ namespace ProteoformSuiteInternal
                     true); //This returns the entire sheet except for the header. Each row of cells is one List<string>
 
             //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
-            Parallel.For(1, cells.Count, index =>
+            Parallel.For(0, cells.Count, index =>
             {
                 var cellStrings = cells[index];
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)

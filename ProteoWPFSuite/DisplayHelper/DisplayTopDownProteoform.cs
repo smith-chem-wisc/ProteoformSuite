@@ -62,7 +62,7 @@ namespace ProteoWPFSuite
 
         public string original_PFR_accession
         {
-            get { return t.root.original_pfr_accession; }
+            get { return t.topdown_hits.First().original_pfr_accession; }
         }
 
         public string Description
@@ -215,7 +215,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return t.root.bottom_up_PSMs.Count.ToString()
+                return t.topdown_bottom_up_PSMs.Count.ToString()
                        + (t.ambiguous_topdown_hits.Count > 0
                            ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(i => i.bottom_up_PSMs.Count.ToString()))
                     : "");
@@ -262,7 +262,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return t.root.bottom_up_PSMs.Any(p => p.begin == t.topdown_begin);
+                return t.topdown_bottom_up_PSMs.Any(p => p.begin == t.topdown_begin);
             }
         }
 
@@ -270,7 +270,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return t.root.bottom_up_PSMs.Any(p => p.end == t.topdown_end);
+                return t.topdown_bottom_up_PSMs.Any(p => p.end == t.topdown_end);
             }
         }
 
@@ -279,7 +279,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return Proteoform.get_bottom_up_evidence_for_all_PTMs(t.root.bottom_up_PSMs, t.topdown_ptm_set, true);
+                return Proteoform.get_bottom_up_evidence_for_all_PTMs(t.topdown_bottom_up_PSMs, t.topdown_ptm_set, true);
             }
         }
 
@@ -289,7 +289,7 @@ namespace ProteoWPFSuite
             //only unambiguous psms for now
             get
             {
-                return TopDownProteoform.get_description(t.root.bottom_up_PSMs, t.accession, true, t.topdown_ptm_set) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, true, new PtmSet(h.ptm_list)))) : "");
+                return TopDownProteoform.get_description(t.topdown_bottom_up_PSMs, t.accession, true, t.topdown_ptm_set) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, true, new PtmSet(h.ptm_list)))) : "");
 
             }
         }
@@ -298,7 +298,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return TopDownProteoform.get_description(t.root.bottom_up_PSMs, t.accession, false, t.topdown_ptm_set) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, false, new PtmSet(h.ptm_list)))) : "");
+                return TopDownProteoform.get_description(t.topdown_bottom_up_PSMs, t.accession, false, t.topdown_ptm_set) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, false, new PtmSet(h.ptm_list)))) : "");
 
             }
         }

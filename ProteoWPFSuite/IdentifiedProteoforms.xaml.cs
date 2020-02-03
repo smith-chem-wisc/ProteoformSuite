@@ -173,7 +173,7 @@ namespace ProteoWPFSuite
         private void display_bu_peptides()
         {
             List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() :
-                (selected_pf as TopDownProteoform) != null ? (selected_pf as TopDownProteoform).root.bottom_up_PSMs
+                (selected_pf as TopDownProteoform) != null ? (selected_pf as TopDownProteoform).topdown_bottom_up_PSMs
                 .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs).Distinct()).ToList()
                 : selected_pf.bottom_up_PSMs.Concat(selected_pf.ambiguous_identifications.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
             DisplayUtility.FillDataGridView(dgv_bottomUp, bu_psms.Select(c => new DisplayTopDownHit(c)));

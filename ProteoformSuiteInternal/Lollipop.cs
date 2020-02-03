@@ -535,7 +535,7 @@ namespace ProteoformSuiteInternal
             {
                 Parallel.ForEach(topdown_proteoforms, p =>
                 {
-                    p.root.bottom_up_PSMs = Proteoform.get_possible_PSMs(p.accession, p.topdown_ptm_set, p.topdown_begin, p.topdown_end, true);
+                    p.topdown_bottom_up_PSMs = Proteoform.get_possible_PSMs(p.accession, p.topdown_ptm_set, p.topdown_begin, p.topdown_end, true);
                     foreach(var ambiguous in p.ambiguous_topdown_hits)
                     {
                        ambiguous.bottom_up_PSMs = Proteoform.get_possible_PSMs(ambiguous.accession, new PtmSet(ambiguous.ptm_list), ambiguous.begin, ambiguous.end, true);

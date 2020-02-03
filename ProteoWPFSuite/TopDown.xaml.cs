@@ -187,7 +187,7 @@ namespace ProteoWPFSuite
                 TopDownProteoform p = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
 
                 Dictionary<string, List<SpectrumMatch>> baseSequenceGroups = new Dictionary<string, List<SpectrumMatch>>();
-                baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.root});
+                baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.topdown_hits.First()});
                 foreach (var h in p.ambiguous_topdown_hits)
                 {
                     if (baseSequenceGroups.ContainsKey(h.sequence))
@@ -208,7 +208,7 @@ namespace ProteoWPFSuite
 
         private void display_bu_peptides(TopDownProteoform selected_pf)
         {
-            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() : selected_pf.root.bottom_up_PSMs
+            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() : selected_pf.topdown_bottom_up_PSMs
                 .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
             DisplayUtility.FillDataGridView(dgv_BU_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
             DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides);
