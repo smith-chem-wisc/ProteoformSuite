@@ -459,7 +459,7 @@ namespace ProteoformSuiteInternal
                 if (same_ptmset_theos.Count == 0)
                 {
                     //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
-                    PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
+                    PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination.Where(s => s.modification.ModificationType != "Common Fixed").ToList(), mod_ranks, added_ptm_penalty);
                     TheoreticalProteoform t =
                     new TheoreticalProteoform(
                         accession + "_P" + ptm_set_counter.ToString(),

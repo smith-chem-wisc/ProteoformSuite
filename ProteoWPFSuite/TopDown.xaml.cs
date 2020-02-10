@@ -3,43 +3,33 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Controls;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using ProteoformSuiteInternal;
-using System.Windows;
-using MassSpectrometry;
 using Proteomics;
 using Proteomics.Fragmentation;
-using Proteomics.ProteolyticDigestion;
 
 namespace ProteoWPFSuite
 {
     /// <summary>
     /// Interaction logic for TopDown.xaml
     /// </summary>
-    public partial class TopDown : UserControl, ISweetForm, ITabbedMDI
+    public partial class TopDown : UserControl, ISweetForm, ITabbedMDI, INotifyPropertyChanged
     {
         private Dictionary<ProductType, Color> productTypeToColor;
         private Dictionary<ProductType, double> productTypeToYOffset;
         private Dictionary<string, SolidColorBrush> ModificationAnnotationColors;
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private static List<Modification> mods = new List<Modification>();
         public TopDown()
         {
             InitializeComponent();
             InitializeParameterSet();
+            this.DataContext = this;
+            CBPROTEOFORMSPECIFICPEPTIDES = true;
         }
 
         public void InitializeParameterSet()
@@ -52,6 +42,22 @@ namespace ProteoWPFSuite
             cb_biomarker.IsChecked = Sweet.lollipop.biomarker;
             cb_tight_abs_mass.IsChecked = Sweet.lollipop.tight_abs_mass;
             nUD_td_rt_tolerance.Value = (decimal)Sweet.lollipop.td_retention_time_tolerance;
+        }
+
+
+        private bool? cbproteoformspecificpeptides; 
+        public bool? CBPROTEOFORMSPECIFICPEPTIDES
+        {
+            get
+            {
+                return cbproteoformspecificpeptides;
+            }
+            set
+            {
+                cbproteoformspecificpeptides = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("CBPROTEOFORMSPECIFICPEPTIDES"));
+                display_bu_peptides();
+            }
         }
 
         public List<DataTable> DataTables { get; private set; }
@@ -125,6 +131,30 @@ namespace ProteoWPFSuite
             MDIParent.theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
 
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\modified_edges.tsv"))
+            {
+                foreach (var td in Sweet.lollipop.topdown_proteoforms.Where(t => t.topdown_level == 1))
+                {
+                    foreach (var bu in Proteoform.get_possible_PSMs(td.accession, td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Where(p => !p.shared_protein))
+                    {
+                        var ptms_bio_interest = bu.ptm_list.Where(p => p.modification.ModificationType != "Common Fixed" && UnlocalizedModification.bio_interest(p.modification));
+                        if (ptms_bio_interest.Count() == 0) continue;
+                        writer.WriteLine(td.accession + "_" + td.topdown_ptm_description + "\t" + bu.accession + "_" + bu.begin + "_" + bu.end + "_" + string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
+                    }
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\deterine_unique_possibe_proteoforms_from_peptides.tsv"))
+            {
+                foreach (var bu in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Values.SelectMany(b => b).Where(p => !p.shared_protein))
+                {
+                    var ptms_bio_interest = bu.ptm_list.Where(p => p.modification.ModificationType != "Common Fixed" && UnlocalizedModification.bio_interest(p.modification));
+                    if (ptms_bio_interest.Count() == 0) continue;
+                    writer.WriteLine(bu.accession + "\t" + bu.name + "\t" + string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
+                    //writer.WriteLine(td.accession + "_" + td.topdown_ptm_description + "\t" + bu.accession + "_" + bu.begin + "_" + bu.end + "_" + string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
+                }
+            }
+
         }
         public void ClearListsTablesFigures(bool clear_following)
         {
@@ -184,11 +214,11 @@ namespace ProteoWPFSuite
         {
             if (e.RowIndex >= 0)
             {
-                TopDownProteoform p = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
+                selected_pf = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
 
                 Dictionary<string, List<SpectrumMatch>> baseSequenceGroups = new Dictionary<string, List<SpectrumMatch>>();
-                baseSequenceGroups.Add(p.sequence, new List<SpectrumMatch>() { p.topdown_hits.First()});
-                foreach (var h in p.ambiguous_topdown_hits)
+                baseSequenceGroups.Add(selected_pf.sequence, new List<SpectrumMatch>() { selected_pf.topdown_hits.First()});
+                foreach (var h in selected_pf.ambiguous_topdown_hits)
                 {
                     if (baseSequenceGroups.ContainsKey(h.sequence))
                     {
@@ -199,17 +229,24 @@ namespace ProteoWPFSuite
                         baseSequenceGroups.Add(h.sequence, new List<SpectrumMatch>() { h });
                     }
                 }
-                var matched_fragment_ions = p.ambiguous_topdown_hits.Concat(p.topdown_hits).SelectMany(h => h.matched_fragment_ions).ToList();
+                var matched_fragment_ions = selected_pf.ambiguous_topdown_hits.Concat(selected_pf.topdown_hits).SelectMany(h => h.matched_fragment_ions).ToList();
                 get_proteoform_sequence(baseSequenceAnnotationCanvas, baseSequenceGroups, matched_fragment_ions);
-                display_bu_peptides(p);
+                display_bu_peptides();
             }
         }
 
+        private TopDownProteoform selected_pf;
 
-        private void display_bu_peptides(TopDownProteoform selected_pf)
+        private void display_bu_peptides()
         {
-            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() : selected_pf.topdown_bottom_up_PSMs
+            if (selected_pf == null) return;
+            List<SpectrumMatch> bu_psms =
+                selected_pf.topdown_bottom_up_PSMs
                 .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
+            if((bool)cbproteoformspecificpeptides && selected_pf != null)
+            {
+                Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(selected_pf.accession.Split('_')[0].Split('-')[0], out bu_psms);
+            }
             DisplayUtility.FillDataGridView(dgv_BU_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
             DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides);
         }
@@ -424,6 +461,10 @@ namespace ProteoWPFSuite
         {
             Sweet.lollipop.td_retention_time_tolerance = (double)nUD_td_rt_tolerance.Value;
         }
-        
+
+        private void cb_proteoform_specific_peptides_Checked(object sender, RoutedEventArgs e)
+        {
+            display_bu_peptides();
+        }
     }
 }

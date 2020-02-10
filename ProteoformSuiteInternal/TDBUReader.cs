@@ -355,7 +355,7 @@ namespace ProteoformSuiteInternal
                         {
                             List<Ptm> list = new List<Ptm>();
                             PeptideWithSetModifications modsIdentifier =
-                                new PeptideWithSetModifications(full_sequences[i], mods);
+                                new PeptideWithSetModifications(full_sequences[i].Trim(new char[] { '"' }), mods);
 
                             var ptm_list = modsIdentifier.AllModsOneIsNterminus;
 
@@ -441,12 +441,12 @@ namespace ProteoformSuiteInternal
                                 new_ptm_list.Count, begin.Count, end.Count
                             };
 
-                        for (int hit = 0; hit < counts.Max(); hit++)
-                        {
-                            SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file,
-                                TopDownResultType.TightAbsoluteMass,
-                                accessions.Count > hit ? accessions[hit] : accessions[0],
-                                cellStrings[index_full_sequence],
+                    for (int hit = 0; hit < counts.Max(); hit++)
+                    {
+                        SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file,
+                            TopDownResultType.TightAbsoluteMass,
+                            accessions.Count > hit ? accessions[hit] : accessions[0],
+                            cellStrings[index_full_sequence].Trim(new char[] {'"'}),
                                 accessions.Count > hit ? accessions[hit] : accessions[0],
                                 names.Count > hit ? names[hit] : names[0],
                                 base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0],

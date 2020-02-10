@@ -766,7 +766,7 @@ namespace ProteoformSuiteInternal
                     td.agg_rt,
                     td.topdown_hits.Count(),
                     td.pfr_accession,
-                    td.topdown_hits.First().full_sequence,
+                    td.topdown_hits.First().original_pfr_accession,
                     td.name + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.name)) : ""),
                     td.topdown_geneName.primary + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.gene_name.primary)) : "" ),
                     td.accession.Split('_')[0].Split('-')[0] + (td.ambiguous_topdown_hits.Count > 0 ? String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0].Split('-')[0])) : ""),

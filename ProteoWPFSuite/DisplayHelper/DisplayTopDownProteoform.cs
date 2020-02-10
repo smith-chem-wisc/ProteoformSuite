@@ -78,9 +78,7 @@ namespace ProteoWPFSuite
         {
             get
             {
-                return "";
-             //   return t.topdown_geneName.primary + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.gene_name.primary)) : "");
-
+                return t.topdown_geneName.primary + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.gene_name.primary)) : "");
             }
         }
 
@@ -300,6 +298,16 @@ namespace ProteoWPFSuite
             {
                 return TopDownProteoform.get_description(t.topdown_bottom_up_PSMs, t.accession, false, t.topdown_ptm_set) + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, false, new PtmSet(h.ptm_list)))) : "");
 
+            }
+        }
+
+        public string Fragments
+        {
+            get
+            {
+                return String.Join(", ", t.topdown_hits.SelectMany(h => h.matched_fragment_ions)
+                    .OrderBy(i => i.NeutralTheoreticalProduct.ProductType.ToString()).ThenBy(i => i.NeutralTheoreticalProduct.TerminusFragment.FragmentNumber)
+                    .Select(i => i.NeutralTheoreticalProduct.ProductType.ToString() + i.NeutralTheoreticalProduct.TerminusFragment.FragmentNumber).Distinct());
             }
         }
 

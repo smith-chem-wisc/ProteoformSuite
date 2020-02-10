@@ -19,10 +19,9 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0"/>
-            <Grid Grid.Column="1" Margin="0 0 0 0">
+            <Grid Grid.Column="0" Margin="0 0 0 0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
@@ -37,7 +36,7 @@
                 <Label Grid.Row="1" Grid.Column="0" Padding="5,2,0,0">Ret. Time Tolerance (min)</Label>
                 <CheckBox Click="cb_tight_abs_mass_CheckedChanged" x:Name="cb_tight_abs_mass" Grid.Row="2" Grid.Column="0" Padding="5,0,0,0" Margin="2,2,0,0" IsChecked="True" >TightAbsolute Mass</CheckBox>
                 <CheckBox Click="cb_biomarker_CheckedChanged" x:Name="cb_biomarker" Grid.Row="3" Grid.Column="0" Padding="5,0,0,0" Margin="2,2,0,0" IsChecked="True">Biomarker</CheckBox>
-
+                <CheckBox x:Name="cb_proteoform_specific_peptides" Grid.Row="3" Grid.Column="1" Padding="5,0,0,0" Margin="2,2,0,0" IsChecked="{Binding Path=CBPROTEOFORMSPECIFICPEPTIDES,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Show Proteoform-Specific Peptides</CheckBox>
                 <wpfTool:DecimalUpDown x:Name="nUD_min_score_td"  DefaultValue="3.0" Grid.Row="0" Grid.Column="1" DisplayDefaultValueOnEmptyText="True" ValueChanged="nUD_min_score_td_ValueChanged" />
                 <wpfTool:DecimalUpDown x:Name="nUD_td_rt_tolerance" DefaultValue="5.00" Grid.Row="1" Grid.Column="1" DisplayDefaultValueOnEmptyText="True" ValueChanged="nUD_td_rt_tolerance_ValueChanged"/>
             </Grid>
