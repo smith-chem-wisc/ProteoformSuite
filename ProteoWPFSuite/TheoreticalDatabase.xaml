@@ -100,7 +100,7 @@
                             </WindowsFormsHost>
                         </Grid>
                         <CheckBox IsChecked="True" Margin="5 5 0 5" Checked="ckbx_combineIdenticalSequences_CheckedChanged" Unchecked="ckbx_combineIdenticalSequences_CheckedChanged" Content="Combine Sequence-Identical Proteins" x:Name="ckbx_combineIdenticalSequences"></CheckBox>
-                        <CheckBox IsChecked="True" Margin="5 5 0 5" Checked="ckbx_combineTheoreticalsByMass_CheckedChanged" Unchecked="ckbx_combineTheoreticalsByMass_CheckedChanged" Content="Combine Theoretical Proteoforms By Mass" x:Name="ckbx_combineTheoreticalsByMass"></CheckBox>
+                        <CheckBox IsChecked="False" Margin="5 5 0 5" Checked="ckbx_combineTheoreticalsByMass_CheckedChanged" Unchecked="ckbx_combineTheoreticalsByMass_CheckedChanged" Content="Combine Theoretical Proteoforms By Mass" x:Name="ckbx_combineTheoreticalsByMass"></CheckBox>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
