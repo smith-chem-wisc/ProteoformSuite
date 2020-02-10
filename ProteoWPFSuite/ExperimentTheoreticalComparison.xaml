@@ -98,7 +98,7 @@
                         <Label DockPanel.Dock="Left" FontSize="9" Padding="0.5" Grid.Row="2">
                             <TextBlock>Peak Width<LineBreak/>Base (Da)</TextBlock></Label>
                         <WindowsFormsHost Grid.Column="1" Grid.Row="2" Margin="1 0 0 1">
-                            <winform:NumericUpDown Maximum="0.5" Increment="0.005" DecimalPlaces="4" Value="0.1" Minimum="0"  x:Name="nUD_PeakWidthBase" Height="25" Dock="Fill" ValueChanged="nUD_PeakWidthBase_ValueChanged"></winform:NumericUpDown>
+                            <winform:NumericUpDown Maximum="0.5" Increment="0.005" DecimalPlaces="4" Value="0.03" Minimum="0"  x:Name="nUD_PeakWidthBase" Height="25" Dock="Fill" ValueChanged="nUD_PeakWidthBase_ValueChanged"></winform:NumericUpDown>
                         </WindowsFormsHost>
                         <Label Grid.Column="0" Grid.Row="3" DockPanel.Dock="Left" FontSize="9" Padding="0.5">
                             <TextBlock>Peak Threshold<LineBreak/>(cts)</TextBlock>
