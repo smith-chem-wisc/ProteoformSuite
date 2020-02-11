@@ -247,6 +247,7 @@ namespace ProteoWPFSuite
             {
                 Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(selected_pf.accession.Split('_')[0].Split('-')[0], out bu_psms);
             }
+            if (bu_psms == null) bu_psms = new List<SpectrumMatch>();
             DisplayUtility.FillDataGridView(dgv_BU_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
             DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides);
         }

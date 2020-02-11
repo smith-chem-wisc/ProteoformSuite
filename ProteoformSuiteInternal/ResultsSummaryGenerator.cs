@@ -461,8 +461,16 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("UniProt-Annotated Modifications");
             results.Columns.Add("Potentially Novel Modifications");
             results.Columns.Add("Bottom-Up PSM Count", typeof(string));
-            results.Columns.Add("Bottom-Up PTMs", typeof(string));
-            results.Columns.Add("Bottom-up evidence all PTMs", typeof(string));
+
+            //results.Columns.Add("Different BU PSM Count for Amibguous IDs", typeof(bool));
+            results.Columns.Add("Bottom-Up Modifications from Proteoform", typeof(string));
+            //results.Columns.Add("Bottom-Up Modifications from Protein", typeof(string));
+            //   results.Columns.Add("Peptide-Specific Bottom-Up Modifications", typeof(string));
+            results.Columns.Add("Bottom-Up Evidence for Begin", typeof(string));
+            results.Columns.Add("Bottom-Up Evidence for End", typeof(string));
+            results.Columns.Add("Bottom-Up Evidence for All PTMs", typeof(string));
+
+
             results.Columns.Add("Level Number", typeof(int));
             results.Columns.Add("Level Description", typeof(string));
             results.Columns.Add("New Intact-Mass ID", typeof(string));
@@ -523,8 +531,10 @@ namespace ProteoformSuiteInternal
                            ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => i.bottom_up_PSMs.Count(p => p.ptm_list.Count > 0) == 0 ?
                                  "N/A" : String.Join(", ", i.bottom_up_PSMs.Where(p => p.ptm_list.Count > 0).Select(p => p.ptm_description).Distinct())))
                            : "")),
-                 Proteoform.get_bottom_up_evidence_for_all_PTMs(e.bottom_up_PSMs, e.ptm_set, false) + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_bottom_up_evidence_for_all_PTMs(i.bottom_up_PSMs, i.ptm_set, false ))) : ""),
-                e.proteoform_level,
+                  e.bottom_up_PSMs.Any(p => p.begin == e.begin) + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(a => a.bottom_up_PSMs.Any(p => p.begin == a.begin))) : ""),
+                  e.bottom_up_PSMs.Any(p => p.end == e.end) + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(a => a.bottom_up_PSMs.Any(p => p.end == a.end))) : ""),
+                   Proteoform.get_bottom_up_evidence_for_all_PTMs(e.bottom_up_PSMs, e.ptm_set, false) + (e.ambiguous_identifications.Count > 0 ? " | " + String.Join(" | ", e.ambiguous_identifications.Select(i => Proteoform.get_bottom_up_evidence_for_all_PTMs(i.bottom_up_PSMs, i.ptm_set, false ))) : ""),
+                  e.proteoform_level,
                    e.proteoform_level_description,
                    e.new_intact_mass_id,
                    e.ambiguous_identifications.Count > 0 ? "TRUE" : "FALSE",
@@ -545,7 +555,7 @@ namespace ProteoformSuiteInternal
                     e.aggregated.Count > 0 ? string.Join(", ", e.aggregated.OrderByDescending(c => c.intensity_sum).First().charge_states.Select(cs => Math.Round(cs.mz_centroid, 2))) : "",
                     e.aggregated.Count > 0 ? string.Join(", ", e.aggregated.OrderByDescending(c => c.intensity_sum).First().charge_states.Select(cs => cs.charge_count)) : "",
                     e.manual_validation_id
-                    );
+                    );;
             }
 
             StringBuilder result_string = new StringBuilder();
@@ -750,9 +760,9 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Bottom-Up Modifications from Proteoform", typeof(string));
             results.Columns.Add("Bottom-Up Modifications from Protein", typeof(string));
             results.Columns.Add("Peptide-Specific Bottom-Up Modifications", typeof(string));
-            results.Columns.Add("Bottom-Up Evidence for Begin", typeof(bool));
-            results.Columns.Add("Bottom-Up Evidence for End", typeof(bool));
-            results.Columns.Add("Bottom-Up Evidence for All PTMs", typeof(bool));
+            results.Columns.Add("Bottom-Up Evidence for Begin", typeof(string));
+            results.Columns.Add("Bottom-Up Evidence for End", typeof(string));
+            results.Columns.Add("Bottom-Up Evidence for All PTMs", typeof(string));
             results.Columns.Add("Top-Down and Bottom-Up Modification Overlap Description", typeof(string));
             results.Columns.Add("Top-Down and Bottom-Up Modification Overlap Description from Protein", typeof(string));
 
@@ -822,9 +832,9 @@ namespace ProteoformSuiteInternal
                      td.bu_PTMs,
                      td.bu_PTMs_all_from_protein,
                      td.bu_PTMs_separatepeptides,
-                     td.topdown_bottom_up_PSMs.Any(p => p.begin == td.topdown_begin),
-                     td.topdown_bottom_up_PSMs.Any(p => p.end == td.topdown_end),
-                     Proteoform.get_bottom_up_evidence_for_all_PTMs(td.topdown_bottom_up_PSMs, td.topdown_ptm_set, true),
+                     td.topdown_bottom_up_PSMs.Any(p => p.begin == td.topdown_begin) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.bottom_up_PSMs.Any(b => b.begin == h.begin))) : ""),
+                     td.topdown_bottom_up_PSMs.Any(p => p.end == td.topdown_end) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.bottom_up_PSMs.Any(b => b.end == h.end))) :""),
+                     Proteoform.get_bottom_up_evidence_for_all_PTMs(td.topdown_bottom_up_PSMs, td.topdown_ptm_set, true) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => Proteoform.get_bottom_up_evidence_for_all_PTMs(h.bottom_up_PSMs, new PtmSet(h.ptm_list), true))) :""),
                      TopDownProteoform.get_description(td.topdown_bottom_up_PSMs, td.accession, true, td.topdown_ptm_set) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, true, new PtmSet(h.ptm_list)))) : ""),
                      TopDownProteoform.get_description(td.topdown_bottom_up_PSMs, td.accession, false, td.topdown_ptm_set) + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => TopDownProteoform.get_description(h.bottom_up_PSMs, h.accession, false, new PtmSet(h.ptm_list)))) : "")
                     );
