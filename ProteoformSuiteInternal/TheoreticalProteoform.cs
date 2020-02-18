@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
             this.modified_mass = CalculateProteoformMass(sequence, ptm_set.ptm_combination);
-            bottom_up_PSMs = get_possible_PSMs(accession, ptm_set, begin, end, false);
+            bottom_up_PSMs = get_possible_PSMs(accession, ptm_set, this.sequence, false);
         }
 
         #endregion Public Constructor

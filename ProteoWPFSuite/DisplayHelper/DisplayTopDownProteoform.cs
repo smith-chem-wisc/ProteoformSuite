@@ -91,11 +91,16 @@ namespace ProteoWPFSuite
         //    }
         //}
 
+        public string uniprot_id
+        {
+            get { return t.uniprot_id + (t.ambiguous_topdown_hits.Count > 0 ? " | "  + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.uniprot_id)) : ""); }
+        }
+
         public string grouped_accessions
         {
             get
             {
-                return t.accession.Split('_')[0].Split('-')[0] + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0].Split('-')[0])) : "");
+                return t.accession.Split('_')[0].Split('-')[0] + (t.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", t.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0])) : "");
             }
         }
 
@@ -365,6 +370,7 @@ namespace ProteoWPFSuite
             if (name == nameof(manual_id)) { return "Best Hit Info"; }
             if (name == nameof(family_id)) { return "Family ID"; }
             if (name == nameof(PFR_accession)) { return "PFR Accession"; }
+            if (name == nameof(uniprot_id)) { return "Uniprot ID"; }
             if (name == nameof(bu_PTMs)) return "Modified Bottom-Up PSMs";
             if (name == nameof(bu_PSMs_count)) return "Bottom-Up PSMs Count";
             if (name == nameof(different_ambiguity)) return "Different Ambiguity in Bottom-Up PSMs";

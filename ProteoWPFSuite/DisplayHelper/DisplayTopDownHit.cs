@@ -108,11 +108,16 @@ namespace ProteoWPFSuite
             get { return h.score; }
         }
 
+        public bool Shared
+        {
+            get { return h.shared_protein; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
 
-        public static void FormatTopDownHitsTable(System.Windows.Forms.DataGridView dgv)
+        public static void FormatTopDownHitsTable(System.Windows.Forms.DataGridView dgv, bool bottomUp)
         {
             if (dgv.Columns.Count <= 0) return;
 
@@ -124,7 +129,7 @@ namespace ProteoWPFSuite
                 string n = number_format(c.Name);
                 c.HeaderText = h != null ? h : c.HeaderText;
                 c.DefaultCellStyle.Format = n != null ? n : c.DefaultCellStyle.Format;
-                c.Visible = visible(c.Name, c.Visible);
+                c.Visible = visible(c.Name, bottomUp);
             }
         }
 
@@ -140,7 +145,11 @@ namespace ProteoWPFSuite
 
         private static bool visible(string property_name, bool current)
         {
-            return current;
+            if(property_name == nameof(Shared))
+            {
+                return current;
+            }
+            return true;
         }
 
         private static string header(string property_name)

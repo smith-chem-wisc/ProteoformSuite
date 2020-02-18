@@ -130,31 +130,6 @@ namespace ProteoWPFSuite
             
             MDIParent.theoreticalDatabase.FillTablesAndCharts();
             FillTablesAndCharts();
-
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\modified_edges.tsv"))
-            {
-                foreach (var td in Sweet.lollipop.topdown_proteoforms.Where(t => t.topdown_level == 1))
-                {
-                    foreach (var bu in Proteoform.get_possible_PSMs(td.accession, td.topdown_ptm_set, td.topdown_begin, td.topdown_end, true).Where(p => !p.shared_protein))
-                    {
-                        var ptms_bio_interest = bu.ptm_list.Where(p => p.modification.ModificationType != "Common Fixed" && UnlocalizedModification.bio_interest(p.modification));
-                        if (ptms_bio_interest.Count() == 0) continue;
-                        writer.WriteLine(td.accession + "_" + td.topdown_ptm_description + "\t" + bu.accession + "_" + bu.begin + "_" + bu.end + "_" + string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
-                    }
-                }
-            }
-
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\deterine_unique_possibe_proteoforms_from_peptides.tsv"))
-            {
-                foreach (var bu in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Values.SelectMany(b => b).Where(p => !p.shared_protein))
-                {
-                    var ptms_bio_interest = bu.ptm_list.Where(p => p.modification.ModificationType != "Common Fixed" && UnlocalizedModification.bio_interest(p.modification));
-                    if (ptms_bio_interest.Count() == 0) continue;
-                    writer.WriteLine(bu.accession + "\t" + bu.name + "\t" + string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
-                    //writer.WriteLine(td.accession + "_" + td.topdown_ptm_description + "\t" + bu.accession + "_" + bu.begin + "_" + bu.end + "_" + string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
-                }
-            }
-
         }
         public void ClearListsTablesFigures(bool clear_following)
         {
@@ -243,13 +218,13 @@ namespace ProteoWPFSuite
             List<SpectrumMatch> bu_psms =
                 selected_pf.topdown_bottom_up_PSMs
                 .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
-            if((bool)cbproteoformspecificpeptides && selected_pf != null)
+            if(!(bool)cbproteoformspecificpeptides && selected_pf != null)
             {
-                Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(selected_pf.accession.Split('_')[0].Split('-')[0], out bu_psms);
+                Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(selected_pf.accession.Split('_')[0], out bu_psms);
             }
             if (bu_psms == null) bu_psms = new List<SpectrumMatch>();
             DisplayUtility.FillDataGridView(dgv_BU_peptides, bu_psms.Select(c => new DisplayTopDownHit(c)));
-            DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides);
+            DisplayTopDownHit.FormatTopDownHitsTable(dgv_BU_peptides, true);
         }
 
         private void dgv_BU_peptides_CellContentClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)

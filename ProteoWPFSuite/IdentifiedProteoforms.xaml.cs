@@ -177,7 +177,7 @@ namespace ProteoWPFSuite
                 .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs).Distinct()).ToList()
                 : selected_pf.bottom_up_PSMs.Concat(selected_pf.ambiguous_identifications.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
             DisplayUtility.FillDataGridView(dgv_bottomUp, bu_psms.Select(c => new DisplayTopDownHit(c)));
-            DisplayTopDownHit.FormatTopDownHitsTable(dgv_bottomUp);
+            DisplayTopDownHit.FormatTopDownHitsTable(dgv_bottomUp, true);
         }
     }
 }

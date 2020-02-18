@@ -156,6 +156,7 @@ namespace ProteoformSuiteInternal
             if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
             {
                 return
+
                     (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) >=
                     Sweet.lollipop.et_low_mass_difference
                     && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <=
@@ -192,8 +193,8 @@ namespace ProteoformSuiteInternal
         {
             List<TopDownProteoform> topdown_proteoforms_same_accession = Sweet.lollipop.topdown_proteoforms.Where(td =>
                 pf2_with_allowed_lysines.ExpandedProteinList.Any(p =>
-                    p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0])
-                        .Contains(td.accession.Split('_')[0].Split('-')[0]))).ToList();
+                    p.AccessionList.Select(a => a.Split('_')[0])
+                        .Contains(td.accession.Split('_')[0]))).ToList();
             bool good_BU_PSMs = //topdown_proteoforms_same_accession.Count > 0 || 
                                 pf2_with_allowed_lysines.bottom_up_PSMs.Count >= Sweet.lollipop.min_bu_peptides;
           

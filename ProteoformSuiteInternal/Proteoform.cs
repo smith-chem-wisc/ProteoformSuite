@@ -299,17 +299,19 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
-        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end, bool ptm_location_specific)
+        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, string sequence, bool ptm_location_specific)
         {
             var bottom_up_PSMs = new List<SpectrumMatch>();
             //add BU PSMs
-            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0].Split('-')[0], out var psms);
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.TryGetValue(accession.Split('_')[0], out var psms);
             if (psms != null)
             {
                 if (ptm_location_specific)
                 {
 
-                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin >= begin && s.end <= end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
+                    bottom_up_PSMs = psms.Where(s => 
+                    s.ambiguous_matches.Count == 0 && sequence.Contains(s.sequence)
+                                                                && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
                                                                ptm_set.ptm_combination.
                                                                Count(m2 =>
                                                                    UnlocalizedModification.LookUpId(m1.modification) +"@" + m1.position ==
@@ -323,7 +325,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin >= begin && s.end <= end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
+                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && sequence.Contains(s.sequence) && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
                                                                ptm_set.ptm_combination.
                                                                Count(m2 =>
                                                                    UnlocalizedModification.LookUpId(m1.modification) ==

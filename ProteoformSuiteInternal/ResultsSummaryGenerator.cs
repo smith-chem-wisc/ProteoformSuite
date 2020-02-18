@@ -729,6 +729,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Original PFR Accession/full-sequence", typeof(string));
             results.Columns.Add("Description", typeof(string));
             results.Columns.Add("Gene Name", typeof(string));
+            results.Columns.Add("UniProt ID", typeof(string));
             results.Columns.Add("Accession", typeof(string));
             results.Columns.Add("PTM Type", typeof(string));
             results.Columns.Add("Begin and End", typeof(string));
@@ -779,7 +780,8 @@ namespace ProteoformSuiteInternal
                     td.topdown_hits.First().original_pfr_accession,
                     td.name + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.name)) : ""),
                     td.topdown_geneName.primary + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.gene_name.primary)) : "" ),
-                    td.accession.Split('_')[0].Split('-')[0] + (td.ambiguous_topdown_hits.Count > 0 ? String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0].Split('-')[0])) : ""),
+                    td.uniprot_id + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.uniprot_id)) : "" ),
+                    td.accession.Split('_')[0] + (td.ambiguous_topdown_hits.Count > 0 ? String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0])) : ""),
                     td.topdown_ptm_description + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.ptm_description)) : ""),
                     td.topdown_begin + " to " + td.topdown_end + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.begin + " to " + h.end)) : ""),
                     td.sequence + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.sequence)) : ""),
@@ -858,6 +860,7 @@ namespace ProteoformSuiteInternal
         {
             DataTable results = new DataTable();
             results.Columns.Add("Protein Accession", typeof(string));
+            results.Columns.Add("Uniprot ID", typeof(string));
             results.Columns.Add("Peptide Sequence", typeof(string));
             results.Columns.Add("Begin", typeof(int));
             results.Columns.Add("End", typeof(int));
@@ -878,17 +881,16 @@ namespace ProteoformSuiteInternal
                 {
                     //right now just unambiguous TD ID's...
                     var topdowns_with_accession = Sweet.lollipop.topdown_proteoforms.Where(t => t.topdown_bottom_up_PSMs.Count > 0 && t.topdown_bottom_up_PSMs.First().accession == accession.Key && t.ambiguous_topdown_hits.Count == 0);
-                    //t.accession.Split('_')[0].Split('-')[0] == accession.Key && t.ambiguous_topdown_hits.Count == 0);
                      var intactMass_with_accession = intact_mass_IDs.Where(e => e.bottom_up_PSMs.Count > 0 && e.bottom_up_PSMs.First().accession == accession.Key);
-                   // e.linked_proteoform_references.First().accession.Split('_')[0].Split('-')[0] == accession.Key);
                     var rows = new List<object[]>();
                     foreach (var peptide in accession.Value)
                     {
                         if (peptide.ambiguous_matches.Count > 0) continue;
                         var topdown_with_this_peptide = topdowns_with_accession.Where(t => t.topdown_bottom_up_PSMs.Contains(peptide));
                         var intactMass_with_this_peptide = intactMass_with_accession.Where(e => e.bottom_up_PSMs.Contains(peptide));
-                        rows.Add(new object[15]{
+                        rows.Add(new object[16]{
                             peptide.accession,
+                            peptide.uniprot_id,
                             peptide.sequence,
                             peptide.begin,
                             peptide.end,
@@ -935,8 +937,9 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Peptide Full Sequence", typeof(string));
             results.Columns.Add("Number Proteins in Protein Group", typeof(string));
             results.Columns.Add("Different TD Matches for Different Proteins", typeof(bool));
-            results.Columns.Add("# Top-down proteoform matches for protein", typeof(string));
-            results.Columns.Add("Top-down proteoform matches for protein", typeof(string));
+            results.Columns.Add("# Level-1 Top-down proteoform matches for protein", typeof(string));
+            results.Columns.Add("Level-1 Top-down proteoform matches for protein", typeof(string));
+            results.Columns.Add("Shared Protein Group", typeof(bool));
 
             Dictionary<string, List<SpectrumMatch>> by_pfr = new Dictionary<string, List<SpectrumMatch>>();
             foreach (var p in Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Values.SelectMany(b => b))
@@ -953,13 +956,25 @@ namespace ProteoformSuiteInternal
             foreach (var pfr in by_pfr.Keys)
             {
                 var peptides_with_this_pfr = by_pfr[pfr];
-                List<int> td_counts = peptides_with_this_pfr.Select(b => Sweet.lollipop.topdown_proteoforms.Count(p => p.accession.Split('_')[0].Split('-')[0] == b.accession)).ToList();
+
+                bool shared_protein = true;
+                foreach (var peptide in peptides_with_this_pfr)
+                {
+                    if(Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession[peptide.accession].Any(b => !b.shared_protein))
+                    {
+                        shared_protein = false;
+                        break;
+                    }
+                }
+
+                List<int> td_counts = peptides_with_this_pfr.Select(b => Sweet.lollipop.topdown_proteoforms.Where(td => td.proteoform_level == 1).Count(p => p.accession.Split('_')[0] == b.accession)).ToList();
                 results.Rows.Add(
-                  pfr,
                   peptides_with_this_pfr.Count(),
+                  pfr,
                   (td_counts.Any(c => c > 0) && td_counts.Any(c => c == 0)),
                   String.Join("|", td_counts),
-                   String.Join("|", peptides_with_this_pfr.Select(b => b.accession))
+                  String.Join("|", peptides_with_this_pfr.Select(b => b.accession)),
+                  shared_protein
                   );
             }
 

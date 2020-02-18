@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                return accession.Split('-')[0] + "_" + begin + "_" + end + "_" + full_sequence + (ambiguous_matches.Count > 0 ? 
+                return accession + "_" + begin + "_" + end + "_" + full_sequence + (ambiguous_matches.Count > 0 ? 
                     "|" + string.Join("|", ambiguous_matches.Select(a => a.accession.Split('-')[0] + "_" + a.begin + "_" + a.end + "_" + a.full_sequence)) : "");
             }
         }
@@ -87,7 +87,12 @@ namespace ProteoformSuiteInternal
             this.hit_ID = hit_ID;
             this.file = file;
             this.tdResultType = tdResultType;
-            this.accession = accession;
+
+            //handle isoform accsesion --> convert _ to -
+            string[] accession_split = accession.Split('_');
+            string new_accession = accession_split[0].Split('-')[0]; //get rid of TDPortal accession stuffs
+            if (accession_split.Length > 1) new_accession = new_accession + "-" + accession_split[1];
+            this.accession = new_accession;
             this.uniprot_id = uniprot_id;
             this.name = name;
             this.sequence = sequence;
