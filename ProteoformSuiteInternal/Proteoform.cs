@@ -299,7 +299,7 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
-        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, string sequence, bool ptm_location_specific)
+        public static List<SpectrumMatch> get_possible_PSMs(string accession, PtmSet ptm_set, int begin, int end, bool ptm_location_specific)
         {
             var bottom_up_PSMs = new List<SpectrumMatch>();
             //add BU PSMs
@@ -310,7 +310,7 @@ namespace ProteoformSuiteInternal
                 {
 
                     bottom_up_PSMs = psms.Where(s => 
-                    s.ambiguous_matches.Count == 0 && sequence.Contains(s.sequence)
+                    s.ambiguous_matches.Count == 0 && s.begin == begin && s.end == end
                                                                 && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
                                                                ptm_set.ptm_combination.
                                                                Count(m2 =>
@@ -325,7 +325,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && sequence.Contains(s.sequence) && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
+                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin == begin && s.end == end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
                                                                ptm_set.ptm_combination.
                                                                Count(m2 =>
                                                                    UnlocalizedModification.LookUpId(m1.modification) ==
