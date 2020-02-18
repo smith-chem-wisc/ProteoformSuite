@@ -74,8 +74,19 @@ namespace ProteoformSuiteInternal
                     null,
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label, false);
             message += Environment.NewLine;
+
+           if (Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count > 0)
+           {
+                        message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
+                Sweet.lollipop.results_folder, "BottomUp_", timestamp,
+                null,
+                true, true,
+                CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
+                Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label, true);
+                        message += Environment.NewLine;
+           }
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
@@ -84,7 +95,7 @@ namespace ProteoformSuiteInternal
                     go_analysis as IGoAnalysis,
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label, false);
                 message += Environment.NewLine;
 
                 message += CytoscapeScript.write_cytoscape_script(tusher_analysis == null ? Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.Log2FoldChangeValues.significant), Sweet.lollipop.Log2FoldChangeAnalysis.GoAnalysis) :
@@ -95,7 +106,7 @@ namespace ProteoformSuiteInternal
                     go_analysis as IGoAnalysis,
                     true, true,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label);
+                    Sweet.lollipop.gene_centric_families, Lollipop.preferred_gene_label, false);
                 message += Environment.NewLine;
             }
 
@@ -865,6 +876,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Begin", typeof(int));
             results.Columns.Add("End", typeof(int));
             results.Columns.Add("PTM List", typeof(string));
+            results.Columns.Add("Biological Interest PTM List", typeof(string));
             results.Columns.Add("Shared", typeof(bool));
             results.Columns.Add("Full Sequence PFR", typeof(string));
             results.Columns.Add("Level1 Top-down proteoform Count", typeof(int));
@@ -885,16 +897,19 @@ namespace ProteoformSuiteInternal
                     var rows = new List<object[]>();
                     foreach (var peptide in accession.Value)
                     {
+                        var ptms_bio_interest = peptide.ptm_list.Where(p => p.modification.ModificationType != "Common Fixed" && UnlocalizedModification.bio_interest(p.modification));
+                        string ptm_description_bio_interest = (ptms_bio_interest.Count() == 0 ? "Unmodified" : string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position)));
                         if (peptide.ambiguous_matches.Count > 0) continue;
                         var topdown_with_this_peptide = topdowns_with_accession.Where(t => t.topdown_bottom_up_PSMs.Contains(peptide));
                         var intactMass_with_this_peptide = intactMass_with_accession.Where(e => e.bottom_up_PSMs.Contains(peptide));
-                        rows.Add(new object[16]{
+                        rows.Add(new object[17]{
                             peptide.accession,
                             peptide.uniprot_id,
                             peptide.sequence,
                             peptide.begin,
                             peptide.end,
                             peptide.ptm_description,
+                            ptm_description_bio_interest,
                             peptide.shared_protein,
                             peptide.pfr_accession,
                             topdown_with_this_peptide.Count(),
@@ -967,10 +982,10 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                List<int> td_counts = peptides_with_this_pfr.Select(b => Sweet.lollipop.topdown_proteoforms.Where(td => td.proteoform_level == 1).Count(p => p.accession.Split('_')[0] == b.accession)).ToList();
+                List<int> td_counts = peptides_with_this_pfr.Select(b => Sweet.lollipop.topdown_proteoforms.Where(td => td.topdown_level == 1).Count(p => p.accession.Split('_')[0] == b.accession)).ToList();
                 results.Rows.Add(
-                  peptides_with_this_pfr.Count(),
                   pfr,
+                  peptides_with_this_pfr.Count(),
                   (td_counts.Any(c => c > 0) && td_counts.Any(c => c == 0)),
                   String.Join("|", td_counts),
                   String.Join("|", peptides_with_this_pfr.Select(b => b.accession)),

@@ -310,7 +310,7 @@ namespace ProteoformSuiteInternal
                 {
 
                     bottom_up_PSMs = psms.Where(s => 
-                    s.ambiguous_matches.Count == 0 && s.begin == begin && s.end == end
+                    s.ambiguous_matches.Count == 0 && s.begin >= begin && s.end <= end
                                                                 && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
                                                                ptm_set.ptm_combination.
                                                                Count(m2 =>
@@ -325,7 +325,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin == begin && s.end == end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
+                    bottom_up_PSMs = psms.Where(s => s.ambiguous_matches.Count == 0 && s.begin >= begin && s.end <= end && s.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification)).All(m1 =>
                                                                ptm_set.ptm_combination.
                                                                Count(m2 =>
                                                                    UnlocalizedModification.LookUpId(m1.modification) ==
