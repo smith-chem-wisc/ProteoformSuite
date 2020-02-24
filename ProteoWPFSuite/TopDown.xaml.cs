@@ -77,36 +77,29 @@ namespace ProteoWPFSuite
             DisplayTopDownProteoform.FormatTopDownTable(dgv_TD_proteoforms, false);
             mods = Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.topdown_ptm_set.ptm_combination).Select(m => m.modification).Distinct().ToList();
             SetUpDictionaries();
+            tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             tb_tdProteoforms.Text = Sweet.lollipop.topdown_proteoforms.Count.ToString();
             tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
             tb_unique_PFRs.Text = Sweet.lollipop.topdown_proteoforms.Select(p => p.pfr_accession).Distinct().Count().ToString();
         }
         public void RunTheGamut(bool full_run)
         {
+            ClearListsTablesFigures(true);
+
             if (!full_run)
             {
-                if (Sweet.lollipop.top_down_hits.Count == 0)
+                if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
                 {
-                    ClearListsTablesFigures(true);
-                    if (!Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
-                    {
-                        MessageBox.Show("Go back and load in top-down results.");
-                        return;
-                    }
-                    if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-                    {
-                        MessageBox.Show("Go back and construct a theoretical database.");
-                        return;
-                    }
-                    Sweet.lollipop.read_in_td_hits();
-                    tb_td_hits.Text = Sweet.lollipop.top_down_hits.Count.ToString();
+                    MessageBox.Show("Go back and load in top-down results.");
+                    return;
+                }
+                if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                {
+                    MessageBox.Show("Go back and construct a theoretical database.");
+                    return;
                 }
             }
-            else
-            {
-                Sweet.lollipop.read_in_td_hits();
-            }
-            ClearListsTablesFigures(true);
+
             AggregateTdHits();
             if (!full_run)
             {
@@ -133,11 +126,7 @@ namespace ProteoWPFSuite
         }
         public void ClearListsTablesFigures(bool clear_following)
         {
-            if (!clear_following)
-            {
-                tb_td_hits.Clear();
-                Sweet.lollipop.top_down_hits.Clear(); //only want to clear if cleared theo database
-            }
+            tb_td_hits.Clear();
             Sweet.lollipop.clear_td();
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
@@ -163,12 +152,10 @@ namespace ProteoWPFSuite
 
         private void AggregateTdHits()
         {
-            if (Sweet.lollipop.top_down_hits.Count > 0)
-            {
-                Sweet.lollipop.clear_td();
-                Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
-                Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
-            }
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.read_in_td_hits();
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
+            Sweet.lollipop.theoretical_database.make_theoretical_proteoforms();
         }
 
         private void bt_td_relations_Click(object sender, EventArgs e)

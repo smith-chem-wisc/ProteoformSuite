@@ -1621,11 +1621,13 @@ namespace ProteoformSuiteInternal
 
         public void clear_td()
         {
+            Sweet.lollipop.top_down_hits.Clear();
             Sweet.lollipop.topdown_proteoforms.Clear();
             Sweet.lollipop.topdown_proteoforms_no_theoretical.Clear();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
                 List<TheoreticalProteoform> topdown_theoreticals = community.theoretical_proteoforms.Where(t => t.new_topdown_proteoform).ToList();
+                Sweet.lollipop.theoretical_database.expanded_proteins.ToList().RemoveAll(t => t.topdown_protein);
                 community.theoretical_proteoforms = community.theoretical_proteoforms.Except(topdown_theoreticals).ToArray();
                 if (theoretical_database.theoreticals_by_accession.ContainsKey(community.community_number))
                 {
