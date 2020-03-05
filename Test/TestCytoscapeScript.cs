@@ -23,7 +23,7 @@ namespace Test
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1], false);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
-            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
+            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2, false));
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace Test
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1], false);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
-            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
+            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2, false));
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace Test
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1], false);
             Assert.True(node_table.Contains(CytoscapeScript.unmodified_theoretical_label));
-            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
+            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2, false));
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace Test
                 CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1], false);
             Assert.True(node_table.Contains(CytoscapeScript.unmodified_theoretical_label));
-            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
+            Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2, false));
         }
 
         [Test]

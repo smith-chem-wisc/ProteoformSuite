@@ -343,16 +343,6 @@ namespace Test
             Sweet.lollipop.theoretical_database.EnterTheoreticalProteformFamily("BADSEQ", null, null, "asdf",
                 theoreticals, -1, null);
             Assert.AreEqual(0, theoreticals.Count);
-
-            //too large of proteoform
-            string sequence = "K";
-            for (int i = 0; i < 3000; i++)
-            {
-                sequence += "K";
-            }
-            Sweet.lollipop.theoretical_database.EnterTheoreticalProteformFamily(sequence, null, null, "asdf",
-                theoreticals, -1, null);
-            Assert.AreEqual(0, theoreticals.Count);
         }
 
         [Test]
