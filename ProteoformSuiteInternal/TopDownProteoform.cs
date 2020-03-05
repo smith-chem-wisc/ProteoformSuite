@@ -106,7 +106,7 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                            return (topdown_bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
+               return (topdown_bottom_up_PSMs.Count(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0) == 0
                 ? "N/A"
                 : String.Join(", ",
                      topdown_bottom_up_PSMs.Where(p => p.ptm_list.Count(m => UnlocalizedModification.bio_interest(m.modification)) > 0 && p.ambiguous_matches.Count == 0).Select(p => p.ptm_description).Distinct()))

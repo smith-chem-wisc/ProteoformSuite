@@ -316,24 +316,6 @@ namespace ProteoWPFSuite
             }
         }
 
-        //public string hits_index
-        //{
-        //    get { return String.Join(",", t.topdown_hits.Select(h => "H" + h.hit_ID + "hit")); }
-        //}
-
-        //public double percent_target
-        //{
-        //    get
-        //    {
-        //        int total_hits = 1 + t.ambiguous_topdown_hits.Count;
-        //        int total_targets = (t.topdown_hits.Any(h => h.target) ? 1 : 0) + t.ambiguous_topdown_hits.Count(h => h.target);
-        //        double ratio = (double)total_targets / (double)total_hits;
-        //        return ratio;
-        //    }
-        //}
-
-
-
         #endregion Public Properties
 
         #region Public Methods

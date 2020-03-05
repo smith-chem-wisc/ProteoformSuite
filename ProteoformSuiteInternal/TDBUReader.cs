@@ -440,7 +440,7 @@ namespace ProteoformSuiteInternal
                                 accessions.Count, names.Count, base_sequences.Count, theoretical_masses.Count,
                                 new_ptm_list.Count, begin.Count, end.Count
                             };
-
+                        
                     for (int hit = 0; hit < counts.Max(); hit++)
                     {
                         SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file,
@@ -450,7 +450,7 @@ namespace ProteoformSuiteInternal
                                 accessions.Count > hit ? accessions[hit] : accessions[0],
                                 names.Count > hit ? names[hit] : names[0],
                                 base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0],
-                                begin.Count > hit ? begin[0] : begin[0], end.Count > hit ? end[0] : end[0],
+                                begin.Count > hit ? begin[hit] : begin[0], end.Count > hit ? end[hit] : end[0],
                                 new_ptm_list.Count > hit ? new_ptm_list[hit] : new_ptm_list.Count > 0 ? new_ptm_list[0] : new List<Ptm>(),
                                 Double.TryParse(cellStrings[index_precursor_mass], out double m) ? m : 0,
                                 theoretical_masses.Count > hit ? theoretical_masses[hit] : theoretical_masses[0],
@@ -460,19 +460,24 @@ namespace ProteoformSuiteInternal
                                 qValue,
                                 Convert.ToDouble(cellStrings[index_score]),
                                 ReadFragmentIonsFromString(cellStrings[index_matched_ion_mz_ratios], base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0]),
-                                decoy.Count > hit? decoy[hit] : decoy[0]);
+                                decoy.Count > hit ? decoy[hit] : decoy[0]);
+                            
                             if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&
                                  td_hit.reported_mass > 0 && td_hit.score > 0
                                 && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
                             {
-                            if (hit == 0)
-                            {
-                                hit_to_add = td_hit;
-                            }
-                            else if (td_hit.pfr_accession != hit_to_add.pfr_accession 
-                                && !ambiguious_hits.Select(h =>  h.pfr_accession).Contains(td_hit.pfr_accession))
+                                //MM bug right now handling...
+                                if (begin.Count == 1 || begin.Count == accessions.Count)
                                 {
-                                    ambiguious_hits.Add(td_hit);
+                                    if (hit == 0)
+                                    {
+                                        hit_to_add = td_hit;
+                                    }
+                                    else if (td_hit.pfr_accession != hit_to_add.pfr_accession
+                                        && !ambiguious_hits.Select(h => h.pfr_accession).Contains(td_hit.pfr_accession))
+                                    {
+                                        ambiguious_hits.Add(td_hit);
+                                    }
                                 }
                             }
                         }

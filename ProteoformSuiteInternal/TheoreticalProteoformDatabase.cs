@@ -109,9 +109,8 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-
-            //make theoreticals
-            make_theoretical_proteoforms();
+                //make theoreticals
+                make_theoretical_proteoforms();
         }
 
         public List<Modification> get_mods(string current_directory)
@@ -352,7 +351,8 @@ namespace ProteoformSuiteInternal
         {
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
 
-            if (seq.Length > 3000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
+            if (//seq.Length > 3000 || 
+                seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
             {
                 return;
             }
@@ -598,7 +598,7 @@ namespace ProteoformSuiteInternal
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-              Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
+           Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
             //foreach (var p in expanded_proteins)
             //{
             //    EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications);
