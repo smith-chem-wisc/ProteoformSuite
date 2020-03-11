@@ -330,10 +330,10 @@ namespace ProteoformSuiteInternal
                 string row = cells[index];
                 var cellStrings = row.Split('\t').ToList();
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
-                double qValue = Convert.ToDouble(cellStrings[index_q_value].Split('|')[0]);
+                double qValue = Double.TryParse(cellStrings[index_q_value].Split('|')[0], out qValue) ? qValue: -1;
                 List<string> decoy = cellStrings[index_decoy].Split('|').ToList();
                 //don't read in any decoys for now
-                if (qValue < 0.01 && decoy.All(d => d == "N"))
+                if (qValue >= 0 && qValue < 0.01 && decoy.All(d => d == "N"))
                 {
                     List<int> begin = new List<int>();
                     List<int> end = new List<int>();

@@ -499,7 +499,8 @@ namespace ProteoformSuiteInternal
                 TopDownProteoform e = p as TopDownProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
                 if (node_label == Lollipop.node_labels[1])
-                    name += " " + e.topdown_begin + "to" + e.topdown_end + " " + e.topdown_ptm_description;
+                    name += " " + (e.topdown_level > 1 ? "Ambiguous " : "")
+                        + e.topdown_begin + "to" + e.topdown_end + " " + e.topdown_ptm_description;
                 if (addBottomUpNodes) name = e.accession + "_" + e.topdown_ptm_description;
                 return name;
             }
