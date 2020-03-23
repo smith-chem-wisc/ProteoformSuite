@@ -95,6 +95,7 @@ namespace ProteoformSuiteInternal
     public enum Labeling
     {
         NeuCode,
+        Cystag,
         Unlabeled
     }
 }

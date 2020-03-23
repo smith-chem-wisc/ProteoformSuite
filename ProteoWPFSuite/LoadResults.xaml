@@ -81,8 +81,13 @@
                         x:Name="rb_neucode" 
                         IsChecked="{Binding Path=CK_rbneucode,UpdateSourceTrigger=PropertyChanged}" 
                         HorizontalAlignment="Left" 
-                        Content="NeuCode Labeled" />
+                        Content="NeuCode Lysine" />
                     <RadioButton 
+                        x:Name="rb_cystag" 
+                        IsChecked="{Binding Path=CK_rbcystag,UpdateSourceTrigger=PropertyChanged}" 
+                        HorizontalAlignment="Left" 
+                        Content="Neucode Cysteine" />
+                                        <RadioButton 
                         x:Name="rb_unlabeled" 
                         IsChecked="True" 
                         HorizontalAlignment="Left"

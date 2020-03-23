@@ -17,6 +17,8 @@ namespace ProteoformSuiteInternal
         public string accession { get; set; }
         public double modified_mass { get; set; }
         public int lysine_count { get; set; } = -1;
+
+        public int cysteine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
         public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }

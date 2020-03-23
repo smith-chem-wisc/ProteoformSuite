@@ -57,6 +57,11 @@ namespace ProteoWPFSuite
             get { return c.lysine_count; }
         }
 
+        public int cysteine_count
+        {
+            get { return c.cysteine_count; }
+        }
+
         public double mass
         {
             get { return c.weighted_monoisotopic_mass; }
@@ -147,7 +152,10 @@ namespace ProteoWPFSuite
             if (property_name == nameof(id_heavy)) { return "Heavy NeuCode Component ID"; }
             if (property_name == nameof(intensity_ratio)) { return "Intensity Ratio"; }
             if (property_name == nameof(intensity_sum)) { return "Intensity Sum Overlapping Charge States"; }
-            if (property_name == nameof(lysine_count)) { return "Lysine Count"; }
+
+            if (Sweet.lollipop.neucode_labeled && property_name == nameof(lysine_count)) { return "Lysine Count"; }
+            else if (Sweet.lollipop.cystag_labeled && property_name == nameof(cysteine_count)) { return "Cysteine Count"; }
+
             if (property_name == nameof(input_file_filename)) { return "Input Filename"; }
             if (property_name == nameof(input_file_purpose)) { return "Input File Purpose"; }
             if (property_name == nameof(input_file_uniqueId)) { return "Input File Unique ID"; }

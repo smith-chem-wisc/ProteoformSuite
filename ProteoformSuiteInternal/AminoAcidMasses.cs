@@ -6,7 +6,7 @@ namespace ProteoformSuiteInternal
     {
         public Dictionary<char, double> AA_Masses { get; set; }
 
-        public AminoAcidMasses(bool cBn, bool neucode_labeled)
+        public AminoAcidMasses(bool cBn, bool neucode_labeled, bool cystag_labeled)
         {
             var aaMasses = new Dictionary<char, double>();
             aaMasses.Add('A', 71.037114);
@@ -16,6 +16,10 @@ namespace ProteoformSuiteInternal
             if (cBn)
             {
                 aaMasses.Add('C', 160.030649);
+            }
+            else if (cystag_labeled)
+            {
+                aaMasses.Add('C', 325.168147);
             }
             else
             {

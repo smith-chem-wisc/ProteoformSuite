@@ -475,7 +475,7 @@ namespace ProteoformSuiteInternal
 
         public void populate_aa_mass_dictionary()
         {
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled).AA_Masses;
         }
 
         #endregion Public Methods

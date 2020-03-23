@@ -23,6 +23,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
         public static readonly double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public static readonly double NEUCODE_CYSTEINE_MASS_SHIFT = 0.045258;
         public static readonly double PROTON_MASS = 1.007276474;
 
         #endregion Constants
@@ -111,8 +112,21 @@ namespace ProteoformSuiteInternal
 
                 string filename = Path.GetFileNameWithoutExtension(complete_path);
                 string extension = Path.GetExtension(complete_path);
-                Labeling label = neucode_labeled ? Labeling.NeuCode : Labeling.Unlabeled;
+                Labeling label;
 
+                if (neucode_labeled)
+                {
+                    label = Labeling.NeuCode;
+                }
+                else if (cystag_labeled)
+                {
+                    label = Labeling.Cystag;
+                }
+                else
+                {
+                    label = Labeling.Unlabeled;
+                }
+              
                 if (acceptable_extensions.Contains(extension) && !destination.Where(f => purposes.Contains(f.purpose)).Any(f => f.filename == filename))
                 {
                     InputFile file;
@@ -143,6 +157,7 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
+        public bool cystag_labeled = false;
         public double raw_component_mass_tolerance = 5;
         public double min_likelihood_ratio = 0;
         public double max_fit = 0.2;
@@ -161,7 +176,7 @@ namespace ProteoformSuiteInternal
                 lock (destination) destination.AddRange(someComponents);
             });
 
-            if (neucode_labeled && purpose == Purpose.Identification)
+            if ((neucode_labeled || cystag_labeled) && purpose == Purpose.Identification)
             {
                 process_neucode_components(raw_neucode_pairs);
             }
@@ -373,6 +388,8 @@ namespace ProteoformSuiteInternal
         public decimal min_intensity_ratio = 1.4m;
         public decimal max_lysine_ct = 26.2m;
         public decimal min_lysine_ct = 1.5m;
+        public decimal max_cysteine_count = 30;
+        public decimal min_cysteine_count = 2;
 
         #endregion NEUCODE PAIRS Public Fields
 
@@ -540,6 +557,7 @@ namespace ProteoformSuiteInternal
         public int maximum_missed_monos = 3;
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
+        public int maximum_missed_cysteines = 2;
         public int min_num_CS = 1;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;

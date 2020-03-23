@@ -28,6 +28,7 @@ namespace ProteoWPFSuite
         #region Private Fields
         private String _labeltxt;
         private bool ck_rbneucode;
+        private bool ck_rbcystag;
         private int cb_select;
         //private string[] cb_src;
         #endregion Private Fields
@@ -86,6 +87,32 @@ namespace ProteoWPFSuite
                 populate_file_lists();
             }
         }
+
+        public bool CK_rbcystag
+        {
+            get
+            {
+                return ck_rbcystag;
+            }
+            set
+            {
+                if (ck_rbcystag == value)
+                    return;
+                ck_rbcystag = value;
+                rb_cystag.IsChecked = (bool)ck_rbcystag;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbcystag"));
+
+                this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)ck_rbcystag);
+                Sweet.lollipop.cystag_labeled = (bool)ck_rbcystag;
+
+                foreach (InputFile f in Sweet.lollipop.input_files)
+                {
+                    if ((bool)rb_cystag.IsChecked)
+                        f.label = Labeling.Cystag;
+                }
+                populate_file_lists();
+            }
+        }
         public int CB_select
         {
             get
@@ -122,8 +149,8 @@ namespace ProteoWPFSuite
             cmb_dissociation_types.ClearValue(ItemsControl.ItemsSourceProperty);
             cmb_dissociation_types.ItemsSource = new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD };
             cmb_dissociation_types.SelectedIndex = 0;
-
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
+            this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.cystag_labeled);
             this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
 
