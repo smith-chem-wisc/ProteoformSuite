@@ -342,6 +342,37 @@ namespace Test
         }
 
         [Test]
+        public void TestTopDownAggregationAmbiguity()
+        {
+            Sweet.lollipop = new Lollipop();
+            SpectrumMatch pf1 = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 10, 20);
+            SpectrumMatch ambiguous_pf = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 10, 20);
+            ambiguous_pf.ambiguous_matches = new List<SpectrumMatch>() { ConstructorsForTesting.SpectrumMatch("B", 1000, 10, 10, 20) };
+            Sweet.lollipop.top_down_hits = new List<SpectrumMatch>() { pf1, ambiguous_pf };
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, 0, true, true);
+            Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.First().topdown_hits.Count);
+            Assert.AreEqual(0, Sweet.lollipop.topdown_proteoforms.First().ambiguous_topdown_hits.Count);
+        }
+
+        [Test]
+        public void TestBottomUpPSMsWithTopDownProteoforms()
+        {
+            Sweet.lollipop = new Lollipop();
+            SpectrumMatch ambiguous_pf = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 10, 20);
+            ambiguous_pf.ambiguous_matches = new List<SpectrumMatch>() { ConstructorsForTesting.SpectrumMatch("B", 1000, 10, 10, 20) };
+            SpectrumMatch bu1 = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 10, 17);
+            SpectrumMatch bu2 = ConstructorsForTesting.SpectrumMatch("B", 1000, 10, 10, 17);
+            SpectrumMatch bu3 = ConstructorsForTesting.SpectrumMatch("B", 1000, 10, 9, 17);
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Add("A", new List<SpectrumMatch>() { bu1 });
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Add("B", new List<SpectrumMatch>() { bu2, bu3 });
+            Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(new List<SpectrumMatch>() { ambiguous_pf }, 0, true, true);
+            Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.First().topdown_bottom_up_PSMs.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdown_proteoforms.First().ambiguous_topdown_hits.First().bottom_up_PSMs.Count);
+        }
+
+
+        [Test]
         public void TestTopdownGeneAmbiguity()
         {
             Sweet.lollipop = new Lollipop();

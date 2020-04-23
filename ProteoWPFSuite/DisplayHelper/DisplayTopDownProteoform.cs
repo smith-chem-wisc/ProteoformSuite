@@ -155,6 +155,12 @@ namespace ProteoWPFSuite
             get { return t.topdown_hits.Max(h => h.score); }
         }
 
+
+        public double best_delta_score
+        {
+            get { return t.topdown_hits.Max(h => h.deltaScore); }
+        }
+
         public double best_q_value
         {
             get { return t.topdown_hits.Min(h => h.qValue); }
@@ -348,7 +354,8 @@ namespace ProteoWPFSuite
             if (name == nameof(modified_mass)) { return "Modified Mass"; }
             if (name == nameof(ptm_description)) { return "PTM Description"; }
             if (name == nameof(retentionTime)) { return "Retention Time"; }
-            if (name == nameof(best_c_score)) { return "Best Hit C-Score"; }
+            if (name == nameof(best_c_score)) { return "Best Hit Score"; }
+            if (name == nameof(best_delta_score)) { return "Best Hit Delta Score"; }
             if (name == nameof(manual_id)) { return "Best Hit Info"; }
             if (name == nameof(family_id)) { return "Family ID"; }
             if (name == nameof(PFR_accession)) { return "PFR Accession"; }

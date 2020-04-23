@@ -138,6 +138,21 @@ namespace Test
             return td;
         }
 
+        //SPECTRUM MATCH
+        public static SpectrumMatch SpectrumMatch(string accession, double modified_mass, double retention_time, int begin, int end)
+        {
+            SpectrumMatch h = new SpectrumMatch();
+            h.accession = accession;
+            h.reported_mass = modified_mass;
+            h.theoretical_mass = modified_mass;
+            h.ms2_retention_time = retention_time;
+            h.sequence = "MSSSSSSSSSS";
+            h.begin = begin;
+            h.end = end;
+            h.name = "";
+            h.uniprot_id = "";
+            return h;
+        }
 
         //INPUT FILE
         public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, string biorep, string fraction, string techrep) // for neucode files. here both conditions are present in one file

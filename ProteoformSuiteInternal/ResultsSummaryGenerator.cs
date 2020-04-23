@@ -754,6 +754,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Potentially Novel Modifications");
             results.Columns.Add("Top-Down PTM Type Unlocalized", typeof(string));
             results.Columns.Add("Best C-score", typeof(double));
+            results.Columns.Add("Best Delta score", typeof(double));
             results.Columns.Add("Best Q-Value", typeof(double));
             results.Columns.Add("Level Number", typeof(string));
             results.Columns.Add("Level Description", typeof(string));
@@ -806,6 +807,7 @@ namespace ProteoformSuiteInternal
                     (td.topdown_ptm_set.ptm_combination.Count == 0 ? "Unmodified" : string.Join("; ", td.topdown_ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)))
                      + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.ptm_list.Count == 0 ? "Unmodified" : string.Join("; ", h.ptm_list.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)))) : ""),
                     td.topdown_hits.Max(h => h.score),
+                    td.topdown_hits.Max(h => h.deltaScore),
                     td.topdown_hits.Min(h => h.qValue),
                     td.topdown_level,
                     td.topdown_level_description,

@@ -154,7 +154,7 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
-                else if(row.Length == 3)
+                else if (row.Length == 3)
                 {
                     List<string> cellStrings = new List<string>();
                     cellStrings.Add(i.ToString()); //id
@@ -185,39 +185,7 @@ namespace ProteoformSuiteInternal
                         return new List<Component>();
                     }
                 }
-                else if(row.Length == 1)
-                {
-                    row = lines[i].Split(',');
-                    List<string> cellStrings = new List<string>();
-                    cellStrings.Add(i.ToString()); //id
-                    cellStrings.Add(row[0]); //monoisotopic mass
-                    cellStrings.Add(row[1]); //intensity
-                    cellStrings.Add(row[2]); //num charges
-                    cellStrings.Add("0"); //num detected intervals
-                    cellStrings.Add("0"); //reported delta mass
-                    cellStrings.Add("0"); //relative abundance
-                    cellStrings.Add("0"); //fractional abundance
-                    cellStrings.Add(row[6]); //scanrange
-                    cellStrings.Add(row[7]); //rt range
-                    cellStrings.Add(row[8]); //apex rt
-
-                    Component c = new Component(cellStrings, file);
-                    //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!!
-                    //multiply by charge for intensity because constructor divides (thermo is not charge state normalized!)
-                    c.charge_states.Add(new ChargeState(new List<string>() { "1", row[1].ToString(), (c.reported_monoisotopic_mass.ToMz(1)).ToString(), c.reported_monoisotopic_mass.ToString() }));
-                    c.calculate_properties();
-
-                    if (acceptable_component(c))
-                    {
-                        add_component(c);
-                    }
-                    else
-                    {
-                        Clear();
-                        return new List<Component>();
-                    }
-                }
-            }
+            }            
 
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;

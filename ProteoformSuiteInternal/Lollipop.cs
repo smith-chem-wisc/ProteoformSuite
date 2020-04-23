@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_lists = new[]
         {
-            "Deconvolution Results for Identification (.xlsx, .tsv, .txt, .csv)",
+            "Deconvolution Results for Identification (.xlsx, .tsv, .txt)",
             "Deconvolution Results for Quantification (.xlsx, .tsv. txt)",
             "Protein Databases (.xml, .xml.gz, .fasta)",
             "Top-Down Hit Results (.xlsx, .psmtsv )",
@@ -61,7 +61,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly List<string>[] acceptable_extensions = new[]
         {
-            new List<string> { ".xlsx", ".tsv", ".txt", ".csv" },
+            new List<string> { ".xlsx", ".tsv", ".txt" },
             new List<string> { ".xlsx", ".tsv", ".txt"  },
             new List<string> { ".xml", ".gz", ".fasta" },
             new List<string> { ".xlsx" , ".psmtsv"},
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_filters = new[]
         {
-            "Deconvolution Files (*.xlsx, *.tsv, *.txt, *.csv) | *.xlsx;*.tsv;*.txt;*.csv",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt;",
             "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
             "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
@@ -527,6 +527,7 @@ namespace ProteoformSuiteInternal
                     to_remove.Add(proteoform);
                 }
             }
+
             topdown_proteoforms = topdown_proteoforms.Except(to_remove).ToList();
 
 
