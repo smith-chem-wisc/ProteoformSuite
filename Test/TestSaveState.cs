@@ -432,12 +432,87 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "testBottomUp.psmtsv") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
-            var bottom_up_psms = Sweet.lollipop.bottomupReader.ReadTDFile(Sweet.lollipop.input_files.Where(b => b.purpose == Purpose.BottomUp).First());
-            Assert.AreEqual(2, bottom_up_psms.Count(p => p.shared_protein));
-            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
+            Assert.AreEqual(2, Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count);
+            var time_stamp = Sweet.time_stamp();
+            var directory = TestContext.CurrentContext.TestDirectory;
+            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, time_stamp, Sweet.lollipop.TusherAnalysis1 as IGoAnalysis, Sweet.lollipop.TusherAnalysis1 as TusherAnalysis);
+            Assert.IsTrue(File.Exists(Path.Combine(directory, "bottomup_results_" + time_stamp + ".tsv")));
+            Assert.IsTrue(File.Exists(Path.Combine(directory, "shared_peptide_bottomup_results_" + time_stamp + ".tsv")));
+            Assert.IsTrue(File.Exists(Path.Combine(directory, "proteoform_bottomup_evidence_" + time_stamp + ".tsv")));
             Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.bottomup_results_dataframe()).Length > 0);
             Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.putative_proteoforms_bottom_up()).Length > 0);
             Assert.True(ResultsSummaryGenerator.datatable_tostring(ResultsSummaryGenerator.shared_peptide_results_dataframe()).Length > 0);
+        }
+
+        [Test]
+        public void test_putative_proteoforms()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            var mod = Sweet.lollipop.theoretical_database.all_mods_with_mass.Where(m => m.OriginalId == "Acetylation").First();
+           
+            //should have 1 pform
+            SpectrumMatch p1 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 1, 10);
+            p1.ptm_list = new List<Ptm>() { new Ptm(2, mod)};
+            SpectrumMatch p2 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 1, 15);
+            p2.ptm_list = new List<Ptm>() { new Ptm(2, mod)};
+            SpectrumMatch p3 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 3, 25);
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Add("P32329", new List<SpectrumMatch>() { p1, p2, p3 });
+
+            var result = ResultsSummaryGenerator.putative_proteoforms_bottom_up();
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(1, result.Rows[0].ItemArray[2]);
+            Assert.AreEqual(569, result.Rows[0].ItemArray[3]);
+            Assert.AreEqual("Acetyl@2", result.Rows[0].ItemArray[5]);
+
+            //should have 2 pform
+            p1 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 22, 30);
+            p1.ptm_list = new List<Ptm>() { new Ptm(26, mod) };
+            p2 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 26, 60);
+            p2.ptm_list = new List<Ptm>() { new Ptm(26, mod) };
+            p3 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 65, 80);
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession["P32329"] = new List<SpectrumMatch>() { p1, p2, p3 };
+            result = ResultsSummaryGenerator.putative_proteoforms_bottom_up();
+            Assert.AreEqual(2, result.Rows.Count);
+            Assert.AreEqual(22, result.Rows[0].ItemArray[2]);
+            Assert.AreEqual(67, result.Rows[0].ItemArray[3]);
+            Assert.AreEqual("Acetyl@26", result.Rows[0].ItemArray[5]);
+            Assert.AreEqual(2, result.Rows[1].ItemArray[2]);
+            Assert.AreEqual(569, result.Rows[1].ItemArray[3]);
+            Assert.AreEqual("Unmodified", result.Rows[1].ItemArray[5]);
+
+            //should have 1 pform
+            p1 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 1, 10);
+            p1.ptm_list = new List<Ptm>() { new Ptm(2, mod), new Ptm(9, mod) };
+            p2 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 1, 15);
+            p2.ptm_list = new List<Ptm>() { new Ptm(2, mod), new Ptm(9, mod) };
+            p3 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 3, 25);
+            p3.ptm_list = new List<Ptm>() { new Ptm(9, mod) };
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession["P32329"] = new List<SpectrumMatch>() { p1, p2, p3 };
+
+            result = ResultsSummaryGenerator.putative_proteoforms_bottom_up();
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(1, result.Rows[0].ItemArray[2]);
+            Assert.AreEqual(569, result.Rows[0].ItemArray[3]);
+            Assert.AreEqual("Acetyl@2; Acetyl@9", result.Rows[0].ItemArray[5]);
+
+            //should have 2 pform
+            p1 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 22, 30);
+            p1.ptm_list = new List<Ptm>() { new Ptm(26, mod), new Ptm(65, mod) };
+            p2 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 26, 60);
+            p2.ptm_list = new List<Ptm>() { new Ptm(26, mod), new Ptm(65, mod) };
+            p3 = ConstructorsForTesting.SpectrumMatch("P32329", 100, 100, 65, 80);
+            p3.ptm_list = new List<Ptm>() { new Ptm(65, mod) };
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession["P32329"] = new List<SpectrumMatch>() { p1, p2, p3 };
+            result = ResultsSummaryGenerator.putative_proteoforms_bottom_up();
+            Assert.AreEqual(2, result.Rows.Count);
+            Assert.AreEqual(22, result.Rows[0].ItemArray[2]);
+            Assert.AreEqual(67, result.Rows[0].ItemArray[3]);
+            Assert.AreEqual("Acetyl@26; Acetyl@65", result.Rows[0].ItemArray[5]);
+            Assert.AreEqual(2, result.Rows[1].ItemArray[2]);
+            Assert.AreEqual(569, result.Rows[1].ItemArray[3]);
+            Assert.AreEqual("Acetyl@65", result.Rows[1].ItemArray[5]);
         }
 
 

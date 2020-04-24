@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
 
            if (Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count > 0)
            {
-                        message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.results_folder, "BottomUp_", timestamp,
                 null,
                 true, true,
@@ -1104,11 +1104,11 @@ namespace ProteoformSuiteInternal
                                 {
                                     foreach (var mod_set in theo.Value.Where(p => p.Contains('@')))
                                     {
-                                        var mods = mod_set.Split(';').Select(m => m.Trim());
-                                        var positions = mod_set.Split(';').Select(p => p.Split('@')[1]);
+                                        var mods = mod_set.Split(';').Select(m => m.Trim()).ToList();
+                                        var positions = mod_set.Split(';').Select(p => p.Split('@')[1]).ToList();
                                         if (unique_mod_set.Key == "Unmodified")
                                         {
-                                            if (positions.All(position => unique_mod_set.Value.Where(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end)
+                                            if (unique_mod_set.Value.Any(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end) && positions.All(position => unique_mod_set.Value.Where(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end)
                                                  .All(p => !(Convert.ToInt32(position) >= p.begin && Convert.ToInt32(position) <= p.end))))
                                             {
                                                 add_full_sequence = false;
@@ -1118,7 +1118,7 @@ namespace ProteoformSuiteInternal
                                         else if (mods.Contains(unique_mod_set.Key))
                                         {
                                             var other_positions = mods.Where(m => m != unique_mod_set.Key).Select(p => p.Split('@')[1]);
-                                            if (other_positions.All(position => unique_mod_set.Value.Where(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end)
+                                            if (unique_mod_set.Value.Any(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end) && other_positions.All(position => unique_mod_set.Value.Where(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end)
                                                  .All(p => !(Convert.ToInt32(position) >= p.begin && Convert.ToInt32(position) <= p.end))))
                                             {
                                                 add_full_sequence = false;
