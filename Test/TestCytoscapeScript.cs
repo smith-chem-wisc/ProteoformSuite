@@ -125,6 +125,22 @@ namespace Test
         }
 
         [Test]
+        public void edges_table_gives_meaningful_BU()
+        {
+            TopDownProteoform t = ConstructorsForTesting.TopDownProteoform("ACC", 999.99, 50);
+            t.topdown_bottom_up_PSMs.Add(ConstructorsForTesting.SpectrumMatch("ACC", 100, 10, 1, 50));
+            ProteoformFamily f = new ProteoformFamily(t);
+            f.construct_family();
+            string edge_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f },
+              null,
+              CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
+              f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1], true);
+            Assert.True(edge_table.Contains("ACC"));
+            Assert.True(edge_table.Contains("999.99"));
+            Assert.True(edge_table.Contains("ACC_1to50_Unmodified"));
+        }
+
+        [Test]
         public void script_for_bu()
         {
             Sweet.lollipop = new Lollipop();
