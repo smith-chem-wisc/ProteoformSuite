@@ -26,5 +26,25 @@ namespace Test
             Assert.AreEqual(2, bottom_up_psms.Count(p => p.shared_protein));
         }
 
+        [Test]
+        public void test_get_bottom_up_evidence_for_all_PTMs()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            var mod = Sweet.lollipop.theoretical_database.all_mods_with_mass.Where(m => m.OriginalId == "Acetylation").First();
+
+            //not ptm specific
+            var peptide = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 1, 10);
+            peptide.ptm_list.Add(new Ptm(2, mod));
+            bool BU_evidence_for_all_PTMs = Proteoform.get_bottom_up_evidence_for_all_PTMs(new List<SpectrumMatch>() { peptide }, new PtmSet(new List<Ptm>() { new Ptm(3, mod) }), false);
+            Assert.IsTrue(BU_evidence_for_all_PTMs);
+            BU_evidence_for_all_PTMs = Proteoform.get_bottom_up_evidence_for_all_PTMs(new List<SpectrumMatch>() { peptide }, new PtmSet(new List<Ptm>() { new Ptm(3, mod)}), true);
+            Assert.IsFalse(BU_evidence_for_all_PTMs);
+            BU_evidence_for_all_PTMs = Proteoform.get_bottom_up_evidence_for_all_PTMs(new List<SpectrumMatch>() { peptide }, new PtmSet(new List<Ptm>() { new Ptm(2, mod) }), true);
+            Assert.IsTrue(BU_evidence_for_all_PTMs);
+
+        }
+
     }
 }
