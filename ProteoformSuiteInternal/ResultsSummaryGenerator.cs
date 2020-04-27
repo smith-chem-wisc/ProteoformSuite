@@ -994,20 +994,55 @@ namespace ProteoformSuiteInternal
                     Dictionary<TheoreticalProteoform, List<string>> theoreticals_added = new Dictionary<TheoreticalProteoform, List<string>>();
                     foreach (var unique_mod_set in peptides_by_unique_mods.OrderByDescending(k => k.Key.Count(c => c == '@')))
                     {
+                        //see if peptides can already be explained by previously added theoreticals
+                        List<SpectrumMatch> unexplained_peptides = new List<SpectrumMatch>();
+                        if (theoreticals_added.Count == 0) unexplained_peptides.AddRange(unique_mod_set.Value);
+                        foreach (var p in unique_mod_set.Value)
+                        {
+                            bool unexplained = true;
+                            foreach (var theo in theoreticals_added.Where(t => p.begin >= t.Key.begin && p.end <= t.Key.end))
+                            {
+                                foreach (var mod_set in theo.Value.Where(t => t.Contains('@')))
+                                {
+                                    var mods = mod_set.Split(';').Select(m => m.Trim()).ToList();
+                                    var positions = mod_set.Split(';').Select(t => t.Split('@')[1]).ToList();
+                                    if (unique_mod_set.Key == "Unmodified")
+                                    {
+                                        //unmodified so make sure no PTM positions within peptide...
+                                        if (positions.All(position => !(Convert.ToInt32(position) >= p.begin && Convert.ToInt32(position) <= p.end)))
+                                        {
+                                            unexplained = false;
+                                        }
+                                    }
+
+                                    //if a more modified proteoform explains this modified peptide, don't add also 
+                                    else if (mods.Contains(unique_mod_set.Key))
+                                    {
+                                        //make sure this peptide isn't unmodified at the position of the proteoforms other PTMs
+                                        var other_positions = mods.Where(m => m != unique_mod_set.Key).Select(pos => pos.Split('@')[1]);
+                                        if (other_positions.All(position => !(Convert.ToInt32(position) >= p.begin && Convert.ToInt32(position) <= p.end)))
+                                        {
+                                            unexplained = false;
+                                        }
+                                    }
+                                }
+                            }
+                            if(unexplained)
+                            {
+                                unexplained_peptides.Add(p);
+                            }
+                        }
+
+
                         List<TheoreticalProteoform> theoretical_to_add = new List<TheoreticalProteoform>();
-                        //Proteoform theoretical_with_M = null;
-                        var begin_or_end_peptides = unique_mod_set.Value.Where(p => p.begin == 1 || theoreticals.Select(t => t.begin).Contains(p.begin) || theoreticals.Select(t => t.end).Contains(p.end));
-                        //if a modified peptide is on a theoretical terminus end use that
+                        var begin_or_end_peptides = unexplained_peptides.Where(p => p.begin == 1 || theoreticals.Select(t => t.begin).Contains(p.begin) || theoreticals.Select(t => t.end).Contains(p.end));
+                       
                         if (begin_or_end_peptides.Count() > 0)
                         {
                             var begins = begin_or_end_peptides.Select(p => p.begin).Distinct();
                             var ends = begin_or_end_peptides.Select(p => p.end).Distinct();
                             foreach (var begin in begins)
                             {
-                                if (unique_mod_set.Key == "Unmodified" && theoreticals_added.Keys.Any(t => t.begin == begin))
-                                {
-                                    continue;
-                                }
                                 if (begin == 1)
                                 {
                                     if (theoreticals.Any(t => t.fragment == "full"))
@@ -1040,11 +1075,7 @@ namespace ProteoformSuiteInternal
                             }
                             foreach (var end in ends)
                             {
-                                if (theoretical_to_add.Any(t => t.end == end))
-                                {
-                                    continue;
-                                }
-                                if (unique_mod_set.Key == "Unmodified" && theoreticals_added.Keys.Any(t => t.end == end))
+                                if (theoretical_to_add.Any(t => t.end == end)) //already explained
                                 {
                                     continue;
                                 }
@@ -1059,81 +1090,13 @@ namespace ProteoformSuiteInternal
                             }
                         }
 
-                        var full_length_theo = theoreticals.First();
-                        if (!theoretical_to_add.Contains(full_length_theo) && !theoretical_to_add.Any(t => t.fragment == "full"))
+                        //any leftover peptides unexlpained?
+                        if (unexplained_peptides.Any
+                        (p => !theoretical_to_add.Any(t => p.begin >= t.begin && p.end <= t.end)))
                         {
-                            bool add_full_sequence = false;
-                            //if modified, add full-met sequence if modified peptide outside of normal sequence
-                            //if unmodified, only add full-met sequence if there's unmodified peptide unexampled by current 
-                            //modified peptide...
-                            if (unique_mod_set.Key != "Unmodified")
-                            {
-                                if (unique_mod_set.Value.Any
-                                (p => !theoretical_to_add.Any(t => p.begin >= t.begin && p.end <= t.end)))
-                                {
-                                    add_full_sequence = true;
-                                }
-                            }
-                            else
-                            {
-                                //unmodified peptides in part of sequence not already added
-                                if (unique_mod_set.Value.Any
-                                (p => !theoreticals_added.Keys.Any(t => p.begin >= t.begin && p.end <= t.end))
-                                && unique_mod_set.Value.Any
-                                (p => !theoretical_to_add.Any(t => p.begin >= t.begin && p.end <= t.end)))
-                                {
-                                    add_full_sequence = true;
-                                }
-
-                                //unmodified version of a modified peptide observed
-                                var mod_positions = peptides_by_unique_mods.SelectMany(v => v.Value.First().ptm_list.Where(b => UnlocalizedModification.bio_interest(b.modification)).Select(m => m.position)).ToList();
-                                foreach (var position in mod_positions)
-                                {
-                                    if (unique_mod_set.Value.Any(p => p.begin <= position && p.end >= position))
-                                    {
-                                        add_full_sequence = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            //if an unmodified peptide form of a modified peptide exists, make sure it can't be explained by another modfieid proteoform...
-                           if(add_full_sequence)
-                            {
-                                foreach (var theo in theoreticals_added)
-                                {
-                                    foreach (var mod_set in theo.Value.Where(p => p.Contains('@')))
-                                    {
-                                        var mods = mod_set.Split(';').Select(m => m.Trim()).ToList();
-                                        var positions = mod_set.Split(';').Select(p => p.Split('@')[1]).ToList();
-                                        if (unique_mod_set.Key == "Unmodified")
-                                        {
-                                            if (unique_mod_set.Value.Any(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end) && positions.All(position => unique_mod_set.Value.Where(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end)
-                                                 .All(p => !(Convert.ToInt32(position) >= p.begin && Convert.ToInt32(position) <= p.end))))
-                                            {
-                                                add_full_sequence = false;
-                                            }
-                                        }
-                                        //if a more modified proteoform explains this modified peptide, don't add also 
-                                        else if (mods.Contains(unique_mod_set.Key))
-                                        {
-                                            var other_positions = mods.Where(m => m != unique_mod_set.Key).Select(p => p.Split('@')[1]);
-                                            if (unique_mod_set.Value.Any(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end) && other_positions.All(position => unique_mod_set.Value.Where(p => p.begin >= theo.Key.begin && p.end <= theo.Key.end)
-                                                 .All(p => !(Convert.ToInt32(position) >= p.begin && Convert.ToInt32(position) <= p.end))))
-                                            {
-                                                add_full_sequence = false;
-                                            }
-                                        }
-                                    }
-                                }
-                                //}
-                            }
-
-                            if (add_full_sequence)
-                            {
-                                theoretical_to_add.Add(full_length_theo);
-                            }
+                            theoretical_to_add.Add(theoreticals.First());
                         }
+
                         foreach (var t in theoretical_to_add)
                         {
                             if (theoreticals_added.ContainsKey(t))
