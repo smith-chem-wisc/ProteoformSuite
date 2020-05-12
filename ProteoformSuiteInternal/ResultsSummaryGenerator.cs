@@ -798,7 +798,7 @@ namespace ProteoformSuiteInternal
                     td.name + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.name)) : ""),
                     td.topdown_geneName.primary + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.gene_name.primary)) : "" ),
                     td.uniprot_id + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.uniprot_id)) : "" ),
-                    td.accession.Split('_')[0] + (td.ambiguous_topdown_hits.Count > 0 ? String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0])) : ""),
+                    td.accession.Split('_')[0] + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.accession.Split('_')[0])) : ""),
                     td.topdown_ptm_description + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.ptm_description)) : ""),
                     td.topdown_begin + " to " + td.topdown_end + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.begin + " to " + h.end)) : ""),
                     td.sequence + (td.ambiguous_topdown_hits.Count > 0 ? " | " + String.Join(" | ", td.ambiguous_topdown_hits.Select(h => h.sequence)) : ""),

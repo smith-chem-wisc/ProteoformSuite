@@ -268,12 +268,15 @@ namespace ProteoformSuiteInternal
             {
                 foreach (var experimental in families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id || e.linked_proteoform_references != null)))
                 {
+                    var ambiguous = experimental.topdown_id ? (experimental as TopDownProteoform).ambiguous_topdown_hits.Count : experimental.ambiguous_identifications.Count;
+                    if (ambiguous > 0) continue;
                     var bottom_up_PSMs = experimental.topdown_id ? (experimental as TopDownProteoform).topdown_bottom_up_PSMs : experimental.bottom_up_PSMs;
                     List<string> names = new List<string>();
                     foreach (var bu in bottom_up_PSMs)
                     {
-                        var ptms_bio_interest = bu.ptm_list.Where(p => p.modification.ModificationType != "Common Fixed" && UnlocalizedModification.bio_interest(p.modification));
-                        string ptm_description = ptms_bio_interest.Count() == 0 ? "Unmodified" : string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position));
+                        var ptms_bio_interest = bu.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification));
+                        if (ptms_bio_interest.Count() == 0) continue;
+                        string ptm_description = string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position));
                         string name = bu.accession + "_" + bu.begin + "to" + bu.end + "_" + ptm_description;
                         if (names.Contains(name)) continue;
                         names.Add(name);
@@ -309,6 +312,7 @@ namespace ProteoformSuiteInternal
                 }
                 foreach (TopDownProteoform t in families.SelectMany(f => f.experimental_proteoforms.Where(exp => exp as TopDownProteoform != null)))
                 {
+                    if (addBottomUpPeptideNodes && t.ambiguous_topdown_hits.Count > 0) continue;
                     string gene_name = t.topdown_geneName.get_prefered_name(preferred_gene_label);
                     if (gene_name != null)
                     {
@@ -419,6 +423,8 @@ namespace ProteoformSuiteInternal
                             //only add identified things if bottom up visualization
                             if ((p as ExperimentalProteoform).topdown_id || p.linked_proteoform_references != null)
                             {
+                                var ambiguous = (p as ExperimentalProteoform).topdown_id ? (p as TopDownProteoform).ambiguous_topdown_hits.Count : (p as ExperimentalProteoform).ambiguous_identifications.Count;
+                                if (ambiguous > 0) continue;
                                 node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, true), node_type, total_intensity, tooltip, layout_rank);
                             }
                         }
@@ -440,12 +446,15 @@ namespace ProteoformSuiteInternal
                     if (addBottomUpPeptideNodes && p as ExperimentalProteoform != null)
                     {
                         var experimental = (p as ExperimentalProteoform);
+                        var ambiguous = experimental.topdown_id ? (experimental as TopDownProteoform).ambiguous_topdown_hits.Count : experimental.ambiguous_identifications.Count;
+                        if (ambiguous > 0) continue;
                         var bottom_up_PSMs = experimental.topdown_id ? (experimental as TopDownProteoform).topdown_bottom_up_PSMs : experimental.bottom_up_PSMs;
                         List<string> names = new List<string>();
                         foreach (var bu in bottom_up_PSMs)
                         {
-                            var ptms_bio_interest = bu.ptm_list.Where(m => m.modification.ModificationType != "Common Fixed");
-                            string ptm_description = ptms_bio_interest.Count() == 0 ? "Unmodified" : string.Join("; ", ptms_bio_interest.Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position));
+                            var ptms_bio_interest = bu.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification));
+                            if (ptms_bio_interest.Count() == 0) continue;
+                            string ptm_description = string.Join("; ", ptms_bio_interest.Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position));
                             string name = bu.accession + "_" + bu.begin + "to" + bu.end + "_" + ptm_description;
                             if (names.Contains(name)) continue;
                             names.Add(name);

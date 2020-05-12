@@ -59,8 +59,8 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                List<string> this_ptms = this.ptm_combination.Where(s => s.modification.ModificationType != "Common Fixed").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList();
-                List<string> that_ptms = that.ptm_combination.Where(s => s.modification.ModificationType != "Common Fixed").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).ToList();
+                List<string> this_ptms = this.ptm_combination.Where(s => s.modification.ModificationType != "Common Fixed").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position).ToList();
+                List<string> that_ptms = that.ptm_combination.Where(s => s.modification.ModificationType != "Common Fixed").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification) + "@" + ptm.position).ToList();
                 if (this_ptms.Count != that_ptms.Count) return false;
                 foreach (string m in this_ptms.Distinct())
                 {
