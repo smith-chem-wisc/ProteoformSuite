@@ -147,11 +147,6 @@ namespace ProteoformSuiteInternal
                         {
                             add_component(c);
                         }
-                        else
-                        {
-                            Clear();
-                            return new List<Component>();
-                        }
                     }
                 }
                 else if (row.Length == 3)
@@ -178,11 +173,6 @@ namespace ProteoformSuiteInternal
                     if (acceptable_component(c))
                     {
                         add_component(c);
-                    }
-                    else
-                    {
-                        Clear();
-                        return new List<Component>();
                     }
                 }
             }            

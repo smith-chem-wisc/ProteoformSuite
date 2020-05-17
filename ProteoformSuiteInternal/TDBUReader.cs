@@ -289,7 +289,8 @@ namespace ProteoformSuiteInternal
             string[] cells = Enumerable.ToArray(System.IO.File.ReadAllLines(file.complete_path));
             string[] header = cells[0].Split('\t');
 
-            int index_q_value = Array.IndexOf(header, "QValue");
+            int index_q_value = Array.IndexOf(header, "PEP_QValue");
+            if (index_q_value <= 0) index_q_value = Array.IndexOf(header, "QValue");
             int index_decoy = Array.IndexOf(header, "Decoy");
             int index_full_sequence = Array.IndexOf(header, "Full Sequence");
             int index_filename = Array.IndexOf(header,"File Name");
@@ -462,7 +463,7 @@ namespace ProteoformSuiteInternal
                                 cellStrings[index_filename].Split('.')[0],
                                 qValue,
                                 Convert.ToDouble(cellStrings[index_score]),
-                                Convert.ToDouble(cellStrings[index_score]),
+                                Convert.ToDouble(cellStrings[index_delta_score]),
                                 ReadFragmentIonsFromString(cellStrings[index_matched_ion_mz_ratios], base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0]));
                             
                             if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&

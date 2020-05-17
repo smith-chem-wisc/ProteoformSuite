@@ -31,7 +31,7 @@ namespace ProteoformSuiteInternal
         public static bool bio_interest(Modification modification)
         {
             return modification.ModificationType != "Common Fixed" && modification.ModificationType != "Common Variable"
-                                                              && modification.ModificationType != "Common Artifact";
+                                                              && modification.ModificationType != "Common Artifact" && modification.ModificationType != "Deconvolution Error";
         }
 
         public static string LookUpId(Modification m)

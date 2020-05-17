@@ -658,6 +658,8 @@ namespace ProteoformSuiteInternal
         {
             foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.qValue)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
             {
+                //only add nonambiguous...
+                if (topdown.ambiguous_topdown_hits.Count > 0) continue;
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
                 List<ExperimentalProteoform> potential_matches = new List<ExperimentalProteoform>();

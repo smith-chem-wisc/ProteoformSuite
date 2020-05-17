@@ -275,8 +275,9 @@ namespace ProteoformSuiteInternal
                     foreach (var bu in bottom_up_PSMs)
                     {
                         var ptms_bio_interest = bu.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification));
-                        if (ptms_bio_interest.Count() == 0) continue;
+                     //   if (ptms_bio_interest.Count() == 0) continue;
                         string ptm_description = string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position));
+                        if (ptm_description == "") ptm_description = "Unmodified";
                         string name = bu.accession + "_" + bu.begin + "to" + bu.end + "_" + ptm_description;
                         if (names.Contains(name)) continue;
                         names.Add(name);
@@ -453,8 +454,9 @@ namespace ProteoformSuiteInternal
                         foreach (var bu in bottom_up_PSMs)
                         {
                             var ptms_bio_interest = bu.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification));
-                            if (ptms_bio_interest.Count() == 0) continue;
+                          //  if (ptms_bio_interest.Count() == 0) continue;
                             string ptm_description = string.Join("; ", ptms_bio_interest.Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position));
+                            if (ptm_description == "") ptm_description = "Unmodified";
                             string name = bu.accession + "_" + bu.begin + "to" + bu.end + "_" + ptm_description;
                             if (names.Contains(name)) continue;
                             names.Add(name);

@@ -258,7 +258,7 @@ namespace ProteoWPFSuite
 
             //Other stuff
             yMaxEE.Minimum = 0;
-            yMaxEE.Maximum = 1000;
+            yMaxEE.Maximum = 5000;
             yMaxEE.Value = 100; // scaling for y-axis maximum in the histogram of all EE pairs
 
             yMinEE.Minimum = -100;

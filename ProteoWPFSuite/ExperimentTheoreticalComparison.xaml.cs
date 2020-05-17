@@ -345,7 +345,7 @@ namespace ProteoWPFSuite
 
             //Other stuff
             yMaxET.Minimum = 0;
-            yMaxET.Maximum = 1000;
+            yMaxET.Maximum = 5000;
             yMaxET.Value = 100; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             yMinET.Minimum = -100;
