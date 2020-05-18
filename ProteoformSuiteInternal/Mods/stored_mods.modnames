@@ -380,8 +380,8 @@ Methyl on K	Methyl	1	False
 Methyl on Q	Methyl	1	False
 Methyl on N	Methyl	1	False
 Methyl on S	Methyl	1	False
-Methyl on D	Methy	1	False
-Methylation	Methy	1	False
+Methyl on D	Methyl	1	False
+Methylation	Methyl	1	False
 N-Term Methyl	Methyl	1	False
 C-Term Methyl	Methyl	1	False
 Phospho on S	Phospho	1	False

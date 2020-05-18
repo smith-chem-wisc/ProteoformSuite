@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
         public ProteoformRelation relation;
         public TheoreticalProteoform theoretical_base;
         public List<Proteoform> linked_proteoform_references;
-
+        public List<SpectrumMatch> bottom_up_PSMs = new List<SpectrumMatch>();
         public AmbiguousIdentification(int begin, int end, PtmSet ptm_set, ProteoformRelation relation, TheoreticalProteoform theoretical_base, List<Proteoform> linked_proteoform_references)
         {
             this.begin = begin;

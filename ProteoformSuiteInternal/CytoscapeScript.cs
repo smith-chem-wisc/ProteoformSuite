@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
                    select f;
         }
 
-        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<GoTerm> go_terms, List<ProteoformFamily> all_families)
+        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<goTerm> go_terms, List<ProteoformFamily> all_families)
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
@@ -76,13 +76,13 @@ namespace ProteoformSuiteInternal
             string folder_path, string file_prefix, string time_stamp,
             IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string prefered_gene_label)
+            bool gene_centric_families, string prefered_gene_label, bool addBottomUpPeptideNodes)
         {
             return write_script(families, all_families,
                 folder_path, file_prefix, time_stamp,
                 quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
-                gene_centric_families, prefered_gene_label);
+                gene_centric_families, prefered_gene_label, addBottomUpPeptideNodes);
         }
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
@@ -96,8 +96,8 @@ namespace ProteoformSuiteInternal
             if (stuff.Length <= 0) return "No objects were selected";
             if (families.Count <= 0 && typeof(TheoreticalProteoform).IsAssignableFrom(stuff[0].GetType()))
                 families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(GoTerm) == stuff[0].GetType())
-                families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(goTerm) == stuff[0].GetType())
+                families = get_families(stuff.OfType<goTerm>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(GoTermNumber) == stuff[0].GetType())
                 families = get_families(stuff.OfType<GoTermNumber>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(QuantitativeProteoformValues).IsAssignableFrom(stuff[0].GetType()))
@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
                 folder_path, file_prefix, time_stamp,
                 quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
-                gene_centric_families, prefered_gene_label);
+                gene_centric_families, prefered_gene_label, false);
         }
 
         #endregion CYTOSCAPE SCRIPT Public Methods
@@ -119,7 +119,7 @@ namespace ProteoformSuiteInternal
             string folder_path, string file_prefix, string time_stamp,
             IGoAnalysis quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string preferred_gene_label)
+            bool gene_centric_families, string preferred_gene_label, bool addBottomUpPeptideNodes)
         {
             //Check if valid folder
             if (folder_path == "" || !Directory.Exists(folder_path))
@@ -144,9 +144,9 @@ namespace ProteoformSuiteInternal
             //        else gene_dict.Add(preferred, t.gene_name);
             //    }
 
-            string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relations.Count), quantitative, node_position, edges_path, nodes_path, styles_path, style_name);
-            string node_table = get_cytoscape_nodes_tsv(families, quantitative, color_scheme, node_label, node_label_position, node_position, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
-            string edge_table = get_cytoscape_edges_tsv(families, edge_label, node_label, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
+            string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relations.Count), quantitative, node_position, edges_path, nodes_path, styles_path, style_name, addBottomUpPeptideNodes);
+            string node_table = get_cytoscape_nodes_tsv(families, quantitative, color_scheme, node_label, node_label_position, node_position, double_rounding, theoreticals, gene_centric_families, preferred_gene_label, addBottomUpPeptideNodes);
+            string edge_table = get_cytoscape_edges_tsv(families, edge_label, node_label, double_rounding, theoreticals, gene_centric_families, preferred_gene_label, addBottomUpPeptideNodes);
             File.WriteAllText(edges_path, edge_table);
             File.WriteAllText(nodes_path, node_table);
             File.WriteAllText(script_path, script);
@@ -160,7 +160,7 @@ namespace ProteoformSuiteInternal
         }
 
         //CYTOSCAPE SCRIPT
-        private static string get_script(int feature_count, IGoAnalysis quantitative, string node_position, string edges_path, string nodes_path, string styles_path, string style_name)
+        private static string get_script(int feature_count, IGoAnalysis quantitative, string node_position, string edges_path, string nodes_path, string styles_path, string style_name, bool addBottomUpPeptideNodes)
         {
             double sleep_factor = feature_count / 1000;
             string node_column_types = quantitative != null ? "s,s,d,s,i,d,d,boolean,s" : "s,s,d,s,i"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
@@ -175,7 +175,7 @@ namespace ProteoformSuiteInternal
                 //Load Settings
                 "vizmap load file file=\"" + styles_path + "\"",
                 "command sleep duration=" + (1.0 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
-                Lollipop.node_positioning.ToList().IndexOf(node_position) == 0 ? "layout degree-circle" : "layout attribute-circle NodeAttribute=" + layout_header,
+                addBottomUpPeptideNodes ? "" :  Lollipop.node_positioning.ToList().IndexOf(node_position) == 0 ? "layout degree-circle" : "layout attribute-circle NodeAttribute=" + layout_header,
                 "command sleep duration=" + (0.5 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
                 "view fit content",
 
@@ -213,6 +213,7 @@ namespace ProteoformSuiteInternal
         public static string modified_theoretical_label = "modified_theoretical";
         public static string gene_name_label = "gene_name";
         public static string td_label = "topdown";
+        public static string bu_label = "bottomup";
 
         //Other
         public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
@@ -223,7 +224,7 @@ namespace ProteoformSuiteInternal
 
         public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families,
             string edge_label, string node_label, int double_rounding,
-            IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
+            IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label, bool addBottomUpPeptideNodes)
         {
             DataTable edge_table = new DataTable();
             edge_table.Columns.Add("accession_1", typeof(string));
@@ -236,17 +237,62 @@ namespace ProteoformSuiteInternal
             {
                 string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + string.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.OriginalId != "Unmodified");
-                edge_table.Rows.Add
-                (
-                    get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
-                    r.lysine_count,
-                    get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
-                    delta_mass,
-                    edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
-                        delta_mass + " " + string.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
-                        delta_mass
-                );
+                if (!addBottomUpPeptideNodes)
+                {
+                    edge_table.Rows.Add
+                    (
+                        get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding, false),
+                        r.lysine_count,
+                        get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding, false),
+                        delta_mass,
+                        edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
+                            delta_mass + " " + string.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
+                            delta_mass
+                    );
+                }
+                else if (r.connected_proteoforms[0].linked_proteoform_references != null && r.connected_proteoforms[1].linked_proteoform_references != null)
+                {
+                    edge_table.Rows.Add
+                   (
+
+                       get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding, true),
+                       r.lysine_count,
+                       get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding, true),
+                       "",
+                       ""
+                   );
+                }
             }
+
+            if (addBottomUpPeptideNodes)
+            {
+                foreach (var experimental in families.SelectMany(f => f.experimental_proteoforms.Where(e => e.topdown_id || e.linked_proteoform_references != null)))
+                {
+                    var ambiguous = experimental.topdown_id ? (experimental as TopDownProteoform).ambiguous_topdown_hits.Count : experimental.ambiguous_identifications.Count;
+                    if (ambiguous > 0) continue;
+                    var bottom_up_PSMs = experimental.topdown_id ? (experimental as TopDownProteoform).topdown_bottom_up_PSMs : experimental.bottom_up_PSMs;
+                    List<string> names = new List<string>();
+                    foreach (var bu in bottom_up_PSMs)
+                    {
+                        var ptms_bio_interest = bu.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification));
+                     //   if (ptms_bio_interest.Count() == 0) continue;
+                        string ptm_description = string.Join("; ", ptms_bio_interest.Select(p => UnlocalizedModification.LookUpId(p.modification) + "@" + p.position));
+                        if (ptm_description == "") ptm_description = "Unmodified";
+                        string name = bu.accession + "_" + bu.begin + "to" + bu.end + "_" + ptm_description;
+                        if (names.Contains(name)) continue;
+                        names.Add(name);
+                        edge_table.Rows.Add
+                        (
+                            get_proteoform_shared_name(experimental, node_label, double_rounding, true),
+                            experimental.lysine_count,
+                            name,
+                            "BU",
+                            ""
+                        );
+                    }
+                }
+            }
+        
 
             if (gene_centric_families)
             {
@@ -257,7 +303,7 @@ namespace ProteoformSuiteInternal
                     {
                         edge_table.Rows.Add
                         (
-                            get_proteoform_shared_name(t, node_label, double_rounding),
+                            get_proteoform_shared_name(t, node_label, double_rounding, false),
                             t.lysine_count,
                             t.gene_name.get_prefered_name(preferred_gene_label),
                             "",
@@ -267,12 +313,13 @@ namespace ProteoformSuiteInternal
                 }
                 foreach (TopDownProteoform t in families.SelectMany(f => f.experimental_proteoforms.Where(exp => exp as TopDownProteoform != null)))
                 {
+                    if (addBottomUpPeptideNodes && t.ambiguous_topdown_hits.Count > 0) continue;
                     string gene_name = t.topdown_geneName.get_prefered_name(preferred_gene_label);
                     if (gene_name != null)
                     {
                         edge_table.Rows.Add
                          (
-                        get_proteoform_shared_name(t, node_label, double_rounding),
+                        get_proteoform_shared_name(t, node_label, double_rounding, addBottomUpPeptideNodes),
                         t.lysine_count,
                         t.topdown_geneName.get_prefered_name(preferred_gene_label),
                         "",
@@ -288,7 +335,7 @@ namespace ProteoformSuiteInternal
         public static string get_cytoscape_nodes_tsv(List<ProteoformFamily> families,
             IGoAnalysis quantitative,
             string color_scheme, string node_label, string node_label_position, string node_position, int double_rounding,
-            IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
+            IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label, bool addBottomUpPeptideNodes)
         {
             DataTable node_table = new DataTable();
             node_table.Columns.Add("accession", typeof(string));
@@ -321,13 +368,12 @@ namespace ProteoformSuiteInternal
             }
 
             int layout_rank = 1;
-            string node_rows = "";
             foreach (Proteoform p in layout_order.ToList())
             {
                 if (p as TheoreticalProteoform != null)
                 {
                     string node_type = String.Equals(p.ptm_set.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
-                    node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
+                    node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, false), node_type, mock_intensity, "", layout_rank);
                 }
 
                 if (p as ExperimentalProteoform != null)
@@ -345,7 +391,6 @@ namespace ProteoformSuiteInternal
                         ep.agg_intensity == 0 ? mock_intensity : ep.agg_intensity.ToString();
 
                     //Names and size
-                    node_rows += string.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity });
 
                     //Set tooltip information
                     string tooltip = string.Join("; ", new string[]
@@ -372,16 +417,52 @@ namespace ProteoformSuiteInternal
                         });
                     }
 
-                    if (quantitative as TusherAnalysis1 != null && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues1.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues1.denominatorIntensitySum).ToString(), ep.quant.TusherValues1.significant.ToString(), get_piechart_string(color_scheme));
-                    else if (quantitative as TusherAnalysis2 != null && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues2.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues2.denominatorIntensitySum).ToString(), ep.quant.TusherValues2.significant.ToString(), get_piechart_string(color_scheme));
-                    else if (quantitative as Log2FoldChangeAnalysis != null && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
-                    else if (quantitative != null)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
+                    if (addBottomUpPeptideNodes)
+                    {
+                        if (p as ExperimentalProteoform != null)
+                        {
+                            //only add identified things if bottom up visualization
+                            if ((p as ExperimentalProteoform).topdown_id || p.linked_proteoform_references != null)
+                            {
+                                var ambiguous = (p as ExperimentalProteoform).topdown_id ? (p as TopDownProteoform).ambiguous_topdown_hits.Count : (p as ExperimentalProteoform).ambiguous_identifications.Count;
+                                if (ambiguous > 0) continue;
+                                node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, true), node_type, total_intensity, tooltip, layout_rank);
+                            }
+                        }
+                    }
                     else
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank);
+                    {
+                        if (quantitative as TusherAnalysis1 != null && ep.quant.intensitySum != 0)
+                            node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, false), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues1.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues1.denominatorIntensitySum).ToString(), ep.quant.TusherValues1.significant.ToString(), get_piechart_string(color_scheme));
+                        else if (quantitative as TusherAnalysis2 != null && ep.quant.intensitySum != 0)
+                            node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, false), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues2.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues2.denominatorIntensitySum).ToString(), ep.quant.TusherValues2.significant.ToString(), get_piechart_string(color_scheme));
+                        else if (quantitative as Log2FoldChangeAnalysis != null && ep.quant.intensitySum != 0)
+                            node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, false), node_type, total_intensity, tooltip, layout_rank, ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition == Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.allIntensities.Where(kv => kv.Value.condition != Sweet.lollipop.induced_condition).Sum(kv => kv.Value.intensity_sum).ToString(), ep.quant.Log2FoldChangeValues.significant.ToString(), get_piechart_string(color_scheme));
+                        else if (quantitative != null)
+                            node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, false), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
+                        else
+                            node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding, false), node_type, total_intensity, tooltip, layout_rank);
+                    }
+                    //bottom up
+                    if (addBottomUpPeptideNodes && p as ExperimentalProteoform != null)
+                    {
+                        var experimental = (p as ExperimentalProteoform);
+                        var ambiguous = experimental.topdown_id ? (experimental as TopDownProteoform).ambiguous_topdown_hits.Count : experimental.ambiguous_identifications.Count;
+                        if (ambiguous > 0) continue;
+                        var bottom_up_PSMs = experimental.topdown_id ? (experimental as TopDownProteoform).topdown_bottom_up_PSMs : experimental.bottom_up_PSMs;
+                        List<string> names = new List<string>();
+                        foreach (var bu in bottom_up_PSMs)
+                        {
+                            var ptms_bio_interest = bu.ptm_list.Where(m => UnlocalizedModification.bio_interest(m.modification));
+                          //  if (ptms_bio_interest.Count() == 0) continue;
+                            string ptm_description = string.Join("; ", ptms_bio_interest.Select(m => UnlocalizedModification.LookUpId(m.modification) + "@" + m.position));
+                            if (ptm_description == "") ptm_description = "Unmodified";
+                            string name = bu.accession + "_" + bu.begin + "to" + bu.end + "_" + ptm_description;
+                            if (names.Contains(name)) continue;
+                            names.Add(name);
+                            node_table.Rows.Add(name, bu_label, total_intensity, tooltip, layout_rank);
+                        }
+                    }
                 }
 
                 layout_rank++;
@@ -421,14 +502,16 @@ namespace ProteoformSuiteInternal
             return result_string.ToString();
         }
 
-        public static string get_proteoform_shared_name(Proteoform p, string node_label, int double_rounding)
+        public static string get_proteoform_shared_name(Proteoform p, string node_label, int double_rounding, bool addBottomUpNodes)
         {
             if (p as TopDownProteoform != null)
             {
                 TopDownProteoform e = p as TopDownProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_" + e.accession;
                 if (node_label == Lollipop.node_labels[1])
-                    name += " " + e.topdown_begin + "to" + e.topdown_end + " " + e.topdown_ptm_description;
+                    name += " " + (e.topdown_level > 1 ? "Ambiguous " : "")
+                        + e.topdown_begin + "to" + e.topdown_end + " " + e.topdown_ptm_description;
+                if (addBottomUpNodes) name = e.accession + "_" + e.topdown_ptm_description;
                 return name;
             }
             else if (p as ExperimentalProteoform != null)
@@ -442,6 +525,7 @@ namespace ProteoformSuiteInternal
                           (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
                             string.Join("; ", e.ptm_set.ptm_combination.Select(ptm => UnlocalizedModification.LookUpId(ptm.modification))));
+                if (addBottomUpNodes) name = e.accession + "_" + e.linked_proteoform_references.First().accession.Split('_')[0] + "_" + e.begin + "to" + e.end + "_" + e.ptm_set.ptm_description;
                 return name;
             }
             else if (p as TheoreticalProteoform != null)
@@ -685,7 +769,8 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][6], td_label),
-                            new Tuple<string, string>(color_schemes[color_scheme][4], gene_name_label)
+                            new Tuple<string, string>(color_schemes[color_scheme][4], gene_name_label),
+                            new Tuple<string, string>(color_schemes[color_scheme][5], bu_label)
                             //new Tuple<string, string>(color_schemes[color_scheme][4], transcript_name_label)
                         });
                     }

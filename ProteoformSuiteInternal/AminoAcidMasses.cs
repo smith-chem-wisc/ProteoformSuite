@@ -43,6 +43,9 @@ namespace ProteoformSuiteInternal
             aaMasses.Add('W', 186.079313);
             aaMasses.Add('Y', 163.06332);
             aaMasses.Add('V', 99.068414);
+            aaMasses.Add('O', Chemistry.ChemicalFormula.ParseFormula("C12H19N3O2").MonoisotopicMass);
+            aaMasses.Add('U', Chemistry.ChemicalFormula.ParseFormula("C3H5NOSe").MonoisotopicMass);
+
 
             this.AA_Masses = aaMasses;
         }

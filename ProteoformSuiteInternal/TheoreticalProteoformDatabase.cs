@@ -74,6 +74,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
+
             Sweet.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
             unlocalized_lookup = make_unlocalized_lookup(all_mods_with_mass.Concat(new List<Modification> { new Ptm().modification }));
@@ -97,11 +98,10 @@ namespace ProteoformSuiteInternal
                 var bottom_up_psms = Sweet.lollipop.bottomupReader.ReadTDFile(file);
                 foreach (var psm in bottom_up_psms)
                 {
-                    string accession = psm.accession.Split('_')[0].Split('-')[0];
-                    bottom_up_psm_by_accession.TryGetValue(accession, out var psms);
+                    bottom_up_psm_by_accession.TryGetValue(psm.accession, out var psms);
                     if (psms == null)
                     {
-                        bottom_up_psm_by_accession.Add(accession, new List<SpectrumMatch>() { psm });
+                        bottom_up_psm_by_accession.Add(psm.accession, new List<SpectrumMatch>() { psm });
                     }
                     else
                     {
@@ -109,9 +109,8 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-
-            //make theoreticals
-            make_theoretical_proteoforms();
+                //make theoreticals
+                make_theoretical_proteoforms();
         }
 
         public List<Modification> get_mods(string current_directory)
@@ -132,9 +131,9 @@ namespace ProteoformSuiteInternal
                     glycan_mods = new_mods;
                     continue;
                 }
-
                 all_known_modifications.AddRange(new_mods);
             }
+
             all_known_modifications = new HashSet<Modification>(all_known_modifications).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).Concat(variableModifications).ToList();
@@ -276,17 +275,22 @@ namespace ProteoformSuiteInternal
             foreach (Protein p in proteins)
             {
                 List<ProteinWithGoTerms> new_prots = new List<ProteinWithGoTerms>();
+                //for isoforms
+                string[] accession_split = p.Accession.Split('_');
+                string new_accession = p.Accession;
+                if (accession_split.Length > 1) new_accession = accession_split[0] + "-" + accession_split[1];
 
                 //Add full length product
                 int begin = 1;
                 int end = p.BaseSequence.Length;
-                List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
+                List<goTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new goTerm(reference)).ToList();
                 int startPosAfterCleavage = Convert.ToInt32(Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M"));
                 new_prots.Add(new ProteinWithGoTerms(
                     p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
-                    p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
+                    new_accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
                     p.GeneNames.ToList(),
-                    p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= begin + startPosAfterCleavage && kv.Key <= end).ToDictionary(kv => kv.Key, kv => kv.Value),
+                    p.OneBasedPossibleLocalizedModifications.ToDictionary(kv => kv.Key, kv => kv.Value),
+                    //p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= begin + startPosAfterCleavage && kv.Key <= end).ToDictionary(kv => kv.Key, kv => kv.Value),
                     new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
                     p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences.ToList(), goTerms.ToList()));
 
@@ -305,11 +309,12 @@ namespace ProteoformSuiteInternal
                         continue;
                     bool feature_is_just_met_cleavage = Sweet.lollipop.methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
                     string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
-                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
+                    //Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
+                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.ToDictionary(kv => kv.Key, kv => kv.Value);
                     if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Sweet.lollipop.min_peptide_length)
                         new_prots.Add(new ProteinWithGoTerms(
                             subsequence,
-                            p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
+                            new_accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
                             p.GeneNames.ToList(),
                             segmented_ptms,
                             new List<ProteolysisProduct> { new ProteolysisProduct(feature_begin, feature_end, feature_type) },
@@ -346,7 +351,8 @@ namespace ProteoformSuiteInternal
         {
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
 
-            if (seq.Length > 3000 || seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
+            if (//seq.Length > 3000 || 
+                seq.Any(s => !aaIsotopeMassList.ContainsKey(s)))
             {
                 return;
             }
@@ -359,7 +365,8 @@ namespace ProteoformSuiteInternal
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
             //Figure out the possible ptm sets
-            Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.ToDictionary(kv => kv.Key, kv => new List<Modification>(kv.Value));
+            Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.Where(m => m.Key >= prot.ProteolysisProducts.First().OneBasedBeginPosition && m.Key <= prot.ProteolysisProducts.First().OneBasedEndPosition)
+            .ToDictionary(kv => kv.Key, kv => new List<Modification>(kv.Value));
             foreach (Modification m in variableModifications)
             {
                 for (int i = 1; i <= prot.BaseSequence.Length; i++)
@@ -406,13 +413,14 @@ namespace ProteoformSuiteInternal
         public void add_topdown_sequences()
         {
             List<ProteinWithGoTerms> new_proteins = new List<ProteinWithGoTerms>();
-            foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.OrderBy(t => t.modified_mass))
+          //  foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.OrderBy(t => t.modified_mass))
+           Parallel.ForEach(Sweet.lollipop.topdown_proteoforms, topdown =>
             {
-                List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0])).ToList();
+                List<ProteinWithGoTerms> candidate_theoreticals = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0])).ToList();
                 bool accessions_in_database = true;
                 foreach(var hit in topdown.ambiguous_topdown_hits)
                 {
-                    var ambiguous_hit_theoretical = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(hit.accession.Split('_')[0].Split('-')[0])).ToList();
+                    var ambiguous_hit_theoretical = expanded_proteins.Where(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(hit.accession.Split('_')[0])).ToList();
                     if(ambiguous_hit_theoretical.Count > 0)
                     {
                         hit.gene_name = new GeneName(ambiguous_hit_theoretical.SelectMany(t => t.GeneNames));
@@ -426,25 +434,37 @@ namespace ProteoformSuiteInternal
                 if (candidate_theoreticals.Count > 0 && accessions_in_database)
                 {
                     topdown.topdown_geneName = new GeneName(candidate_theoreticals.SelectMany(t => t.GeneNames));
-                    if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0].Split('-')[0]) && p.BaseSequence == topdown.sequence))
+                    lock (new_proteins)
                     {
-                        int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
-                        int new_proteins_with_same_being_end_diff_sequence = new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0].Split('-')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
-                        int count = old_proteins_with_same_begin_end_diff_sequence + new_proteins_with_same_being_end_diff_sequence;
-                        ProteinWithGoTerms p = new ProteinWithGoTerms(topdown.sequence, topdown.accession.Split('_')[0].Split('-')[0] + "_" + topdown.topdown_begin + "frag" + topdown.topdown_end + (count > 0 ? "_" + count : ""), candidate_theoreticals.First().GeneNames.ToList(), candidate_theoreticals.First().OneBasedPossibleLocalizedModifications, new List<ProteolysisProduct>() { new ProteolysisProduct(topdown.topdown_begin, topdown.topdown_end, "full") }, candidate_theoreticals.First().Name, candidate_theoreticals.First().FullName, false, false, candidate_theoreticals.First().DatabaseReferences, candidate_theoreticals.First().GoTerms);
-                        p.topdown_protein = true;
-                        new_proteins.Add(p);
+                        if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0]) && p.BaseSequence == topdown.sequence))
+                        {
+                            if (topdown.ambiguous_topdown_hits.Count == 0)
+                            {
+                                int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
+                                int new_proteins_with_same_being_end_diff_sequence = new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
+                                int count = old_proteins_with_same_begin_end_diff_sequence + new_proteins_with_same_being_end_diff_sequence;
+                                ProteinWithGoTerms p = new ProteinWithGoTerms(topdown.sequence, topdown.accession.Split('_')[0] + "_" + topdown.topdown_begin + "frag" + topdown.topdown_end + (count > 0 ? "_" + count : ""), candidate_theoreticals.First().GeneNames.ToList(), candidate_theoreticals.First().OneBasedPossibleLocalizedModifications, new List<ProteolysisProduct>() { new ProteolysisProduct(topdown.topdown_begin, topdown.topdown_end, "full") }, candidate_theoreticals.First().Name, candidate_theoreticals.First().FullName, false, false, candidate_theoreticals.First().DatabaseReferences, candidate_theoreticals.First().GoTerms);
+                                p.topdown_protein = true;
+                                new_proteins.Add(p);
+                            }
+                        }
                     }
                 }
-                else Sweet.lollipop.topdown_proteoforms_no_theoretical.Add(topdown);
-            }
+                else
+                {
+                    lock (Sweet.lollipop.topdown_proteoforms_no_theoretical)
+                    {
+                        Sweet.lollipop.topdown_proteoforms_no_theoretical.Add(topdown);
+                    }
+                }
+            });
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.topdown_proteoforms.Except(Sweet.lollipop.topdown_proteoforms_no_theoretical).ToList();
             expanded_proteins = expanded_proteins.Concat(new_proteins).ToArray();
         }
 
         public void add_topdown_theoreticals(ProteinWithGoTerms prot, string seq, string accession, double unmodified_mass, int decoy_number, int lysine_count, List<TheoreticalProteoform> new_theoreticals, int ptm_set_counter, Dictionary<double, int> mod_ranks, int added_ptm_penalty)
         {
-            foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0].Split('-')[0])
+            foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => p.ambiguous_topdown_hits.Count == 0 && prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0])
                 && p.sequence == seq).OrderBy(t => t.accession).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
             {
                 var same_ptmset_theos = new_theoreticals.Where(t => t.ptm_set.same_ptmset(topdown.topdown_ptm_set, true)).ToList();
@@ -452,7 +472,7 @@ namespace ProteoformSuiteInternal
                 if (same_ptmset_theos.Count == 0)
                 {
                     //match each td proteoform group to the closest theoretical w/ best explanation.... otherwise make new theoretical proteoform
-                    PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination, mod_ranks, added_ptm_penalty);
+                    PtmSet ptm_set = new PtmSet(topdown.topdown_ptm_set.ptm_combination.Where(s => s.modification.ModificationType != "Common Fixed").ToList(), mod_ranks, added_ptm_penalty);
                     TheoreticalProteoform t =
                     new TheoreticalProteoform(
                         accession + "_P" + ptm_set_counter.ToString(),
@@ -581,11 +601,11 @@ namespace ProteoformSuiteInternal
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<Modification> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            //Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
-            foreach (var p in expanded_proteins)
-            {
-                EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications);
-            }
+           Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications));
+            //foreach (var p in expanded_proteins)
+            //{
+            //    EnterTheoreticalProteformFamily(p.BaseSequence, p, p.OneBasedPossibleLocalizedModifications, p.Accession, theoretical_proteoforms, -100, variableModifications);
+            //}
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
             Sweet.lollipop.target_proteoform_community.community_number = -100;
         }

@@ -306,7 +306,8 @@
                                           CellMouseClick="dgv_loadFiles1_CellMouseClick" 
                                           CellValidating="dgv_loadFiles1_CellValidating" 
                                           DragDrop="dgv_deconResults_DragDrop" 
-                                          DragEnter="dgv_deconResults_DragEnter" >
+                                          DragEnter="dgv_deconResults_DragEnter" 
+                                          AllowDrop= "true">
                     </winform:DataGridView>
                 </WindowsFormsHost>
 

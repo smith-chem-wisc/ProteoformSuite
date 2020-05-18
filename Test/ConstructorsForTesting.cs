@@ -50,7 +50,7 @@ namespace Test
             ModificationMotif.TryGetMotif("X", out motif);
             string mod_title = "oxidation";
             Modification m = new Modification(mod_title, _modificationType: "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<goTerm> { new goTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
             return new TheoreticalProteoform("T1", "T1_1", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, 100, 0, set, true, false, new Dictionary<InputFile, Protein[]>());
         }
@@ -61,7 +61,7 @@ namespace Test
             ModificationMotif.TryGetMotif("X", out motif);
             string mod_title = "oxidation";
             Modification m = new Modification(mod_title, _modificationType : "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 1);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<goTerm> { new goTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
             return new TheoreticalProteoform(a, d, p1.BaseSequence,  new List<ProteinWithGoTerms> { p }, mass, 0, set, true, false, dict);
         }
@@ -72,7 +72,7 @@ namespace Test
             ModificationMotif.TryGetMotif("X", out motif);
             string mod_title = "oxidation";
             Modification m = new Modification(mod_title, _modificationType: "modtype", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 1);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("ordered locus", "GENE") }, new Dictionary<int, List<Modification>> { { 1, new List<Modification> { m } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<goTerm> { new goTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, m) });
             return new TheoreticalProteoform(a, d, p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, 0, set, true, false, dict);
         }
@@ -82,7 +82,7 @@ namespace Test
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("X", out motif);
             Modification unmodification = new Modification("Unmodified", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 0);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new List<ProteolysisProduct> { new ProteolysisProduct(1, 12, "") }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<goTerm> { new goTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm() });
             var t =  new TheoreticalProteoform(a, "", p1.BaseSequence, new List<ProteinWithGoTerms> { p1 }, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
             t.modified_mass = mass;
@@ -130,7 +130,6 @@ namespace Test
             h.sequence = "MSSSSSSSSSS";
             h.begin = 10;
             h.end = 20;
-            h.pfr_accession = "";
             h.name = "";
             h.uniprot_id = "";
             TopDownProteoform td = new TopDownProteoform(accession, new List<SpectrumMatch>() { h } );
@@ -139,6 +138,21 @@ namespace Test
             return td;
         }
 
+        //SPECTRUM MATCH
+        public static SpectrumMatch SpectrumMatch(string accession, double modified_mass, double retention_time, int begin, int end)
+        {
+            SpectrumMatch h = new SpectrumMatch();
+            h.accession = accession;
+            h.reported_mass = modified_mass;
+            h.theoretical_mass = modified_mass;
+            h.ms2_retention_time = retention_time;
+            h.sequence = "MSSSSSSSSSS";
+            h.begin = begin;
+            h.end = end;
+            h.name = "";
+            h.uniprot_id = "";
+            return h;
+        }
 
         //INPUT FILE
         public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, string biorep, string fraction, string techrep) // for neucode files. here both conditions are present in one file

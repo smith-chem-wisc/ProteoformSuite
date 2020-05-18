@@ -208,7 +208,7 @@ namespace ProteoWPFSuite
             }
             else if ((bool)ra && selected_pf != null && selected_pf.topdown_id)
             {
-                DisplayTopDownHit.FormatTopDownHitsTable(dgv_AcceptNeuCdLtProteoforms);
+                DisplayTopDownHit.FormatTopDownHitsTable(dgv_AcceptNeuCdLtProteoforms, false);
             }
             else
             {

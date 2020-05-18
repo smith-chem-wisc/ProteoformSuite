@@ -27,7 +27,7 @@
                 </Grid.RowDefinitions>
                 <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" SelectionChanged="Cmb_loadTable_OnSelectionChanged"></ComboBox>
                 <WindowsFormsHost Grid.Row="1">
-                    <winform:DataGridView x:Name="dgv_loadFiles" DragDrop="dgv_loadFiles_DragDrop" DragEnter="dgv_loadFiles_DragEnter"></winform:DataGridView>
+                    <winform:DataGridView x:Name="dgv_loadFiles" DragDrop="dgv_loadFiles_DragDrop" DragEnter="dgv_loadFiles_DragEnter" AllowDrop="true"></winform:DataGridView>
                 </WindowsFormsHost>
                 <Grid Grid.Row="2" >
                     <Grid.ColumnDefinitions>

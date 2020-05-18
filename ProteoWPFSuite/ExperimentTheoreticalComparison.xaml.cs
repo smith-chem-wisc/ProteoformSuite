@@ -260,6 +260,7 @@ namespace ProteoWPFSuite
             {
                 List<DeltaMassPeak> peaks_to_shift = Sweet.lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
                 if (peaks_to_shift.Count > 0)
+
                 {
                     shift_masses(); //check for shifts from presets (need to have peaks formed first)
                     RunTheGamut(false);
@@ -344,7 +345,7 @@ namespace ProteoWPFSuite
 
             //Other stuff
             yMaxET.Minimum = 0;
-            yMaxET.Maximum = 1000;
+            yMaxET.Maximum = 5000;
             yMaxET.Value = 100; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             yMinET.Minimum = -100;

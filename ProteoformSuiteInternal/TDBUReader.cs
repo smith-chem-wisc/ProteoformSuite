@@ -1,14 +1,13 @@
 ﻿using Proteomics;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Accord.Math;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Proteomics.ProteolyticDigestion;
-using UsefulProteomicsDatabases;
+using Chemistry;
+using Proteomics.Fragmentation;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace ProteoformSuiteInternal
 {
@@ -51,21 +50,22 @@ namespace ProteoformSuiteInternal
                     true); //This returns the entire sheet except for the header. Each row of cells is one List<string>
 
             //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message.
-            Parallel.ForEach(cells, cellStrings =>
+            Parallel.For(0, cells.Count, index =>
             {
+                var cellStrings = cells[index];
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 TopDownResultType tdResultType = (cellStrings[15] == "BioMarker")
-                    ? TopDownResultType.Biomarker
-                    : ((cellStrings[15] == "Tight Absolute Mass")
-                        ? TopDownResultType.TightAbsoluteMass
-                        : TopDownResultType.Unknown);
+                               ? TopDownResultType.Biomarker
+                               : ((cellStrings[15] == "Tight Absolute Mass")
+                                   ? TopDownResultType.TightAbsoluteMass
+                                   : TopDownResultType.Unknown);
                 if (tdResultType != TopDownResultType.Unknown) //uknown result type!
                 {
                     List<Ptm>
-                        ptm_list =
-                            new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
-                    //N-term modifications
-                    if (cellStrings[10].Length > 0) //N Terminal Modification Code
+                                   ptm_list =
+                                       new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
+                                                        //N-term modifications
+                               if (cellStrings[10].Length > 0) //N Terminal Modification Code
                     {
                         string[] ptms = cellStrings[10].Split('|');
 
@@ -74,7 +74,6 @@ namespace ProteoformSuiteInternal
                         {
                             add_topdown_hit = false;
                         }
-
 
                         foreach (string ptm in ptms)
                         {
@@ -251,7 +250,7 @@ namespace ProteoformSuiteInternal
 
                     if (add_topdown_hit)
                     {
-                        SpectrumMatch td_hit = new SpectrumMatch(aaIsotopeMassList, file, tdResultType, cellStrings[2],
+                        SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file, tdResultType, cellStrings[2],
                             cellStrings[0], cellStrings[1], cellStrings[3], cellStrings[4],
                             Int32.TryParse(cellStrings[5], out int i) ? i : 0,
                             Int32.TryParse(cellStrings[6], out i) ? i : 0, ptm_list,
@@ -260,9 +259,11 @@ namespace ProteoformSuiteInternal
                             Int32.TryParse(cellStrings[17], out i) ? i : 0,
                             Double.TryParse(cellStrings[18], out d) ? d : 0, cellStrings[14].Split('.')[0],
                             Double.TryParse(cellStrings[20], out d) ? d : 0,
-                            Double.TryParse(cellStrings[22], out d) ? d : 0);
+                            Double.TryParse(cellStrings[22], out d) ? d : 0,
+                            0,
+                            new List<MatchedFragmentIon>());
 
-                        if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 && td_hit.pscore > 0 &&
+                        if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&
                             td_hit.reported_mass > 0 && td_hit.score > 0
                             && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0 && (td_hit.end - td_hit.begin + 1 == td_hit.sequence.Length))
                         {
@@ -271,6 +272,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+
             return td_hits;
         }
 
@@ -287,19 +289,24 @@ namespace ProteoformSuiteInternal
             string[] cells = Enumerable.ToArray(System.IO.File.ReadAllLines(file.complete_path));
             string[] header = cells[0].Split('\t');
 
-            int index_q_value = header.IndexOf("QValue");
-            int index_decoy = header.IndexOf("Decoy");
-            int index_full_sequence = header.IndexOf("Full Sequence");
-            int index_filename = header.IndexOf("File Name");
-            int index_scan_number = header.IndexOf("Scan Number");
-            int index_begin_end = header.IndexOf("Start and End Residues In Protein");
-            int index_protein_accession = header.IndexOf("Protein Accession");
-            int index_protein_name = header.IndexOf("Protein Name");
-            int index_base_sequence = header.IndexOf("Base Sequence");
-            int index_retention_time = header.IndexOf("Scan Retention Time");
-            int index_precursor_mass = header.IndexOf("Precursor Mass");
-            int index_peptide_monoisotopic_mass = header.IndexOf("Peptide Monoisotopic Mass");
+            int index_q_value = Array.IndexOf(header, "PEP_QValue");
+            if (index_q_value <= 0) index_q_value = Array.IndexOf(header, "QValue");
+            int index_decoy = Array.IndexOf(header, "Decoy");
+            int index_full_sequence = Array.IndexOf(header, "Full Sequence");
+            int index_filename = Array.IndexOf(header,"File Name");
+            int index_scan_number = Array.IndexOf(header, "Scan Number");
+            int index_begin_end = Array.IndexOf(header, "Start and End Residues In Protein");
+            int index_protein_accession = Array.IndexOf(header, "Protein Accession");
+            int index_protein_name = Array.IndexOf(header, "Protein Name");
+            int index_base_sequence = Array.IndexOf(header, "Base Sequence");
+            int index_retention_time = Array.IndexOf(header, "Scan Retention Time");
+            int index_precursor_mass = Array.IndexOf(header, "Precursor Mass");
+            int index_peptide_monoisotopic_mass = Array.IndexOf(header, "Peptide Monoisotopic Mass");
             bool glycan = header.Contains("GlycanIDs");
+            int index_mods = Array.IndexOf(header, "Mods");
+            int index_matched_ion_mz_ratios = Array.IndexOf(header, "Matched Ion Mass-To-Charge Ratios");
+            int index_score = Array.IndexOf(header, "Score");
+            int index_delta_score = Array.IndexOf(header, "Delta Score");
 
             //creates dictionary to find mods
             Dictionary<string, Modification> mods = new Dictionary<string, Modification>();
@@ -322,13 +329,15 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            Parallel.ForEach(cells.Skip(1), row =>
+            Parallel.For(1, cells.Length, index =>
             {
+                string row = cells[index];
                 var cellStrings = row.Split('\t').ToList();
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
-                double qValue = Convert.ToDouble(cellStrings[index_q_value].Split('|')[0]);
-                string decoy = cellStrings[index_decoy].Split('|')[0];
-                if (qValue < 0.01 && decoy == "N")
+                double qValue = Double.TryParse(cellStrings[index_q_value].Split('|')[0], out qValue) ? qValue: -1;
+                List<string> decoy = cellStrings[index_decoy].Split('|').ToList();
+                //don't read in any decoys for now
+                if (qValue >= 0 && qValue < 0.01 && decoy.All(d => d == "N"))
                 {
                     List<int> begin = new List<int>();
                     List<int> end = new List<int>();
@@ -336,9 +345,9 @@ namespace ProteoformSuiteInternal
                     //splits the string to get the value of starting index
                     foreach (var x in start_and_end_residue_array)
                     {
-                        string[] index = x.Trim(new char[] {'[', ']'}).Split(' ');
-                        begin.Add(Int32.TryParse(index[0], out int j) ? j : 0);
-                        end.Add(Int32.TryParse(index[2], out int i) ? i : 0);
+                        string[] start_end = x.Trim(new char[] {'[', ']'}).Split(' ');
+                        begin.Add(Int32.TryParse(start_end[0], out int j) ? j : 0);
+                        end.Add(Int32.TryParse(start_end[2], out int i) ? i : 0);
                     }
 
                     List<List<Ptm>> new_ptm_list = new List<List<Ptm>>();
@@ -350,13 +359,14 @@ namespace ProteoformSuiteInternal
                         {
                             List<Ptm> list = new List<Ptm>();
                             PeptideWithSetModifications modsIdentifier =
-                                new PeptideWithSetModifications(full_sequences[i], mods);
+                                new PeptideWithSetModifications(full_sequences[i].Trim(new char[] { '"' }), mods);
 
                             var ptm_list = modsIdentifier.AllModsOneIsNterminus;
 
                             //for each  entry in ptm_list make a new Ptm and add it to the new_ptm_list 
                             foreach (KeyValuePair<int, Proteomics.Modification> entry in ptm_list)
                             {
+                                string mod_type = entry.Value.ModificationType;
                                 if (glycan && entry.Value.ModificationType == "N-Glycosylation")
                                 {
                                     string glycanFormula = entry.Value.OriginalId;
@@ -392,7 +402,6 @@ namespace ProteoformSuiteInternal
                                         .FirstOrDefault();
                                     if (mod != null)
                                     {
-
                                         list.Add(new Ptm(entry.Key + (begin.Count > i ? begin[i] : begin[0]) - (entry.Key == 1 ? 1 : 2), entry.Value));
                                     }
                                     else
@@ -415,7 +424,7 @@ namespace ProteoformSuiteInternal
                             lock (bad_ptms)
                             {
                                 //error is somewahre in sequece
-                                bad_ptms.Add("Bad mod at " + cellStrings[index_filename] + " scan " +
+                               bad_ptms.Add(cellStrings[index_mods] + " at " + cellStrings[index_filename] + " scan " +
                                              cellStrings[index_scan_number]);
                                 add_topdown_hit = false;
                             }
@@ -435,48 +444,71 @@ namespace ProteoformSuiteInternal
                                 accessions.Count, names.Count, base_sequences.Count, theoretical_masses.Count,
                                 new_ptm_list.Count, begin.Count, end.Count
                             };
-
-                            for (int hit = 0; hit < counts.Max(); hit++)
+                        
+                    for (int hit = 0; hit < counts.Max(); hit++)
+                    {
+                        SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file,
+                            TopDownResultType.TightAbsoluteMass,
+                            accessions.Count > hit ? accessions[hit] : accessions[0],
+                            cellStrings[index_full_sequence].Trim(new char[] {'"'}),
+                                accessions.Count > hit ? accessions[hit] : accessions[0],
+                                names.Count > hit ? names[hit] : names[0],
+                                base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0],
+                                begin.Count > hit ? begin[hit] : begin[0], end.Count > hit ? end[hit] : end[0],
+                                new_ptm_list.Count > hit ? new_ptm_list[hit] : new_ptm_list.Count > 0 ? new_ptm_list[0] : new List<Ptm>(),
+                                Double.TryParse(cellStrings[index_precursor_mass], out double m) ? m : 0,
+                                theoretical_masses.Count > hit ? theoretical_masses[hit] : theoretical_masses[0],
+                                Int32.TryParse(cellStrings[index_scan_number], out int i) ? i : 0,
+                                Double.TryParse(cellStrings[index_retention_time], out m) ? m : 0,
+                                cellStrings[index_filename].Split('.')[0],
+                                qValue,
+                                Convert.ToDouble(cellStrings[index_score]),
+                                Convert.ToDouble(cellStrings[index_delta_score]),
+                                ReadFragmentIonsFromString(cellStrings[index_matched_ion_mz_ratios], base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0]));
+                            
+                            if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&
+                                 td_hit.reported_mass > 0 && td_hit.score > 0
+                                && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
                             {
-                                SpectrumMatch td_hit = new SpectrumMatch(aaIsotopeMassList, file,
-                                    TopDownResultType.TightAbsoluteMass,
-                                    accessions.Count > hit ? accessions[hit] : accessions[0],
-                                    full_sequences.Length > hit ? full_sequences[hit] : full_sequences[0],
-                                    accessions.Count > hit ? accessions[hit] : accessions[0],
-                                    names.Count > hit ? names[hit] : names[0],
-                                    base_sequences.Count > hit ? base_sequences[hit] : base_sequences[0],
-                                    begin.Count > hit ? begin[0] : begin[0], end.Count > hit ? end[0] : end[0],
-                                    new_ptm_list.Count > hit ? new_ptm_list[hit] : new_ptm_list.Count > 0 ?  new_ptm_list[0] : new List<Ptm>(),
-                                    Double.TryParse(cellStrings[index_precursor_mass], out double m) ? m : 0,
-                                    theoretical_masses.Count > hit ? theoretical_masses[hit] : theoretical_masses[0],
-                                    Int32.TryParse(cellStrings[index_scan_number], out int i) ? i : 0,
-                                    Double.TryParse(cellStrings[index_retention_time], out m) ? m : 0,
-                                    cellStrings[index_filename].Split('.')[0],
-                                    Double.TryParse(cellStrings[index_precursor_mass], out m) ? m : 0,
-                                    Sweet.lollipop.min_score_td + 1);
-
-                                if (td_hit.begin > 0 && td_hit.end > 0 && td_hit.theoretical_mass > 0 &&
-                                    td_hit.pscore > 0 && td_hit.reported_mass > 0 && td_hit.score > 0
-                                    && td_hit.ms2ScanNumber > 0 && td_hit.ms2_retention_time > 0)
+                                //MM bug right now handling...
+                                if (begin.Count == 1 || begin.Count == accessions.Count)
                                 {
                                     if (hit == 0)
                                     {
                                         hit_to_add = td_hit;
                                     }
-                                    else
+                                    else if (td_hit.pfr_accession != hit_to_add.pfr_accession
+                                        && !ambiguious_hits.Select(h => h.pfr_accession).Contains(td_hit.pfr_accession))
                                     {
                                         ambiguious_hits.Add(td_hit);
                                     }
                                 }
                             }
-
-                            if (hit_to_add != null)
-                            {
-                                hit_to_add.ambiguous_matches = ambiguious_hits;
-                                lock (td_hits) td_hits.Add(hit_to_add);
-                            }
                         }
-                    
+
+                        if (hit_to_add != null)
+                        {
+                            foreach (var hit in ambiguious_hits)
+                            {
+                                if(file.purpose == Purpose.BottomUp &&  hit.pfr_accession.Split('_')[0] != hit_to_add.pfr_accession.Split('|')[0].Split('_')[0]
+                                       && hit.pfr_accession.Split('_')[3] == hit_to_add.pfr_accession.Split('|')[0].Split('_')[3])
+                                       //diff accession, same sequence, same PTMs
+                                {
+                                    lock (td_hits)
+                                    {
+                                        hit.shared_protein = true;
+                                        hit_to_add.shared_protein = true;
+                                        td_hits.Add(hit);
+                                    }
+                                }
+                                else
+                                {
+                                    hit_to_add.ambiguous_matches.Add(hit);
+                                }
+                            }
+                            lock (td_hits) td_hits.Add(hit_to_add);
+                        }
+                    }
                 }
             });
             return td_hits;
@@ -501,6 +533,59 @@ namespace ProteoformSuiteInternal
             }
 
             return true;
+        }
+
+        private static readonly Regex IonParser = new Regex(@"([a-zA-Z]+)(\d+)");
+        private static readonly char[] MzSplit = { '[', ',', ']', ';' };
+        private static List<MatchedFragmentIon> ReadFragmentIonsFromString(string matchedMzString, string peptideBaseSequence)
+        {
+            var peaks = matchedMzString.Split(MzSplit, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim())
+                .ToList();
+            peaks.RemoveAll(p => p.Contains("\""));
+
+            List<MatchedFragmentIon> matchedIons = new List<MatchedFragmentIon>();
+
+            foreach (var peak in peaks)
+            {
+                var split = peak.Split(new char[] { '+', ':' });
+
+                string ionTypeAndNumber = split[0];
+                Match result = IonParser.Match(ionTypeAndNumber);
+
+                ProductType productType = (ProductType)Enum.Parse(typeof(ProductType), result.Groups[1].Value);
+
+                int fragmentNumber = int.Parse(result.Groups[2].Value);
+                int z = int.Parse(split[1]);
+                double mz = double.Parse(split[2], CultureInfo.InvariantCulture);
+                double neutralLoss = 0;
+
+                // check for neutral loss
+                if (ionTypeAndNumber.Contains("-"))
+                {
+                    string temp = ionTypeAndNumber.Replace("(", "");
+                    temp = temp.Replace(")", "");
+                    var split2 = temp.Split('-');
+                    neutralLoss = double.Parse(split2[1], CultureInfo.InvariantCulture);
+                }
+
+                FragmentationTerminus terminus = FragmentationTerminus.None;
+                if (TerminusSpecificProductTypes.ProductTypeToFragmentationTerminus.ContainsKey(productType))
+                {
+                    terminus = TerminusSpecificProductTypes.ProductTypeToFragmentationTerminus[productType];
+                }
+
+                int aminoAcidPosition = fragmentNumber;
+                if (terminus == FragmentationTerminus.C)
+                {
+                    aminoAcidPosition = peptideBaseSequence.Length - fragmentNumber;
+                }
+
+                var t = new NeutralTerminusFragment(terminus, mz.ToMass(z) - DissociationTypeCollection.GetMassShiftFromProductType(productType), fragmentNumber, aminoAcidPosition);
+                Product p = new Product(productType, t, neutralLoss);
+                matchedIons.Add(new MatchedFragmentIon(p, mz, 1.0, z));
+            }
+
+            return matchedIons;
         }
     }
 }

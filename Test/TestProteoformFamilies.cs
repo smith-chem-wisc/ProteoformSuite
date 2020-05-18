@@ -148,7 +148,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("ASDF", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<goTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } }
             };
@@ -183,7 +183,7 @@ namespace Test
         public static string p1_name = "name";
         public static string p1_fullName = "full_name_p1";
         public static DatabaseReference p1_dbRef = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
-        public static GoTerm p1_goterm = new GoTerm(p1_dbRef);
+        public static goTerm p1_goTerm = new goTerm(p1_dbRef);
         public static string pf1_accession = "T1_asdf";
         public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals(bool gene_centric_families)
         {
@@ -211,7 +211,7 @@ namespace Test
 
             //TheoreticalProteoformGroup
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", p1_accession, new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, p1_name, p1_fullName, true, false, new List<DatabaseReference> { p1_dbRef }, new List<GoTerm> { p1_goterm });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", p1_accession, new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, p1_name, p1_fullName, true, false, new List<DatabaseReference> { p1_dbRef }, new List<goTerm> { p1_goTerm });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } };
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf", 1234.56, p1, dict);
             TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });

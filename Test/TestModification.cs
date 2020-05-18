@@ -233,5 +233,18 @@ namespace Test
             Assert.IsFalse(set2.same_ptmset(set1, true));
             Assert.IsFalse(set2.same_ptmset(set1, false));
         }
+
+        [Test]
+        public void test_bio_interest()
+        {
+            Modification mod = new Modification("id", "accsesion", "Common Fixed");
+            Assert.IsFalse(UnlocalizedModification.bio_interest(mod));
+            mod = new Modification("id", "accsesion", "Common Variable");
+            Assert.IsFalse(UnlocalizedModification.bio_interest(mod));
+            mod = new Modification("id", "accsesion", "Common Artifact");
+            Assert.IsFalse(UnlocalizedModification.bio_interest(mod));
+            mod = new Modification("id", "accsesion", "Common Biological");
+            Assert.IsTrue(UnlocalizedModification.bio_interest(mod));
+        }
     }
 }

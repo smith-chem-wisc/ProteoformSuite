@@ -1,92 +1,76 @@
-﻿using ClosedXML.Excel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml;
 
 namespace ProteoformSuiteInternal
 {
     public class ExcelWriter
     {
-        #region Private Field
-
-        private XLWorkbook workbook = new XLWorkbook();
-
-        #endregion Private Field
-
         #region Public Methods
-
-        public void ExportToExcel(List<DataTable> datatables, string sheet_prefix)
+        public void ExportToExcel(string filename, List<DataTable> datatables)
         {
-            if (datatables == null)
-                return;
+            SpreadsheetDocument new_document = SpreadsheetDocument.Create(filename, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook);
+            WorkbookPart workbookPart = new_document.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
+            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
 
+            int sheetID = 1; 
             foreach (DataTable dt in datatables)
             {
                 if (dt.Rows.Count == 0)
                     continue;
+                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = (uint)sheetID, Name = sheet_name(dt.TableName) };
+                sheets.Append(sheet);
+                SheetData sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
 
-                IXLWorksheet worksheet = null;
-                lock (workbook)
+               Row headerRow = new Row();
+
+                List<String> columns = new List<string>();
+                foreach (System.Data.DataColumn column in dt.Columns)
                 {
-                    worksheet = workbook.Worksheets.Add(sheet_name(sheet_prefix, dt.TableName));
+                    columns.Add(column.ColumnName);
+
+                    Cell cell = new Cell();
+                    cell.DataType = CellValues.String;
+                    cell.CellValue = new CellValue(column.ColumnName);
+                    headerRow.AppendChild(cell);
                 }
 
-                // speedup by doing this in parallel
-                worksheet.Cell(1, 1).InsertTable(dt);
+                sheetData.AppendChild(headerRow);
 
-                foreach (var col in worksheet.Columns())
+                foreach (DataRow dsrow in dt.Rows)
                 {
-                    try
+                    Row newRow = new Row();
+                    foreach (String col in columns)
                     {
-                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType =
-                            Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ?
-                            XLCellValues.Number :
-                            XLCellValues.Text;
+                        Cell cell = new Cell();
+                        cell.DataType = double.TryParse(dsrow[col].ToString(), out double d) ? CellValues.Number : CellValues.String;
+                        cell.CellValue = new CellValue(dsrow[col].ToString());
+                        newRow.AppendChild(cell);
                     }
-                    catch
-                    {
-                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = XLCellValues.Text;
-                    }
-                }
-            }
-        }
 
-        public void BuildHyperlinkSheet(List<Tuple<string, List<DataTable>>> sheetNameAndTables)
-        {
-            var ws = workbook.Worksheets.Add("Contents");
-            int row = 1;
-            foreach (Tuple<string, List<DataTable>> x in sheetNameAndTables)
-            {
-                if (x.Item2 == null) continue;
-                foreach (DataTable dt in x.Item2)
-                {
-                    ws.Cell(row, 1).Value = "Table S" + row.ToString();
-                    ws.Cell(row, 2).Value = sheet_name(x.Item1, dt.TableName);
-                    ws.Cell(row++, 2).Hyperlink = new XLHyperlink("'" + sheet_name(x.Item1, dt.TableName) + "'!A1");
+                    sheetData.AppendChild(newRow);
                 }
+                sheetID++;
             }
-        }
 
-        public string SaveToExcel(string filename)
-        {
-            if (workbook.Worksheets.Count > 0)
-            {
-                workbook.SaveAs(filename);
-                return "Successfully exported table.";
-            }
-            else
-            {
-                return "There were no tables to export.";
-            }
+            new_document.WorkbookPart.Workbook.Save();
+            new_document.Save();
+            new_document.Close();
         }
 
         #endregion Public Methods
 
         #region Private Method
 
-        private static string sheet_name(string sheet_prefix, string table_name)
+        private static string sheet_name(string table_name)
         {
-            return sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - table_name.Length)) + "_" + table_name;
+            return table_name.Length > 30 ? table_name.Substring(0, 30) : table_name;
         }
 
         #endregion Private Method

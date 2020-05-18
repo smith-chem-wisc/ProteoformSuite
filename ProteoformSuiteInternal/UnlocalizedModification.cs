@@ -28,6 +28,12 @@ namespace ProteoformSuiteInternal
                 ptm_rank = Sweet.lollipop.modification_ranks[Math.Round((double)m.MonoisotopicMass, 5)];
         }
 
+        public static bool bio_interest(Modification modification)
+        {
+            return modification.ModificationType != "Common Fixed" && modification.ModificationType != "Common Variable"
+                                                              && modification.ModificationType != "Common Artifact" && modification.ModificationType != "Deconvolution Error";
+        }
+
         public static string LookUpId(Modification m)
         {
             return Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification x) ? x.id : m.OriginalId;

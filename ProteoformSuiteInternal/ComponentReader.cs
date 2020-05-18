@@ -147,14 +147,9 @@ namespace ProteoformSuiteInternal
                         {
                             add_component(c);
                         }
-                        else
-                        {
-                            Clear();
-                            return new List<Component>();
-                        }
                     }
                 }
-                else if(row.Length == 3)
+                else if (row.Length == 3)
                 {
                     List<string> cellStrings = new List<string>();
                     cellStrings.Add(i.ToString()); //id
@@ -179,13 +174,8 @@ namespace ProteoformSuiteInternal
                     {
                         add_component(c);
                     }
-                    else
-                    {
-                        Clear();
-                        return new List<Component>();
-                    }
                 }
-            }
+            }            
 
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;

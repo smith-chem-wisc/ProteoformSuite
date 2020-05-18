@@ -366,7 +366,7 @@ namespace ProteoWPFSuite
 
         public List<DataTable> SetTables()
         { 
-            if (Sweet.lollipop.qVals.Count == 0) return null; //haven't run quant page...
+            if (!ReadyToRunTheGamut() || selected_tusher_analysis == null) return null; //haven't run quant page...
 
             string suffix = selected_analysis as TusherAnalysis1 != null ?
                  Sweet.lollipop.TusherAnalysis1.sortedPermutedRelativeDifferences.Count.ToString() + "Perm" :
@@ -1533,7 +1533,7 @@ namespace ProteoWPFSuite
             string message = CytoscapeScript.write_cytoscape_script(Sweet.lollipop.target_proteoform_community.families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
              "Smarties", cmbx_nodeLabel.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString(), false);
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1546,7 +1546,7 @@ namespace ProteoWPFSuite
             string message = CytoscapeScript.write_cytoscape_script(families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
                "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString(), false);
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1571,7 +1571,7 @@ namespace ProteoWPFSuite
             string message = CytoscapeScript.write_cytoscape_script(go_families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
                 "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString(), false);
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -1584,7 +1584,7 @@ namespace ProteoWPFSuite
             string message = CytoscapeScript.write_cytoscape_script(selected_families, Sweet.lollipop.target_proteoform_community.families,
                 Sweet.lollipop.family_build_folder_path, "", time_stamp, get_go_analysis(), (bool)cb_redBorder.IsChecked, (bool)cb_boldLabel.IsChecked,
                 "Smarties", cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), Sweet.lollipop.deltaM_edge_display_rounding,
-                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString());
+                (bool)GENECENTRIC, cmbx_geneLabel.SelectedItem.ToString(), false);
             MessageBox.Show(message, "Cytoscape Build");
         }
 
