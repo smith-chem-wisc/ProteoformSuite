@@ -187,6 +187,7 @@ namespace ProteoformSuiteInternal
                 }
                 else if(row.Length == 16)
                 {
+                    Sweet.lollipop.tsv = true;
                     List<string> cellStrings = new List<string>();
                     cellStrings.Add(row[0]); //id
                     cellStrings.Add(row[2]); //monoisotopic mass

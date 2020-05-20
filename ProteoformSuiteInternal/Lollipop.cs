@@ -194,6 +194,7 @@ namespace ProteoformSuiteInternal
         #region DECONVOLUTION
         public bool promex_deconv = false;
         public bool flashdeconv = false;
+        public bool tsv = false;
 
         public string deconvolute(int maxcharge, int mincharge, string directory)
         {
@@ -331,6 +332,7 @@ namespace ProteoformSuiteInternal
         }
         public string flash_deconv(int maxcharge, int mincharge, string directory)
         {
+            Sweet.lollipop.tsv = true;
             int successfully_deconvoluted_files = 0;
             Loaders.LoadElements();
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
@@ -786,20 +788,29 @@ namespace ProteoformSuiteInternal
 
         public bool consecutive_charge_states(int num_charge_states, List<ChargeState> charge_states)
         {
-            List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
-            if (charges.Count < num_charge_states) return false;
-            foreach (int cs in charges)
+            if (!tsv)
             {
-                int consecutive = 1;
-                foreach (int next in charges)
+                List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
+                if (charges.Count < num_charge_states) return false;
+                foreach (int cs in charges)
                 {
-                    if (consecutive >= num_charge_states) return true;
-                    if (next == cs || next < cs) continue;
-                    if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
-                    if (consecutive >= num_charge_states) return true;
+                    int consecutive = 1;
+                    foreach (int next in charges)
+                    {
+                        if (consecutive >= num_charge_states) return true;
+                        if (next == cs || next < cs) continue;
+                        if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
+                        if (consecutive >= num_charge_states) return true;
+                    }
                 }
+                return false;
             }
-            return false;
+            else
+            {
+                if (charge_states.Capacity < num_charge_states)
+                    return false;
+                else return true;
+            }
         }
 
         public IAggregatable find_next_root(List<IAggregatable> ordered, List<IAggregatable> running)

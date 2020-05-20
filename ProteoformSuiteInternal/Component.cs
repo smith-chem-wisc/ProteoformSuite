@@ -150,6 +150,7 @@ namespace ProteoformSuiteInternal
             this.intensity_sum = intensity_reported;
             this.accepted = true;
             this.charge_states_count = Int32.TryParse(cellStrings[3], out i) ? i : 0;
+            charge_states = new List<ChargeState>(charge_states_count);
         }
         #endregion Constructors
 
