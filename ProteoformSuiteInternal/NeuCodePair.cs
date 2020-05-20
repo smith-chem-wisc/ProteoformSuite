@@ -55,15 +55,6 @@ namespace ProteoformSuiteInternal
                 neucode_lysine = true;
                 set_accepted();
             }
-            else if(Sweet.lollipop.cystag_labeled)
-            {
-                this.cysteine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.NEUCODE_CYSTEINE_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
-                this.intensity_ratio = light_intensity_sum_olcs / heavy_intensity_sum_olcs; //ratio of overlapping charge states
-                double neuCodeCorrection = Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                this.weighted_monoisotopic_mass = neuCodeLight.weighted_monoisotopic_mass + neuCodeCorrection;
-                neucode_lysine = false;
-                set_accepted();
-            }
             //marking pair as accepted or not when it's created
         }
 

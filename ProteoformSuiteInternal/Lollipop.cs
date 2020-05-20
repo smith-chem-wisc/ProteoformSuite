@@ -118,10 +118,6 @@ namespace ProteoformSuiteInternal
                 {
                     label = Labeling.NeuCode;
                 }
-                else if (cystag_labeled)
-                {
-                    label = Labeling.Cystag;
-                }
                 else
                 {
                     label = Labeling.Unlabeled;
@@ -157,7 +153,7 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
-        public bool cystag_labeled = false;
+
         public double raw_component_mass_tolerance = 5;
         public double min_likelihood_ratio = 0;
         public double max_fit = 0.2;
@@ -176,7 +172,7 @@ namespace ProteoformSuiteInternal
                 lock (destination) destination.AddRange(someComponents);
             });
 
-            if ((neucode_labeled || cystag_labeled) && purpose == Purpose.Identification)
+            if ((neucode_labeled) && purpose == Purpose.Identification)
             {
                 process_neucode_components(raw_neucode_pairs);
             }
@@ -196,6 +192,22 @@ namespace ProteoformSuiteInternal
         #endregion RAW EXPERIMENTAL COMPONENTS
 
         #region DECONVOLUTION
+        public bool promex_deconv = false;
+        public bool flashdeconv = false;
+
+        public string deconvolute(int maxcharge, int mincharge, string directory)
+        {
+            string output_message;
+            if(flashdeconv)
+            {
+                output_message = flash_deconv(maxcharge, mincharge, directory);
+            }
+            else
+            {
+                output_message = promex_deconvolute(maxcharge, mincharge, directory);
+            }
+            return output_message;
+        }
 
         public string promex_deconvolute(int maxcharge, int mincharge, string directory)
         {
@@ -304,6 +316,63 @@ namespace ProteoformSuiteInternal
                     File.Delete(Path.Combine(filelocation + ".pbf"));
                 }
             }
+            if (successfully_deconvoluted_files == 1)
+            {
+                return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";
+            }
+            else if (successfully_deconvoluted_files > 1)
+            {
+                return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw files.";
+            }
+            else
+            {
+                return "No files deconvoluted. Ensure correct file locations and try again.";
+            }
+        }
+        public string flash_deconv(int maxcharge, int mincharge, string directory)
+        {
+            int successfully_deconvoluted_files = 0;
+            Loaders.LoadElements();
+            foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
+            {
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                string filelocation = Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path));
+                if (File.Exists(Path.Combine(filelocation + ".tsv")))
+                {
+                    File.Delete(Path.Combine(filelocation + ".tsv"));
+                }
+
+                string flashdeconv_location = directory + @"\FLASHDeconv\bin";
+
+                if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
+                {
+                    startInfo.FileName = @"C:\WINDOWS\system32\cmd.exe";
+                }
+                else
+                {
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe" + flashdeconv_location;
+                }
+
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = false;
+                startInfo.CreateNoWindow = true;
+                proc.StartInfo = startInfo;
+
+                proc.Start();
+
+                proc.StandardInput.WriteLine("cd " + flashdeconv_location);
+                string flash_deconv_string = ("FLASHDeconv -in \"" + f.complete_path + "\" -out \"" + f.directory + "\\" + f.filename + "_decon\"" + " -minC " + mincharge + " -maxC "
+                    + maxcharge);
+
+                proc.StandardInput.WriteLine(flash_deconv_string);
+                proc.StandardInput.Close();
+                proc.WaitForExit();
+                proc.Close();
+                successfully_deconvoluted_files++;
+            }
+
             if (successfully_deconvoluted_files == 1)
             {
                 return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";

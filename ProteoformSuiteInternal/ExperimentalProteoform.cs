@@ -92,7 +92,7 @@ namespace ProteoformSuiteInternal
             this.is_target = is_target;
         }
 
-        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<IAggregatable> candidate_observations, bool is_target, bool neucode_labeled, bool cystag_labeled)
+        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<IAggregatable> candidate_observations, bool is_target, bool neucode_labeled)
             : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
             if (neucode_labeled)
@@ -102,19 +102,6 @@ namespace ProteoformSuiteInternal
                 ncRoot.intensity_sum = temp.agg_intensity;
                 ncRoot.rt_apex = temp.agg_rt;
                 ncRoot.lysine_count = temp.lysine_count;
-
-                this.root = ncRoot;
-                this.aggregated.AddRange(candidate_observations.Where(p => includes(p, this.root)));
-                this.calculate_properties();
-                this.root = this.aggregated.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
-            }
-            else if (cystag_labeled)
-            {
-                NeuCodePair ncRoot = new NeuCodePair();
-                ncRoot.weighted_monoisotopic_mass = temp.agg_mass;
-                ncRoot.intensity_sum = temp.agg_intensity;
-                ncRoot.rt_apex = temp.agg_rt;
-                ncRoot.cysteine_count = temp.cysteine_count;
 
                 this.root = ncRoot;
                 this.aggregated.AddRange(candidate_observations.Where(p => includes(p, this.root)));
@@ -215,7 +202,7 @@ namespace ProteoformSuiteInternal
         public void aggregate()
         {
             ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<IAggregatable>(Sweet.lollipop.remaining_to_aggregate), true); //first pass returns temporary proteoform
-            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<IAggregatable>(Sweet.lollipop.remaining_to_aggregate), true, Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled); //second pass uses temporary protoeform from first pass.
+            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<IAggregatable>(Sweet.lollipop.remaining_to_aggregate), true, Sweet.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
             copy_aggregate(new_pf); //doesn't copy quant on purpose
             root = temp_pf.root; //maintain the original component root
         }
@@ -254,7 +241,6 @@ namespace ProteoformSuiteInternal
             agg_mass = aggregated.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * c.intensity_sum / agg_intensity); //remove the monoisotopic errors before aggregating masses
             agg_rt = aggregated.Sum(c => c.rt_apex * c.intensity_sum / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
-            cysteine_count = root as NeuCodePair != null ? (root as NeuCodePair).cysteine_count : cysteine_count;
             modified_mass = agg_mass;
         }
 

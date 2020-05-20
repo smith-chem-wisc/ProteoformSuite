@@ -153,8 +153,7 @@ namespace ProteoWPFSuite
             if (property_name == nameof(intensity_ratio)) { return "Intensity Ratio"; }
             if (property_name == nameof(intensity_sum)) { return "Intensity Sum Overlapping Charge States"; }
 
-            if (Sweet.lollipop.neucode_labeled && property_name == nameof(lysine_count)) { return "Lysine Count"; }
-            else if (Sweet.lollipop.cystag_labeled && property_name == nameof(cysteine_count)) { return "Cysteine Count"; }
+            if (property_name == nameof(lysine_count)) { return "Lysine Count"; }
 
             if (property_name == nameof(input_file_filename)) { return "Input Filename"; }
             if (property_name == nameof(input_file_purpose)) { return "Input File Purpose"; }

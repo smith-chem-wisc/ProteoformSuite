@@ -83,11 +83,6 @@
                         HorizontalAlignment="Left" 
                         Content="NeuCode Lysine" />
                     <RadioButton 
-                        x:Name="rb_cystag" 
-                        IsChecked="{Binding Path=CK_rbcystag,UpdateSourceTrigger=PropertyChanged}" 
-                        HorizontalAlignment="Left" 
-                        Content="Neucode Cysteine" />
-                                        <RadioButton 
                         x:Name="rb_unlabeled" 
                         IsChecked="True" 
                         HorizontalAlignment="Left"
@@ -206,6 +201,16 @@
                         <WindowsFormsHost Grid.Column="1" Grid.Row="1" Height="20" Width="50">
                             <winform:NumericUpDown x:Name="nud_maxcharge" Dock="Fill" Value="60" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0" />
                         </WindowsFormsHost>
+                        <RadioButton 
+                        x:Name="rb_promex" 
+                        IsChecked="{Binding Path=CK_rbpromex,UpdateSourceTrigger=PropertyChanged}" 
+                        Grid.Column="1" Grid.Row= "1"
+                        Content="Promex Deconvolution" Margin="127,9,-93,-9" />
+                        <RadioButton 
+                        x:Name="rb_FLASHDeconv" 
+                        IsChecked="{Binding Path=CK_rbflashdeconv,UpdateSourceTrigger=PropertyChanged}" 
+                        Grid.Column="1"
+                        Content="FLASHDeconv Deconvolution" Margin="127,6,-127,20" Grid.RowSpan="2" />
                     </Grid>
                 </StackPanel>
 
@@ -225,7 +230,7 @@
                             </WindowsFormsHost>
                             <TextBlock FontWeight="Bold" Margin="5 0 0 0">ppm</TextBlock>
                         </WrapPanel>
-                        
+
                         <WrapPanel Grid.Row="1" Grid.Column="0" Margin="5">
                             <TextBlock Margin="0 0 18 0">Product Mass Tolerance:</TextBlock>
                             <WindowsFormsHost Height="20" Width="49">
@@ -240,7 +245,7 @@
                             Margin="5"
                             Content="Fixed Carbamidomethyl Mod" 
                             />
-                        
+
                         <Label Grid.Row="3">Dissociation Type:</Label>
                         <ComboBox 
                             x:Name="cmb_dissociation_types" 
@@ -428,7 +433,7 @@
                         </GroupBox>
                     </Grid>
                 </StackPanel>
-               
+
             </Grid>
         </GroupBox>
 
