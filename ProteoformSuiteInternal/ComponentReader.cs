@@ -185,6 +185,34 @@ namespace ProteoformSuiteInternal
                         return new List<Component>();
                     }
                 }
+                else if(row.Length == 16)
+                {
+                    List<string> cellStrings = new List<string>();
+                    cellStrings.Add(row[0]); //id
+                    cellStrings.Add(row[2]); //monoisotopic mass
+                    cellStrings.Add(row[9]); //intensity
+                    cellStrings.Add(row[13]); //num charges
+                    cellStrings.Add("0"); //num detected intervals
+                    cellStrings.Add("0"); //reported delta mass
+                    cellStrings.Add("0"); //relative abundance
+                    cellStrings.Add("0"); //fractional abundance
+
+                    cellStrings.Add("x" + "-" + "x"); //scanrange
+                    cellStrings.Add((Double.Parse(row[5]) / 60 + "-" + (Double.Parse(row[6]) / 60))); //rt range
+                    cellStrings.Add(row[8]); //
+
+                    Component c = new Component(cellStrings, file, true);
+
+                    if (acceptable_component_flash(c))
+                    {
+                        add_component(c);
+                    }
+                    else
+                    {
+                        Clear();
+                        return new List<Component>();
+                    }
+                }
             }
 
             unprocessed_components += raw_components_in_file.Count;
@@ -209,6 +237,16 @@ namespace ProteoformSuiteInternal
                 }
             }
             return true;
+        }
+
+        public bool acceptable_component_flash(Component c)
+        {
+            if (c.min_rt <= 0 || c.max_rt <= 0 || c.charge_states_count <= 0 || c.rt_apex <= 0)
+            {
+                lock (components_with_errors) components_with_errors.Add(c.input_file.filename + " component" + c.id.Split('_')[1]);
+                return false;
+            }
+            else return true;
         }
 
         public void Clear()

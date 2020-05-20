@@ -64,7 +64,7 @@ namespace ProteoWPFSuite
 
         public int num_charge_states
         {
-            get { return c.charge_states.Count; }
+            get { return c.charge_states_count; }
         }
 
         public string charge_states
