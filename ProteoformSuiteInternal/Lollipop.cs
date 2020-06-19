@@ -335,6 +335,11 @@ namespace ProteoformSuiteInternal
             Sweet.lollipop.tsv = true;
             int successfully_deconvoluted_files = 0;
             Loaders.LoadElements();
+
+            var ind = Directory.GetCurrentDirectory().ToString().IndexOf("ProteoWPFSuite");
+            string proteowpf_directory = Directory.GetCurrentDirectory().ToString().Substring(0, ind);
+            string flashdeconv_location = proteowpf_directory + @"ProteoformSuiteInternal\FLASHDeconv\necessary";
+
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 Process proc = new Process();
@@ -344,8 +349,6 @@ namespace ProteoformSuiteInternal
                 {
                     File.Delete(Path.Combine(filelocation + ".tsv"));
                 }
-
-                string flashdeconv_location = directory + @"\FLASHDeconv\bin";
 
                 if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
                 {
