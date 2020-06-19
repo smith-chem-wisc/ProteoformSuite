@@ -136,6 +136,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestFLASHDeconv.cs" />
     <Compile Include="TestPromex.cs" />
     <Compile Include="ConstructorsForTesting.cs" />
     <Compile Include="TestCalibration.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="05-26-17_B7A_yeast_td_fract5_rep1.mzML" />
     <None Include="05-26-17_B7A_yeast_td_fract5_rep1.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
