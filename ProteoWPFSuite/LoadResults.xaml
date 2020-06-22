@@ -208,7 +208,7 @@
                         Content="Promex Deconvolution" Margin="127,9,-93,-9" />
                         <RadioButton 
                         x:Name="rb_FLASHDeconv"    
-                        IsChecked="True" 
+                        IsChecked="True"
                         Grid.Column="1"
                         Content="FLASHDeconv Deconvolution" Margin="127,6,-127,20" Grid.RowSpan="2" />
                     </Grid>

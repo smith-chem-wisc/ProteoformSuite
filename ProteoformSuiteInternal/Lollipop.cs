@@ -182,7 +182,7 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
         public bool promex_deconv = false;
-        public bool flashdeconv = false;
+        public bool flashdeconv = true;
         public bool tsv = false;
 
         public string deconvolute(int maxcharge, int mincharge, string directory)
