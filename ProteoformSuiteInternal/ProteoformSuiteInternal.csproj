@@ -230,9 +230,9 @@
     <None Include="MetaMorpheusDotNetFrameworkAppveyor\Data\elements.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MetaMorpheusDotNetFrameworkAppveyor\ProteolyticDigestion\proteases.tsv">
+    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\ProteolyticDigestion\proteases.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="MetaMorpheusDotNetFrameworkAppveyor\settings.toml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -246,6 +246,9 @@
     <None Include="Promex\ProMex.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="ProteolyticDigestion\proteases.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Chemistry.dll">

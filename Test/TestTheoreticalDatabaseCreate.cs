@@ -20,9 +20,9 @@ namespace Test
             f.ContaminantDB = true;
             InputFile g = new InputFile("fake.txt", Purpose.ProteinDatabase);
             InputFile h = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
-            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
-            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<goTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<goTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<goTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } },
                 { g, new Protein[] { p2 } },
@@ -189,7 +189,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             var mods = ConstructorsForTesting.read_mods();
-            Assert.AreEqual(471, mods.Keys.Count);
+            Assert.AreEqual(478, mods.Keys.Count);
             //Assert.True(mods.Values.All(v => v.Count == 1));
         }
 
@@ -222,10 +222,10 @@ namespace Test
             relations = Sweet.lollipop.target_proteoform_community.relate(new ExperimentalProteoform[] { e }, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, TestContext.CurrentContext.TestDirectory, false);
             Assert.AreEqual(1, relations.Count);
 
-            Assert.AreEqual(0, Proteoform.get_possible_PSMs("Q3E770", new PtmSet(new List<Ptm>()), 3, 20).Count());
-            Assert.AreEqual(0, Proteoform.get_possible_PSMs("P0CX35", new PtmSet(new List<Ptm>()), 3, 20).Count());
-            Assert.AreEqual(1, Proteoform.get_possible_PSMs("P0CX35", Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[80].Where(p => p.ptm_description.Contains("Phospho")).First(), 2, 500).Count());
-            Assert.AreEqual(0, Proteoform.get_possible_PSMs("P0CX35", Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[80].Where(p => p.ptm_description.Contains("Phospho")).First(), 1, 5).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("Q3E770", new PtmSet(new List<Ptm>()), 3, 20, false).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("P0CX35", new PtmSet(new List<Ptm>()), 3, 20, false).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("P0CX35", Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[80].Where(p => p.ptm_description.Contains("Phospho")).First(), 2, 500, false).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("P0CX35", Sweet.lollipop.theoretical_database.possible_ptmset_dictionary[80].Where(p => p.ptm_description.Contains("Phospho")).First(), 1, 5, false).Count());
         }
 
         [Test]
@@ -234,19 +234,19 @@ namespace Test
             DatabaseReference d1 = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
             DatabaseReference d2 = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
             DatabaseReference d3 = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
-            GoTerm g1 = new GoTerm(d1);
-            GoTerm g2 = new GoTerm(d1);
-            GoTerm g3 = new GoTerm(d1);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
-            ProteinWithGoTerms p2 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
-            ProteinWithGoTerms p3 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
+            goTerm g1 = new goTerm(d1);
+            goTerm g2 = new goTerm(d1);
+            goTerm g3 = new goTerm(d1);
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<goTerm> { g1 });
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<goTerm> { g2 });
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<goTerm> { g3 });
             ProteinSequenceGroup psg = new ProteinSequenceGroup(new List<ProteinWithGoTerms> { p1, p2, p3 }.OrderByDescending(p => p.IsContaminant ? 1 : 0));
             Assert.AreEqual(3, psg.GoTerms.Count());
             Assert.AreEqual(3, psg.GeneNames.Count());
             Assert.AreEqual("T1_3G", psg.Accession);
             Assert.False(psg.IsContaminant);
 
-            p3 = new ProteinWithGoTerms("MCSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
+            p3 = new ProteinWithGoTerms("MCSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<goTerm> { g3 });
             ProteinSequenceGroup[] psgs = Sweet.lollipop.theoretical_database.group_proteins_by_sequence(new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(2, psgs.Length);
         }
@@ -257,12 +257,12 @@ namespace Test
             DatabaseReference d1 = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
             DatabaseReference d2 = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
             DatabaseReference d3 = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
-            GoTerm g1 = new GoTerm(d1);
-            GoTerm g2 = new GoTerm(d1);
-            GoTerm g3 = new GoTerm(d1);
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
-            ProteinWithGoTerms p2 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
-            ProteinWithGoTerms p3 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, true, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
+            goTerm g1 = new goTerm(d1);
+            goTerm g2 = new goTerm(d1);
+            goTerm g3 = new goTerm(d1);
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<goTerm> { g1 });
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<goTerm> { g2 });
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, true, new List<DatabaseReference> { d3 }, new List<goTerm> { g3 });
             ProteinSequenceGroup psg = new ProteinSequenceGroup(new List<ProteinWithGoTerms> { p1, p2, p3 }.OrderByDescending(p => p.IsContaminant ? 1 : 0));
             Assert.AreEqual(3, psg.GoTerms.Count());
             Assert.AreEqual(3, psg.GeneNames.Count());
@@ -341,16 +341,6 @@ namespace Test
 
             //bad sequence
             Sweet.lollipop.theoretical_database.EnterTheoreticalProteformFamily("BADSEQ", null, null, "asdf",
-                theoreticals, -1, null);
-            Assert.AreEqual(0, theoreticals.Count);
-
-            //too large of proteoform
-            string sequence = "K";
-            for (int i = 0; i < 3000; i++)
-            {
-                sequence += "K";
-            }
-            Sweet.lollipop.theoretical_database.EnterTheoreticalProteformFamily(sequence, null, null, "asdf",
                 theoreticals, -1, null);
             Assert.AreEqual(0, theoreticals.Count);
         }

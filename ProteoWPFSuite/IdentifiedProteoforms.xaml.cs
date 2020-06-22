@@ -53,6 +53,7 @@ namespace ProteoWPFSuite
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
             tb_not_td.Text = "Identified Experimental Proteoforms Not in Top-Down";
             tb_topdown.Text = "Top-Down Proteoforms";
+            tb_bottomup.Text = "Bottom-Up Peptides from Selected Proteoform";
         }
 
         public List<DataTable> DataTables { get; private set; }
@@ -138,6 +139,45 @@ namespace ProteoWPFSuite
                 else return;
             }
             else return;
+        }
+
+        private ExperimentalProteoform selected_pf;
+
+        private void dgv_identified_experimentals_CellMouseClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selected_pf = (ExperimentalProteoform)((DisplayExperimentalProteoform)this.dgv_identified_experimentals.Rows[e.RowIndex].DataBoundItem).display_object;
+            }
+            else
+            {
+                selected_pf = null;
+            }
+            display_bu_peptides();
+        }
+
+        private void dgv_td_proteoforms_experimentals_CellMouseClick(object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selected_pf = (ExperimentalProteoform)((DisplayTopDownProteoform)this.dgv_td_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
+            }
+            else
+            {
+                selected_pf = null;
+            }
+            display_bu_peptides();
+        }
+
+
+        private void display_bu_peptides()
+        {
+            List<SpectrumMatch> bu_psms = selected_pf == null ? new List<SpectrumMatch>() :
+                (selected_pf as TopDownProteoform) != null ? (selected_pf as TopDownProteoform).topdown_bottom_up_PSMs
+                .Concat((selected_pf as TopDownProteoform).ambiguous_topdown_hits.SelectMany(p => p.bottom_up_PSMs).Distinct()).ToList()
+                : selected_pf.bottom_up_PSMs.Concat(selected_pf.ambiguous_identifications.SelectMany(p => p.bottom_up_PSMs)).Distinct().ToList();
+            DisplayUtility.FillDataGridView(dgv_bottomUp, bu_psms.Select(c => new DisplayTopDownHit(c)));
+            DisplayTopDownHit.FormatTopDownHitsTable(dgv_bottomUp, true);
         }
     }
 }

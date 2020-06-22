@@ -70,6 +70,8 @@ namespace ProteoformSuiteInternal
         //proteoform: theoretical starting point; first int: begin residue; last ent: end residue; PtmSet
         public List<AmbiguousIdentification> ambiguous_identifications { get; set; } = new List<AmbiguousIdentification>();
 
+        public List<SpectrumMatch> bottom_up_PSMs = new List<SpectrumMatch>();
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -276,12 +278,6 @@ namespace ProteoformSuiteInternal
         {
             List<int> acceptable_lysineCts = Enumerable.Range(lysine_count - Sweet.lollipop.maximum_missed_lysines, Sweet.lollipop.maximum_missed_lysines * 2 + 1).ToList();
             return acceptable_lysineCts.Contains(candidate.lysine_count);
-        }
-
-        private bool tolearable_cysCt(NeuCodePair candidate, int cysteine_count)
-        {
-            List<int> acceptable_cysteineCts = Enumerable.Range(lysine_count - Sweet.lollipop.maximum_missed_cysteines, Sweet.lollipop.maximum_missed_cysteines * 2 + 1).ToList();
-            return acceptable_cysteineCts.Contains(candidate.cysteine_count);
         }
 
         private bool tolerable_mass(double candidate_mass, double corrected_mass)

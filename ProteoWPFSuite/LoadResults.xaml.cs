@@ -366,27 +366,8 @@ namespace ProteoWPFSuite
             drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
         }
         //this one is not called
-        private void dgv_quantResults_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
-        {
-            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
-        }
-
-        private void dgv_calibrationResults_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
-        {
-            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
-        }
 
         private void dgv_deconResults_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
-        {
-            e.Effect = System.Windows.Forms.DragDropEffects.All;
-        }
-
-        private void dgv_calibrationResults_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
-        {
-            e.Effect = System.Windows.Forms.DragDropEffects.All;
-        }
-
-        private void dgv_quantResults_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
         {
             e.Effect = System.Windows.Forms.DragDropEffects.All;
         }

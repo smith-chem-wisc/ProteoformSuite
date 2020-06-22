@@ -11,11 +11,11 @@ namespace ProteoformSuiteInternal
         BiologicalProcess
     }
 
-    public class GoTerm
+    public class goTerm
     {
         #region Public Constructors
 
-        public GoTerm(DatabaseReference goTerm)
+        public goTerm(DatabaseReference goTerm)
         {
             Id = goTerm.Id.Split(':')[1].ToString();
             string full_description = goTerm.Properties.Where(prop => prop.Item1 == "term").First().Item2;
@@ -36,7 +36,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public GoTerm(string id, string descritpion, Aspect aspect)
+        public goTerm(string id, string descritpion, Aspect aspect)
         {
             this.Id = id;
             this.Description = descritpion;

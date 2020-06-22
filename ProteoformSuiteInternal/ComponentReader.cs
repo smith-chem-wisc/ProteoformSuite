@@ -147,14 +147,9 @@ namespace ProteoformSuiteInternal
                         {
                             add_component(c);
                         }
-                        else
-                        {
-                            Clear();
-                            return new List<Component>();
-                        }
                     }
                 }
-                else if(row.Length == 3)
+                else if (row.Length == 3)
                 {
                     List<string> cellStrings = new List<string>();
                     cellStrings.Add(i.ToString()); //id
@@ -178,11 +173,6 @@ namespace ProteoformSuiteInternal
                     if (acceptable_component(c))
                     {
                         add_component(c);
-                    }
-                    else
-                    {
-                        Clear();
-                        return new List<Component>();
                     }
                 }
                 else if(row.Length == 16)

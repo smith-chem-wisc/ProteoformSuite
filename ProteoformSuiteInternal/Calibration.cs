@@ -204,7 +204,7 @@ namespace ProteoformSuiteInternal
 
             // Set of peaks, identified by m/z and retention time. If a peak is in here, it means it has been a part of an accepted identification, and should be rejected
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, int>>();
-            foreach (SpectrumMatch identification in high_scoring_topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass))
+            foreach (SpectrumMatch identification in high_scoring_topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.qValue).ThenBy(h => h.reported_mass))
             {
                 int scanNum = myMsDataFile.GetClosestOneBasedSpectrumNumber(identification.ms2_retention_time);
 

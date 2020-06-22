@@ -57,11 +57,6 @@ namespace ProteoWPFSuite
             get { return c.lysine_count; }
         }
 
-        public int cysteine_count
-        {
-            get { return c.cysteine_count; }
-        }
-
         public double mass
         {
             get { return c.weighted_monoisotopic_mass; }

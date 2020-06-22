@@ -136,6 +136,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestBottomUp.cs" />
     <Compile Include="TestFLASHDeconv.cs" />
     <Compile Include="TestPromex.cs" />
     <Compile Include="ConstructorsForTesting.cs" />
@@ -213,6 +214,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="testBottomUp.psmtsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="testHits.psmtsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

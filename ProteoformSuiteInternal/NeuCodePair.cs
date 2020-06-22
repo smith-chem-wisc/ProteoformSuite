@@ -19,7 +19,6 @@ namespace ProteoformSuiteInternal
         public List<ChargeState> charge_states { get; set; } // light charge states that had charge counts also observed for the heavy component
         public bool neucode_lysine { get; set; } //true if neucode lysine being used, false if neucode cysteine. A neucode pair can only be one of the two.
         public int lysine_count { get; set; }
-        public int cysteine_count { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
         public double rt_apex { get; set; }
         public bool accepted { get; set; }
@@ -75,11 +74,6 @@ namespace ProteoformSuiteInternal
             if (neucode_lysine)
             {
                 accepted = lysine_count >= Sweet.lollipop.min_lysine_ct && lysine_count <= Sweet.lollipop.max_lysine_ct
-                    && intensity_ratio >= Convert.ToDouble(Sweet.lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(Sweet.lollipop.max_intensity_ratio);
-            }
-            else if (!neucode_lysine)
-            {
-                accepted = cysteine_count >= Sweet.lollipop.min_cysteine_count && lysine_count <= Sweet.lollipop.max_cysteine_count
                     && intensity_ratio >= Convert.ToDouble(Sweet.lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(Sweet.lollipop.max_intensity_ratio);
             }
         }

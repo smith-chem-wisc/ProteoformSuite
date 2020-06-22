@@ -30,7 +30,7 @@
             </GroupBox>
         </DockPanel>
         <DockPanel Grid.Row="1">
-            <TextBox x:Name="rtb_summary"/>
+            <TextBox x:Name="rtb_summary" IsReadOnly="True"/>
         </DockPanel>
     </Grid>
 </UserControl>

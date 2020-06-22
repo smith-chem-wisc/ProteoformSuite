@@ -207,8 +207,8 @@
                         Grid.Column="1" Grid.Row= "1"
                         Content="Promex Deconvolution" Margin="127,9,-93,-9" />
                         <RadioButton 
-                        x:Name="rb_FLASHDeconv" 
-                        IsChecked="{Binding Path=CK_rbflashdeconv,UpdateSourceTrigger=PropertyChanged}" 
+                        x:Name="rb_FLASHDeconv"    
+                        IsChecked="True" 
                         Grid.Column="1"
                         Content="FLASHDeconv Deconvolution" Margin="127,6,-127,20" Grid.RowSpan="2" />
                     </Grid>
@@ -316,7 +316,8 @@
                                           CellMouseClick="dgv_loadFiles1_CellMouseClick" 
                                           CellValidating="dgv_loadFiles1_CellValidating" 
                                           DragDrop="dgv_deconResults_DragDrop" 
-                                          DragEnter="dgv_deconResults_DragEnter" >
+                                          DragEnter="dgv_deconResults_DragEnter" 
+                                          AllowDrop= "true">
                     </winform:DataGridView>
                 </WindowsFormsHost>
 

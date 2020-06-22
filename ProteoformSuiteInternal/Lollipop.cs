@@ -21,10 +21,9 @@ namespace ProteoformSuiteInternal
     {
         #region Constants
 
-        public static readonly double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
-        public static readonly double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
-        public static readonly double NEUCODE_CYSTEINE_MASS_SHIFT = 0.045258;
-        public static readonly double PROTON_MASS = 1.007276474;
+        public static double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
+        public static double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public static double PROTON_MASS = 1.007276474;
 
         #endregion Constants
 
@@ -112,17 +111,8 @@ namespace ProteoformSuiteInternal
 
                 string filename = Path.GetFileNameWithoutExtension(complete_path);
                 string extension = Path.GetExtension(complete_path);
-                Labeling label;
+                Labeling label = neucode_labeled ? Labeling.NeuCode : Labeling.Unlabeled;
 
-                if (neucode_labeled)
-                {
-                    label = Labeling.NeuCode;
-                }
-                else
-                {
-                    label = Labeling.Unlabeled;
-                }
-              
                 if (acceptable_extensions.Contains(extension) && !destination.Where(f => purposes.Contains(f.purpose)).Any(f => f.filename == filename))
                 {
                     InputFile file;
@@ -153,7 +143,6 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
-
         public double raw_component_mass_tolerance = 5;
         public double min_likelihood_ratio = 0;
         public double max_fit = 0.2;
@@ -172,7 +161,7 @@ namespace ProteoformSuiteInternal
                 lock (destination) destination.AddRange(someComponents);
             });
 
-            if ((neucode_labeled) && purpose == Purpose.Identification)
+            if (neucode_labeled && purpose == Purpose.Identification)
             {
                 process_neucode_components(raw_neucode_pairs);
             }
@@ -462,8 +451,6 @@ namespace ProteoformSuiteInternal
         public decimal min_intensity_ratio = 1.4m;
         public decimal max_lysine_ct = 26.2m;
         public decimal min_lysine_ct = 1.5m;
-        public decimal max_cysteine_count = 30;
-        public decimal min_cysteine_count = 2;
 
         #endregion NEUCODE PAIRS Public Fields
 
@@ -571,7 +558,7 @@ namespace ProteoformSuiteInternal
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
-            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.pscore).ThenBy(h => h.reported_mass).ToList();
+            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.qValue).ThenBy(h => h.reported_mass).ToList();
 
             List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
@@ -606,6 +593,35 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+
+            List<TopDownProteoform> to_remove = new List<TopDownProteoform>();
+            foreach (var proteoform in topdown_proteoforms)
+            {
+                //if all ambiguous matches are contained
+                if (topdown_proteoforms.Where(p => p != proteoform && p.pfr_accession != proteoform.pfr_accession && Math.Abs(p.agg_rt - proteoform.agg_rt) <= Convert.ToDouble(td_retention_time_tolerance) && p.ambiguous_topdown_hits.Count <= proteoform.ambiguous_topdown_hits.Count)
+                .Any(p => p.ambiguous_topdown_hits.Select(r => r.pfr_accession.Split('|')[0]).Concat(new List<string>() { p.pfr_accession.Split('|')[0] })
+                .All(r => proteoform.ambiguous_topdown_hits.Select(h => h.pfr_accession.Split('|')[0]).Concat(new List<string>() { proteoform.pfr_accession.Split('|')[0] }).Contains(r))))
+                {
+                    to_remove.Add(proteoform);
+                }
+            }
+
+            topdown_proteoforms = topdown_proteoforms.Except(to_remove).ToList();
+
+
+            //add bottomup peptides
+            if(Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Count > 0)
+            {
+                Parallel.ForEach(topdown_proteoforms, p =>
+                {
+                    p.topdown_bottom_up_PSMs = Proteoform.get_possible_PSMs(p.accession, p.topdown_ptm_set, p.topdown_begin, p.topdown_end, true);
+                    foreach(var ambiguous in p.ambiguous_topdown_hits)
+                    {
+                       ambiguous.bottom_up_PSMs = Proteoform.get_possible_PSMs(ambiguous.accession, new PtmSet(ambiguous.ptm_list), ambiguous.begin, ambiguous.end, true);
+                    }
+                    p.bu_PTMs_all_from_protein = p.setter_bu_PTMs_all_from_protein();
+                });
+            }
             return topdown_proteoforms;
         }
 
@@ -631,7 +647,6 @@ namespace ProteoformSuiteInternal
         public int maximum_missed_monos = 3;
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
-        public int maximum_missed_cysteines = 2;
         public int min_num_CS = 1;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
@@ -708,7 +723,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    SpectrumMatch best_hit = (pf as TopDownProteoform).topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.pscore).First();
+                    SpectrumMatch best_hit = (pf as TopDownProteoform).topdown_hits.OrderByDescending(h => h.score).ThenBy(h => h.qValue).First();
                     pf.manual_validation_id = "File: " + best_hit.filename
                          + "; Scan: " + best_hit.ms2ScanNumber
                         + "; RT (min): " + best_hit.ms2_retention_time;
@@ -719,8 +734,10 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> add_topdown_proteoforms(List<ExperimentalProteoform> vetted_proteoforms, List<TopDownProteoform> topdown_proteoforms)
         {
-            foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.pscore)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
+            foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.qValue)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
             {
+                //only add nonambiguous...
+                if (topdown.ambiguous_topdown_hits.Count > 0) continue;
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
                 List<ExperimentalProteoform> potential_matches = new List<ExperimentalProteoform>();
@@ -791,29 +808,22 @@ namespace ProteoformSuiteInternal
 
         public bool consecutive_charge_states(int num_charge_states, List<ChargeState> charge_states)
         {
-            if (!tsv)
+            List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
+            if (charges.Count < num_charge_states) return false;
+            foreach (int cs in charges)
             {
-                List<int> charges = charge_states.OrderBy(cs => cs.charge_count).Select(cs => cs.charge_count).ToList();
-                if (charges.Count < num_charge_states) return false;
-                foreach (int cs in charges)
+                int consecutive = 1;
+                foreach (int next in charges)
                 {
-                    int consecutive = 1;
-                    foreach (int next in charges)
-                    {
-                        if (consecutive >= num_charge_states) return true;
-                        if (next == cs || next < cs) continue;
-                        if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
-                        if (consecutive >= num_charge_states) return true;
-                    }
+                    if (consecutive >= num_charge_states) return true;
+                    if (next == cs || next < cs) continue;
+                    if (next - cs == charges.IndexOf(next) - charges.IndexOf(cs)) consecutive++;
+                    if (consecutive >= num_charge_states) return true;
                 }
-                return false;
             }
-            else
-            {
                 if (charge_states.Capacity < num_charge_states)
                     return false;
                 else return true;
-            }
         }
 
         public IAggregatable find_next_root(List<IAggregatable> ordered, List<IAggregatable> running)
@@ -888,7 +898,7 @@ namespace ProteoformSuiteInternal
                 e.lt_quant_components.Clear();
                 e.hv_quant_components.Clear();
             });
-            List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderBy(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Min(h => h.pscore) : 1e6).ThenByDescending(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(e => e.agg_intensity).ToList();
+            List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderBy(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Min(h => h.qValue) : 1e6).ThenByDescending(e => e.topdown_id ? (e as TopDownProteoform).topdown_hits.Max(h => h.score) : 0).ThenByDescending(e => e.agg_intensity).ToList();
             remaining_quantification_components = new HashSet<Component>(raw_quantification_components);
 
             ExperimentalProteoform p = proteoforms.FirstOrDefault();
@@ -1651,6 +1661,7 @@ namespace ProteoformSuiteInternal
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
+                    (p as ExperimentalProteoform).bottom_up_PSMs.Clear();
                     p.gene_name = null;
                     p.begin = 0;
                     p.end = 0;
@@ -1681,6 +1692,7 @@ namespace ProteoformSuiteInternal
                     p.ptm_set = new PtmSet(new List<Ptm>());
                     p.linked_proteoform_references = null;
                     (p as ExperimentalProteoform).ambiguous_identifications.Clear();
+                    (p as ExperimentalProteoform).bottom_up_PSMs.Clear();
                     p.gene_name = null;
                     ProteoformRelation relation = null;
                     p.relation_to_id = relation;
@@ -1692,11 +1704,13 @@ namespace ProteoformSuiteInternal
 
         public void clear_td()
         {
+            Sweet.lollipop.top_down_hits.Clear();
             Sweet.lollipop.topdown_proteoforms.Clear();
             Sweet.lollipop.topdown_proteoforms_no_theoretical.Clear();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
                 List<TheoreticalProteoform> topdown_theoreticals = community.theoretical_proteoforms.Where(t => t.new_topdown_proteoform).ToList();
+                Sweet.lollipop.theoretical_database.expanded_proteins.ToList().RemoveAll(t => t.topdown_protein);
                 community.theoretical_proteoforms = community.theoretical_proteoforms.Except(topdown_theoreticals).ToArray();
                 if (theoretical_database.theoreticals_by_accession.ContainsKey(community.community_number))
                 {

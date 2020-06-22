@@ -95,8 +95,6 @@ namespace ProteoWPFSuite
             if (ComponentReader.components_with_errors.Count > 0)
             {
                 MessageBox.Show("Error in Deconvolution Results File: " + String.Join(", ", ComponentReader.components_with_errors));
-                ClearListsTablesFigures(true);
-                return;
             }
 
             FillTablesAndCharts();

@@ -24,9 +24,20 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="3"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" Grid.Row="2" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
             <TextBox x:Name="tb_not_td" IsReadOnly="True"></TextBox>
             <WindowsFormsHost Grid.Row="1">
-                <winform:DataGridView x:Name="dgv_identified_experimentals" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize"></winform:DataGridView>
+                <winform:DataGridView x:Name="dgv_identified_experimentals"  CellContentClick="dgv_identified_experimentals_CellMouseClick" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize"></winform:DataGridView>
+            </WindowsFormsHost>
+            <TextBox x:Name="tb_topdown" IsReadOnly="True" Grid.Column="2"></TextBox>
+            <WindowsFormsHost Grid.Row="1" Grid.Column="2">
+                <winform:DataGridView x:Name="dgv_td_proteoforms" CellContentClick="dgv_td_proteoforms_experimentals_CellMouseClick" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize">
+                </winform:DataGridView>
             </WindowsFormsHost>
         </Grid>
         <GridSplitter Grid.Row="2" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
@@ -35,10 +46,9 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <TextBox x:Name="tb_topdown" IsReadOnly="True"></TextBox>
+            <TextBox x:Name="tb_bottomup" IsReadOnly="True" Grid.Row="0"></TextBox>
             <WindowsFormsHost Grid.Row="1">
-                <winform:DataGridView x:Name="dgv_td_proteoforms" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize">
-                    
+                <winform:DataGridView x:Name="dgv_bottomUp" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize">
                 </winform:DataGridView>
             </WindowsFormsHost>
         </Grid>
