@@ -81,7 +81,7 @@
                         x:Name="rb_neucode" 
                         IsChecked="{Binding Path=CK_rbneucode,UpdateSourceTrigger=PropertyChanged}" 
                         HorizontalAlignment="Left" 
-                        Content="NeuCode Labeled" />
+                        Content="NeuCode Lysine" />
                     <RadioButton 
                         x:Name="rb_unlabeled" 
                         IsChecked="True" 
@@ -194,7 +194,7 @@
 
                         <Label x:Name="label_mincharge" Grid.Column="0" Grid.Row="0">Min Charge:</Label>
                         <WindowsFormsHost Grid.Column="1" Grid.Row="0" Height="20" Width="50">
-                            <winform:NumericUpDown x:Name="nud_mincharge" Dock="Fill" Value="1" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0" />
+                            <winform:NumericUpDown x:Name="nud_mincharge" Dock="Fill" Value="5" Minimum="1" Maximum="60" Increment="1" DecimalPlaces="0" />
                         </WindowsFormsHost>
 
                         <Label x:Name="label_maxcharge" Grid.Column="0" Grid.Row="1">Max Charge:</Label>
@@ -220,7 +220,7 @@
                             </WindowsFormsHost>
                             <TextBlock FontWeight="Bold" Margin="5 0 0 0">ppm</TextBlock>
                         </WrapPanel>
-                        
+
                         <WrapPanel Grid.Row="1" Grid.Column="0" Margin="5">
                             <TextBlock Margin="0 0 18 0">Product Mass Tolerance:</TextBlock>
                             <WindowsFormsHost Height="20" Width="49">
@@ -235,7 +235,7 @@
                             Margin="5"
                             Content="Fixed Carbamidomethyl Mod" 
                             />
-                        
+
                         <Label Grid.Row="3">Dissociation Type:</Label>
                         <ComboBox 
                             x:Name="cmb_dissociation_types" 
@@ -424,7 +424,7 @@
                         </GroupBox>
                     </Grid>
                 </StackPanel>
-               
+
             </Grid>
         </GroupBox>
 

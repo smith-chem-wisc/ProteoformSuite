@@ -137,7 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBottomUp.cs" />
-    <Compile Include="TestPromex.cs" />
+    <Compile Include="TestFLASHDeconv.cs" />
     <Compile Include="ConstructorsForTesting.cs" />
     <Compile Include="TestCalibration.cs" />
     <Compile Include="TestTopDown.cs" />
@@ -165,6 +165,9 @@
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="05-26-17_B7A_yeast_td_fract5_rep1.mzML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="05-26-17_B7A_yeast_td_fract5_rep1.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -175,7 +175,39 @@ namespace ProteoformSuiteInternal
                         add_component(c);
                     }
                 }
-            }            
+                else if(row.Length == 16)
+                {
+                    List<string> cellStrings = new List<string>();
+                    cellStrings.Add(row[0]); //id
+                    cellStrings.Add(row[2]); //monoisotopic mass
+                    cellStrings.Add(row[9]); //intensity
+                    cellStrings.Add(row[13]); //num charges
+                    cellStrings.Add("0"); //num detected intervals
+                    cellStrings.Add("0"); //reported delta mass
+                    cellStrings.Add("0"); //relative abundance
+                    cellStrings.Add("0"); //fractional abundance
+                    cellStrings.Add("1-1"); //scanrange
+                    cellStrings.Add((Double.Parse(row[5]) / 60 + "-" + (Double.Parse(row[6]) / 60))); //rt range
+                    cellStrings.Add(Convert.ToString(Double.Parse(row[8]) / 60)); //apex rt
+
+                    Component c = new Component(cellStrings, file);
+                    int min_charge = Convert.ToInt32(row[11]);
+                    int num_charges = Convert.ToInt32(row[13]);
+                    for (int cs = 0; cs < num_charges; cs++)
+                    {
+                        int charge = min_charge + cs;
+                        double intensity = (Convert.ToDouble(row[9])/ num_charges) * charge;
+                        c.charge_states.Add(new ChargeState(new List<string>() {charge.ToString() , intensity.ToString() , (c.reported_monoisotopic_mass.ToMz(charge)).ToString(), c.reported_monoisotopic_mass.ToString() }));
+                    }
+
+                    c.calculate_properties();
+
+                    if (acceptable_component(c))
+                    {
+                        add_component(c);
+                    }
+                }
+            }
 
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
