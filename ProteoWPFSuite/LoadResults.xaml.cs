@@ -29,8 +29,6 @@ namespace ProteoWPFSuite
         #region Private Fields
         private String _labeltxt;
         private bool ck_rbneucode;
-        private bool ck_rbpromex;
-        private bool ck_rbflashdeconv;
         private int cb_select;
         //private string[] cb_src;
         #endregion Private Fields

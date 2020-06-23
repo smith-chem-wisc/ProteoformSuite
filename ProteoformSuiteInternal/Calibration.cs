@@ -615,17 +615,17 @@ namespace ProteoformSuiteInternal
                     string[] row = old[i].Split('\t');
                     double mass;
                     double intensity;
-                    if (row.Length == 20 && Double.TryParse(row[5], out mass) && Double.TryParse(row[9], out intensity))
+                    if (row.Length == 16 && Double.TryParse(row[2], out mass) && Double.TryParse(row[9], out intensity))
                     {
                         double value;
                         if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
-                            row[5] = value.ToString();
+                            row[2] = value.ToString();
                             new_file.Add(string.Join("\t", row));
                         }
                         if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
-                            row[10] = value.ToString();
+                            row[8] = (value*60).ToString();
                             new_file.Add(string.Join("\t", row));
                         }
                     }

@@ -18,7 +18,7 @@ namespace Test
 
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.mzML") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
 
-            string filepath = Path.Combine(Path.GetDirectoryName(Sweet.lollipop.input_files[0].complete_path), Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path));
+            string filepath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileNameWithoutExtension(Sweet.lollipop.input_files[0].complete_path));
 
             // Make sure no initial problems with running deconvolution.
             Assert.AreEqual("Successfully deconvoluted 1 raw file.", Sweet.lollipop.flash_deconv(60, 1, TestContext.CurrentContext.TestDirectory));
