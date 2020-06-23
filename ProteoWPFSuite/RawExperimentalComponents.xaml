@@ -93,16 +93,6 @@
                         <winform:NumericUpDown x:Name="nUD_mass_tolerance" Value="0" DecimalPlaces="0" Increment="1" Maximum="100" Minimum="0" ValueChanged="nUD_mass_tolerance_ValueChanged"></winform:NumericUpDown>
                     </WindowsFormsHost>
                     <Label Grid.Column="1" Grid.Row="0" Margin="5 10 5 0">Mass Tolerance for Merging Artifacts (ppm)</Label>
-                    <WindowsFormsHost Margin="5 0 5 0" Grid.Column="0" Grid.Row="1">
-                        <winform:NumericUpDown x:Name="nUD_min_liklihood_ratio" Value="0" DecimalPlaces="0" Increment="1" Maximum="100" Minimum="-100" ValueChanged="nUD_min_liklihood_ratio_ValueChanged"></winform:NumericUpDown>
-                    </WindowsFormsHost>
-                    <Label Grid.Column="1" Grid.Row="1" Margin="5 10 5 0">Min. Likelihood Ratio</Label>
-                    <WindowsFormsHost Margin="5 0 5 0" Grid.Column="0" Grid.Row="2">
-                        <winform:NumericUpDown x:Name="nUD_max_fit" Value="0.2" DecimalPlaces="2" Increment="1" Maximum="100" Minimum="0" ValueChanged="nUD_max_fit_ValueChanged"></winform:NumericUpDown>
-                    </WindowsFormsHost>
-                    <Label Grid.Column="1" Grid.Row="2" Margin="5 10 5 0">
-                        Max. Fit
-                    </Label>
 
                 </Grid>
                 <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />

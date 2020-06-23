@@ -144,8 +144,6 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
         public double raw_component_mass_tolerance = 5;
-        public double min_likelihood_ratio = 0;
-        public double max_fit = 0.2;
 
         #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
 
@@ -187,7 +185,7 @@ namespace ProteoformSuiteInternal
             int successfully_deconvoluted_files = 0;
             Loaders.LoadElements();
 
-            string flashdeconv_location = directory + @"\FLASHDeconv\necessary";
+            string flashdeconv_location = directory + @"\FLASHDeconv";
 
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
@@ -209,9 +207,9 @@ namespace ProteoformSuiteInternal
 
                 Process proc = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
-                if (File.Exists(Path.Combine(filelocation + "_decon.tsv")))
+                if (File.Exists(Path.Combine(filelocation + ".tsv")))
                 {
-                    File.Delete(Path.Combine(filelocation + "_decon.tsv"));
+                    File.Delete(Path.Combine(filelocation + ".tsv"));
                 }
 
                 if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
@@ -232,7 +230,7 @@ namespace ProteoformSuiteInternal
                 proc.Start();
 
                 proc.StandardInput.WriteLine("cd " + flashdeconv_location);
-                string flash_deconv_string = ("FLASHDeconv.exe -in \"" + file_path + "\" -out \"" + Path.Combine(filelocation + "_decon") + "\"" + " -minC " + mincharge + " -maxC "
+                string flash_deconv_string = ("FLASHDeconv.exe -in \"" + file_path + "\" -out \"" + filelocation + "\"" + " -minC " + mincharge + " -maxC "
                     + maxcharge);
 
                 proc.StandardInput.WriteLine(flash_deconv_string);
@@ -1326,8 +1324,6 @@ namespace ProteoformSuiteInternal
 
         public string calibrate_files()
         {
-            Sweet.lollipop.min_likelihood_ratio = -100;
-            Sweet.lollipop.max_fit = 100;
             if (input_files.Where(f => f.purpose == Purpose.SpectraFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
                 return "Label condition, fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
             if (input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))

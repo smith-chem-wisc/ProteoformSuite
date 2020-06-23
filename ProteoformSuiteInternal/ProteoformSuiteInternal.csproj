@@ -221,10 +221,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="FLASHDeconv\necessary\OpenMS.lib">
+    <None Include="FLASHDeconv\OpenMS.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="FLASHDeconv\necessary\OpenSwathAlgo.lib">
+    <None Include="FLASHDeconv\OpenSwathAlgo.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="MetaMorpheusDotNetFrameworkAppveyor\CMD.exe.config">
@@ -236,40 +236,40 @@
     <None Include="MetaMorpheusDotNetFrameworkAppveyor\Data\elements.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="FLASHDeconv\necessary\FLASHDeconv.exe">
+    <Content Include="FLASHDeconv\FLASHDeconv.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\OpenMS.dll">
+    <Content Include="FLASHDeconv\OpenMS.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\OpenMSInfo.exe">
+    <Content Include="FLASHDeconv\OpenMSInfo.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\OpenPepXL.exe">
+    <Content Include="FLASHDeconv\OpenPepXL.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\OpenPepXLLF.exe">
+    <Content Include="FLASHDeconv\OpenPepXLLF.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\OpenSwathAlgo.dll">
+    <Content Include="FLASHDeconv\OpenSwathAlgo.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\platforms\qwindows.dll">
+    <Content Include="FLASHDeconv\platforms\qwindows.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\Qt5Core.dll">
+    <Content Include="FLASHDeconv\Qt5Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\Qt5Gui.dll">
+    <Content Include="FLASHDeconv\Qt5Gui.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\Qt5Network.dll">
+    <Content Include="FLASHDeconv\Qt5Network.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\Qt5Svg.dll">
+    <Content Include="FLASHDeconv\Qt5Svg.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\necessary\Qt5Widgets.dll">
+    <Content Include="FLASHDeconv\Qt5Widgets.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MetaMorpheusDotNetFrameworkAppveyor\ProteolyticDigestion\proteases.tsv">
