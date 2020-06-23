@@ -187,8 +187,7 @@ namespace ProteoformSuiteInternal
             int successfully_deconvoluted_files = 0;
             Loaders.LoadElements();
 
-            var ind = Directory.GetCurrentDirectory().ToString().IndexOf("ProteoWPFSuite");
-            string flashdeconv_location = directory + @"ProteoformSuiteInternal\FLASHDeconv\necessary";
+            string flashdeconv_location = directory + @"\FLASHDeconv\necessary";
 
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
@@ -202,6 +201,7 @@ namespace ProteoformSuiteInternal
                 //    MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(file, filelocation + ".mzML", false);
                 //    file_path = filelocation + ".mzML";
                 //}
+
                 if(f.extension == ".raw")
                 {
                     return "Error: please convert .raw files to .mzML";
