@@ -232,7 +232,7 @@ namespace ProteoformSuiteInternal
                 proc.Start();
 
                 proc.StandardInput.WriteLine("cd " + flashdeconv_location);
-                string flash_deconv_string = ("FLASHDeconv.exe -in \"" + file_path + "\" -out \"" + f.directory + "\\" + f.filename + "_decon\"" + " -minC " + mincharge + " -maxC "
+                string flash_deconv_string = ("FLASHDeconv.exe -in \"" + file_path + "\" -out \"" + Path.Combine(filelocation + "_decon") + "\"" + " -minC " + mincharge + " -maxC "
                     + maxcharge);
 
                 proc.StandardInput.WriteLine(flash_deconv_string);
