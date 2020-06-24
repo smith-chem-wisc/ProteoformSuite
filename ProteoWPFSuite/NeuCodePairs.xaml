@@ -149,7 +149,7 @@
                 </Grid.RowDefinitions>
                 <Grid>
                     <WindowsFormsHost>
-                        <winformchart:Chart x:Name="ct_IntensityRatio" Dock="Fill" MouseClick="ct_IntensityRatio_MouseClick" Location="0, 0" Margin="2, 2, 2, 2" TabIndex="1" Text="chart1">
+                        <winformchart:Chart x:Name="ct_IntensityRatio" Dock="Fill" MouseClick="ct_IntensityRatio_MouseClick" Margin="2, 2, 2, 2" TabIndex="1" Text="chart1">
                             <winformchart:Chart.Series>
                                 <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Name="intensityRatio" Legend="Legend1"/>
                             </winformchart:Chart.Series>

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoformSuiteInternal", "ProteoformSuiteInternal\ProteoformSuiteInternal.csproj", "{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProteoformSuiteInternal", "ProteoformSuiteInternal\ProteoformSuiteInternal.csproj", "{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoWPFSuite", "ProteoWPFSuite\ProteoWPFSuite.csproj", "{5972A55B-68BA-4A5F-BF24-CAD06824C46A}"
 EndProject

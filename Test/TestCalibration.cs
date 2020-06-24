@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System;
-using Chemistry;
-using IO.Thermo;
+using ThermoRawFileReader;
+
 
 namespace Test
 {
@@ -606,18 +605,13 @@ namespace Test
             //fraction 6 has more hits, so shouldn't have shifted those RT's -> fraction 5 got shifted accordign to 6's. 
             List<double> fraction_5_original_times;
             List<double> fraction_6_original_times;
-            using (ThermoDynamicData reader = ThermoDynamicData.InitiateDynamicConnection(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw")))
-            {
-                fraction_5_original_times =
-                    reader.GetMsScansInTimeRange(44.10, 45.89).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
-            }
-            using (ThermoDynamicData reader = ThermoDynamicData.InitiateDynamicConnection(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw")))
-            {
-                fraction_6_original_times =
-                    reader.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
-            }
+            var reader = ThermoRawFileReaderData.LoadAllStaticData(
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw"));
+            fraction_5_original_times =
+                reader.GetMsScansInTimeRange(44.10, 45.89).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
+            var reader2 = ThermoRawFileReaderData.LoadAllStaticData(
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw"));
+            fraction_6_original_times = reader2.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
             Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract5")).Any(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract6")).All(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx")));
@@ -715,18 +709,14 @@ namespace Test
             //fraction 6 has more hits, so shouldn't have shifted those RT's -> fraction 5 got shifted accordign to 6's. 
             List<double> fraction_5_original_times;
             List<double> fraction_6_original_times;
-            using (ThermoDynamicData reader = ThermoDynamicData.InitiateDynamicConnection(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw")))
-            {
+            var reader = ThermoRawFileReaderData.LoadAllStaticData(
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw"));
                 fraction_5_original_times =
                     reader.GetMsScansInTimeRange(44.10, 45.89).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
-            }
-            using (ThermoDynamicData reader = ThermoDynamicData.InitiateDynamicConnection(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw")))
-            {
+            var reader2 = ThermoRawFileReaderData.LoadAllStaticData(
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw"));
                 fraction_6_original_times =
-                    reader.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
-            }
+                    reader2.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
             Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract5")).Any(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract6")).All(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx")));
@@ -824,18 +814,14 @@ namespace Test
             //fraction 6 has more hits, so shouldn't have shifted those RT's -> fraction 5 got shifted accordign to 6's. 
             List<double> fraction_5_original_times;
             List<double> fraction_6_original_times;
-            using (ThermoDynamicData reader = ThermoDynamicData.InitiateDynamicConnection(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw")))
-            {
+            var reader = ThermoRawFileReaderData.LoadAllStaticData(
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw"));
                 fraction_5_original_times =
                     reader.GetMsScansInTimeRange(44.10, 45.89).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
-            }
-            using (ThermoDynamicData reader = ThermoDynamicData.InitiateDynamicConnection(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw")))
-            {
+            var reader2 = ThermoRawFileReaderData.LoadAllStaticData(
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw"));
                 fraction_6_original_times =
-                    reader.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
-            }
+                    reader2.GetMsScansInTimeRange(42.01, 45.98).Select(s => Math.Round(s.RetentionTime, 2)).ToList();
             Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract5")).Any(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(Sweet.lollipop.td_hits_calibration.Where(h => h.filename.Contains("fract6")).All(h => h.calibrated_retention_time == h.ms2_retention_time));
             Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_RTcalibration_calibrated.xlsx")));

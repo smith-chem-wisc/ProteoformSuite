@@ -183,7 +183,11 @@ namespace Test
         public static string p1_name = "name";
         public static string p1_fullName = "full_name_p1";
         public static DatabaseReference p1_dbRef = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
+<<<<<<< HEAD
         public static goTerm p1_goTerm = new goTerm(p1_dbRef);
+=======
+        public static GoTerm p1_GoTerm = new GoTerm(p1_dbRef);
+>>>>>>> a01cb0efb3d16f2936f3167676b1d5d65f8cf295
         public static string pf1_accession = "T1_asdf";
         public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals(bool gene_centric_families)
         {
@@ -211,7 +215,11 @@ namespace Test
 
             //TheoreticalProteoformGroup
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
+<<<<<<< HEAD
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", p1_accession, new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, p1_name, p1_fullName, true, false, new List<DatabaseReference> { p1_dbRef }, new List<goTerm> { p1_goTerm });
+=======
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", p1_accession, new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, p1_name, p1_fullName, true, false, new List<DatabaseReference> { p1_dbRef }, new List<GoTerm> { p1_GoTerm });
+>>>>>>> a01cb0efb3d16f2936f3167676b1d5d65f8cf295
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } };
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf", 1234.56, p1, dict);
             TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
