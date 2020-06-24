@@ -45,7 +45,7 @@
                     x:Name="rb_deconvolution" 
                     Click="rb_deconvolution_CheckedChanged" 
                     HorizontalAlignment="Left"
-                    Content="Deconvolution" />
+                    Content="FLASHDeconv Deconvolution" />
                 <RadioButton 
                     x:Name="rb_topdown_search" 
                     Click="rb_topdown_search_CheckedChanged" 
