@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.ComponentModel;
 using MassSpectrometry;
+using System.Windows.Media.Animation;
 
 namespace ProteoWPFSuite
 {
@@ -86,6 +87,7 @@ namespace ProteoWPFSuite
                 populate_file_lists();
             }
         }
+        
         public int CB_select
         {
             get
@@ -122,7 +124,6 @@ namespace ProteoWPFSuite
             cmb_dissociation_types.ClearValue(ItemsControl.ItemsSourceProperty);
             cmb_dissociation_types.ItemsSource = new object[] { DissociationType.HCD, DissociationType.CID, DissociationType.ECD, DissociationType.ETD, DissociationType.EThcD };
             cmb_dissociation_types.SelectedIndex = 0;
-
             this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem(Sweet.lollipop.neucode_labeled);
             this.MDIParent.enable_quantificationToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.Quantification));
             this.MDIParent.enable_topDownToolStripMenuItem(Sweet.lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
@@ -531,7 +532,7 @@ namespace ProteoWPFSuite
                 MessageBox.Show("Please enter raw files to deconvolute.");
                 return;
             }
-            string deconv_results = Sweet.lollipop.promex_deconvolute(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Environment.CurrentDirectory);
+            string deconv_results = Sweet.lollipop.flash_deconv(Convert.ToInt32(nud_maxcharge.Value), Convert.ToInt32(nud_mincharge.Value), Environment.CurrentDirectory);
             MessageBox.Show(deconv_results);
         }
 

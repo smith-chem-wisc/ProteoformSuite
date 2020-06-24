@@ -98,58 +98,7 @@ namespace ProteoformSuiteInternal
             for (int i = 1; i < lines.Length; i++)
             {
                 string[] row = lines[i].Split('\t');
-                if (row.Length == 20)
-                {
-                    if (Double.TryParse(row[16], out double likelihood_ratio) && likelihood_ratio >= Sweet.lollipop.min_likelihood_ratio
-                        && Double.TryParse(row[19], out double fit) && fit <= Sweet.lollipop.max_fit)
-                    {
-                        List<string> charge_column = row[17].Split(',').ToList();
-                        List<string> intensity_column = row[18].Split(',').ToList();
-                        if (charge_column.Count != intensity_column.Count) continue;
-                        List<int> charges = new List<int>();
-                        List<double> intensities = new List<double>();
-                        for (int a = 0; a < charge_column.Count; a++)
-                        {
-                            int asdfg = Int32.TryParse(charge_column[a], out int ok) ? ok : 0;
-                            if (asdfg > 0)
-                            {
-                                charges.Add(ok);
-                                intensities.Add(Double.TryParse(intensity_column[a], out double intensity) ? intensity : 0);
-                            }
-                        }
-                        if (charges.Count < 1) continue;
-                        List<string> cellStrings = new List<string>();
-                        cellStrings.Add(row[0]); //id
-                        cellStrings.Add(row[5]); //monoisotopic mass
-                        cellStrings.Add(row[9]); //intensity
-                        cellStrings.Add(charges.Count().ToString()); //num charges
-                        cellStrings.Add("0"); //num detected intervals
-                        cellStrings.Add("0"); //reported delta mass
-                        cellStrings.Add("0"); //relative abundance
-                        cellStrings.Add("0"); //fractional abundance
-
-                        cellStrings.Add(row[1] + "-" + row[2]); //scanrange
-                        cellStrings.Add(row[12] + "-" + row[13]); //rt range
-                        cellStrings.Add(row[10]);
-
-                        Component c = new Component(cellStrings, file);
-
-                        for (int a = 0; a < charges.Count; a++)
-                        {
-                            //must use monoisotopic mass reported to get m/z --> m/z reported in each row is NOT monoisotopic!!
-                            //multiply by charge for intensity because constructor divides (thermo is not charge state normalized!)
-                            c.charge_states.Add(new ChargeState(new List<string>() { charges[a].ToString(), (intensities[a] * charges[a]).ToString(), (c.reported_monoisotopic_mass.ToMz(charges[a])).ToString(), c.reported_monoisotopic_mass.ToString() }));
-                        }
-
-                        c.calculate_properties();
-
-                        if (acceptable_component(c))
-                        {
-                            add_component(c);
-                        }
-                    }
-                }
-                else if (row.Length == 3)
+                if (row.Length == 3)
                 {
                     List<string> cellStrings = new List<string>();
                     cellStrings.Add(i.ToString()); //id
@@ -175,7 +124,39 @@ namespace ProteoformSuiteInternal
                         add_component(c);
                     }
                 }
-            }            
+                else if(row.Length == 16)
+                {
+                    List<string> cellStrings = new List<string>();
+                    cellStrings.Add(row[0]); //id
+                    cellStrings.Add(row[2]); //monoisotopic mass
+                    cellStrings.Add(row[9]); //intensity
+                    cellStrings.Add(row[13]); //num charges
+                    cellStrings.Add("0"); //num detected intervals
+                    cellStrings.Add("0"); //reported delta mass
+                    cellStrings.Add("0"); //relative abundance
+                    cellStrings.Add("0"); //fractional abundance
+                    cellStrings.Add("1-1"); //scanrange
+                    cellStrings.Add((Double.Parse(row[5]) / 60 + "-" + (Double.Parse(row[6]) / 60))); //rt range
+                    cellStrings.Add(Convert.ToString(Double.Parse(row[8]) / 60)); //apex rt
+
+                    Component c = new Component(cellStrings, file);
+                    int min_charge = Convert.ToInt32(row[11]);
+                    int num_charges = Convert.ToInt32(row[13]);
+                    for (int cs = 0; cs < num_charges; cs++)
+                    {
+                        int charge = min_charge + cs;
+                        double intensity = (Convert.ToDouble(row[9])/ num_charges) * charge;
+                        c.charge_states.Add(new ChargeState(new List<string>() {charge.ToString() , intensity.ToString() , (c.reported_monoisotopic_mass.ToMz(charge)).ToString(), c.reported_monoisotopic_mass.ToString() }));
+                    }
+
+                    c.calculate_properties();
+
+                    if (acceptable_component(c))
+                    {
+                        add_component(c);
+                    }
+                }
+            }
 
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
@@ -185,7 +166,7 @@ namespace ProteoformSuiteInternal
 
         public bool acceptable_component(Component c)
         {
-            if (c.min_rt <= 0 || c.max_rt <= 0 || c.max_scan <= 0 || c.min_scan <= 0 || c.charge_states.Count <= 0 || c.rt_apex <= 0)
+            if (c.reported_monoisotopic_mass <= 0 || c.weighted_monoisotopic_mass <= 0 || c.min_rt <= 0 || c.max_rt <= 0 || c.max_scan <= 0 || c.min_scan <= 0 || c.charge_states.Count <= 0 || c.rt_apex <= 0)
             {
                 lock (components_with_errors) components_with_errors.Add(c.input_file.filename + " component " + c.id.Split('_')[1]);
                 return false;

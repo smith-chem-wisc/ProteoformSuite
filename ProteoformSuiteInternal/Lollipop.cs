@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
 
         public static readonly string[] file_filters = new[]
         {
-            "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt;",
+            "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
             "Deconvolution Files (*.xlsx, *.tsv, *.txt) | *.xlsx;*.tsv;*.txt",
             "Protein Databases (*.xml, *.xml.gz, *.fasta) | *.xml;*.xml.gz;*.fasta",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
@@ -144,8 +144,6 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
         public double raw_component_mass_tolerance = 5;
-        public double min_likelihood_ratio = 0;
-        public double max_fit = 0.2;
 
         #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
 
@@ -182,33 +180,28 @@ namespace ProteoformSuiteInternal
 
         #region DECONVOLUTION
 
-        public string promex_deconvolute(int maxcharge, int mincharge, string directory)
+        public string flash_deconv(int maxcharge, int mincharge, string directory)
         {
             int successfully_deconvoluted_files = 0;
             Loaders.LoadElements();
+
+            string flashdeconv_location = directory + @"\FLASHDeconv\FLASHDeconv";
+
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
-                Process proc = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
                 string filelocation = Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path));
-                if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
+
+                if(f.extension == ".raw")
                 {
-                    File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
-                }
-                if (File.Exists(Path.Combine(filelocation + ".pbf")))
-                {
-                    File.Delete(Path.Combine(filelocation + ".pbf"));
-                }
-                if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
-                {
-                    File.Delete(Path.Combine(filelocation + ".ms1ft"));
-                }
-                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
-                {
-                    File.Delete(Path.Combine(filelocation + "_ms1ft.csv"));
+                    return "Error: please convert .raw files to .mzML";
                 }
 
-                string promexlocation = directory + @"\ProMex";
+                Process proc = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                if (File.Exists(Path.Combine(filelocation + ".tsv")))
+                {
+                    File.Delete(Path.Combine(filelocation + ".tsv"));
+                }
 
                 if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
                 {
@@ -216,7 +209,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe";
+                    return "Please ensure that the command line executable is in " + @"C:\WINDOWS\system32\cmd.exe" + flashdeconv_location;
                 }
 
                 startInfo.UseShellExecute = false;
@@ -227,68 +220,17 @@ namespace ProteoformSuiteInternal
 
                 proc.Start();
 
-                proc.StandardInput.WriteLine("cd " + promexlocation);
+                proc.StandardInput.WriteLine("cd " + flashdeconv_location);
+                string flash_deconv_string = ("FLASHDeconv.exe -in " + f.complete_path + " -out " + filelocation + " -minC " + mincharge + " -maxC "
+                    + maxcharge);
 
-                proc.StandardInput.WriteLine("ProMex.exe -i " + f.complete_path + " -minCharge " + mincharge + " -maxCharge " + maxcharge + " -csv y -maxThreads 0");
+                proc.StandardInput.WriteLine(flash_deconv_string);
                 proc.StandardInput.Close();
                 proc.WaitForExit();
                 proc.Close();
-
-                Dictionary<int, List<string[]>> csv_feature_info = new Dictionary<int, List<string[]>>(); //key is feature id, value is row from .ms1ft file
-                if (File.Exists(Path.Combine(filelocation + "_ms1ft.csv")))
-                {
-                    string[] lines = File.ReadAllLines(Path.Combine(filelocation + "_ms1ft.csv"));
-                    for (int i = 1; i < lines.Length; i++)
-                    {
-                        string[] fields = lines[i].Split(',');
-                        if (fields.Length >= 7 && Int32.TryParse(fields[6], out int featureID))
-                        {
-                            if (csv_feature_info.TryGetValue(featureID, out List<string[]> value))
-                            {
-                                value.Add(fields);
-                            }
-                            else
-                            {
-                                csv_feature_info.Add(featureID, new List<string[]>() { fields });
-                            }
-                        }
-                    }
-                    File.Delete(Path.Combine(filelocation + "_ms1ft.csv"));
-                }
-
-                if (File.Exists(Path.Combine(filelocation + ".ms1ft")))
-                {
-                    string[] lines = File.ReadAllLines(filelocation + ".ms1ft");
-                    List<string> new_lines = new List<string>();
-                    new_lines.Add(lines[0] + "\tCharges\tCharge Intensities\tBest Fit");
-                    for (int i = 1; i < lines.Length; i++)
-                    {
-                        string[] cs = lines[i].Split('\t');
-                        if (cs.Length < 17)
-                        {
-                            continue;
-                        }
-                        if (Int32.TryParse(cs[6], out int feature_ID) && csv_feature_info.TryGetValue(feature_ID, out List<string[]> fields) && fields.Count > 0)
-                        {
-                            //get charges, intensities for each charge, and fit
-                            List<int> charges = fields.Select(a => Int32.TryParse(a[1], out int charge) ? charge : 0).Where(c => c != 0).Distinct().OrderBy(c => c).ToList();
-                            List<double> intensities = charges.Select(c => fields.Where(a => a[1] == c.ToString()).Sum(fields2 => Double.TryParse(fields2[2], out double intensity) ? intensity : 0)).ToList();
-                            new_lines.Add(lines[i] + "\t" + string.Join(",", charges) + "\t" + string.Join(",", intensities) + "\t" + fields.First()[4]);
-                        }
-                    }
-                    File.WriteAllLines(filelocation + ".tsv", new_lines);
-                    File.Delete(Path.Combine(filelocation + ".ms1ft"));
-                    successfully_deconvoluted_files++;
-                }
-                if (File.Exists(Path.Combine(filelocation + "_ms1ft.png")))
-                {
-                    File.Delete(Path.Combine(filelocation + "_ms1ft.png"));
-                }
-                if (File.Exists(Path.Combine(filelocation + ".pbf")))
-                {
-                    File.Delete(Path.Combine(filelocation + ".pbf"));
-                }
+                successfully_deconvoluted_files++;
             }
+
             if (successfully_deconvoluted_files == 1)
             {
                 return "Successfully deconvoluted " + successfully_deconvoluted_files + " raw file.";
@@ -743,7 +685,8 @@ namespace ProteoformSuiteInternal
                     if (consecutive >= num_charge_states) return true;
                 }
             }
-            return false;
+
+           return false;
         }
 
         public IAggregatable find_next_root(List<IAggregatable> ordered, List<IAggregatable> running)
@@ -1372,8 +1315,6 @@ namespace ProteoformSuiteInternal
 
         public string calibrate_files()
         {
-            Sweet.lollipop.min_likelihood_ratio = -100;
-            Sweet.lollipop.max_fit = 100;
             if (input_files.Where(f => f.purpose == Purpose.SpectraFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == "" || f.biological_replicate == "" || f.technical_replicate == "" || f.lt_condition == ""))
                 return "Label condition, fraction, biological replicate, and techincal replicate of all Uncalibrated Proteoform Identification Results and Raw Files.";
             if (input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f1 => input_files.Where(f => f.purpose == Purpose.SpectraFile).Any(f2 => f2 != f1 && f2.biological_replicate == f1.biological_replicate && f2.fraction == f1.fraction && f2.technical_replicate == f1.technical_replicate && f2.lt_condition == f1.lt_condition)))
