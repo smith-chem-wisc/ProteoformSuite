@@ -547,7 +547,7 @@ namespace ProteoWPFSuite
             {
                 MessageBox.Show("Please enter at least one database files to search."); return;
             }
-            MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
+            MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Sweet.time_stamp(), Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
                 (double)nud_precursor_mass_tol.Value,
                 (double)nud_product_mass_tol.Value, (DissociationType)cmb_dissociation_types.SelectedItem));
         }

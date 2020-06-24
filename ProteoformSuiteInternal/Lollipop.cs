@@ -249,16 +249,16 @@ namespace ProteoformSuiteInternal
 
         #region METAMORPHEUS TOPDOWN SEARCH
 
-        public string metamorpheus_topdown(string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
+        public string metamorpheus_topdown(string timestamp, string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
         {
             //set toml with new parameters
-            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
+            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"));
             toml_params[42] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
                 : "ListOfModsFixed = \"\"";
             toml_params[50] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
             toml_params[51] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
             toml_params[66] = "DissociationType = \"" + dissocation_type + "\"";
-            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"), toml_params);
+            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\Task1-SearchTaskconfig.toml"), toml_params);
 
             Loaders.LoadElements();
             Process proc = new Process();
@@ -285,7 +285,7 @@ namespace ProteoformSuiteInternal
 
             proc.StandardInput.WriteLine("cd " + metaMorpheusBuild);
 
-            string command = "CMD.exe -t TopDownSearchSettingsMetaMorpheus0.0.300.toml -s ";
+            string command = "CMD.exe -t Task1-SearchTaskconfig.toml -s ";
             foreach (var file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 command += file.complete_path + " ";
@@ -295,6 +295,7 @@ namespace ProteoformSuiteInternal
             {
                 command += file.complete_path + " ";
             }
+            command += "-o " + Path.Combine(input_files.Where(f => f.purpose == Purpose.SpectraFile).First().directory, timestamp);
 
             proc.StandardInput.WriteLine(command);
 

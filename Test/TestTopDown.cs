@@ -17,9 +17,10 @@ namespace Test
         public void TestTopDownMetaMorpheusCommandLine()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract6_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
-            string result = Sweet.lollipop.metamorpheus_topdown(TestContext.CurrentContext.TestDirectory, true, 10, 10,
+            var time_stamp = Sweet.time_stamp();
+            string result = Sweet.lollipop.metamorpheus_topdown(time_stamp, TestContext.CurrentContext.TestDirectory, true, 10, 10,
                 DissociationType.HCD);
             Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
 
@@ -31,7 +32,7 @@ namespace Test
             Assert.AreEqual("DissociationType = \"HCD\"", toml_params[66]);
 
 
-            result = Sweet.lollipop.metamorpheus_topdown(TestContext.CurrentContext.TestDirectory, false, 5, 25,
+            result = Sweet.lollipop.metamorpheus_topdown(time_stamp, TestContext.CurrentContext.TestDirectory, false, 5, 25,
                 DissociationType.CID);
             Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
 
@@ -41,6 +42,11 @@ namespace Test
             Assert.AreEqual("ProductMassTolerance = \"±25 PPM\"", toml_params[50]);
             Assert.AreEqual("PrecursorMassTolerance = \"±5 PPM\"", toml_params[51]);
             Assert.AreEqual("DissociationType = \"CID\"", toml_params[66]);
+
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1-SearchTask\\AllPSMs.psmtsv")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1-SearchTask\\AllProteoforms.psmtsv")));
+
+
         }
 
 

@@ -236,28 +236,19 @@
     <None Include="FLASHDeconv\share\OpenMS\CV\unit.obo">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MetaMorpheusDotNetFrameworkAppveyor\CMD.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheusDotNetFrameworkAppveyor\Contaminants\MPI_Contaminants.fasta">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheusDotNetFrameworkAppveyor\Data\elements.dat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="FLASHDeconv\FlashDeconv\FLASHDeconv.exe">
+    <Content Include="FLASHDeconv\FLASHDeconv\FLASHDeconv.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\FlashDeconv\OpenMS.dll">
+    <Content Include="FLASHDeconv\FLASHDeconv\OpenMS.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\FlashDeconv\OpenSwathAlgo.dll">
+    <Content Include="FLASHDeconv\FLASHDeconv\OpenSwathAlgo.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\FlashDeconv\Qt5Core.dll">
+    <Content Include="FLASHDeconv\FLASHDeconv\Qt5Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\FlashDeconv\Qt5Network.dll">
+    <Content Include="FLASHDeconv\FLASHDeconv\Qt5Network.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="FLASHDeconv\share\OpenMS\CHEMISTRY\Elements.xml">
@@ -269,183 +260,276 @@
     <Content Include="FLASHDeconv\share\OpenMS\MAPPING\mzdata-mapping.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\ProteolyticDigestion\proteases.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="MetaMorpheusDotNetFrameworkAppveyor\settings.toml">
+    <None Include="MetaMorpheus_CommandLine\CMD.deps.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MetaMorpheusDotNetFrameworkAppveyor\TopDownSearchSettingsMetaMorpheus0.0.300.toml">
+    <None Include="MetaMorpheus_CommandLine\CMD.dll.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\CMD.runtimeconfig.dev.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\CMD.runtimeconfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Contaminants\MPI_Contaminants.fasta">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Data\Crosslinkers.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Data\elements.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Data\SmallCalibratible_Yeast.mzML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Data\SmallYeast.fasta">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Glycan_Mods\NGlycan\NGlycan182.gdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\OGlycan.gdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\ProteolyticDigestion\proteases.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libCpuMathNative.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libFastTreeNative.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libLdaNative.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libCpuMathNative.dylib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libFastTreeNative.dylib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libLdaNative.dylib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MetaMorpheus_CommandLine\Task1-SearchTaskconfig.toml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Mods\stored_mods.modnames">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <Content Include="MetaMorpheus_CommandLine\BayesianEstimation.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Chemistry.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\CMD.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\CMD.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\CMD.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\CommandLine.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\combos.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\PSI-MOD.obo.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\ptmlist.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\unimod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Easy.Common.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\EngineLayer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\EngineLayer.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\FlashLFQ.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\Olgycan Database 28 glycans plus Sodium 56 total.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\Olgycan Database 28 glycans plus Sulfo 56 total.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\Olgycan Database 28 glycans.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\Olgycan Database 32 glycans.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\Olgycan Database 36 glycans with Mann.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\MassSpectrometry.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\MathNet.Numerics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mgf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.CpuMath.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.Data.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.DataView.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.FastTree.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.KMeansClustering.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.PCA.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.StandardTrainers.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Microsoft.ML.Transforms.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mods\aListOfmods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mods\glyco.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mods\Mods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mods\substitutions.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mods\surfactants.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Mods\tmt.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\MzIdentML.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\MzLibUtil.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\MzML.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\NetSerializer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Nett.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\OpenMcdf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\OpenMcdf.Extensions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\PepXML.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Proteomics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\win-x64\native\CpuMathNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\win-x64\native\FastTreeNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\win-x64\native\LdaNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\win-x86\native\CpuMathNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\win-x86\native\FastTreeNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\win-x86\native\LdaNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\SharpLearning.Common.Interfaces.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\SharpLearning.Containers.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\SharpLearning.DecisionTrees.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\SharpLearning.InputOutput.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\SharpLearning.Optimization.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\SharpLearning.RandomForest.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\System.CodeDom.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\TaskLayer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\TaskLayer.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\ThermoFisher.CommonCore.BackgroundSubtraction.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\ThermoFisher.CommonCore.Data.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\ThermoFisher.CommonCore.MassPrecisionEstimator.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\ThermoFisher.CommonCore.RawFileReader.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\ThermoRawFileReader.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\UsefulProteomicsDatabases.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ProteolyticDigestion\proteases.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Chemistry.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\CMD.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\combos.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\PSI-MOD.obo.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\ptmlist.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Data\unimod.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\EngineLayer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\FlashLFQ.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\FluentCommandLineParser.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\ManagedThermoHelperLayer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MassSpectrometry.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MathNet.Numerics.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mgf.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\aListOfmods.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\glyco.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\Mods.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\substitutions.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\surfactants.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Mods\tmt.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MzIdentML.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MzLibUtil.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\MzML.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\NetSerializer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Nett.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\PepXML.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Proteomics.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Common.Interfaces.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Containers.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.CrossValidation.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.DecisionTrees.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.GradientBoost.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.InputOutput.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Metrics.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.Optimization.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\SharpLearning.RandomForest.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Spectra.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Data.Common.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Diagnostics.StackTrace.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Diagnostics.Tracing.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Globalization.Extensions.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.IO.Compression.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Net.Http.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Net.Sockets.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Runtime.Serialization.Primitives.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Security.Cryptography.Algorithms.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Security.SecureString.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Threading.Overlapped.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\System.Xml.XPath.XDocument.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\TaskLayer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\Thermo.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\UnmanagedThermoHelperLayer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheusDotNetFrameworkAppveyor\UsefulProteomicsDatabases.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Mods\aListOfmods.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
