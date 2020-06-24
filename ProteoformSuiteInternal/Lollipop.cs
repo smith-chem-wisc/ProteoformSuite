@@ -190,15 +190,6 @@ namespace ProteoformSuiteInternal
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 string filelocation = Path.Combine(Path.GetDirectoryName(f.complete_path), Path.GetFileNameWithoutExtension(f.complete_path));
-                string file_path = f.complete_path;
-
-                //TODO: enable raw files... for now noticed way fewer components than when MSConvert used.
-                //if(f.extension == ".raw")
-                //{
-                //    var file = ThermoStaticData.LoadAllStaticData(f.complete_path);
-                //    MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(file, filelocation + ".mzML", false);
-                //    file_path = filelocation + ".mzML";
-                //}
 
                 if(f.extension == ".raw")
                 {
@@ -230,7 +221,7 @@ namespace ProteoformSuiteInternal
                 proc.Start();
 
                 proc.StandardInput.WriteLine("cd " + flashdeconv_location);
-                string flash_deconv_string = ("FLASHDeconv.exe -in \"" + file_path + "\" -out \"" + filelocation + "\"" + " -minC " + mincharge + " -maxC "
+                string flash_deconv_string = ("FLASHDeconv.exe -in " + f.complete_path + " -out " + filelocation + " -minC " + mincharge + " -maxC "
                     + maxcharge);
 
                 proc.StandardInput.WriteLine(flash_deconv_string);
