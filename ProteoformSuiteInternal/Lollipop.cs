@@ -185,7 +185,7 @@ namespace ProteoformSuiteInternal
             int successfully_deconvoluted_files = 0;
             Loaders.LoadElements();
 
-            string flashdeconv_location = directory + @"\FLASHDeconv\bin";
+            string flashdeconv_location = directory + @"\FLASHDeconv\FLASHDeconv";
 
             foreach (InputFile f in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {

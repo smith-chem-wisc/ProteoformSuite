@@ -245,19 +245,19 @@
     <None Include="MetaMorpheusDotNetFrameworkAppveyor\Data\elements.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="FLASHDeconv\bin\FLASHDeconv.exe">
+    <Content Include="FLASHDeconv\FlashDeconv\FLASHDeconv.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\bin\OpenMS.dll">
+    <Content Include="FLASHDeconv\FlashDeconv\OpenMS.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\bin\OpenSwathAlgo.dll">
+    <Content Include="FLASHDeconv\FlashDeconv\OpenSwathAlgo.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\bin\Qt5Core.dll">
+    <Content Include="FLASHDeconv\FlashDeconv\Qt5Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="FLASHDeconv\bin\Qt5Network.dll">
+    <Content Include="FLASHDeconv\FlashDeconv\Qt5Network.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="FLASHDeconv\share\OpenMS\CHEMISTRY\Elements.xml">
