@@ -14,7 +14,7 @@ DecoyType = "Reverse"
 MassDiffAcceptorType = "ThreeMM"
 WritePrunedDatabase = false
 KeepAllUniprotMods = true
-DoLocalizationAnalysis = false
+DoLocalizationAnalysis = true
 DoQuantification = false
 SearchType = "Classic"
 LocalFdrCategories = ["FullySpecific"]
@@ -84,5 +84,3 @@ SearchModeType = "Full"
 FragmentationTerminus = "Both"
 SpecificProtease = "top-down"
 GeneratehUnlabeledProteinsForSilac = true
-
-[[FileSpecificParameters]]

@@ -253,18 +253,18 @@ namespace ProteoformSuiteInternal
         {
             //set toml with new parameters
             string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"));
-            toml_params[42] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
+            toml_params[45] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
                 : "ListOfModsFixed = \"\"";
-            toml_params[50] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
-            toml_params[51] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
-            toml_params[66] = "DissociationType = \"" + dissocation_type + "\"";
-            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\Task1-SearchTaskconfig.toml"), toml_params);
+            toml_params[53] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
+            toml_params[54] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
+            toml_params[69] = "DissociationType = \"" + dissocation_type + "\"";
+            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"), toml_params);
 
             Loaders.LoadElements();
             Process proc = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo();
 
-            string metaMorpheusBuild = directory + @"\MetaMorpheusDotNetFrameworkAppveyor";
+            string metaMorpheusBuild = directory + @"\MetaMorpheus_CommandLine";
 
             if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
             {
@@ -285,7 +285,7 @@ namespace ProteoformSuiteInternal
 
             proc.StandardInput.WriteLine("cd " + metaMorpheusBuild);
 
-            string command = "CMD.exe -t Task1-SearchTaskconfig.toml -s ";
+            string command = "dotnet CMD.dll -t Task1-SearchTaskconfig.toml -s ";
             foreach (var file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 command += file.complete_path + " ";
@@ -298,7 +298,7 @@ namespace ProteoformSuiteInternal
             command += "-o " + Path.Combine(input_files.Where(f => f.purpose == Purpose.SpectraFile).First().directory, timestamp);
 
             proc.StandardInput.WriteLine(command);
-
+            proc.StandardInput.WriteLine("y");
 
             proc.StandardInput.Close();
             proc.WaitForExit();

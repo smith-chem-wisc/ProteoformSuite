@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -11,13 +11,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.8.1" />
-    <PackageReference Include="FastMember.Signed" Version="1.4.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.0" />
+    <PackageReference Include="FastMember.Signed" Version="1.5.0" />
     <PackageReference Include="mzLib" Version="1.0.472" />
     <PackageReference Include="SharpLearning.Common.Interfaces" Version="0.31.7" />
     <PackageReference Include="SharpLearning.CrossValidation" Version="0.31.7" />
@@ -67,63 +67,63 @@
     <Content Include="FLASHDeconv\share\OpenMS\MAPPING\mzdata-mapping.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="MetaMorpheus_CommandLine\CMD.deps.json">
+    <Content Include="MetaMorpheus_CommandLine\CMD.deps.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\CMD.dll.config">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\CMD.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\CMD.runtimeconfig.dev.json">
+    </Content>
+    <EmbeddedResource Include="MetaMorpheus_CommandLine\CMD.runtimeconfig.dev.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\CMD.runtimeconfig.json">
+    </EmbeddedResource>
+    <Content Include="MetaMorpheus_CommandLine\CMD.runtimeconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Contaminants\MPI_Contaminants.fasta">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Contaminants\MPI_Contaminants.fasta">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Data\Crosslinkers.tsv">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\Crosslinkers.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Data\elements.dat">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\elements.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Data\SmallCalibratible_Yeast.mzML">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\SmallCalibratible_Yeast.mzML">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Data\SmallYeast.fasta">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Data\SmallYeast.fasta">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Glycan_Mods\NGlycan\NGlycan182.gdb">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\NGlycan\NGlycan182.gdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\OGlycan.gdb">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Glycan_Mods\OGlycan\OGlycan.gdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\ProteolyticDigestion\proteases.tsv">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\ProteolyticDigestion\proteases.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libCpuMathNative.so">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libCpuMathNative.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libFastTreeNative.so">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libFastTreeNative.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libLdaNative.so">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\linux-x64\native\libLdaNative.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libCpuMathNative.dylib">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libCpuMathNative.dylib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libFastTreeNative.dylib">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libFastTreeNative.dylib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libLdaNative.dylib">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\runtimes\osx-x64\native\libLdaNative.dylib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetaMorpheus_CommandLine\Task1-SearchTaskconfig.toml">
+    </Content>
+    <Content Include="MetaMorpheus_CommandLine\Task1-SearchTaskconfig.toml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
     <Content Include="MetaMorpheus_CommandLine\BayesianEstimation.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -134,9 +134,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MetaMorpheus_CommandLine\CMD.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheus_CommandLine\CMD.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MetaMorpheus_CommandLine\CommandLine.dll">
@@ -158,9 +155,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MetaMorpheus_CommandLine\EngineLayer.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MetaMorpheus_CommandLine\EngineLayer.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MetaMorpheus_CommandLine\FlashLFQ.dll">
@@ -307,9 +301,6 @@
     <Content Include="MetaMorpheus_CommandLine\TaskLayer.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="MetaMorpheus_CommandLine\TaskLayer.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="MetaMorpheus_CommandLine\ThermoFisher.CommonCore.BackgroundSubtraction.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -372,5 +363,10 @@
     <Content Include="Mods\variable.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Mods\stored_mods.modnames">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

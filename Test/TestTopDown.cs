@@ -23,29 +23,31 @@ namespace Test
             string result = Sweet.lollipop.metamorpheus_topdown(time_stamp, TestContext.CurrentContext.TestDirectory, true, 10, 10,
                 DissociationType.HCD);
             Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1SearchTask\\AllPSMs.psmtsv")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1SearchTask\\AllProteoforms.psmtsv")));
 
             //set toml with new parameters
-            string[] toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
-            Assert.AreEqual("ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\"", toml_params[42]);
-            Assert.AreEqual("ProductMassTolerance = \"±10 PPM\"", toml_params[50]);
-            Assert.AreEqual("PrecursorMassTolerance = \"±10 PPM\"", toml_params[51]);
-            Assert.AreEqual("DissociationType = \"HCD\"", toml_params[66]);
+            string[] toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"));
+            Assert.AreEqual("ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\"", toml_params[45]);
+            Assert.AreEqual("ProductMassTolerance = \"±10 PPM\"", toml_params[53]);
+            Assert.AreEqual("PrecursorMassTolerance = \"±10 PPM\"", toml_params[54]);
+            Assert.AreEqual("DissociationType = \"HCD\"", toml_params[69]);
 
+             time_stamp = Sweet.time_stamp();
 
             result = Sweet.lollipop.metamorpheus_topdown(time_stamp, TestContext.CurrentContext.TestDirectory, false, 5, 25,
                 DissociationType.CID);
             Assert.AreEqual("Successfully ran MetaMorpheus top-down search.", result);
 
             //set toml with new parameters
-            toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
-            Assert.AreEqual("ListOfModsFixed = \"\"", toml_params[42]);
-            Assert.AreEqual("ProductMassTolerance = \"±25 PPM\"", toml_params[50]);
-            Assert.AreEqual("PrecursorMassTolerance = \"±5 PPM\"", toml_params[51]);
-            Assert.AreEqual("DissociationType = \"CID\"", toml_params[66]);
+            toml_params = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"));
+            Assert.AreEqual("ListOfModsFixed = \"\"", toml_params[45]);
+            Assert.AreEqual("ProductMassTolerance = \"±25 PPM\"", toml_params[53]);
+            Assert.AreEqual("PrecursorMassTolerance = \"±5 PPM\"", toml_params[54]);
+            Assert.AreEqual("DissociationType = \"CID\"", toml_params[69]);
 
-            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1-SearchTask\\AllPSMs.psmtsv")));
-            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1-SearchTask\\AllProteoforms.psmtsv")));
-
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1SearchTask\\AllPSMs.psmtsv")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, time_stamp, "Task1SearchTask\\AllProteoforms.psmtsv")));
 
         }
 
@@ -243,11 +245,7 @@ namespace Test
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
             Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-<<<<<<< HEAD
             Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-=======
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
->>>>>>> a01cb0efb3d16f2936f3167676b1d5d65f8cf295
             Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
@@ -268,15 +266,9 @@ namespace Test
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
             Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-<<<<<<< HEAD
             Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
-=======
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
->>>>>>> a01cb0efb3d16f2936f3167676b1d5d65f8cf295
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(12, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().theoretical_mass, 3));
@@ -295,11 +287,7 @@ namespace Test
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
             Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-<<<<<<< HEAD
             Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-=======
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
->>>>>>> a01cb0efb3d16f2936f3167676b1d5d65f8cf295
             Assert.AreEqual(10969.845, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(10969.856, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
@@ -320,15 +308,9 @@ namespace Test
             Assert.AreEqual(13, Sweet.lollipop.top_down_hits.Count);
             Assert.AreEqual(1, Sweet.lollipop.topdownReader.bad_ptms.Count);
             Assert.AreEqual("\"N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N-acetylserine on S|N6,N6-dimethyllysine on K N6-acetyllysine on K|N6,N6-dimethyllysine on K N6-acetyllysine on K\" at 08-02-17_B9_myoblast_A_fract3and4_td_rep1 scan 2395", Sweet.lollipop.topdownReader.bad_ptms.OrderByDescending(p => p).First());
-<<<<<<< HEAD
             Assert.AreEqual(10, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().theoretical_mass, 3));
             Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.name).First().reported_mass, 3));
-=======
-            Assert.AreEqual(9, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
-            Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().theoretical_mass, 3));
-            Assert.AreEqual(11058.012, Math.Round(Sweet.lollipop.top_down_hits.OrderBy(h => h.pfr_accession).First().reported_mass, 3));
->>>>>>> a01cb0efb3d16f2936f3167676b1d5d65f8cf295
             Sweet.lollipop.topdown_proteoforms = Sweet.lollipop.aggregate_td_hits(Sweet.lollipop.top_down_hits, Sweet.lollipop.min_score_td, Sweet.lollipop.biomarker, Sweet.lollipop.tight_abs_mass);
             Assert.AreEqual(12, Sweet.lollipop.topdown_proteoforms.Count());
             Assert.AreEqual(11058.001, Math.Round(Sweet.lollipop.topdown_proteoforms.OrderBy(h => h.name).First().theoretical_mass, 3));

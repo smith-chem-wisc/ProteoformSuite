@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
     <StartupObject>ProteoformSuiteWPF.App</StartupObject>
@@ -26,7 +26,7 @@
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.1" />
-    <PackageReference Include="FastMember.Signed" Version="1.4.1" />
+    <PackageReference Include="FastMember.Signed" Version="1.5.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.0-preview.5.20278.1" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
