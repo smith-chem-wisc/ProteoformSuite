@@ -37,7 +37,10 @@ namespace ProteoformSuiteInternal
             //need to reset m/z in case same td hits used for multiple calibration raw files...
             Parallel.ForEach(all_topdown_hits, h => h.mz = h.reported_mass.ToMz(h.charge));
 
-            high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
+            high_scoring_topdown_hits = all_topdown_hits.Where(h => (h.tdResultType == TopDownResultType.MetaMorpheus && h.qValue < 0.001 && h.ambiguous_matches.Count == 0)
+            || (h.tdResultType != TopDownResultType.MetaMorpheus && h.score > 40)).ToList();
+
+
             this.raw_file = raw_file;
 
             if (high_scoring_topdown_hits.Count < 5)
@@ -130,7 +133,8 @@ namespace ProteoformSuiteInternal
 
         {
             all_topdown_hits = topdown_hits.Where(h => h.score > 0).ToList();
-            high_scoring_topdown_hits = all_topdown_hits.Where(h => h.score >= 40).ToList();
+            high_scoring_topdown_hits = all_topdown_hits.Where(h => (h.tdResultType == TopDownResultType.MetaMorpheus && h.qValue < 0.001 && h.ambiguous_matches.Count == 0)
+            || (h.tdResultType != TopDownResultType.MetaMorpheus && h.score > 40)).ToList();
             List<string> filenames_orderbydescendingUniquePFRs = high_scoring_topdown_hits.Select(h => h.filename).Distinct().OrderByDescending(f => high_scoring_topdown_hits.Where(h => h.filename == f).Select(h => h.pfr_accession).Distinct().Count()).ThenByDescending(f => high_scoring_topdown_hits.Count(h => h.filename == f)).ToList();
             if (filenames_orderbydescendingUniquePFRs.Count == 1) return; //only if more than 1 file.
 
@@ -159,7 +163,8 @@ namespace ProteoformSuiteInternal
                 foreach (SpectrumMatch hit in all_topdown_hits.Where(h => h.filename == filenames_orderbydescendingUniquePFRs[i]))
                 {
                     hit.calibrated_retention_time = hit.ms2_retention_time - ms1Model.Predict(new double[] { hit.ms2_retention_time });
-                    if (hit.score > 40)
+                    if ((hit.tdResultType != TopDownResultType.MetaMorpheus && hit.score > 40) 
+                        || (hit.tdResultType == TopDownResultType.MetaMorpheus && hit.qValue < 0.001 && hit.ambiguous_matches.Count == 0))
                     {
                         calibrated_RT_topdown_hits.Add(hit); //use for subsequent rounds
                     }
@@ -506,94 +511,141 @@ namespace ProteoformSuiteInternal
             string old_absolute_path = file.complete_path;
             string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
-            var rows = new List<Row>();
-            SpreadsheetDocument old_document = SpreadsheetDocument.Open(old_absolute_path, false);
-            IEnumerable<Sheet> sheetcollection = old_document.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document
-            WorksheetPart worksheet_1 = (WorksheetPart)old_document.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-            SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
-            rows = worksheet_1.Worksheet.Descendants<Row>().ToList();
-
-
-            using (SpreadsheetDocument new_document = SpreadsheetDocument.Create(new_absolute_path, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+            if (file.extension == ".xlsx")
             {
-                WorkbookPart workbookPart = new_document.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
-                // Add a WorksheetPart to the WorkbookPart.
-                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                worksheetPart.Worksheet = new Worksheet(new SheetData());
-                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                var rows = new List<Row>();
+                SpreadsheetDocument old_document = SpreadsheetDocument.Open(old_absolute_path, false);
+                IEnumerable<Sheet> sheetcollection = old_document.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document
+                WorksheetPart worksheet_1 = (WorksheetPart)old_document.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
+                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
+                rows = worksheet_1.Worksheet.Descendants<Row>().ToList();
 
-                Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
-                sheets.Append(sheet);
-                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-                int rowIndex = 1;
-                foreach (var row in rows)
+
+                using (SpreadsheetDocument new_document = SpreadsheetDocument.Create(new_absolute_path, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
                 {
-                    bool add_row_to_new_document = true;
-                    IEnumerable<Cell> cells = ExcelReader.GetRowCells(row as Row);
-                    if (row.RowIndex.Value > 1)
+                    WorkbookPart workbookPart = new_document.AddWorkbookPart();
+                    workbookPart.Workbook = new Workbook();
+                    // Add a WorksheetPart to the WorkbookPart.
+                    WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                    worksheetPart.Worksheet = new Worksheet(new SheetData());
+                    var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+                    Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                    sheets.Append(sheet);
+                    SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+                    int rowIndex = 1;
+                    foreach (var row in rows)
                     {
-                        double corrected_mass = 0;
-                        double corrected_RT = 0;
-                        if (Sweet.lollipop.retention_time_calibration)
+                        bool add_row_to_new_document = true;
+                        IEnumerable<Cell> cells = ExcelReader.GetRowCells(row as Row);
+                        if (row.RowIndex.Value > 1)
                         {
-                            if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
-                                new Tuple<string, double, double>(ExcelReader.GetCellValue(old_document, cells.ElementAt(14)).Split('.')[0],
-                                    Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(17))),
-                                    Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(16)))), out corrected_RT))
+                            double corrected_mass = 0;
+                            double corrected_RT = 0;
+                            if (Sweet.lollipop.retention_time_calibration)
                             {
+                                if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
+                                    new Tuple<string, double, double>(ExcelReader.GetCellValue(old_document, cells.ElementAt(14)).Split('.')[0],
+                                        Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(17))),
+                                        Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(16)))), out corrected_RT))
+                                {
                                     cells.ElementAt(18).CellValue = new CellValue(corrected_RT.ToString());
+                                }
+                                //if hit's file not calibrated (not enough calibration points, remove from list
+                                else
+                                {
+                                    add_row_to_new_document = false;
+                                }
                             }
-                            //if hit's file not calibrated (not enough calibration points, remove from list
-                            else
+
+                            if (Sweet.lollipop.mass_calibration)
                             {
-                                add_row_to_new_document = false;
+                                if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
+                            new Tuple<string, double, double>(ExcelReader.GetCellValue(old_document, cells.ElementAt(14)).Split('.')[0],
+                                Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(17))),
+                                Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(16)))), out corrected_mass))
+                                {
+                                    cells.ElementAt(16).CellValue = new CellValue(corrected_mass.ToString());
+                                }
+                                //if hit's file not calibrated (not enough calibration points, remove from list
+                                else
+                                {
+                                    add_row_to_new_document = false;
+                                }
                             }
                         }
 
-                        if (Sweet.lollipop.mass_calibration)
+                        if (add_row_to_new_document)
                         {
-                            if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
-                        new Tuple<string, double, double>(ExcelReader.GetCellValue(old_document, cells.ElementAt(14)).Split('.')[0],
-                            Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(17))),
-                            Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(16)))), out corrected_mass))
+                            var new_row = new Row();
+                            new_row.RowIndex = (uint)rowIndex;
+                            foreach (var cell in cells)
                             {
-                                cells.ElementAt(16).CellValue = new CellValue(corrected_mass.ToString());
+                                if (cell.CellReference == null) continue;
+                                string cellreference = Regex.Replace(cell.CellReference.Value, "[0-9]", "") + rowIndex;
+                                var cell_value = ExcelReader.GetCellValue(old_document, cell);
+                                var new_cell = new Cell();
+                                var data_type = new EnumValue<CellValues>(CellValues.String);
+                                if (double.TryParse(cell_value, out double i)) data_type = new EnumValue<CellValues>(CellValues.Number);
+                                new_cell.CellReference = cellreference;
+                                new_cell.CellValue = new CellValue(cell_value);
+                                new_cell.DataType = data_type;
+                                new_cell.CellReference = cellreference;
+                                new_row.Append(new_cell);
                             }
-                            //if hit's file not calibrated (not enough calibration points, remove from list
-                            else
-                            {
-                                add_row_to_new_document = false;
-                            }
+                            sheetData.Append(new_row);
+                            worksheetPart.Worksheet.Save();
+                            rowIndex++;
+                        }
+                    }
+                    new_document.WorkbookPart.Workbook.Save();
+                    new_document.Close();
+                    old_document.Close();
+                }
+            }
+            else
+            {
+                string[] old = Enumerable.ToArray(System.IO.File.ReadAllLines(file.complete_path));
+                string[] header = old[0].Split('\t');
+                int index_filename = Array.IndexOf(header, "File Name");
+                int index_scan_number = Array.IndexOf(header, "Scan Number");
+                int index_precursor_mass = Array.IndexOf(header, "Precursor Mass");
+                int index_retention_time = Array.IndexOf(header, "Scan Retention Time");
+
+                List<string> new_file = new List<string>();
+                new_file.Add(old[0]);
+                for (int i = 1; i < old.Length; i++)
+                {
+                    double corrected_mass;
+                    double corrected_RT;
+                    // key is filename, hit scan #, hit reported mass, value is corrected mass
+                    string[] row = old[i].Split('\t');
+                    if (Sweet.lollipop.retention_time_calibration)
+                    {
+                        if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
+                            new Tuple<string, double, double>(row[index_filename].Split('.')[0],
+                                Convert.ToDouble(row[index_scan_number]),
+                                Convert.ToDouble(row[index_precursor_mass])), out corrected_RT))
+                        {
+                            row[index_retention_time] = corrected_RT.ToString();
+                            new_file.Add(String.Join("\t", row));
                         }
                     }
 
-                    if (add_row_to_new_document)
+                    if (Sweet.lollipop.mass_calibration)
                     {
-                        var new_row = new Row();
-                        new_row.RowIndex = (uint)rowIndex;
-                        foreach (var cell in cells)
+                        if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
+                            new Tuple<string, double, double>(row[index_filename].Split('.')[0],
+                                Convert.ToDouble(row[index_scan_number]),
+                                Convert.ToDouble(row[index_precursor_mass])), out corrected_mass))
                         {
-                            if (cell.CellReference == null) continue;
-                            string cellreference = Regex.Replace(cell.CellReference.Value, "[0-9]", "") + rowIndex;
-                            var cell_value = ExcelReader.GetCellValue(old_document, cell);
-                            var new_cell = new Cell();
-                            var data_type =  new EnumValue<CellValues>(CellValues.String);
-                            if (double.TryParse(cell_value, out double i)) data_type =  new EnumValue<CellValues>(CellValues.Number);
-                            new_cell.CellReference = cellreference;
-                            new_cell.CellValue = new CellValue(cell_value);
-                            new_cell.DataType = data_type;
-                            new_cell.CellReference = cellreference;
-                            new_row.Append(new_cell);
+                            row[index_precursor_mass] = corrected_mass.ToString();
+                            new_file.Add(String.Join("\t", row));
+
                         }
-                        sheetData.Append(new_row);
-                        worksheetPart.Worksheet.Save();
-                        rowIndex++;
                     }
                 }
-                new_document.WorkbookPart.Workbook.Save();
-                new_document.Close();
-                old_document.Close();
+                File.WriteAllLines(new_absolute_path, new_file);
             }
         }
 

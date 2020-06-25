@@ -178,6 +178,7 @@ namespace ProteoformSuiteInternal
 
     public enum TopDownResultType
     {
+        MetaMorpheus,
         Biomarker,
         TightAbsoluteMass,
         Unknown //not read in if unknown...

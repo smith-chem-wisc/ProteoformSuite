@@ -478,7 +478,7 @@ namespace ProteoformSuiteInternal
                                     e.begin = 0;
                                     e.end = 0;
                                     e.gene_name = null;
-                                    e.ambiguous_identifications.Clear();
+                                  //  e.ambiguous_identifications.Clear();
                                     ProteoformRelation relation = null;
                                     e.relation_to_id = relation;
 

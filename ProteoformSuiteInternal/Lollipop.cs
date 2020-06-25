@@ -18,7 +18,7 @@ using Proteomics;
 namespace ProteoformSuiteInternal
 {
     public class Lollipop
-    {
+    { 
         #region Constants
 
         public static double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
@@ -67,7 +67,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" , ".psmtsv"},
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx", ".tsv" },
-            new List<string> { ".xlsx" },
+            new List<string> { ".xlsx", ".psmtsv" },
             new List<string> { ".psmtsv"}
 
         };
@@ -80,7 +80,7 @@ namespace ProteoformSuiteInternal
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "Spectra Files (*.raw, *.mzML) | *.raw;*.mzML",
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
-            "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
+            "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "MetaMorpheus Bottom-Up Unique Peptides (*.psmtsv) | *.psmtsv",
         };
 
@@ -423,7 +423,7 @@ namespace ProteoformSuiteInternal
         {
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //get topdown hits that meet criteria
-            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.qValue).ThenBy(h => h.reported_mass).ToList();
+            List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && (h.tdResultType == TopDownResultType.MetaMorpheus || (biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.qValue).ThenBy(h => h.reported_mass).ToList();
 
             List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.accession.Split('-')[0] + "_" + h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
