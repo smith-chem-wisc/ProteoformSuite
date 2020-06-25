@@ -34,7 +34,6 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             var mod = Sweet.lollipop.theoretical_database.all_mods_with_mass.Where(m => m.OriginalId == "Phosphorylation").First();
 
-            //not ptm specific
             var peptide = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 1, 10);
             peptide.ptm_list.Add(new Ptm(2, mod));
             bool BU_evidence_for_all_PTMs = Proteoform.get_bottom_up_evidence_for_all_PTMs(new List<SpectrumMatch>() { peptide }, new PtmSet(new List<Ptm>() { new Ptm(3, mod) }), false);
@@ -88,6 +87,48 @@ namespace Test
             Assert.AreEqual("N/A | N/A", topdown.bu_PTMs);
             Assert.AreEqual("Phospho@2, Phospho@3, Phospho@4, Phospho@5 | Phospho@2, Phospho@3, Phospho@4, Phospho@5", topdown.setter_bu_PTMs_all_from_protein());
             Assert.AreEqual("N/A | N/A", topdown.bu_PTMs_separatepeptides);
+
+        }
+
+        [Test]
+        public void test_get_possible_PSMs()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            var mod = Sweet.lollipop.theoretical_database.all_mods_with_mass.Where(m => m.OriginalId == "Phosphorylation").First();
+            var ox = Sweet.lollipop.theoretical_database.all_mods_with_mass.Where(m => m.OriginalId == "Oxidation").First();
+
+            var peptide = ConstructorsForTesting.SpectrumMatch("A", 1000, 10, 1, 10);
+            peptide.ptm_list.Add(new Ptm(2, mod));
+            Sweet.lollipop.theoretical_database.bottom_up_psm_by_accession.Add("A", new List<SpectrumMatch>() { peptide });
+
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod) , new Ptm(8, mod)}), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod), new Ptm(11, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod) }), 2, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod) }), 1, 9, true).Count());
+
+            peptide.ptm_list.Clear();
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod), new Ptm(8, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() {new Ptm(11, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 2, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 1, 9, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, ox) }), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, ox), new Ptm(8, ox) }), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(11, ox) }), 1, 100, true).Count());
+
+            peptide.ptm_list.Add(new Ptm(2, ox));
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(2, mod), new Ptm(8, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>() { new Ptm(11, mod) }), 1, 100, true).Count());
+            Assert.AreEqual(1, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 1, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 2, 100, true).Count());
+            Assert.AreEqual(0, Proteoform.get_possible_PSMs("A", new PtmSet(new List<Ptm>()), 1, 9, true).Count());
+
 
         }
 

@@ -109,7 +109,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            foreach (TheoreticalProteoform t in theoretical_proteoforms.OrderBy(t => t.topdown_theoretical))
+            foreach (TheoreticalProteoform t in theoretical_proteoforms.OrderByDescending(t => t.topdown_theoretical))
             {
                 lock (identified_experimentals)
                     foreach (ExperimentalProteoform e in t.identify_connected_experimentals(t, t.begin, t.end, t.ptm_set, t.linked_proteoform_references))
