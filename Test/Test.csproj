@@ -80,6 +80,9 @@
     <None Update="calibration_AllPSMs.psmtsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="calibration_RT_AllPSMs.psmtsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="elements.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
