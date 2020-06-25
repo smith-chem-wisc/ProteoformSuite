@@ -547,9 +547,17 @@ namespace ProteoWPFSuite
             {
                 MessageBox.Show("Please enter at least one database files to search."); return;
             }
-            MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
-                (double)nud_precursor_mass_tol.Value,
-                (double)nud_product_mass_tol.Value, (DissociationType)cmb_dissociation_types.SelectedItem));
+            if (Sweet.lollipop.input_files.Any(f => f.extension == ".raw"))
+            {
+                MessageBoxResult d4 = MessageBox.Show(ThermoRawFileReader.ThermoRawFileReaderLicence.ThermoLicenceText + "\nIn order to search Thermo .raw files, you must agree to the above terms. Do you agree to the above terms?",
+                    "Thermo", MessageBoxButton.YesNo);
+                if (d4 == MessageBoxResult.No) return;
+            }
+
+            MessageBox.Show(Sweet.lollipop.metamorpheus_topdown(Sweet.time_stamp(), Environment.CurrentDirectory, (bool)cb_carbamidomethylate.IsChecked,
+        (double)nud_precursor_mass_tol.Value,
+        (double)nud_product_mass_tol.Value, (DissociationType)cmb_dissociation_types.SelectedItem));
+
         }
         #endregion CHANGED TABLE SELECTION Private Methods
 

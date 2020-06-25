@@ -386,7 +386,7 @@ namespace Test
         }
 
         [Test]
-        public void cytoscape_script_from_goTerm()
+        public void cytoscape_script_from_GoTerm()
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.gene_centric_families = false;
@@ -422,7 +422,7 @@ namespace Test
         }
 
         [Test]
-        public void cytoscape_script_from_gotermnumber()
+        public void cytoscape_script_from_GoTermnumber()
         {
             Sweet.lollipop = new Lollipop();
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals(false);

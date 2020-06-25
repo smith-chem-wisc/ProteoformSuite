@@ -262,8 +262,8 @@ namespace ProteoWPFSuite
                 // draw the fragment ion annotations on the base sequence
                 foreach (MatchedFragmentIon ion in matched_fragment_ions)
                 {
-                    int zeroBasedAminoAcidIndex = ion.NeutralTheoreticalProduct.TerminusFragment.AminoAcidPosition - 1;
-                    if (ion.NeutralTheoreticalProduct.TerminusFragment.Terminus == FragmentationTerminus.C) zeroBasedAminoAcidIndex++;
+                    int zeroBasedAminoAcidIndex = ion.NeutralTheoreticalProduct.AminoAcidPosition - 1;
+                    if (ion.NeutralTheoreticalProduct.Terminus == FragmentationTerminus.C) zeroBasedAminoAcidIndex++;
                     for (int i = 0; i < drawnAminoAcids.Count; i++)
                     {
                         if (i == zeroBasedAminoAcidIndex)
@@ -363,7 +363,7 @@ namespace ProteoWPFSuite
 
         private void AnnotateFragmentIon(TextBlock residue, MatchedFragmentIon ion, Canvas canvas)
         {
-            string annotation = ion.NeutralTheoreticalProduct.ProductType + "" + ion.NeutralTheoreticalProduct.TerminusFragment.FragmentNumber;
+            string annotation = ion.NeutralTheoreticalProduct.ProductType + "" + ion.NeutralTheoreticalProduct.FragmentNumber;
             Color color = productTypeToColor[ion.NeutralTheoreticalProduct.ProductType];
 
             if (ion.NeutralTheoreticalProduct.NeutralLoss != 0)
@@ -371,7 +371,7 @@ namespace ProteoWPFSuite
                 annotation += "-" + ion.NeutralTheoreticalProduct.NeutralLoss;
             }
 
-            if (ion.NeutralTheoreticalProduct.TerminusFragment.Terminus == FragmentationTerminus.C)
+            if (ion.NeutralTheoreticalProduct.Terminus == FragmentationTerminus.C)
             {
                 double top = Canvas.GetTop(residue);
                 double left = Canvas.GetLeft(residue);
@@ -380,7 +380,7 @@ namespace ProteoWPFSuite
                     new Point(left - 2, top - 9 + productTypeToYOffset[ion.NeutralTheoreticalProduct.ProductType]),
                     color, annotation);
             }
-            else if (ion.NeutralTheoreticalProduct.TerminusFragment.Terminus == FragmentationTerminus.N)
+            else if (ion.NeutralTheoreticalProduct.Terminus == FragmentationTerminus.N)
             {
                 double top = Canvas.GetTop(residue);
                 double left = Canvas.GetLeft(residue);

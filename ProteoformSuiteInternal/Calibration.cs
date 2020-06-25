@@ -1,7 +1,6 @@
 ﻿using Chemistry;
-using ClosedXML.Excel;
 using IO.MzML;
-using IO.Thermo;
+using ThermoRawFileReader;
 using MassSpectrometry;
 using MathNet.Numerics.Statistics;
 using SharpLearning.Containers.Matrices;
@@ -16,7 +15,10 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using FlashLFQ;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml;
+
 
 namespace ProteoformSuiteInternal
 {
@@ -44,7 +46,7 @@ namespace ProteoformSuiteInternal
             }
 
             myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                ThermoRawFileReaderData.LoadAllStaticData(raw_file.complete_path) :
                 null;
             if (myMsDataFile == null) { myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path); }
             if (myMsDataFile == null) { return false; }
@@ -363,7 +365,7 @@ namespace ProteoformSuiteInternal
                             var closestPeak = fullMS1spectrum.GetClosestPeakXvalue(theMZ);
                             var closestPeakMZ = closestPeak;
 
-                            var theTuple = closestPeakMZ != null ? Tuple.Create((double)closestPeakMZ, ms1ScanNumber) : null;
+                            var theTuple = closestPeakMZ != null ? new Tuple<double,int>((double)closestPeakMZ, ms1ScanNumber) : null;
                             if (theTuple == null)
                             {
                                 continue;
@@ -504,62 +506,97 @@ namespace ProteoformSuiteInternal
             string old_absolute_path = file.complete_path;
             string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
-            //create copy of excel file
-            byte[] byteArray = File.ReadAllBytes(old_absolute_path);
-            using (MemoryStream stream = new MemoryStream())
+            var rows = new List<Row>();
+            SpreadsheetDocument old_document = SpreadsheetDocument.Open(old_absolute_path, false);
+            IEnumerable<Sheet> sheetcollection = old_document.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document
+            WorksheetPart worksheet_1 = (WorksheetPart)old_document.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
+            SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
+            rows = worksheet_1.Worksheet.Descendants<Row>().ToList();
+
+
+            using (SpreadsheetDocument new_document = SpreadsheetDocument.Create(new_absolute_path, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
             {
-                stream.Write(byteArray, 0, byteArray.Length);
-                File.WriteAllBytes(new_absolute_path, stream.ToArray());
-            }
-            // Get Data in Sheet1 of Excel file
-            var workbook = new XLWorkbook(new_absolute_path);
-            var worksheet = workbook.Worksheets.Worksheet(1);
-            List<IXLRow> rows_to_delete = new List<IXLRow>();
-            Parallel.ForEach(worksheet.Rows(), row =>
-            {
-                if (row.RowNumber() != 1)
+                WorkbookPart workbookPart = new_document.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
+                // Add a WorksheetPart to the WorkbookPart.
+                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                worksheetPart.Worksheet = new Worksheet(new SheetData());
+                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+                Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                sheets.Append(sheet);
+                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+                int rowIndex = 1;
+                foreach (var row in rows)
                 {
-                    double corrected_mass;
-                    double corrected_RT;
-
-                    if (Sweet.lollipop.retention_time_calibration)
+                    bool add_row_to_new_document = true;
+                    IEnumerable<Cell> cells = ExcelReader.GetRowCells(row as Row);
+                    if (row.RowIndex.Value > 1)
                     {
-                        if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
-                            new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0],
-                                row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_RT))
+                        double corrected_mass = 0;
+                        double corrected_RT = 0;
+                        if (Sweet.lollipop.retention_time_calibration)
                         {
-                            row.Cell(19).SetValue(corrected_RT);
+                            if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
+                                new Tuple<string, double, double>(ExcelReader.GetCellValue(old_document, cells.ElementAt(14)).Split('.')[0],
+                                    Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(17))),
+                                    Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(16)))), out corrected_RT))
+                            {
+                                    cells.ElementAt(18).CellValue = new CellValue(corrected_RT.ToString());
+                            }
+                            //if hit's file not calibrated (not enough calibration points, remove from list
+                            else
+                            {
+                                add_row_to_new_document = false;
+                            }
                         }
-                        //if hit's file not calibrated (not enough calibration points, remove from list
-                        else
+
+                        if (Sweet.lollipop.mass_calibration)
                         {
-                            lock (rows_to_delete) rows_to_delete.Add(row);
+                            if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
+                        new Tuple<string, double, double>(ExcelReader.GetCellValue(old_document, cells.ElementAt(14)).Split('.')[0],
+                            Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(17))),
+                            Convert.ToDouble(ExcelReader.GetCellValue(old_document, cells.ElementAt(16)))), out corrected_mass))
+                            {
+                                cells.ElementAt(16).CellValue = new CellValue(corrected_mass.ToString());
+                            }
+                            //if hit's file not calibrated (not enough calibration points, remove from list
+                            else
+                            {
+                                add_row_to_new_document = false;
+                            }
                         }
                     }
 
-                    if (Sweet.lollipop.mass_calibration)
+                    if (add_row_to_new_document)
                     {
-                        if (Sweet.lollipop.td_hit_mz_correction.TryGetValue(
-                            new Tuple<string, double, double>(row.Cell(15).Value.ToString().Split('.')[0],
-                                row.Cell(18).GetDouble(), row.Cell(17).GetDouble()), out corrected_mass))
+                        var new_row = new Row();
+                        new_row.RowIndex = (uint)rowIndex;
+                        foreach (var cell in cells)
                         {
-                            row.Cell(17).SetValue(corrected_mass);
+                            if (cell.CellReference == null) continue;
+                            string cellreference = Regex.Replace(cell.CellReference.Value, "[0-9]", "") + rowIndex;
+                            var cell_value = ExcelReader.GetCellValue(old_document, cell);
+                            var new_cell = new Cell();
+                            var data_type =  new EnumValue<CellValues>(CellValues.String);
+                            if (double.TryParse(cell_value, out double i)) data_type =  new EnumValue<CellValues>(CellValues.Number);
+                            new_cell.CellReference = cellreference;
+                            new_cell.CellValue = new CellValue(cell_value);
+                            new_cell.DataType = data_type;
+                            new_cell.CellReference = cellreference;
+                            new_row.Append(new_cell);
                         }
-                        //if hit's file not calibrated (not enough calibration points, remove from list
-                        else
-                        {
-                            lock (rows_to_delete) rows_to_delete.Add(row);
-                        }
+                        sheetData.Append(new_row);
+                        worksheetPart.Worksheet.Save();
+                        rowIndex++;
                     }
-
                 }
-            });
-            foreach (IXLRow row in rows_to_delete.Distinct())
-            {
-                row.Delete(); //can't parallelize
+                new_document.WorkbookPart.Workbook.Save();
+                new_document.Close();
+                old_document.Close();
             }
-            workbook.Save();
         }
+
 
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE
         public static void calibrate_components_in_xlsx(InputFile file)
@@ -570,44 +607,49 @@ namespace ProteoformSuiteInternal
 
             if (file.extension == ".xlsx")
             {
-                //create copy of excel file
-                byte[] byteArray = File.ReadAllBytes(old_absolute_path);
-                using (MemoryStream stream = new MemoryStream())
+                using (var packageDocument = SpreadsheetDocument.CreateFromTemplate(old_absolute_path))
                 {
-                    stream.Write(byteArray, 0, (int)byteArray.Length);
-                    File.WriteAllBytes(new_absolute_path, stream.ToArray());
-                }
-                var workbook = new XLWorkbook(new_absolute_path);
-                var worksheet = workbook.Worksheets.Worksheet(1);
-                Parallel.ForEach(worksheet.Rows(2, worksheet.Rows().Count()), row =>
-                {
-                    if (row.Cell(1).Value.ToString().Length == 0)
-                    {
-                        if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
-                        {
-                            double corrected_mass;
-                            //CHECK WITH CHARGE NORMALIZED INTENSITY!!
-                            if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble() / row.Cell(2).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out corrected_mass))
-                            {
-                                row.Cell(4).SetValue(corrected_mass);
-                            }
+                    var part = packageDocument.WorkbookPart;
+                    var root = part.Workbook;
 
-                        }
-                    }
-                    else
-                    {
-                        double corrected_RT;
-                        if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0), Math.Round(row.Cell(2).GetDouble(), 2)), out corrected_RT))
-                        {
-                            row.Cell(11).SetValue(corrected_RT);
-                        }
-                    }
-                });
-                workbook.Save();
+                    packageDocument.SaveAs(new_absolute_path).Close();
+                }
+
+                using (SpreadsheetDocument document = SpreadsheetDocument.Open(new_absolute_path, true))
+                {
+                    SheetData sheet = document.WorkbookPart.Workbook.WorkbookPart.WorksheetParts.First().Worksheet.GetFirstChild<SheetData>();
+                    Parallel.ForEach(sheet.Elements<Row>().Where(r => r.RowIndex != 1), row =>
+                     {
+                         IEnumerable<Cell> cells = ExcelReader.GetRowCells(row as Row);
+                         if (ExcelReader.GetCellValue(document, cells.ElementAt(0)).Length == 0)
+                         {
+                             if (Regex.IsMatch(ExcelReader.GetCellValue(document, cells.ElementAt(1)).ToString(), @"^\d+$"))
+                             {
+                                 double corrected_mass;
+                                 //CHECK WITH CHARGE NORMALIZED INTENSITY!!
+                                 if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(Convert.ToDouble(ExcelReader.GetCellValue(document, cells.ElementAt(2))) / Convert.ToDouble(ExcelReader.GetCellValue(document, cells.ElementAt(1))), 0),
+                                     Math.Round(Convert.ToDouble(ExcelReader.GetCellValue(document, cells.ElementAt(4))), 2)), out corrected_mass))
+                                 {
+                                     cells.ElementAt(3).CellValue = new CellValue(corrected_mass.ToString());
+                                 }
+
+                             }
+                         }
+                         else
+                         {
+                             double corrected_RT;
+                             if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(Convert.ToDouble(ExcelReader.GetCellValue(document, cells.ElementAt(2))), 0), Math.Round(Convert.ToDouble(ExcelReader.GetCellValue(document, cells.ElementAt(1))), 2)), out corrected_RT))
+                             {
+                                 cells.ElementAt(10).CellValue = new CellValue(corrected_RT.ToString());
+                             }
+                         }
+                     });
+                    document.Save();
+                }
             }
             else if (file.extension == ".tsv")
-            {
-                string[] old = File.ReadAllLines(old_absolute_path);
+                {
+                    string[] old = File.ReadAllLines(old_absolute_path);
                 List<string> new_file = new List<string>();
                 new_file.Add(old[0]);
                 for (int i = 1; i < old.Length; i++)

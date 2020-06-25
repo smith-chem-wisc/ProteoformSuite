@@ -1,7 +1,7 @@
 ﻿using Accord.Math;
 using Chemistry;
 using IO.MzML;
-using IO.Thermo;
+using ThermoRawFileReader;
 using MassSpectrometry;
 using System;
 using System.Collections.Generic;
@@ -249,22 +249,22 @@ namespace ProteoformSuiteInternal
 
         #region METAMORPHEUS TOPDOWN SEARCH
 
-        public string metamorpheus_topdown(string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
+        public string metamorpheus_topdown(string timestamp, string directory, bool carbamidomethyl, double precursor_mass_tolerance, double product_mass_tolerance, DissociationType dissocation_type)
         {
             //set toml with new parameters
-            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"));
-            toml_params[42] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
+            string[] toml_params = File.ReadAllLines(Path.Combine(directory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"));
+            toml_params[45] = carbamidomethyl ?  "ListOfModsFixed = \"Common Fixed\tCarbamidomethyl on C\t\tCommon Fixed\tCarbamidomethyl on U\""
                 : "ListOfModsFixed = \"\"";
-            toml_params[50] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
-            toml_params[51] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
-            toml_params[66] = "DissociationType = \"" + dissocation_type + "\"";
-            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheusDotNetFrameworkAppveyor\\TopDownSearchSettingsMetaMorpheus0.0.300.toml"), toml_params);
+            toml_params[53] = "ProductMassTolerance = \"±" + Math.Round(product_mass_tolerance, 4) + " PPM\"";
+            toml_params[54] = "PrecursorMassTolerance = \"±" + Math.Round(precursor_mass_tolerance, 4) + " PPM\"";
+            toml_params[69] = "DissociationType = \"" + dissocation_type + "\"";
+            File.WriteAllLines(Path.Combine(directory + "\\MetaMorpheus_CommandLine\\Task1-SearchTaskconfig.toml"), toml_params);
 
             Loaders.LoadElements();
             Process proc = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo();
 
-            string metaMorpheusBuild = directory + @"\MetaMorpheusDotNetFrameworkAppveyor";
+            string metaMorpheusBuild = directory + @"\MetaMorpheus_CommandLine";
 
             if (File.Exists(@"C:\WINDOWS\system32\cmd.exe"))
             {
@@ -285,7 +285,7 @@ namespace ProteoformSuiteInternal
 
             proc.StandardInput.WriteLine("cd " + metaMorpheusBuild);
 
-            string command = "CMD.exe -t TopDownSearchSettingsMetaMorpheus0.0.300.toml -s ";
+            string command = "dotnet CMD.dll -t Task1-SearchTaskconfig.toml -s ";
             foreach (var file in input_files.Where(f => f.purpose == Purpose.SpectraFile))
             {
                 command += file.complete_path + " ";
@@ -295,9 +295,10 @@ namespace ProteoformSuiteInternal
             {
                 command += file.complete_path + " ";
             }
+            command += "-o " + Path.Combine(input_files.Where(f => f.purpose == Purpose.SpectraFile).First().directory, timestamp);
 
             proc.StandardInput.WriteLine(command);
-
+            proc.StandardInput.WriteLine("y");
 
             proc.StandardInput.Close();
             proc.WaitForExit();
@@ -424,10 +425,10 @@ namespace ProteoformSuiteInternal
             //get topdown hits that meet criteria
             List<SpectrumMatch> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderBy(h => h.ambiguous_matches.Count).ThenByDescending(h => h.score).ThenBy(h => h.qValue).ThenBy(h => h.reported_mass).ToList();
 
-            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.pfr_accession).Distinct().ToList();
+            List<string> unique_proteoform_ids = remaining_td_hits.Select(h => h.accession.Split('-')[0] + "_" + h.pfr_accession).Distinct().ToList();
             Parallel.ForEach(unique_proteoform_ids, pfr =>
             {
-                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.pfr_accession == pfr).ToList();
+                List<SpectrumMatch> hits_by_pfr = remaining_td_hits.Where(h => h.accession.Split('-')[0] + "_" + h.pfr_accession == pfr).ToList();
                 List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
                 //aggregate to td hit w/ highest c-score as root - 1st average for retention time
                 while (hits_by_pfr.Count > 0)
@@ -1283,7 +1284,7 @@ namespace ProteoformSuiteInternal
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
                     MsDataFile myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                        ThermoStaticData.LoadAllStaticData(raw_file.complete_path) :
+                        ThermoRawFileReaderData.LoadAllStaticData(raw_file.complete_path) :
                         null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
                     Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>

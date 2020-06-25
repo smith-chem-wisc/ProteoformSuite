@@ -317,8 +317,8 @@ namespace ProteoWPFSuite
             get
             {
                 return String.Join(", ", t.topdown_hits.SelectMany(h => h.matched_fragment_ions)
-                    .OrderBy(i => i.NeutralTheoreticalProduct.ProductType.ToString()).ThenBy(i => i.NeutralTheoreticalProduct.TerminusFragment.FragmentNumber)
-                    .Select(i => i.NeutralTheoreticalProduct.ProductType.ToString() + i.NeutralTheoreticalProduct.TerminusFragment.FragmentNumber).Distinct());
+                    .OrderBy(i => i.NeutralTheoreticalProduct.ProductType.ToString()).ThenBy(i => i.NeutralTheoreticalProduct.FragmentNumber)
+                    .Select(i => i.NeutralTheoreticalProduct.ProductType.ToString() + i.NeutralTheoreticalProduct.FragmentNumber).Distinct());
             }
         }
 

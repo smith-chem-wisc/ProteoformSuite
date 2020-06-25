@@ -49,7 +49,7 @@
                     </WindowsFormsHost>
                     <GridSplitter ResizeDirection="Columns" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     <WindowsFormsHost Grid.Column="2">
-                        <winformchart:Chart x:Name="ct_ET_peakList" Dock="Fill" Location="0, 0" Text="chart1" MouseClick="ct_ET_peakList_MouseClick">
+                        <winformchart:Chart x:Name="ct_ET_peakList" Dock="Fill" Text="chart1" MouseClick="ct_ET_peakList_MouseClick">
                             <winformchart:Chart.Series>
                                 <winformchart:Series Name="Peak Count" ChartType="Point" ChartArea="chartarea1" Legend="legend1" MarkerSize="10" YValuesPerPoint="2"/>
                                 <winformchart:Series Name="Median Decoy Count" ChartType="Point" ChartArea="chartarea1" MarkerSize="10"/>

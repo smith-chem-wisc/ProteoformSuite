@@ -354,8 +354,7 @@ namespace ProteoWPFSuite
 
         #endregion METHOD TOOL STRIP Private Methods
 
-        #region Export Table as Excel File -- Private Methods
-        private void exportTablesToolStripMenuItem_Click(object sender, RoutedEventArgs e)
+        private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<DataTable> data_tables = current_form.SetTables();
             if (data_tables == null)
@@ -363,8 +362,9 @@ namespace ProteoWPFSuite
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page or click Run Page.");
                 return;
             }
+
             ExcelWriter writer = new ExcelWriter();
-            saveExcelDialog.FileName = (current_form as UserControl).GetType().Name + "_table.xlsx";
+            saveExcelDialog.FileName = (current_form as UserControl).Name + "_table.xlsx";
             bool? dr = saveExcelDialog.ShowDialog();
             if (dr == true)
             {
@@ -377,7 +377,7 @@ namespace ProteoWPFSuite
         {
             ExcelWriter writer = new ExcelWriter();
             if (MessageBox.Show("Will prepare for export. This may take a while.", "Export Data", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel) return;
-            saveExcelDialog.FileName = (current_form as ITabbedMDI).MDIParent.GetType().Name + "_table.xlsx";
+            saveExcelDialog.FileName = (current_form as ITabbedMDI).MDIParent.Name + "_table.xlsx";
             bool? dr = saveExcelDialog.ShowDialog();
             if (dr == true)
             {
@@ -385,8 +385,6 @@ namespace ProteoWPFSuite
                 writer.ExportToExcel(saveExcelDialog.FileName, forms.Where(f => f.DataTables != null).SelectMany(f => f.DataTables).ToList());
             }
         }
-
-        #endregion Export Table as Excel File -- Private Methods
 
         #region Results Summary Methods
 
