@@ -409,7 +409,201 @@ namespace Test
             Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(cs => calibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity)));
         }
 
-      
+        [Test]
+        public void calibrate_file_with_same_techrep_MetaMorpheus()
+        {
+            //get raw file
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.retention_time_calibration = false;
+            Sweet.lollipop.calibrate_td_files = true;
+            Sweet.lollipop.calibrate_raw_files = false; //shouldn't cali raw files!
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.neucode_labeled = false;
+
+            int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.SpectraFile)).First());
+            int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
+            int cali_td_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationTopDown)).First());
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[raw_file_index], Lollipop.file_types[raw_file_index], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().lt_condition = "1";
+
+            //get deconvolution results - same file as topdown file/diff tech rep - should be calibrated
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().lt_condition = "1";
+
+            //add another file - not same fraction as td file... should not be calibrated
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].fraction = "4";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].lt_condition = "1";
+
+            //td calibration hits -- treat as same file as topdown file
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs.psmtsv") }, Lollipop.acceptable_extensions[cali_td_file], Lollipop.file_types[cali_td_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv"))) 
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv")));
+            Sweet.lollipop.read_in_calibration_td_hits();
+            Assert.AreEqual(40, Sweet.lollipop.td_hits_calibration.Count);
+            Assert.AreEqual(24, Sweet.lollipop.td_hits_calibration.Count(h => h.qValue < 0.001 && h.ambiguous_matches.Count == 0));
+            Assert.AreEqual("Successfully calibrated files.", Sweet.lollipop.calibrate_files());
+            Assert.AreEqual(91, Sweet.lollipop.component_mz_correction.Count);
+            Assert.AreEqual(40, Sweet.lollipop.td_hit_mz_correction.Count);
+            Assert.IsFalse(Sweet.lollipop.component_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
+            Assert.IsFalse(Sweet.lollipop.component_mz_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")));
+            //make sure calibrated file contains correct points...
+            Sweet.lollipop.input_files.Clear();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            List<SpectrumMatch> calibrated_td_hits = Sweet.lollipop.topdownReader.ReadTDFile(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).First());
+            List<Component> calibrated_components = new List<Component>();
+            List<Component> uncalibrated_components = new List<Component>();
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList(), uncalibrated_components, Purpose.CalibrationIdentification, false);
+            Assert.AreEqual(10, calibrated_components.Count());
+            Assert.AreEqual(10, uncalibrated_components.Count());
+            Assert.AreEqual(40, calibrated_td_hits.Count);
+
+            foreach (SpectrumMatch h in calibrated_td_hits)
+            {
+                Assert.IsTrue(Sweet.lollipop.td_hit_mz_correction.ContainsValue(h.reported_mass));
+                Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(p => p.reported_mass == h.reported_mass));
+            }
+
+            foreach (Component c in calibrated_components)
+            {
+                foreach (ChargeState cs in c.charge_states)
+                {
+                    Assert.True(Sweet.lollipop.component_mz_correction.Values.Contains(Math.Round(cs.mz_centroid, 5)));
+                }
+            }
+
+            //sometimes have a cs that doesn't change - want to make sure not ALL of them didn't...
+            Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(cs => calibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity)));
+        }
+
+        [Test]
+        public void calibrate_file_of_different_tech_rep_MetaMorpheus()
+        {
+            //get raw files -- one for topdown one for intact mass file (same raw file for both...)
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.retention_time_calibration = false;
+            Sweet.lollipop.carbamidomethylation = false;
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.calibrate_td_files = false;
+            Sweet.lollipop.calibrate_raw_files = true;
+            int raw_file_index = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.SpectraFile)).First());
+            int cali_id_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationIdentification)).First());
+            int cali_td_file = Lollipop.file_types.ToList().IndexOf(Lollipop.file_types.Where(f => f.Contains(Purpose.CalibrationTopDown)).First());
+
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1.raw") }, Lollipop.acceptable_extensions[raw_file_index], Lollipop.file_types[raw_file_index], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).First().lt_condition = "normal";
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[raw_file_index], Lollipop.file_types[raw_file_index], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].technical_replicate = "2";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.SpectraFile).ToList()[1].lt_condition = "normal";
+
+            //get deconvolution results - same file as topdown file
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().fraction = "5";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().lt_condition = "normal";
+
+            //add another file - not same fraction as td file... should not be calibrated
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].fraction = "4";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].biological_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].lt_condition = "normal";
+
+            //add another file - not same biorep as td file... should not be calibrated
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].fraction = "4";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].technical_replicate = "1";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].biological_replicate = "2";
+            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList()[1].lt_condition = "normal";
+
+            //td calibration hits -- treat as same file as topdown file
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs.psmtsv") }, Lollipop.acceptable_extensions[cali_td_file], Lollipop.file_types[cali_td_file], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzml")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzml"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")));
+            if (File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv")))
+                File.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv"));
+            Assert.False(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv")));
+            Sweet.lollipop.read_in_calibration_td_hits();
+            Assert.AreEqual(40, Sweet.lollipop.td_hits_calibration.Count);
+            Assert.AreEqual(24, Sweet.lollipop.td_hits_calibration.Count(h => h.qValue < 0.001 && h.ambiguous_matches.Count == 0));
+            Assert.AreEqual("Successfully calibrated files.", Sweet.lollipop.calibrate_files());
+            Assert.AreEqual(91, Sweet.lollipop.component_mz_correction.Count);
+            Assert.AreEqual(0, Sweet.lollipop.td_hit_mz_correction.Count);
+            Assert.IsFalse(Sweet.lollipop.component_mz_correction.Keys.Select(k => k.Item1).Any(k => k == "noisy"));
+            Assert.IsFalse(Sweet.lollipop.component_mz_correction.Keys.Select(k => k.Item1).Any(k => k != "05-26-17_B7A_yeast_td_fract5_rep1"));
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.mzML"))); //didn't calibrate topdown
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_MS1_calibrated.mzML")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "calibration_AllPSMs_calibrated.psmtsv"))); //didn't calibrate topdown
+            //make sure calibrated file contains correct points...
+            Sweet.lollipop.input_files.Clear();
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1_calibrated.xlsx") }, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[cali_id_file], Lollipop.file_types[cali_id_file], Sweet.lollipop.input_files, false);
+            List<Component> calibrated_components = new List<Component>();
+            List<Component> uncalibrated_components = new List<Component>();
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), calibrated_components, Purpose.Identification, false);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList(), uncalibrated_components, Purpose.CalibrationIdentification, false);
+
+            Assert.AreEqual(10, calibrated_components.Count());
+            Assert.AreEqual(10, uncalibrated_components.Count());
+
+            foreach (Component c in calibrated_components)
+            {
+                foreach (ChargeState cs in c.charge_states)
+                {
+                    Assert.True(Sweet.lollipop.component_mz_correction.Values.Contains(Math.Round(cs.mz_centroid, 5)));
+                }
+            }
+
+            //sometimes have a cs that doesn't change - want to make sure not ALL of them didn't...
+            Assert.IsFalse(uncalibrated_components.SelectMany(c => c.charge_states).All(cs => calibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid && p.intensity == cs.intensity)));
+        }
+
+
         [Test]
         public void too_few_td_hits_to_calibrate()
         {

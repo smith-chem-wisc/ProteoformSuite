@@ -448,7 +448,7 @@ namespace ProteoformSuiteInternal
                     for (int hit = 0; hit < counts.Max(); hit++)
                     {
                         SpectrumMatch td_hit = new SpectrumMatch(index, aaIsotopeMassList, file,
-                            TopDownResultType.TightAbsoluteMass,
+                            TopDownResultType.MetaMorpheus,
                             accessions.Count > hit ? accessions[hit] : accessions[0],
                             cellStrings[index_full_sequence].Trim(new char[] {'"'}),
                                 accessions.Count > hit ? accessions[hit] : accessions[0],
