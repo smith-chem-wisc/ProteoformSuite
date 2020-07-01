@@ -93,7 +93,16 @@
                         <winform:NumericUpDown x:Name="nUD_mass_tolerance" Value="0" DecimalPlaces="0" Increment="1" Maximum="100" Minimum="0" ValueChanged="nUD_mass_tolerance_ValueChanged"></winform:NumericUpDown>
                     </WindowsFormsHost>
                     <Label Grid.Column="1" Grid.Row="0" Margin="5 10 5 0">Mass Tolerance for Merging Artifacts (ppm)</Label>
-
+                    <WindowsFormsHost Margin="5 0 5 0" Grid.Column="0" Grid.Row="1">
+                        <winform:NumericUpDown x:Name="nud_minCC" Value="0.70" DecimalPlaces="2" Increment=".01" Maximum="1" Minimum=".70" ValueChanged="nUD_minCC_ValueChanged"></winform:NumericUpDown>
+                    </WindowsFormsHost>
+                    <Label Grid.Column="1" Grid.Row="1" Margin="5 10 5 0">Cosine threshold between per-charge-intensities and fitted gaussian distribution</Label>
+                    <WindowsFormsHost Margin="5 0 5 0" Grid.Column="0" Grid.Row="2">
+                        <winform:NumericUpDown x:Name="nUD_minIC" Value="0.70" DecimalPlaces="2" Increment=".01" Maximum="1" Minimum="0.70" ValueChanged="nUD_minIC_ValueChanged"></winform:NumericUpDown>
+                    </WindowsFormsHost>
+                    <Label Grid.Column="1" Grid.Row="2" Margin="5 10 5 0">
+                        Cosine threshold between averagine and observed isotope pattern
+                    </Label>
                 </Grid>
                 <GridSplitter Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
                 <Grid Grid.Row="2">

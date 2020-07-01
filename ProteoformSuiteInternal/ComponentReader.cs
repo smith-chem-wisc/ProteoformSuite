@@ -124,7 +124,7 @@ namespace ProteoformSuiteInternal
                         add_component(c);
                     }
                 }
-                else if(row.Length == 16)
+                else if (row.Length == 16)
                 {
                     List<string> cellStrings = new List<string>();
                     cellStrings.Add(row[0]); //id
@@ -153,6 +153,13 @@ namespace ProteoformSuiteInternal
 
                     if (acceptable_component(c))
                     {
+                        double IC = Convert.ToDouble(row[14]);
+                        double CC = Convert.ToDouble(row[15]);
+                        if (IC < Sweet.lollipop.minIC || CC < Sweet.lollipop.minCC)
+                        {
+                            continue;
+                        }
+
                         add_component(c);
                     }
                 }

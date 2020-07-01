@@ -144,6 +144,8 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
         public double raw_component_mass_tolerance = 5;
+        public double minIC = 0.7;
+        public double minCC = 0.7;
 
         #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
 
@@ -193,7 +195,11 @@ namespace ProteoformSuiteInternal
 
                 if(f.extension == ".raw")
                 {
-                    return "Error: please convert .raw files to .mzML";
+                    //var myMsDataFile = ThermoRawFileReaderData.LoadAllStaticData(f.complete_path);
+                    //MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile,
+                    //f.directory + "\\" + f.filename + "PS.mzML", false);
+                    //filelocation = f.directory + "\\" + f.filename + "PS";
+                     return "Error: please convert .raw files to .mzML";
                 }
 
                 Process proc = new Process();

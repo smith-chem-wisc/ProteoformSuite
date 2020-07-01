@@ -106,6 +106,8 @@ namespace ProteoWPFSuite
             nUD_mass_tolerance.Value = (decimal)Sweet.lollipop.raw_component_mass_tolerance;
             CK_rb_displayIdentificationComponents = true;
             CK_rb_displayQuantificationComponents = false;
+            nud_minCC.Value = (decimal)Sweet.lollipop.minCC;
+            nUD_minIC.Value = (decimal)Sweet.lollipop.minIC;
             FillTablesAndCharts();
         }
 
@@ -210,7 +212,17 @@ namespace ProteoWPFSuite
             Sweet.lollipop.raw_component_mass_tolerance = Convert.ToDouble(nUD_mass_tolerance.Value);
         }
 
+        private void nUD_minCC_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.minCC = Convert.ToDouble(nud_minCC.Value);
+        }
+
+        private void nUD_minIC_ValueChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.minIC = Convert.ToDouble(nUD_minIC.Value);
+        }
+
         #endregion Private Methods
-        
+
     }
 }

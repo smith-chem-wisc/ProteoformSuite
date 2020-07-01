@@ -29,7 +29,7 @@ namespace Test
 
             List<Component> deconv_components = new List<Component>();
             Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.Identification).ToList(), deconv_components, Purpose.Identification, false);
-            Assert.AreEqual(54, deconv_components.Count);
+            Assert.AreEqual(52, deconv_components.Count);
             Assert.AreEqual(6999.01, Math.Round(deconv_components.OrderBy(c => c.id).First().reported_monoisotopic_mass, 2));
             Assert.AreEqual(6999.01, Math.Round(deconv_components.OrderBy(c => c.id).First().weighted_monoisotopic_mass, 2));
             Assert.AreEqual(15184400000, Math.Round(deconv_components.OrderBy(c => c.id).First().intensity_reported, 2));

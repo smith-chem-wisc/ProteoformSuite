@@ -620,6 +620,8 @@ namespace ProteoformSuiteInternal
                     double corrected_RT;
                     // key is filename, hit scan #, hit reported mass, value is corrected mass
                     string[] row = old[i].Split('\t');
+                    bool add_row_to_new_document = true;
+
                     if (Sweet.lollipop.retention_time_calibration)
                     {
                         if (Sweet.lollipop.td_hit_RT_correction.TryGetValue(
@@ -628,7 +630,10 @@ namespace ProteoformSuiteInternal
                                 Convert.ToDouble(row[index_precursor_mass])), out corrected_RT))
                         {
                             row[index_retention_time] = corrected_RT.ToString();
-                            new_file.Add(String.Join("\t", row));
+                        }
+                        else
+                        {
+                            add_row_to_new_document = false;
                         }
                     }
 
@@ -640,9 +645,15 @@ namespace ProteoformSuiteInternal
                                 Convert.ToDouble(row[index_precursor_mass])), out corrected_mass))
                         {
                             row[index_precursor_mass] = corrected_mass.ToString();
-                            new_file.Add(String.Join("\t", row));
-
                         }
+                        else
+                        {
+                            add_row_to_new_document = false;
+                        }
+                    }
+                    if(add_row_to_new_document)
+                    {
+                        new_file.Add(String.Join("\t", row));
                     }
                 }
                 File.WriteAllLines(new_absolute_path, new_file);
@@ -715,13 +726,13 @@ namespace ProteoformSuiteInternal
                         if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
                             row[2] = value.ToString();
-                            new_file.Add(string.Join("\t", row));
                         }
                         if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
                             row[8] = (value*60).ToString();
-                            new_file.Add(string.Join("\t", row));
                         }
+                        new_file.Add(string.Join("\t", row));
+
                     }
                     else if (row.Length == 3 && Double.TryParse(row[0], out mass) &&
                              Double.TryParse(row[1], out intensity))
@@ -730,13 +741,12 @@ namespace ProteoformSuiteInternal
                         if (Sweet.lollipop.component_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
                             row[0] = value.ToString();
-                            new_file.Add(string.Join("\t", row));
                         }
                         if (Sweet.lollipop.component_RT_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(intensity, 0), Math.Round(mass, 2)), out value))
                         {
                             row[2] = value.ToString();
-                            new_file.Add(string.Join("\t", row));
                         }
+                        new_file.Add(string.Join("\t", row));
                     }
                 }
                 File.WriteAllLines(new_absolute_path, new_file);
