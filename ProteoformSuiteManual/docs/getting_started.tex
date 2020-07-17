@@ -4,28 +4,49 @@
 %---------------------------------------------------------------------
 
 \section{Getting Started}
+
 \subsection{Installation}
 Download a release from \url{https://github.com/smith-chem-wisc/proteoform-suite}.
 
 \subsection{System Requirements}
-16 GB RAM recommended, .NET Framework, and such
 
-\subsection{Deconvolution Software}
-Thermo Deconvolution 4.0 is the only deconvolution software currently supported, although we are working on other solutions.
-
-\subsubsection{Thermo Deconvolution 4.0}
 \begin{itemize}
-	\item How to find, install, pricing
-	\item How to analyze files, how we've figured out is best
-	\item How to save files
-	\item Any tricks and known bugs of the program that we've had to get around
+
+\item 8 GB of RAM is recommended for yeast; more RAM is required for larger databases.
+\item 64-bit operating system
+\item .NET Core 3.1: \\
+\url{https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.3-windows-x64-installer}
+\item For visualization of proteoform families: Cytoscape\supercite{Shannon2003,Smoot2011} version 3.5.0: \\
+ \url{https://cytoscape.org/download.html}
+\item For visualization of quantitative proteoform families: Need to install enhancedGraphics in Cytoscape using the App Manager under the Tools menu.
+%\item For thermo .RAW files: Need to have Thermo MSFileReader 3.1 SP2 installed
+
 \end{itemize}
+
+%\subsection{Deconvolution Software}
+%Thermo Deconvolution 4.0 is the only deconvolution software currently supported, although we are working on other solutions.
+%\subsubsection{Thermo Deconvolution 4.0}
+%\begin{itemize}
+%\item How to find, install, pricing
+%	\item How to analyze files, how we've figured out is best
+%	\item How to save files
+%	\item Any tricks and known bugs of the program that we've had to get around
+%\end{itemize}
 
 \subsection{Basic Workflow}
 \begin{itemize}
-	\item Load results
-	\item Results menu walkthrough -- click the button on each page to process
-	\item Accessing results (results summary; export tables with File -> Export)
-	\item Full run with defaults
+	\item Load results on the Load Results page under Standard analysis
+	\item Click through each tab at the top or use the arrows (top right) to navigate through the pages
+	\item On each page, set parameters and then click the Run Page button (top right)
 \end{itemize}
-
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.43]{figures/gettingstarted.jpg}
+\end{figure}
+\begin{itemize}
+	\item To save the tables on a specific page: File $>$ Export Table
+	\item To save all tables from all pages: File $>$ Export All Tables
+	\item To save a method .xml (including all parameters, files, file labels): Methods $>$ Save Method
+	\item To load a method .xml (including all parameters, files, file labels): Methods $>$ Load Method
+	%\item To run a full run with a previous method .xml, click Full Run (bottom right)
+\end{itemize}

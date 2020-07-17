@@ -43,6 +43,9 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <None Update="Image\lollipop.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ProteoformSweet.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

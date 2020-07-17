@@ -5,6 +5,116 @@
 
 \section{Results Summary}
 
+\subsection{Overview}
+This page displays all of the results from the Proteoform Suite analysis. The results automatically refresh each time the page is loaded. Results and tables can be exported.
+
+\subsection{Results}
 \begin{itemize}
-	\item Explain all of the things listed if not defined in the glossary, or point to glossary
+\item Results Folder: browse for a folder where all results will be exported
+\item Save All: save all results files in the folder selected
+\begin{itemize}
+\item ExperimentExperimental\_MassDifferences\_timestamp.png: image of Experiment-Experiment Delta Mass Histogram
+\item ExperimentTheoretical\_MassDifferences\_timestamp.png: image of Experiment-Theoretical Delta Mass Histogram
+\item Presets\_timestamp.xml: method file of all set parameters in Proteoform Suite. Can be used in future Proteoform Suite analyses to replicate this analysis
+\item Proteoform\_bottomup\_evidence\_timestamp.tsv: if bottom-up data input, this is a list of potential proteoforms inferred with bottom-up evidence
+\item Bottomup\_results\_timestampe.tsv: if bottom-up data input, this is a list of bottom-up peptides
+\item Shared\_peptide\_bottomup\_results\_timestamp.tsv: if bottom-up data input, this is a list of shared bottom-up peptides
+\item Topdown\_results\_timestampe.tsv: if top-down data input, this is a list of top-down proteoforms
+\item AllFamilies\_cytoscape\_edges\_timestamp.tsv: file containing edge information for all proteoform families in Cytoscape visualization
+\item AllFamilies\_cytoscape\_nodes\_timestamp.tsv: file containing node information for all proteoform families in Cytoscape visualization
+\item AllFamilies\_cytoscape\_script\_timestamp.tsv: script to visualize all proteoform families in Cytoscape
+\item AllFamilies\_cytoscape\_style\_timestamp.tsv: file containing style information for all proteoform families in Cytoscape visualization
+\item BottomUp\_cytoscape\_edges\_timestamp.tsv: if bottom-up data input, file containing edge information for all proteoform families in Cytoscape visualization
+\item BottomUp\_cytoscape\_nodes\_timestamp.tsv: if bottom-up data input, file containing node information for all proteoform families in Cytoscape visualization
+\item BottomUp\_cytoscape\_script\_timestamp.tsv: if bottom-up data input, script to visualize peptide-to-proteoform relations in Cytoscape
+\item BottomUp\_cytoscape\_style\_timestamp.tsv: if bottom-up data input, file containing style information for all proteoform families in Cytoscape visualization
+\item Decoy\_experimental\_results\_timestamp.tsv: all decoy intact-mass identifications
+\item Experimental\_intensities\_by\_file\_timestampe.tsv: intensity for each file for each experimental proteoform
+\item Experimental\_results\_timestamp.tsv: experimental proteoform intact-mass identifications
+\item Summary\_timestampe.txt: summary of all proteoform results, displayed on Results Summary page
 \end{itemize}
+\item Results Summary
+\begin{itemize}
+\item Unprocessed Raw Experimental Components: the number of raw experimental components for identification before merging artifacts
+\item Raw Experimental Components:  the number of raw experimental components for identification after merging artifacts
+\item Missed Monoisotopic Raw Experimental Components Merged: the number of raw experimental components for identification artifacts merged due to being missed monoisotopic errors within the set mass tolerance
+\item Harmonic Raw Experimental Components Merged: the number of raw experimental components for identification artifacts merged due to being charge state harmonic errors within the set mass tolerance
+\item Unprocessed Raw Quantitative Components: the number of raw experimental components for quantification before merging artifacts
+\item Raw Quantitative Components: the number of raw experimental components for quantification after merging artifacts
+\item Missed Monoisotopic Raw Quantitative Components Merged: the number of raw experimental components for quantification artifacts merged due to being missed monoisotopic errors within the set mass tolerance
+\item Harmonic Raw Quantitative Components Merged: the number of raw experimental components for quantification artifacts merged due to being charge state harmonic errors within the set mass tolerance
+\item Raw NeuCode Pairs: the total number of NeuCode pairs, each with a heavy and light NeuCode raw experimental component 
+\item Accepted NeuCode Pairs: the number of accepted NeuCode pairs, which are used in subsequent analysis
+\item Top-Down Hit: total number of top-down hits (proteoform spectral matches)
+\item Accepted Top-Down Proteoforms: number of aggregated top-down proteoforms. May be greater than the number of unique PFRs if some hits of the same ID fall outside of the retention time tolerance
+\item Experimental Proteoforms: the total number of experimental proteoforms
+\item Accepted Experimental Proteoforms: the number of accepted experimental proteoforms that are used in subsequent analysis
+\item Accepted Intact-Mass Experimental Proteoforms: the number of accepted experimental proteoforms aggregated from raw experimental components from deconvolution results
+\item Accepted Top-Down Experimental Proteoforms: the number of accepted experimental proteoforms aggregated from top-down hits from top-down results
+\item Theoretical Proteins: the number of unique proteins
+\item Expanded Theoretical Proteins: the number of unique protein sequences, including annotated subsequences
+\item Theoretical Proteoforms: the number of theoretical proteoforms in the database
+\item Experimental-Theoretical Peaks: the total number of experiment-theoretical delta mass peaks
+\item Experimental-Theoretical Pairs: the total number of experiment-theoretical pairs, each with a delta mass between the experiment and theoretical proteoforms
+\item Accepted Experimental-Theoretical Peaks: the number of accepted experiment-theoretical delta mass peaks
+\item Accepted Experimental-Theoretical Pairs: the number of experiment-theoretical pairs in accepted delta mass peaks, used in subsequent proteoform family construction
+\item Average Experimental-Decoy Pairs: the average number of experiment-decoy pairs across all decoy databases generated
+\item Experimental-Experimental Peaks: the total number of experiment-experiment delta mass peaks
+\item Experimental-Experimental Pairs: the total number of experiment-experiment pairs, each with a delta mass between the two experimental proteoforms
+\item Accepted Experimental-Experimental Peaks: the number of accepted experiment-experiment delta mass peaks
+\item Accepted Experimental-Experimental Pairs: the number of experiment-experiment pairs in accepted delta mass peaks, used in subsequent proteoform family construction
+\item Average Experimental-False Pairs: the average number of experiment-false pairs across all decoy analyses
+\item Proteoform Families: the number of constructed proteoform families, from accepted experiment-theoretical and experiment-experiment pairs
+\item Identified Families (Correspond to 1 gene): the number of proteoform families with one unique gene from the theoretical proteoforms in the family
+\item Experimental Proteoforms in Identified Families: the number of experimental proteoforms in identified proteoform families with 1 gene
+\item Ambiguous Families (Correspond to $>$ 1 gene): the number of proteoform families with more than one unique gene from the theoretical proteoforms in the family
+\item Experimental Proteoforms in Ambiguous Families: the number of experimental proteoforms in ambiguous proteoform families with more than 1 gene
+\item Unidentified Families (Correspond to no gene): the number of proteoform families with no genes (no theoretical proteoforms)
+\item Experimental Proteoforms in Unidentified Families: the number of experimental proteoforms in unidentified families with no theoretical proteoforms/genes
+\item Orphaned Experimental Proteoforms (Intact-mass proteoforms not joined with another proteoform): the number of experimental proteoforms that were not part of any accepted experiment-theoretical or experiment-experiment pairs
+\item Raw Experimental Components in Families: the number of raw experimental components that were aggregated into an experimental proteoform that was a part of a proteoform family (non-orphans)
+\item \% of Raw Experimental Components in Families: the percentage of raw experimental components that were aggregated into an experimental proteoform that was a part of a proteoform family (non-orphans)
+\item Raw Quantitative Components in Families: the number of raw quantitative components that were aggregated into an experimental proteoform that was a part of a proteoform family (non-orphans)
+\item \% of Raw Quantitative Components in Families:  the percentage of raw quantitative components that were aggregated into an experimental proteoform that was a part of a proteoform family (non-orphans)
+\item Identified Experimental Proteoforms: the number of experimental proteoforms that were identified from proteoform family construction of experiment-theoretical and experiment-experiment pairs
+\item Average Identified Experimental Proteoforms by Decoys: the average number of experimental proteoforms that were identified from proteoform family construction of experiment-decoy and experiment-false pairs
+\item Proteoform FDR: the calculated global false discovery rate (average number of decoy identifications / experimental proteoform identifications)
+\item Identified Experimental Proteoforms (no Ambiguous): the number of experimental proteoforms that were identified from proteoform family construction of experiment-theoretical and experiment-experiment pairs, excluding ambiguous identifications
+\item Average Identified Experimental Proteoforms by Decoys (no Ambiguous): the average number of experimental proteoforms that were identified from proteoform family construction of experiment-decoy and experiment-false pairs, excluding ambiguous identifications
+\item Proteoform FDR:  the calculated global false discovery rate (average number of decoy identifications / experimental proteoform identifications), excluding ambiguous identifications
+\item Top-Down Proteoforms Assigned Same Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned the same identification through proteoform family construction as the original top-down identification
+\item Top-Down Proteoforms Assigned Different Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned a different identification through proteoform family construction as the original top-down identification
+\item Top-Down Proteoforms Assigned Amibguous Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned an ambiguous identification through proteoform family construction
+\item Top-Down Proteoforms Unidentified by Intact-Mass Analysis: the number of top-down proteoforms that were not assigned an identification through proteoform family construction
+\item Unique Top-Down Protein Identifications (TDPortal): then umber of unique protein identifications from the top-down identifications
+\item Total Unique Protein Identifications: the total number of unique protein identifications, top-down + intact-mass
+\item Unique Intact-Mass Experimental Proteoform Identifications: the total number of unique protein identifications from proteoform family construction
+\item Ambiguous Intact-Mass Experimental Proteoform Identifications: the number of ambiguous experimental proteoform identification from proteoform family construction
+\item Unique Top-Down Proteoforms Identifications (TDPortal): the number of unique top-down proteoform identifications from the top-down hit results
+\item Unidentified Intact-Mass Experimental Proteoforms: the number of unidentified intact-mass experimental proteoforms (aggregated from raw experimental components from deconvolution results)
+\item Total Unique Proteoform Identifications: the total number of unique proteoform identifications from top-down results and intact-mass results
+\item Quantified Experimental Proteoforms (Threshold for Quantification: 0 = Minimum Bioreps with Observations From Any Single Condition): the number of experimental proteoforms that met the minimum threshold for quantification analysis
+\item Average Log2 Intensity Quantified Experimental Proteoform Observations: the average log2 intensity of experimental proteoforms that were quantified (calculated from the raw quantitative components)
+\item Log2 Intensity Standard Deviation for Quantified Experimental Proteoform: the standard deviation fo the log2 intensity of experimental proteoforms that were quantified
+\item Experimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange $>$ 0, \& Total Intensity from Quantification $>$ 0, \& Q-Value $<$ 0.05): experimental proteoforms with statistically significant fold change from both relative difference and fold change analysis
+\item Experimental Proteoforms with Significant Change by Relative Difference (Offset of 1 from d(i) = dE(i) line): number of proteoforms with statistically significant relative difference in Tusher analysis with X permutations
+\item Experimental Proteoforms with Significant Change by Fold Change (Offset of 1 from d(i) = dE(i) line): number of proteoforms with statistically significant fold change in Tusher analysis with X permutations
+\item FDR for Significance Conclusion (Offset of 1 from d(i) = dE(i) line): the false discovery rate for the relative difference analysis from the Tusher analysis with X permutations
+\item Proteoform Families with Significant Change: number of proteoform families with at least one experimental proteoform with a statistically significant fold change from the Tusher analysis with X permutations
+\item Identified Proteins with Significant Change: the number of unique identified proteins with at least one identified experimental proteoform with a statistically significant fold change from the Tusher analysis with X permutations
+\item GO Terms of Significance (Benjimini-Yekeulti p-value $<$ 0.05; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange $>$ 0, \& Total Intensity from Quantification $>$ 0, \& Q-Value $<$ 0.05): number of significant gene ontology terms from the Tusher analysis with X permutations
+\item Experimental Proteoforms with Significant Change (Threshold for Significance: Benjimini-Hochberg Q-Value $<$ 0.05): number of proteoforms with statistically significant fold change from log2 fold change t-test with Benjamini-Hochberg correction
+\item FDR for Significance Conclusion: FDR value for fold change to be considered statistically significant
+\item Proteoform Families with Significant Change: number of proteoforms with statistically significant  relative difference from log2 fold change t-test with Benjamini-Hochberg correction
+\item Identified Proteins with Significant Change: the number of unique identified proteins with at least one identified experimental proteoform with a statistically significant fold change from log2 fold change t-test with Benjamini-Hochberg correction
+\item GO Terms of Significance (Benjimini-Yekeulti p-value $<$ 0.05; using Experimental Proteoforms that satisified the criteria:  Log2FoldChange $>$ 0, \& Total Intensity from 
+\item Quantification $>$ 0, \& Q-Value $<$ 0.05): number of significant gene ontology terms from log2 fold change t-test with Benjamini-Hochberg correction
+\item Identified Proteins with Significant Change: (0 Permutations): list of unique identified proteins with at least one identified experimental proteoform with a statistically significant fold change from Tusher analysis with X permutations
+\item Identified Proteins with Significant Change: (by log2 fold change analysis): list of unique identified proteins with at least one identified experimental proteoform with a statistically significant fold change from log2 fold change t-test with Benjamini-Hochberg correction
+\item GO Terms of Significance, Tusher Analysis with 0 permutations (Benjimini-Yekeulti p-value $<$ 0.05): list of statistically significant gene ontology terms from Tusher analysis with X permutations
+\item GO Terms of Significance, Log2 Fold Change Analysis with 0.05 FDR (Benjimini-Yekeulti p-value $<$ 0.05): list of statistically significant gene ontology terms from log2 fold change t-test with Benjamini-Hochberg correction
+\item USER ACTIONS: list of user actions, including adding files, changing file labels, accepting/unaccepting delta mass peaks, shifting the mass of experiment-theoretical delta mass peaks
+\item DECONVOLUTION RESULTS FILES AND PROTEIN DATABASE FILES: list of files loaded on the Load Results page
+\end{itemize}
+\end{itemize}
+
