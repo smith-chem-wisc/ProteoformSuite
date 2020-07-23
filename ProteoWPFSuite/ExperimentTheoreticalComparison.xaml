@@ -210,7 +210,7 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-                        <CheckBox x:Name="cb_view_decoy_histogram" FontSize="9.5" VerticalAlignment="Center" IsEnabled="False" IsChecked="{Binding Path=CBVIEWDECOYHISTOGRAM,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">View Experimental-Decoy Histogram</CheckBox>
+                        <CheckBox x:Name="cb_view_decoy_histogram" FontSize="9.5" VerticalAlignment="Center" IsEnabled="False" IsChecked="{Binding Path=CBVIEWDECOYHISTOGRAM,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">View Experiment-Decoy Histogram</CheckBox>
                         <!--Binding Here-->
                         <CheckBox x:Name="cb_discoveryHistogram" FontSize="9.5" VerticalAlignment="Center" Grid.Row="1" IsChecked="{Binding Path=CBDISCOVERYHISTOGRAM,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Raw ET Histogram with Unmodified</CheckBox>
                         <!--Binding Here-->

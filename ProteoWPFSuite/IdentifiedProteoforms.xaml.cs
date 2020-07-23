@@ -51,7 +51,7 @@ namespace ProteoWPFSuite
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_identified_experimentals);
             DisplayUtility.FillDataGridView(dgv_td_proteoforms, Sweet.lollipop.topdown_proteoforms.Select(e => new DisplayTopDownProteoform(e as TopDownProteoform)));
             DisplayTopDownProteoform.FormatTopDownTable(dgv_td_proteoforms, true);
-            tb_not_td.Text = "Identified Experimental Proteoforms Not in Top-Down";
+            tb_not_td.Text = "Identified Intact-Mass Experimental Proteoforms";
             tb_topdown.Text = "Top-Down Proteoforms";
             tb_bottomup.Text = "Bottom-Up Peptides from Selected Proteoform";
         }

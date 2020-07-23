@@ -351,6 +351,7 @@ namespace ProteoWPFSuite
 
         public static string header(string name)
         {
+            if (name == nameof(best_q_value)) { return "Best Hit Q-Value"; }
             if (name == nameof(modified_mass)) { return "Modified Mass"; }
             if (name == nameof(ptm_description)) { return "PTM Description"; }
             if (name == nameof(retentionTime)) { return "Retention Time"; }

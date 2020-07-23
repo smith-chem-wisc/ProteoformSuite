@@ -438,7 +438,7 @@ namespace ProteoformSuiteInternal
                     {
                         if (!candidate_theoreticals.Any(p => p.BaseSequence == topdown.sequence) && !new_proteins.Any(p => p.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0]) && p.BaseSequence == topdown.sequence))
                         {
-                            if (topdown.ambiguous_topdown_hits.Count == 0)
+                            if (topdown.topdown_level <= 2)
                             {
                                 int old_proteins_with_same_begin_end_diff_sequence = candidate_theoreticals.Count(t => t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);
                                 int new_proteins_with_same_being_end_diff_sequence = new_proteins.Count(t => t.AccessionList.Select(a => a.Split('_')[0]).Contains(topdown.accession.Split('_')[0]) && t.ProteolysisProducts.First().OneBasedBeginPosition == topdown.topdown_begin && t.ProteolysisProducts.First().OneBasedEndPosition == topdown.topdown_end && t.BaseSequence != topdown.sequence);

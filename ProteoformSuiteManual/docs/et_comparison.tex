@@ -14,7 +14,7 @@ On this page, experimental proteoforms are compared to theoretical proteoforms f
 \item The Theoretical Proteoforms and Aggregated Proteoforms pages must be run before running this page.
 \item Set all parameters as desired for current analysis (see below)
 \item Click Run Page button (top right)
-\item Browse the list of delta mass peaks from the histogram of experimental-theoretical pairs delta masses (top left table). Accept peaks that have an acceptable false discovery rate and correspond to common/likely modifications. For unlabeled analyses, typically only the delta mass peak closest to 0 (exact matches) is accepted. 
+\item Browse the list of delta mass peaks from the histogram of experiment-theoretical pairs delta masses (top left table). Accept peaks that have an acceptable false discovery rate and correspond to common/likely modifications. For unlabeled analyses, typically only the delta mass peak closest to 0 (exact matches) is accepted. 
 \end{itemize}
 
 \subsection{Set Parameters}
@@ -28,17 +28,17 @@ On this page, experimental proteoforms are compared to theoretical proteoforms f
 \item Report Best ET Pair Only: if checked, only the closest matching experiment-theoretical pair for each experimental proteoform will be included (each experimental proteoform will only be able to belong to one experiment-theoretical pair)
 \item Peak Width Base (Da): if notch search is unchecked, this is the size of bins used for generating the delta mass histogram from experiment-theoretical pair delta masses
 \item Peak Threshold (cts): the minimum number of experiment-theoretical pairs that must belong to a delta mass peak for the peak to be accepted
-\item Min. Bottom-Up Peptides: this is the minimum number of bottom-up peptides that a theoretical proteoform must have in order to be included in the experiment-theoretical comparison
+\item Min. Bottom-Up Peptides: this is the minimum number of bottom-up peptides that a theoretical proteoform must have in order to be included in the experiment-theoretical comparison. Top-down identified proteoforms are also included in the database.
 \item Notch Tolerance: if a notch search is performed, this tolerance will be used to generate experiment-theoretical pairs at each modification delta mass
 \item ET Histogram Boundaries: Lower (Da) and Upper (Da) delta masses to be considered for an experiment-theoretical pair to be generated 
 \end{itemize}
 
 \subsection{Results}
 \begin{itemize}
-	\item Identified Proteoforms: the number of accepted experimental-theoretical pairs
+	\item Identified Proteoforms: the number of accepted experiment-theoretical pairs
 	\item Total Peaks: the number of accepted experiment-theoretical delta mass peaks
 	\pagebreak
-	\item Experimental-Theoretical Delta Mass Peaks table: the top left table displays the delta mass peaks from the histogram of experiment-theoretical pair delta masses. If a notch search is performed, each peak is a different modification delta mass/notch
+	\item Experiment-Theoretical Delta Mass Peaks table: the top left table displays the delta mass peaks from the histogram of experiment-theoretical pair delta masses. If a notch search is performed, each peak is a different modification delta mass/notch
 
 	\begin{figure}[h]
 \centering
@@ -65,7 +65,7 @@ On this page, experimental proteoforms are compared to theoretical proteoforms f
 \begin{itemize}
 	\item Peak Center Count: if this pair is in a delta mass peak, the number of pairs in the peak
 	\item Peak Center Delta Mass: if this pair is in a delta mass peak, the delta mass at the center of the peak
-	\item Accepted: checked if this pair is in a delta mass peak that is accepted in the Experimental-Theoretical Delta Mass Peaks table
+	\item Accepted: checked if this pair is in a delta mass peak that is accepted in the Experiment-Theoretical Delta Mass Peaks table
 	\item Delta Mass: mass difference between the experimental and theoretical proteoform in this pair
 	\item Nearby Relation Count: number of pairs with a delta mass close to this pair's delta mass; this value is used to plot the delta mass histogram
 	\item Outside No Man's Land: checked if this pair is an acceptable delta mass regarding the numbers after the decimal point. Pairs with a delta mass in no man's land are not joined into delta mass peaks
@@ -89,7 +89,7 @@ On this page, experimental proteoforms are compared to theoretical proteoforms f
 \includegraphics[scale=0.46]{figures/et5.jpg}
 \end{figure}
 \begin{itemize} 
-	\item View Experiment Decoy Histogram: if checked, delta mass histogram for experiment decoy pairs will be plotted
+	\item View Experiment-Decoy Histogram: if checked, delta mass histogram for experiment decoy pairs will be plotted
 	\item Raw ET Histogram with Unmodified: if checked, a histogram with only unmodified theoretical proteoforms will be plotted using all delta mass pairs
 	\item Show Threshold: if checked, a red line on the graph shows the Peak Threshold set
 	\end{itemize}

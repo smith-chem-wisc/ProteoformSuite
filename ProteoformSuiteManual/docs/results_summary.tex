@@ -46,24 +46,24 @@ This page displays all of the results from the Proteoform Suite analysis. The re
 \item Raw NeuCode Pairs: the total number of NeuCode pairs, each with a heavy and light NeuCode raw experimental component 
 \item Accepted NeuCode Pairs: the number of accepted NeuCode pairs, which are used in subsequent analysis
 \item Top-Down Hit: total number of top-down hits (proteoform spectral matches)
-\item Accepted Top-Down Proteoforms: number of aggregated top-down proteoforms. May be greater than the number of unique PFRs if some hits of the same ID fall outside of the retention time tolerance
+\item Accepted Level 1 and 2 Top-Down Proteoforms: number of aggregated top-down proteoforms. May be greater than the number of unique PFRs if some hits of the same ID fall outside of the retention time tolerance. Only level 1 and 2 top-down proteoform identifications are included
 \item Experimental Proteoforms: the total number of experimental proteoforms
 \item Accepted Experimental Proteoforms: the number of accepted experimental proteoforms that are used in subsequent analysis
 \item Accepted Intact-Mass Experimental Proteoforms: the number of accepted experimental proteoforms aggregated from raw experimental components from deconvolution results
-\item Accepted Top-Down Experimental Proteoforms: the number of accepted experimental proteoforms aggregated from top-down hits from top-down results
+\item Accepted Level 1 and 2 Top-Down Experimental Proteoforms: the number of accepted experimental proteoforms aggregated from top-down hits from top-down results. Only level 1 and 2 top-down proteoform identifications are included
 \item Theoretical Proteins: the number of unique proteins
 \item Expanded Theoretical Proteins: the number of unique protein sequences, including annotated subsequences
 \item Theoretical Proteoforms: the number of theoretical proteoforms in the database
-\item Experimental-Theoretical Peaks: the total number of experiment-theoretical delta mass peaks
-\item Experimental-Theoretical Pairs: the total number of experiment-theoretical pairs, each with a delta mass between the experiment and theoretical proteoforms
-\item Accepted Experimental-Theoretical Peaks: the number of accepted experiment-theoretical delta mass peaks
-\item Accepted Experimental-Theoretical Pairs: the number of experiment-theoretical pairs in accepted delta mass peaks, used in subsequent proteoform family construction
-\item Average Experimental-Decoy Pairs: the average number of experiment-decoy pairs across all decoy databases generated
-\item Experimental-Experimental Peaks: the total number of experiment-experiment delta mass peaks
-\item Experimental-Experimental Pairs: the total number of experiment-experiment pairs, each with a delta mass between the two experimental proteoforms
-\item Accepted Experimental-Experimental Peaks: the number of accepted experiment-experiment delta mass peaks
-\item Accepted Experimental-Experimental Pairs: the number of experiment-experiment pairs in accepted delta mass peaks, used in subsequent proteoform family construction
-\item Average Experimental-False Pairs: the average number of experiment-false pairs across all decoy analyses
+\item Experiment-Theoretical Peaks: the total number of experiment-theoretical delta mass peaks
+\item Experiment-Theoretical Pairs: the total number of experiment-theoretical pairs, each with a delta mass between the experiment and theoretical proteoforms
+\item Accepted Experiment-Theoretical Peaks: the number of accepted experiment-theoretical delta mass peaks
+\item Accepted Experiment-Theoretical Pairs: the number of experiment-theoretical pairs in accepted delta mass peaks, used in subsequent proteoform family construction
+\item Average Experiment-Decoy Pairs: the average number of experiment-decoy pairs across all decoy databases generated
+\item Experiment-Experiment Peaks: the total number of experiment-experiment delta mass peaks
+\item Experiment-Experiment Pairs: the total number of experiment-experiment pairs, each with a delta mass between the two experimental proteoforms
+\item Accepted Experiment-Experiment Peaks: the number of accepted experiment-experiment delta mass peaks
+\item Accepted Experiment-Experiment Pairs: the number of experiment-experiment pairs in accepted delta mass peaks, used in subsequent proteoform family construction
+\item Average Experiment-False Pairs: the average number of experiment-false pairs across all decoy analyses
 \item Proteoform Families: the number of constructed proteoform families, from accepted experiment-theoretical and experiment-experiment pairs
 \item Identified Families (Correspond to 1 gene): the number of proteoform families with one unique gene from the theoretical proteoforms in the family
 \item Experimental Proteoforms in Identified Families: the number of experimental proteoforms in identified proteoform families with 1 gene
@@ -82,15 +82,15 @@ This page displays all of the results from the Proteoform Suite analysis. The re
 \item Identified Experimental Proteoforms (no Ambiguous): the number of experimental proteoforms that were identified from proteoform family construction of experiment-theoretical and experiment-experiment pairs, excluding ambiguous identifications
 \item Average Identified Experimental Proteoforms by Decoys (no Ambiguous): the average number of experimental proteoforms that were identified from proteoform family construction of experiment-decoy and experiment-false pairs, excluding ambiguous identifications
 \item Proteoform FDR:  the calculated global false discovery rate (average number of decoy identifications / experimental proteoform identifications), excluding ambiguous identifications
-\item Top-Down Proteoforms Assigned Same Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned the same identification through proteoform family construction as the original top-down identification
-\item Top-Down Proteoforms Assigned Different Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned a different identification through proteoform family construction as the original top-down identification
-\item Top-Down Proteoforms Assigned Amibguous Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned an ambiguous identification through proteoform family construction
-\item Top-Down Proteoforms Unidentified by Intact-Mass Analysis: the number of top-down proteoforms that were not assigned an identification through proteoform family construction
-\item Unique Top-Down Protein Identifications (TDPortal): then umber of unique protein identifications from the top-down identifications
+\item Level 1 and 2 Top-Down Proteoforms Assigned Same Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned the same identification through proteoform family construction as the original top-down identification
+\item Level 1 and 2 Top-Down Proteoforms Assigned Different Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned a different identification through proteoform family construction as the original top-down identification
+\item Level 1 and 2 Top-Down Proteoforms Assigned Amibguous Identification by Intact-Mass Analysis: the number of top-down proteoforms that were assigned an ambiguous identification through proteoform family construction
+\item Level 1 and 2  Top-Down Proteoforms Unidentified by Intact-Mass Analysis: the number of top-down proteoforms that were not assigned an identification through proteoform family construction
+\item Unique Level 1 and 2 Top-Down Protein Identifications (TDPortal): the number of unique protein identifications from the level 1 and 2 top-down identifications 
 \item Total Unique Protein Identifications: the total number of unique protein identifications, top-down + intact-mass
 \item Unique Intact-Mass Experimental Proteoform Identifications: the total number of unique protein identifications from proteoform family construction
 \item Ambiguous Intact-Mass Experimental Proteoform Identifications: the number of ambiguous experimental proteoform identification from proteoform family construction
-\item Unique Top-Down Proteoforms Identifications (TDPortal): the number of unique top-down proteoform identifications from the top-down hit results
+\item Unique Level 1 and 2 Top-Down Proteoforms Identifications (TDPortal): the number of unique level 1 and 2 top-down proteoform identifications from the top-down hit results
 \item Unidentified Intact-Mass Experimental Proteoforms: the number of unidentified intact-mass experimental proteoforms (aggregated from raw experimental components from deconvolution results)
 \item Total Unique Proteoform Identifications: the total number of unique proteoform identifications from top-down results and intact-mass results
 \item Quantified Experimental Proteoforms (Threshold for Quantification: 0 = Minimum Bioreps with Observations From Any Single Condition): the number of experimental proteoforms that met the minimum threshold for quantification analysis

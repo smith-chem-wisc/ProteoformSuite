@@ -25,7 +25,7 @@
                     <RowDefinition Height="6*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" SelectionChanged="Cmb_loadTable_OnSelectionChanged"></ComboBox>
+                <ComboBox x:Name="cmb_loadTable" TextBoxBase.TextChanged="cmb_empty_TextChanged" Grid.Row="0" IsEnabled="False" SelectionChanged="Cmb_loadTable_OnSelectionChanged"></ComboBox>
                 <WindowsFormsHost Grid.Row="1">
                     <winform:DataGridView x:Name="dgv_loadFiles" DragDrop="dgv_loadFiles_DragDrop" DragEnter="dgv_loadFiles_DragEnter" AllowDrop="true"></winform:DataGridView>
                 </WindowsFormsHost>
@@ -130,7 +130,7 @@
                         <TextBox x:Name="tb_modTableFilter" Height="25" TextChanged="tb_modTableFilter_TextChanged"></TextBox>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Modification Names" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1">
+                <GroupBox Header="Theoretical Database" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1">
                     <StackPanel VerticalAlignment="Top">
                         <Label Content="Total Theoretical Proteoforms:"></Label>
                         <TextBox x:Name="tb_totalTheoreticalProteoforms" Height="25" IsReadOnly="True">0</TextBox>

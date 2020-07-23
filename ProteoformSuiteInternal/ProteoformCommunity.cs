@@ -191,10 +191,10 @@ namespace ProteoformSuiteInternal
 
         public bool topdown_bottomup_comparison(ExperimentalProteoform pf1, TheoreticalProteoform pf2_with_allowed_lysines)
         {
-            List<TopDownProteoform> topdown_proteoforms_same_accession = Sweet.lollipop.topdown_proteoforms.Where(td =>
-                pf2_with_allowed_lysines.ExpandedProteinList.Any(p =>
-                    p.AccessionList.Select(a => a.Split('_')[0])
-                        .Contains(td.accession.Split('_')[0]))).ToList();
+        //    List<TopDownProteoform> topdown_proteoforms_same_accession = Sweet.lollipop.topdown_proteoforms.Where(td =>
+        //        pf2_with_allowed_lysines.ExpandedProteinList.Any(p =>
+        //            p.AccessionList.Select(a => a.Split('_')[0])
+        //                .Contains(td.accession.Split('_')[0]))).ToList();
             bool good_BU_PSMs = //topdown_proteoforms_same_accession.Count > 0 || 
                                 pf2_with_allowed_lysines.bottom_up_PSMs.Count >= Sweet.lollipop.min_bu_peptides;
           
