@@ -2224,5 +2224,90 @@ namespace Test
             Assert.AreEqual("Unmodified", set.ptm_description);
             Assert.AreEqual(0, set.mass);
         }
+
+        [Test]
+        public void test_unique_intact_mass_ID()
+        {
+            Sweet.lollipop = new Lollipop();
+            Lollipop.preferred_gene_label = "primary";
+
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("T1", 10000, 0); // sequence with all serines
+            t1.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene1", "gene1") });
+            TheoreticalProteoform t2 = ConstructorsForTesting.make_a_theoretical("T2", 10000, 0); // sequence with all serines
+            t2.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("gene2", "gene2") });
+            t1.begin = 2;
+            t2.begin = 2;
+            t1.end = 12;
+            t2.end = 12;
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", 10000, 0, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", 10000, 0, true);
+            ExperimentalProteoform e3 = ConstructorsForTesting.ExperimentalProteoform("E3", 10000, 0, true);
+            ExperimentalProteoform e4 = ConstructorsForTesting.ExperimentalProteoform("E4", 100042.01, 0, true);
+            ConstructorsForTesting.make_relation(t1, e1, ProteoformComparison.ExperimentalTheoretical, 0);
+            ConstructorsForTesting.make_relation(e2, e3, ProteoformComparison.ExperimentalExperimental, 0);
+            ConstructorsForTesting.make_relation(t2, e2, ProteoformComparison.ExperimentalTheoretical, 0);
+            var relation34 = ConstructorsForTesting.make_relation(e3, e4, ProteoformComparison.ExperimentalExperimental, 42.01);
+            ConstructorsForTesting.make_relation(e1, e3, ProteoformComparison.ExperimentalExperimental, 0);
+
+            ModificationMotif.TryGetMotif("M", out ModificationMotif motif);
+            Ptm serine_loss_tpm = new Ptm(0,
+                new Modification("Methionine", _modificationType: "AminoAcid", _target: motif,
+                    _locationRestriction: "Anywhere.", _monoisotopicMass: 42.011));
+            PtmSet serine_loss = new PtmSet(new List<Ptm>
+            {
+                serine_loss_tpm
+            });
+            PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
+
+            // Proteoforms start without any modifications in the PtmSet
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>
+            {
+                { Math.Round(serine_loss.mass, 1), new List<PtmSet> { serine_loss }  }, {Math.Round(set_unmodified.mass, 1), new List<PtmSet> {set_unmodified}}
+            };
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>() { set_unmodified, serine_loss };
+            for (int i = 0; i < 3; i++)
+            {
+                e1.relationships[i].Accepted = true;
+                e1.relationships[i].peak = new DeltaMassPeak(e1.relationships[i],
+                    new HashSet<ProteoformRelation> { e1.relationships[i] });
+                e2.relationships[i].Accepted = true;
+                e2.relationships[i].peak = new DeltaMassPeak(e2.relationships[i],
+                    new HashSet<ProteoformRelation> { e2.relationships[i] });
+            }
+
+            relation34.Accepted = true;
+            relation34.peak = new DeltaMassPeak(relation34, new HashSet<ProteoformRelation>() { relation34 });
+
+            ProteoformFamily fam = new ProteoformFamily(e1);
+            fam.construct_family();
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            fam.identify_experimentals();
+            Assert.AreEqual(4, fam.experimental_proteoforms.Count);
+            Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
+            Assert.AreEqual(2, fam.gene_names.Count);
+            Assert.AreEqual(1, e3.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e4.ambiguous_identifications.Count);
+
+            Assert.AreEqual(1, e3.ambiguous_identifications.Count);
+            Assert.AreEqual("gene1", e3.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e3.begin, 2);
+            Assert.AreEqual(e3.end, 12);
+            Assert.AreEqual("Unmodified", e3.ptm_set.ptm_description);
+            Assert.AreEqual("gene2", e3.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(2, e3.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e3.ambiguous_identifications.First().end);
+            Assert.AreEqual("Unmodified", e3.ambiguous_identifications.First().ptm_set.ptm_description);
+
+            Assert.AreEqual("gene1", e4.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(e4.begin, 1);
+            Assert.AreEqual(e4.end, 12);
+            Assert.AreEqual("Unmodified", e4.ptm_set.ptm_description);
+            Assert.AreEqual("gene2", e4.ambiguous_identifications.First().theoretical_base.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
+            Assert.AreEqual(1, e4.ambiguous_identifications.Count);
+            Assert.AreEqual(1, e4.ambiguous_identifications.First().begin);
+            Assert.AreEqual(12, e4.ambiguous_identifications.First().end);
+            Assert.AreEqual("Unmodified", e4.ambiguous_identifications.First().ptm_set.ptm_description);
+
+        }
     }
 }
