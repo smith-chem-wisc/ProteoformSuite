@@ -82,7 +82,7 @@ namespace ProteoWPFSuite
         public void RunTheGamut(bool full_run)
         {
             ClearListsTablesFigures(true);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
 
             
             this.MDIParent.quantification.InitializeConditionsParameters();

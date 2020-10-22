@@ -47,6 +47,7 @@ namespace ProteoformSuiteInternal
         public int nearby_relations_count { get; set; } // count is the "running sum"; relations are not saved
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
+        public int cysteine_count { get; set; }
         public ProteoformComparison RelationType { get; set; }
         public bool Identification { get; set; } = false;
         /// <summary>
@@ -77,6 +78,11 @@ namespace ProteoformSuiteInternal
             if (Sweet.lollipop.neucode_labeled)
             {
                 lysine_count = pf1.lysine_count;
+            }
+
+            if(Sweet.lollipop.cystag_labeled)
+            {
+                cysteine_count = pf1.cysteine_count;
             }
 
 

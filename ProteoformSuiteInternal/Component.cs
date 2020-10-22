@@ -32,6 +32,7 @@ namespace ProteoformSuiteInternal
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public List<Component> incorporated_missed_monoisotopics = new List<Component>();
+        public List<Component> previously_compared_components = new List<Component>();
         public bool calculating_properties { get; set; } = false;
         private int num_detected_intervals { get; set; }
         public bool accepted { get; set; }

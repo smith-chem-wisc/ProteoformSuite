@@ -244,8 +244,9 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
-
-                if (Sweet.lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
+                
+                //Something likely has to be done here with cystag as well..
+                if ((Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled) && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
                 {
                     ncPairsInScan = Sweet.lollipop.find_neucode_pairs(scanComps.Except(removeThese), neucodePairs_in_file, heavy_hashed_pairs_in_file); // these are not the final neucode pairs, just a temp list
                 }

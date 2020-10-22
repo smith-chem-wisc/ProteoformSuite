@@ -76,6 +76,15 @@ namespace ProteoWPFSuite
             }
         }
 
+        public int CysteineCount
+        {
+            get
+            {
+                return ((ProteoformRelation)display_object).cysteine_count;
+            }
+        }
+            
+
         public int NearbyRelationCount
         {
             get
@@ -298,6 +307,7 @@ namespace ProteoWPFSuite
             if (property_name == nameof(PeakCenterDeltaMass)) { return "Peak Center Delta Mass"; }
             if (!raw_et_histogram && property_name == nameof(PeakCenterCount)) { return "Peak Center Count"; }
             if (property_name == nameof(LysineCount)) { return "Lysine Count"; }
+            if(property_name == nameof(CysteineCount)) { return "Cysteine Count"; }
             if (!raw_et_histogram && property_name == nameof(OutsideNoMansLand)) { return "Outside No Man's Land"; }
 
             //ET formatting
@@ -374,6 +384,7 @@ namespace ProteoWPFSuite
                 if (property_name == nameof(TheoreticalDescription)) { return false; }
             }
             if (property_name == nameof(LysineCount)) return Sweet.lollipop.neucode_labeled;
+            if (property_name == nameof(CysteineCount)) return Sweet.lollipop.cystag_labeled;
             return current;
         }
 

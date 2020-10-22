@@ -39,8 +39,6 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], Sweet.lollipop.input_files, false);
             // Make sure no initial problems with running deconvolution.
             Assert.AreEqual("Error: please convert .raw files to .mzML", Sweet.lollipop.flash_deconv(60, 1, TestContext.CurrentContext.TestDirectory));
-
-
         }
     }
 }

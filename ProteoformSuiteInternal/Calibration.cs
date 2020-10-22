@@ -351,9 +351,9 @@ namespace ProteoformSuiteInternal
                         foreach (double a in originalMasses)
                         {
                             double theMZ = a.ToMz(chargeToLookAt);
-                            if (Sweet.lollipop.neucode_labeled)
+                            if (Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled)
                             {
-                                theMZ = Sweet.lollipop.get_neucode_mass(theMZ.ToMass(chargeToLookAt), identification.sequence.Count(s => s == 'K')).ToMz(chargeToLookAt);
+                                theMZ = Sweet.lollipop.get_neucode_mass(theMZ.ToMass(chargeToLookAt), identification.sequence.Count(s => s == 'K'), identification.sequence.Count(s => s == 'C')).ToMz(chargeToLookAt);
                             }
 
                             double mass_tolerance = theMZ / 1e6 * Sweet.lollipop.cali_mass_tolerance;

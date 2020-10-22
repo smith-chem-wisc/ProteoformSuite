@@ -153,6 +153,7 @@ namespace ProteoformSuiteInternal
             this.accession = accession + "_" + topdown_begin + "to" + topdown_end + "_1TD";
             this.calculate_td_properties();
             this.lysine_count = sequence.Count(s => s == 'K');
+            this.cysteine_count = sequence.Count(s => s == 'C');
             this.topdown_id = true;
         }
 
@@ -174,6 +175,7 @@ namespace ProteoformSuiteInternal
             this.accession = t.accession;
             this.agg_rt = t.agg_rt;
             this.lysine_count = t.lysine_count;
+            this.cysteine_count = t.cysteine_count;
             this.uniprot_id = t.uniprot_id;
             this.pfr_accession = t.pfr_accession;
             this.agg_intensity = t.agg_intensity;

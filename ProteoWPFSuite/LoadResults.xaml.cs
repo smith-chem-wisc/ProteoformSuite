@@ -29,6 +29,7 @@ namespace ProteoWPFSuite
         #region Private Fields
         private String _labeltxt;
         private bool ck_rbneucode;
+        private bool ck_rbcystag;
         private int cb_select;
         //private string[] cb_src;
         #endregion Private Fields
@@ -71,7 +72,10 @@ namespace ProteoWPFSuite
                     return;
                 ck_rbneucode = value;
                 rb_neucode.IsChecked = (bool)ck_rbneucode;
-                rb_unlabeled.IsChecked = (bool)!ck_rbneucode;
+                if (!ck_rbcystag && !ck_rbneucode)
+                {
+                    rb_unlabeled.IsChecked = true;
+                }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbneucode"));
 
                 this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)ck_rbneucode);
@@ -87,7 +91,39 @@ namespace ProteoWPFSuite
                 populate_file_lists();
             }
         }
-        
+
+        public bool CK_rbcystag
+        {
+            get
+            {
+                return ck_rbcystag;
+            }
+            set
+            {
+                if (ck_rbcystag == value)
+                    return;
+                ck_rbcystag = value;
+                rb_cystag.IsChecked = (bool)ck_rbcystag;
+                if(!ck_rbcystag && !ck_rbneucode)
+                {
+                    rb_unlabeled.IsChecked = true;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CK_rbcystag"));
+
+                this.MDIParent.enable_neuCodeProteoformPairsToolStripMenuItem((bool)ck_rbcystag);
+                Sweet.lollipop.cystag_labeled = (bool)ck_rbcystag;
+
+                foreach (InputFile f in Sweet.lollipop.input_files)
+                {
+                    if ((bool)rb_cystag.IsChecked)
+                        f.label = Labeling.Cystag;
+                    if ((bool)rb_unlabeled.IsChecked)
+                        f.label = Labeling.Unlabeled;
+                }
+                populate_file_lists();
+            }
+        }
+
         public int CB_select
         {
             get
@@ -110,6 +146,7 @@ namespace ProteoWPFSuite
         {
             // Initialize components in "2. Set Parameters"
             CK_rbneucode = Sweet.lollipop.neucode_labeled;
+            CK_rbcystag = Sweet.lollipop.cystag_labeled;
 
             // Initialize components in "2. Set Parameters" that fall under "1. Choose Analysis->Chemical Calibration"
             cb_calibrate_raw_files.IsChecked        = Sweet.lollipop.calibrate_raw_files;

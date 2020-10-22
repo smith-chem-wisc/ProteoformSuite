@@ -55,7 +55,7 @@
         </GroupBox>
 
         <!-- 2. Set Parameters -->
-        <GroupBox x:Name="box_parameters" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="150" FontSize="12" Padding="5 5 5 0">
+        <GroupBox x:Name="box_parameters" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Height="157" FontSize="12" Padding="5 5 5 0" Grid.RowSpan="2">
             <GroupBox.Header>
                 <TextBlock FontWeight="Bold">2. Set Parameters</TextBlock>
             </GroupBox.Header>
@@ -84,9 +84,14 @@
                         Content="NeuCode Lysine" />
                     <RadioButton 
                         x:Name="rb_unlabeled" 
-                        IsChecked="True" 
+                        IsChecked = "True" 
                         HorizontalAlignment="Left"
                         Content="Unlabeled" />
+                    <RadioButton 
+                        x:Name="rb_cystag" 
+                        IsChecked="{Binding Path=CK_rbcystag,UpdateSourceTrigger=PropertyChanged}" 
+                        HorizontalAlignment="Left" 
+                        Content="Cystag" />
                 </StackPanel>
 
                 <StackPanel x:Name="panel_fullrun" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left">

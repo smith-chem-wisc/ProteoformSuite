@@ -103,7 +103,7 @@ namespace ProteoformSuiteInternal
             this.end = end;
             this.ptm_list = modifications;
             //if neucode labeled, calculate neucode mass....
-            this.reported_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(reported_mass, sequence.Count(s => s == 'K')) : reported_mass;
+            this.reported_mass = Sweet.lollipop.neucode_labeled ? Sweet.lollipop.get_neucode_mass(reported_mass, sequence.Count(s => s == 'K'), sequence.Count(s => s == 'C')) : reported_mass;
             //if theoretical database if carbamidomethylated, and this proteoform isn't... adjust mass again.
             this.theoretical_mass = CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Where(p => p.modification != null).Sum(p => Math.Round((double)p.modification.MonoisotopicMass, 5));
             this.ms2ScanNumber = scan;

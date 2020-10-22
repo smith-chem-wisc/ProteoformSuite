@@ -620,7 +620,8 @@ namespace Test
         {
             double unlabeled_mass = 1000;
             int kcount = 1;
-            double neucode_mass = Sweet.lollipop.get_neucode_mass(unlabeled_mass, kcount);
+            int ccount = 1;
+            double neucode_mass = Sweet.lollipop.get_neucode_mass(unlabeled_mass, kcount, ccount);
             Assert.AreEqual(1008.01, Math.Round(neucode_mass, 2));
         }
 
