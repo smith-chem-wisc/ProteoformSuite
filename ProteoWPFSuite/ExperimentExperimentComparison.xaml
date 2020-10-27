@@ -198,7 +198,7 @@
                         </GroupBox>
                         <GroupBox Header="EE Histogram Selection" Grid.Row="2" Grid.Column="2" Padding="5 0 0 0">
                             <StackPanel VerticalAlignment="Center">
-                                <CheckBox x:Name="cb_view_decoy_histogram" IsChecked="{Binding Path=CK_View,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">View Experimental-False Histogram</CheckBox>
+                                <CheckBox x:Name="cb_view_decoy_histogram" IsChecked="{Binding Path=CK_View,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">View Experiment-False Histogram</CheckBox>
                                 <CheckBox Margin="0 5 0 0" x:Name="cb_Graph_lowerThreshold" IsChecked="{Binding Path=CK_Graph,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Show Threshold</CheckBox>
                             </StackPanel>
                         </GroupBox>

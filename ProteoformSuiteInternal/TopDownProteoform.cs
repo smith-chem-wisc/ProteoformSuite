@@ -394,6 +394,13 @@ namespace ProteoformSuiteInternal
                 bool same_begin_and_end = begin == topdown_begin && end == topdown_end;
                 bool same_ptm_set = topdown_ptm_set.same_ptmset(ptm_set, true);
                 correct_id = matching_accession && same_ptm_set && same_begin_and_end;
+                if(ambiguous_topdown_hits.Count > 0 && correct_id == false)
+                {
+                    //check ambiguous hits...
+                    correct_id = ambiguous_topdown_hits.Any(h =>
+                    t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Contains(h.accession.Split('_')[0])
+                    && begin == h.begin && end == h.end && ptm_set.same_ptmset(new PtmSet(h.ptm_list), true));
+                }
             }
         }
     }

@@ -143,6 +143,7 @@ namespace ProteoWPFSuite
 
         private static string header(string property_name)
         {
+            if (property_name == nameof(overlapping_charge_states)) { return "Overlapping Charge States"; }
             if (property_name == nameof(id_light)) { return "Light NeuCode Component ID"; }
             if (property_name == nameof(id_heavy)) { return "Heavy NeuCode Component ID"; }
             if (property_name == nameof(intensity_ratio)) { return "Intensity Ratio"; }

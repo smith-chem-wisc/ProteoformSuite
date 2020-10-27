@@ -13,6 +13,7 @@
    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
    <Win32Resource />
+      <ApplicationIcon>Image\lollipop.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -43,6 +44,9 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <None Update="Image\lollipop.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ProteoformSweet.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

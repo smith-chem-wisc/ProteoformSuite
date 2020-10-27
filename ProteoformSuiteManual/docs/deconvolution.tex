@@ -1,0 +1,44 @@
+%!TEX root = ../proteoform_suite_manual.tex
+%---------------------------------------------------------------------
+%	DECONVOLUTION
+%---------------------------------------------------------------------
+
+\section{Deconvolution}
+
+Results from deconvolution of MS1 spectra are used to identify proteoforms by intact-mass analysis and to construct proteoform families of observed proteoforms. Deconvolution results are loaded on the Load Results page (see \textbf{Load Results: Standard}) under Deconvolution Results for Identification and Deconvolution Results for Quantification. This section describes how to obtain deconvolution results to import into Proteoform Suite.
+
+\subsection{Thermo Deconvolution 4.0}
+\begin{itemize}
+\item See Thermo Fisher website for quote and user guide
+\item Run Xtract algorithm for high resolution data
+\item For each .raw file:
+\begin{itemize}
+	\item Select Open Results in the Run Queue
+	\item Right-click the Results table and choose Export All
+	\item Open the .xls file exported and save as a .xlsx file
+\end{itemize}
+\item The saved .xlsx file is used for Deconvolution Results for Identification and Deconvolution Results for Quantification in the Standard analysis on the Load Results page
+\end{itemize}
+
+\subsection{FLASHDeconv}
+FLASHDeconv is an ultra-fast deconvolution algorithm for high resolution mass spectrometry data developed by the OpenMS team.\supercite{Jeong2020}
+\begin{itemize}
+\item On the Load Results page, select FLASHDeconv Deconvolution under Choose Analysis (top left)
+\item Input .mzML files into the table (Load Data drop down menu will be set to Spectra Files)
+\item FLASHDeconv requires .mzML files. Use MSConvert to convert other file types (\url{http://proteowizard.sourceforge.net/}). Peak picking is NOT recommended.
+\item Set Parameters:
+\begin{itemize}
+\item Min Charge: minimum charge state allowed for deconvolution
+\item Max Charge: maximum charge state allowed for deconvolution
+\end{itemize}
+\item To begin deconvolution, hit the Deconvolute button under Start Analysis (bottom right)
+\item For more advanced parameter options, you can also run the command line version of FLASHDeconv, available at \url{https://www.openms.de/comp/flashdeconv/}
+\item The resulting .tsv file is used for Deconvolution Results for Identification and Deconvolution Results for Quantification in the Standard analysis on the Load Results page
+\end{itemize}
+
+\subsection{Other}
+\begin{itemize}
+\item If you have another deconvolution algorithm of choice, simply create a three column tab-separated file
+\subitem Monoisotopic mass \textbackslash t intensity \textbackslash t retention time
+\item This .tsv or .txt file can be used for Deconvolution Results for Identification and Deconvolution Results for Quantification in the Standard analysis on the Load Results page
+\end{itemize}

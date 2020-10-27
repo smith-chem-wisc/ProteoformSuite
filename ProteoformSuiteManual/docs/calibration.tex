@@ -1,0 +1,49 @@
+%!TEX root = ../proteoform_suite_manual.tex
+%---------------------------------------------------------------------
+%CALIBRATION
+%---------------------------------------------------------------------
+
+\section{Calibration}
+
+Calibration is an optional pre-processing step to improve the mass accuracy of the deconvolution and the top-down search results.\supercite{Solntsev2018,Schaffer2018b} High-scoring top-down identifications are used as calibration points. Retention time across files can also be calibrated to correct run-to-run variation. Calibrated deconvolution results are loaded on the Load Results page (see \textbf{Load Results: Standard}) under Deconvolution Results for Identification and Deconvolution Results for Quantification, and calibrated top-down results are loaded on the Load Results page (see \textbf{Load Results: Standard}) under Top-Down Hit Results. This section describes how to perform calibration.
+
+\subsection{Overview}
+\begin{itemize}
+\item On the Load Results page, select Chemical Calibration under Choose Analysis (top left)
+\item Load and label files (see below)
+\subitem To change one of these labels for a single file, click the appropriate cell in the table. To change the label for more than one file or cell, select the cells you would like to change the label for, right click your mouse, enter a label, click Okay. 
+\item Set parameters (see below)
+\item To begin calibration, hit the Calibrate button under Start Analysis (bottom right)
+\end{itemize}
+
+\subsection{Load Files}
+\begin{itemize}
+\item Set the Load Data drop down menu to Spectra Files
+\begin{itemize}
+\item Add all .raw or .mzML files using the Add Files button or with drag-and-drop
+\item Any raw files deconvoluted to generate Deconvolution Results AND searched to generate Top-Down Hit results must be added
+\end{itemize}
+\item Set the Load Data drop down menu to Uncalibrated Deconvolution Results
+\item Add all deconvolution results files using the Add Files button or with drag-and-drop
+\item Set the Load Data drop down menu to Uncalibrated Top-Down Hit Results
+\item Add all top-down results files using the Add Files button or with drag-and-drop
+\item Label the Biological Replicate, Fraction, Technical Replicate, and Condition for each file. 
+\begin{itemize}
+	\item Each spectra file and deconvolution result file must have a different label
+	\item Each spectra file label should exactly match the corresponding deconvolution result label
+	\item Calibration is performed across technical replicates for the same biological replicate, fraction, and condition. Therefore, if you wish to have a top-down file calibrate an intact-mass file, it is necessary to have the biological replicate, fraction, and condition match while the technical replicate label varies (ex: 1, 2, 3, etc.)
+\end{itemize}
+\end{itemize}
+
+\subsection{Set Parameters}
+\begin{itemize}
+\item NeuCode Lysine: select if cell culture was performed with heavy and light NeuCode lysine tags 
+\item Unlabeled : select if no labeling was utilized (typical)
+\item Write Calibrate Raw Files: if checked, calibrated .mzML files will be exported in the same file location as the original spectra files
+\item Calibrate Top-Down Files: if checked, a calibrated top-down results file will be exported in the same file location as the original top-down results file
+\item Calibrate Masses: if checked, calibration will be performed on proteoform masses
+\item Mass Tol. (ppm): mass tolerance used for mass calibration if Calibrate Masses is checked
+\item Calibrate Retention Times: if checked, calibration will be performed on proteoform retention times
+\item RT Tol. (min): retention time tolerance used for retention time calibration if Calibrate Retention Times is checked
+\end{itemize}
+

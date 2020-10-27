@@ -143,6 +143,9 @@ namespace ProteoformSuiteInternal
             List<string> topdown_ids = Sweet.lollipop.topdown_proteoforms
                .Select(p => p.accession.Split('_')[0].Split('-')[0] + "_" + p.sequence + "_" + string.Join(", ", p.topdown_ptm_set.ptm_combination.Where(m => m.modification.ModificationType != "Deconvolution Error" && m.modification.ModificationType != "Common Fixed").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m))).ToList();
 
+            //add ambiguous IDs too...
+            topdown_ids.AddRange(Sweet.lollipop.topdown_proteoforms.SelectMany(p => p.ambiguous_topdown_hits.Select(h =>
+                h.accession.Split('_')[0].Split('-')[0] + "_" + h.sequence + "_" + string.Join(", ", h.ptm_list.Where(m => m.modification.ModificationType != "Deconvolution Error" && m.modification.ModificationType != "Common Fixed").Select(ptm => UnlocalizedModification.LookUpId(ptm.modification)).OrderBy(m => m)))).ToList());
 
             //determine identified experimentals that are adducts
             //checks if any experimentals have same mods as e's ptmset, except e has additional adduct only mods.

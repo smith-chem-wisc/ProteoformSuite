@@ -707,6 +707,42 @@ namespace Test
             td.topdown_ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new Modification("Acetylation", _modificationType : "type", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass: 42.02)) });
             td.set_correct_id();
             Assert.IsTrue(td.correct_id);
+
+            //ambiguous example...
+            //no PTMs diff begin fail
+            td.begin = 10;
+            td.topdown_begin = 10;
+            td.end = 20;
+            td.topdown_end = 30;
+            td.ptm_set = new PtmSet(new List<Ptm>());
+            td.topdown_ptm_set = new PtmSet(new List<Ptm>());
+            SpectrumMatch hit = ConstructorsForTesting.SpectrumMatch(td.accession, 1000, 10, td.begin, td.end);
+            td.set_correct_id();
+            Assert.IsFalse(td.correct_id);
+            td.ambiguous_topdown_hits.Add(hit);
+            td.set_correct_id();
+            Assert.IsTrue(td.correct_id);
+            hit.begin = 20;
+            td.set_correct_id();
+            Assert.IsFalse(td.correct_id);
+            hit.begin = 10;
+            td.set_correct_id();
+            Assert.IsTrue(td.correct_id);
+            hit.end = 40;
+            td.set_correct_id();
+            Assert.IsFalse(td.correct_id);
+            hit.end = 20;
+            td.set_correct_id();
+            Assert.IsTrue(td.correct_id);
+            hit.ptm_list.Add(new Ptm(15, new Modification("Acetylation", _modificationType: "type", _target: motif, _locationRestriction: "Anywhere.", _monoisotopicMass: 42.02)));
+            td.set_correct_id();
+            Assert.IsFalse(td.correct_id);
+            hit.ptm_list.Clear();
+            td.set_correct_id();
+            Assert.IsTrue(td.correct_id);
+            hit.accession = "wrong"; 
+            td.set_correct_id();
+            Assert.IsFalse(td.correct_id);
         }
 
         [Test]

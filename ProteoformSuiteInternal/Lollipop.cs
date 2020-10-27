@@ -54,7 +54,7 @@ namespace ProteoformSuiteInternal
             "Top-Down Hit Results (.xlsx, .psmtsv )",
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
-            "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
+            "Uncalibrated Top-Down Hit Results (Unlabeled) (.xlsx, .psmtsv)",
             "MetaMorpheus Bottom-Up Unique Peptides (.psmtsv)"
 
         };
@@ -607,8 +607,9 @@ namespace ProteoformSuiteInternal
         {
             foreach (TopDownProteoform topdown in topdown_proteoforms.OrderByDescending(t => t.topdown_hits.Max(h => h.score)).ThenBy(t => t.topdown_hits.Min(h => h.qValue)).ThenBy(t => t.topdown_hits.Count).ThenBy(t => t.agg_mass))
             {
-                //only add nonambiguous...
-                if (topdown.ambiguous_topdown_hits.Count > 0) continue;
+                //only add level 1 and 2
+                if (topdown.topdown_level > 2) continue;
+
                 double mass = topdown.modified_mass;
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
                 List<ExperimentalProteoform> potential_matches = new List<ExperimentalProteoform>();
@@ -1264,9 +1265,9 @@ namespace ProteoformSuiteInternal
         public List<Component> calibration_components = new List<Component>();
         public List<string> filenames_did_not_calibrate = new List<string>();
         public bool calibrate_raw_files = false;
-        public bool calibrate_td_files = false;
+        public bool calibrate_td_files = true;
         public bool mass_calibration = true;
-        public bool retention_time_calibration = true;
+        public bool retention_time_calibration = false;
         public double cali_mass_tolerance = 10;
         public double cali_rt_tolerance = 5;
 

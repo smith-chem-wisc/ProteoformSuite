@@ -340,6 +340,7 @@ namespace ProteoWPFSuite
 
         private static string header(string property_name)
         {
+            if (property_name == nameof(begin_and_end)) return "Begin and End";
             if (property_name == nameof(Accession)) return "Experimental Proteoform ID";
             if (property_name == nameof(agg_mass)) return "Aggregated Mass";
             if (property_name == nameof(agg_intensity)) return "Aggregated Deconvolution Intensity";
