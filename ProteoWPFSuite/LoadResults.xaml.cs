@@ -549,7 +549,7 @@ namespace ProteoWPFSuite
             }
             if (Sweet.lollipop.input_files.Any(f => f.extension == ".raw"))
             {
-                MessageBoxResult d4 = MessageBox.Show(ThermoRawFileReader.ThermoRawFileReaderLicence.ThermoLicenceText + "\nIn order to search Thermo .raw files, you must agree to the above terms. Do you agree to the above terms?",
+                MessageBoxResult d4 = MessageBox.Show(IO.ThermoRawFileReader.ThermoRawFileReaderLicence.ThermoLicenceText + "\nIn order to search Thermo .raw files, you must agree to the above terms. Do you agree to the above terms?",
                     "Thermo", MessageBoxButton.YesNo);
                 if (d4 == MessageBoxResult.No) return;
             }

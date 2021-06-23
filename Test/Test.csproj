@@ -1,22 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-   <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-   <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-   <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-   <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-   <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <TargetFramework>net5.0</TargetFramework>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="mzLib" Version="1.0.472" />
+    <PackageReference Include="mzLib" Version="1.0.485" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0-beta.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0-preview-20200519-01" />
@@ -30,9 +27,9 @@
     <None Update="05-26-17_B7A_yeast_td_fract5_rep1.raw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-      <None Update="05-26-17_B7A_yeast_td_fract5_rep1.mzML">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+    <None Update="05-26-17_B7A_yeast_td_fract5_rep1.mzML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="05-26-17_B7A_yeast_td_fract5_rep1.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

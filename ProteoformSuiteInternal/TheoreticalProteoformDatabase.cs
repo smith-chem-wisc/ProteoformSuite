@@ -69,8 +69,8 @@ namespace ProteoformSuiteInternal
                 else if (database.extension == ".fasta")
                 {
                     lock (theoretical_proteins)
-                        theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
-                   ProteinDbLoader.UniprotOrganismRegex, out var dbErrors).ToArray());
+                        theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, out var dbErrors, 
+                            ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,ProteinDbLoader.UniprotOrganismRegex).ToArray());
                 }
             }
 

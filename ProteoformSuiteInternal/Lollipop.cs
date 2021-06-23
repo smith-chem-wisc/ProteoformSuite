@@ -1,7 +1,7 @@
 ﻿using Accord.Math;
 using Chemistry;
 using IO.MzML;
-using ThermoRawFileReader;
+using IO.ThermoRawFileReader;
 using MassSpectrometry;
 using System;
 using System.Collections.Generic;
@@ -1291,7 +1291,7 @@ namespace ProteoformSuiteInternal
                 if (Sweet.lollipop.td_hits_calibration.Any(f => f.filename == raw_file.filename))
                 {
                     MsDataFile myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                        ThermoRawFileReaderData.LoadAllStaticData(raw_file.complete_path) :
+                        ThermoRawFileReader.LoadAllStaticData(raw_file.complete_path) :
                         null;
                     if (myMsDataFile == null) myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path);
                     Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
