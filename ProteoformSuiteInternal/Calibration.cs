@@ -1,6 +1,6 @@
 ﻿using Chemistry;
 using IO.MzML;
-using ThermoRawFileReader;
+using IO.ThermoRawFileReader;
 using MassSpectrometry;
 using MathNet.Numerics.Statistics;
 using SharpLearning.Containers.Matrices;
@@ -49,7 +49,7 @@ namespace ProteoformSuiteInternal
             }
 
             myMsDataFile = Path.GetExtension(raw_file.complete_path) == ".raw" ?
-                ThermoRawFileReaderData.LoadAllStaticData(raw_file.complete_path) :
+                ThermoRawFileReader.LoadAllStaticData(raw_file.complete_path) :
                 null;
             if (myMsDataFile == null) { myMsDataFile = Mzml.LoadAllStaticData(raw_file.complete_path); }
             if (myMsDataFile == null) { return false; }
