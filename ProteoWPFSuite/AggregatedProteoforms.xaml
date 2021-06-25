@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="ProteoWPFSuite.AggregatedProteoforms"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             mc:Ignorable="d" 
+             MinHeight="600" MinWidth="900">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height= "1.3*"></RowDefinition>
+            <RowDefinition Height= "3"></RowDefinition>
+            <RowDefinition Height= "*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="3"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <StackPanel>
+                    <DockPanel Margin="0 5 0 0" Height="28">
+                        <Label DockPanel.Dock="Left" Width="170" Margin="10 0 10 0">Mass Tolerance (ppm)</Label>
+                        <WindowsFormsHost Margin="0 0 10 0" DockPanel.Dock="Left">
+                            <winform:NumericUpDown Dock="Fill" x:Name="nUP_mass_tolerance" ValueChanged="nUP_mass_tolerance_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </DockPanel>
+                    <DockPanel Margin="0 5 0 0" Height="28">
+                        <Label DockPanel.Dock="Left" Margin="10 0 10 0" Width="170">Ret. Time Tolerance (min)</Label>
+                        <WindowsFormsHost Margin="0 0 10 0" DockPanel.Dock="Left">
+                            <winform:NumericUpDown Dock="Fill" x:Name="nUD_RetTimeToleranace" ValueChanged="nUD_RetTimeToleranace_ValueChanged" DecimalPlaces="2"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </DockPanel>
+                    <DockPanel Margin="0 5 0 0" Height="28">
+                        <Label DockPanel.Dock="Left" Margin="10 0 10 0" Width="170">Missed Monoisotopics (num)</Label>
+                        <WindowsFormsHost Margin="0 0 10 0" DockPanel.Dock="Left">
+                            <winform:NumericUpDown Dock="Fill" x:Name="nUD_Missed_Monos" ValueChanged="nUD_Missed_Monos_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </DockPanel>
+                    <DockPanel Margin="0 5 0 0" Height="28">
+                        <Label DockPanel.Dock="Left" Margin="10 0 10 0" Width="170">Missed Lysine Counts (num)</Label>
+                        <WindowsFormsHost Margin="0 0 10 0" DockPanel.Dock="Left">
+                            <winform:NumericUpDown Dock="Fill" x:Name="nUD_Missed_Ks" ValueChanged="nUD_Missed_Ks_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </DockPanel>
+                    <DockPanel Margin="0 5 0 0" Height="28">
+                        <Label DockPanel.Dock="Left" Margin="10 0 10 0" Width="170">Min. # Consecutive Charge States</Label>
+                        <WindowsFormsHost Margin="0 0 10 0" DockPanel.Dock="Left">
+                            <winform:NumericUpDown x:Name="nUD_min_num_CS" Dock="Fill" ValueChanged="nUD_min_num_CS_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </DockPanel>
+                    <GroupBox Header="Minimum Required Observations" Height="60">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <WindowsFormsHost Grid.Column="0" Margin="5 5 0 0" Width="70" Height="28">
+                                <winform:NumericUpDown Value="1" Minimum="1" Maximum="100" Increment="1" DecimalPlaces="0" x:Name="nud_minObservations" ValueChanged="nud_minObservations_ValueChanged" Dock="Fill"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                            <ComboBox x:Name="cmbx_observationsTypeRequired" Grid.Column="1" Margin="10 5 10 0" SelectedIndex="{Binding Path=CB_SELECT, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectionChanged="Cmbx_observationsTypeRequired_OnSelectionChanged"></ComboBox>
+                            <!--Do the same binding as in loadresult, cmbx_observationsTypeRequired_SelectedIndexChanged-->
+                        </Grid>
+                    </GroupBox>
+                    <DockPanel Height="28">
+                        <CheckBox IsChecked="{Binding Path=CK1,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Margin="0 0 5 0" x:Name="cb_add_td_proteoforms">Add Top-Down Proteoforms</CheckBox><!--cb_add_td_proteoforms_CheckedChanged, chekced binding-->
+                        <CheckBox IsChecked="{Binding Path=CK2,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" x:Name="cb_validateProteoforms" Height="28" VerticalAlignment="Top">Validate Proteoforms</CheckBox><!--cb_validateProteoforms_CheckedChanged-->
+                    </DockPanel>
+                    <DockPanel LastChildFill="True" Height="28">
+                        <Label Margin="0 0 5 0" MinWidth="223">Total Accepted Aggregated Proteoforms</Label>
+                        <TextBox x:Name="tb_totalAggregatedProteoforms" IsReadOnly="True"></TextBox>
+                    </DockPanel> 
+                    <DockPanel LastChildFill="True" Margin="0 5 0 0" Height="28">
+                        <Label Margin="0 0 5 0" MinWidth="223">Aggregated Proteoform Table Filter</Label>
+                        <TextBox x:Name="tb_tableFilter" TextChanged="tb_tableFilter_TextChanged"></TextBox>
+                    </DockPanel>
+                    <GroupBox Header="Components Displayed upon Selecting an Experimental Proteoform">
+                        <StackPanel>
+                            <!--Implement data binding for checked changes here-->
+                            <RadioButton x:Name="rb_displayIdentificationComponents" IsChecked="{Binding Path=RA, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Content="Identification Components"></RadioButton>
+                            <RadioButton x:Name="rb_displayLightQuantificationComponents" IsChecked="{Binding Path=RB, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Content="Light Quantification Components"></RadioButton>
+                            <RadioButton x:Name="rb_displayHeavyQuantificationComponents" IsChecked="{Binding Path=RC, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Content="Heavy Quantification Components"></RadioButton>
+                        </StackPanel>
+                    </GroupBox>
+                    <!--<Button x:Name="bt_aggregate" Click="bt_aggregate_Click" Content="Aggregate Proteoform Observations"></Button>-->
+                </StackPanel>
+                
+            </Grid>
+            <GridSplitter ResizeDirection="Columns" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <Grid Grid.Column="2">
+                <WindowsFormsHost>
+                    <winform:DataGridView x:Name="dgv_AggregatedProteoforms" AllowUserToOrderColumns="True" ColumnHeadersHeightSizeMode="AutoSize" Dock="Fill" CellContentClick="dgv_AggregatedProteoforms_CellContentClick" CellMouseClick="dgv_AggregatedProteoforms_CellMouseClick">
+                        
+                    </winform:DataGridView>
+                </WindowsFormsHost>
+            </Grid>
+        </Grid>
+        <GridSplitter ResizeDirection="Rows" Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Grid Grid.Row="2">
+            <WindowsFormsHost>
+                <winform:DataGridView AllowUserToOrderColumns="True" ColumnHeadersHeightSizeMode="AutoSize"  x:Name="dgv_AcceptNeuCdLtProteoforms"></winform:DataGridView>
+            </WindowsFormsHost>
+        </Grid>
+    </Grid>
+</UserControl>

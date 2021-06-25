@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="ProteoWPFSuite.IdentifiedProteoforms"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             mc:Ignorable="d" 
+             MinHeight="600" MinWidth="900">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="3"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="btn_compare_with_td" Click="btn_compare_with_td_Click" Padding="5 0 5 0" Margin="5 0 5 0"> Compare With other Top-Down Results</Button>
+            <TextBox Width="150" Margin=" 5 0 5 0" x:Name="tb_tableFilter" TextChanged="tb_tableFilter_TextChanged"></TextBox>
+            <Label>Table Filters</Label>
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="3"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" Grid.Row="2" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+            <TextBox x:Name="tb_not_td" IsReadOnly="True"></TextBox>
+            <WindowsFormsHost Grid.Row="1">
+                <winform:DataGridView x:Name="dgv_identified_experimentals"  CellContentClick="dgv_identified_experimentals_CellMouseClick" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize"></winform:DataGridView>
+            </WindowsFormsHost>
+            <TextBox x:Name="tb_topdown" IsReadOnly="True" Grid.Column="2"></TextBox>
+            <WindowsFormsHost Grid.Row="1" Grid.Column="2">
+                <winform:DataGridView x:Name="dgv_td_proteoforms" CellContentClick="dgv_td_proteoforms_experimentals_CellMouseClick" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize">
+                </winform:DataGridView>
+            </WindowsFormsHost>
+        </Grid>
+        <GridSplitter Grid.Row="2" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="tb_bottomup" IsReadOnly="True" Grid.Row="0"></TextBox>
+            <WindowsFormsHost Grid.Row="1">
+                <winform:DataGridView x:Name="dgv_bottomUp" Dock="Fill" AllowUserToAddRows="False" AllowUserToDeleteRows="False" ColumnHeadersHeightSizeMode="AutoSize">
+                </winform:DataGridView>
+            </WindowsFormsHost>
+        </Grid>
+    </Grid>
+</UserControl>

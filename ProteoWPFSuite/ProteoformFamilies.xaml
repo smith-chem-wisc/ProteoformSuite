@@ -1,0 +1,164 @@
+﻿<UserControl x:Class="ProteoWPFSuite.ProteoformFamilies"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <!---->
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="3"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="3"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <!--top-->
+    <Grid>
+        <WindowsFormsHost>
+            <winform:DataGridView x:Name="dgv_main" CellMouseClick="dgv_proteoform_families_CellMouseClick" AllowUserToAddRows="False" AllowUserToOrderColumns="True" AllowUserToDeleteRows="False"></winform:DataGridView>
+        </WindowsFormsHost>
+    </Grid>
+    <GridSplitter Grid.Row="0" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+    <Grid Grid.Column="2">
+        <StackPanel>
+            <DockPanel Margin="0 5 0 0">
+                <Label Width="150" DockPanel.Dock="Left" x:Name="lb_dgv_selection" Margin="0 0 5 0">Table Selection</Label>
+                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0">
+                    <winform:ComboBox x:Name="cmbx_tableSelector" Dock="Fill" FormattingEnabled="True" DropDownStyle="DropDownList" SelectedIndexChanged="cmbx_tableSelector_SelectedIndexChanged" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                </WindowsFormsHost>
+            </DockPanel>
+
+                <DockPanel Margin="0 5 0 0">
+                    <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Table Filter</Label>
+                    <TextBox DockPanel.Dock="Right" Margin="0 0 5 0" Width="350" x:Name="tb_tableFilter" TextChanged="tb_tableFilter_TextChanged"></TextBox>
+                </DockPanel>
+            
+                <DockPanel Margin="0 5 0 0">
+                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Layout</Label>
+                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
+                        <winform:ComboBox x:Name="cmbx_nodeLayout" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged" ></winform:ComboBox>
+                </WindowsFormsHost>
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Label Positioning</Label>
+                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
+                        <winform:ComboBox x:Name="cmbx_nodeLabelPositioning" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                </WindowsFormsHost>
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Node Label Informing</Label>
+                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0">
+                        <winform:ComboBox x:Name="cmbx_nodeLabel" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                </WindowsFormsHost>
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Edge Label Information</Label>
+                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
+                        <winform:ComboBox x:Name="cmbx_edgeLabel" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged"></winform:ComboBox>
+                </WindowsFormsHost>
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Label Width="150" DockPanel.Dock="Left" Margin="0 0 5 0">Prefered
+                        Gene Label</Label>
+                <WindowsFormsHost Width="350" DockPanel.Dock="Right" Margin="0 0 5 0" >
+                        <winform:ComboBox x:Name="cmbx_geneLabel" DropDownStyle="DropDownList" Dock="Fill" TextChanged="cmbx_empty_TextChanged" SelectedIndexChanged="cmbx_geneLabel_SelectedIndexChanged"></winform:ComboBox>
+                </WindowsFormsHost>
+            </DockPanel>
+        </StackPanel>
+    </Grid>
+    <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+    <!--Bottom-->
+    <Grid Grid.Row="2" Grid.Column="0">
+        <WindowsFormsHost>
+            <winform:DataGridView x:Name="dgv_proteoform_family_members" AllowUserToAddRows="False" AllowUserToDeleteRows="False" AllowUserToOrderColumns="True" >
+
+
+            </winform:DataGridView>
+        </WindowsFormsHost>
+    </Grid>
+    <GridSplitter Grid.Row="2" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" />
+    <Grid Grid.Row="2" Grid.Column="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid>
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+                    <Label x:Name="label_tempFileFolder" Width="145" DockPanel.Dock="Left" Margin="0 0 30 0">Folder for Family Build</Label>
+                    <TextBox TextChanged="tb_tempFileFolderPath_TextChanged" Margin="0 0 30 0" Background="White" Height="20" Width="120" x:Name="tb_familyBuildFolder"></TextBox>
+                    <Button Width="100" x:Name="btn_browseTempFolder" Click="btn_browseTempFolder_Click">Browse</Button>
+                </StackPanel>
+
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <Label x:Name="lb_timeStamp" DockPanel.Dock="Left" Width="165" Margin="0 0 10 0">Most Recent Time Stamp</Label>
+                            <TextBox x:Name="tb_recentTimeStamp" IsReadOnly="True" DockPanel.Dock="Right" Margin="0 0 10 0" Background="White" Height="20" Width="120"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="165" Margin="0 0 10 0">Decimal Rounding for Labels</Label>
+                            <WindowsFormsHost Width="80" Height="30">
+                                <winform:NumericUpDown ValueChanged="nud_decimalRoundingLabels_ValueChanged" x:Name="nud_decimalRoundingLabels" Dock="Fill" Maximum="100" Minimum="0" Increment="1" DecimalPlaces="0"></winform:NumericUpDown>
+                            </WindowsFormsHost>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Right">
+                        <CheckBox Margin="0 5 5 0" IsChecked="{Binding Path=CK_cb_only_assign_common_known_mods,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" x:Name="cb_only_assign_common_known_mods">Only Assign Common/Known Mods</CheckBox>
+                        <CheckBox Margin="0 5 5 0" x:Name="cb_count_adducts_as_id" IsChecked="{Binding Path=CK_cb_count_adducts_as_id,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Count Adducts as Identifications</CheckBox>
+                        <CheckBox Margin="0 5 5 0" x:Name="cb_geneCentric" IsChecked="{Binding Path=CK_cb_geneCentric,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Build Gene-Centric Families</CheckBox>
+                        <CheckBox Margin="0 5 5 0" x:Name="cb_buildAsQuantitative" IsChecked="{Binding Path=CK_cb_buildAsQuantitative,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Build as Quantitative Families</CheckBox>
+                        <CheckBox Margin="0 5 5 0" x:Name="cb_idFromTdNodes" IsChecked="{Binding Path=CK_cb_idFromTdNodes,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Identify from Top-Down Nodes</CheckBox>
+                            <CheckBox Margin="0 5 5 0" x:Name="cb_removeBadConnections" IsChecked="{Binding Path=CK_cb_removeBadConnections,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Remove Bad Connections</CheckBox>
+                            <CheckBox Margin="0 5 5 0" x:Name="cb_useTdToReduceAmbiguity" IsChecked="{Binding Path=CK_cb_useTdToReduceAmbiguity,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Use Top-Down IDs to Reduce Ambiguity</CheckBox>
+                            <CheckBox Margin="0 5 5 0" x:Name="cb_useAnnotatedPTMsToReduceAmbiguity" IsChecked="{Binding Path=CK_cb_useAnnotatedPTMsToReduceAmbiguity,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Use Annotated PTMs to Reduce Ambiguity</CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Margin="0 5 5 0" x:Name="cb_usePpmTolerance" IsChecked="{Binding Path=CK_cb_usePpmTolerance,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Use ppm tolerance</CheckBox>
+                                <WindowsFormsHost Width="80" Height="30">
+                                    <winform:NumericUpDown x:Name="nUD_ppm_ID_tolerance" Maximum="100" Increment=".1" Minimum="0" DecimalPlaces="1" Value="0" Height="25" Dock="Fill" ValueChanged="nUD_ppm_ID_tolerance_ValueChanged"></winform:NumericUpDown>
+                                </WindowsFormsHost>
+                            </StackPanel>
+                                <GroupBox Header="Highlights for Significant Differences" Margin="0 5 5 5">
+                            <StackPanel>
+                                <CheckBox Margin="0 5 5 0" x:Name="cb_redBorder" IsEnabled="False">Red Node Border</CheckBox>
+                                    <CheckBox Margin="0 5 5 0" x:Name="cb_boldLabel" IsEnabled="False">Bold Label</CheckBox>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </DockPanel>
+                <StackPanel>
+                    <Button x:Name="btn_buildAllFamilies" Click="btn_buildAllFamilies_Click" Padding="2" Margin="4">Build All Families in Cytoscape</Button>
+                    <Button x:Name="btn_buildSelectedFamilies" Click="btn_buildSelectedFamilies_Click" Padding="2" Margin="4">Build Selected Families in Cytoscape</Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <WindowsFormsHost>
+                <winform:RichTextBox ReadOnly="True" x:Name="rtb_proteoformFamilyResults" Dock="Fill" >
+
+                </winform:RichTextBox>
+            </WindowsFormsHost>
+            <!--<Button Grid.Row="1" Padding="2" Margin="4" AllowDrop="True" x:Name="Families_update" Click="Families_update_Click">
+                Construct Families and Identify Proteoforms
+            </Button>-->
+        </Grid>
+    </Grid>
+    </Grid>
+
+</UserControl>

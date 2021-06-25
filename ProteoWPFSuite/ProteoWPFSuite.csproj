@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+	<UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>ProteoformSuiteWPF.App</StartupObject>
+	  <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+   <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+   <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+   <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+   <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+   <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+   <Win32Resource />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="ProteoformSweet.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Accord" Version="3.8.2-alpha" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.1" />
+    <PackageReference Include="FastMember.Signed" Version="1.5.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.0-preview.5.20278.1" />
+    <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.IO.Packaging" Version="5.0.0-preview.5.20278.1" />
+    <PackageReference Include="System.Windows.Forms.DataVisualization" Version="1.0.0-prerelease.20110.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ProteoformSweet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="ProteoformSweet.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

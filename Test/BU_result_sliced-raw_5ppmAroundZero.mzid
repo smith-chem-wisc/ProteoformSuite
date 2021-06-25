@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MzIdentML xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.1" xmlns="http://psidev.info/psi/pi/mzIdentML/1.1.1">
+  <cvList>
+    <cv fullName="Proteomics Standards Initiative Mass Spectrometry Vocabularies" version="4.0.9" uri="https://github.com/HUPO-PSI/psi-ms-CV/blob/master/psi-ms.obo" id="PSI-MS" />
+    <cv fullName="UNIT-ONTOLOGY" uri="http://www.unimod.org/obo/unimod.obo" id="UO" />
+  </cvList>
+  <AnalysisSoftwareList>
+    <AnalysisSoftware id="AS_MetaMorpheus" name="MetaMorpheus" version="1.0.1434.0" uri="https://github.com/smith-chem-wisc/MetaMorpheus">
+      <SoftwareName>
+        <cvParam name="Morpheus" cvRef="PSI-MS" accession="MS:1002661" />
+      </SoftwareName>
+    </AnalysisSoftware>
+  </AnalysisSoftwareList>
+  <SequenceCollection>
+    <DBSequence id="DBS_P0CE92" name="PAU8_YEAST" length="120" searchDatabase_ref="SDB_1" accession="P0CE92">
+      <Seq>MAEIPDETIQQFMALTNVSHNIAVQYLSEFGDLNEALNSYYASQTDDQKDRREEAHWNRQQEKALKQEAFSTNSSNKAINTEHVGGLCPKPGSSQGSNEYLKRKGSTSPEPTKGSSRSGSGNNSRFMSFSDMVRGQADDDDEDQPRNTFAGGETSGLEVTDPSDPNSLLKDLLEKARRGGQMGAENGFRDDEDHEMGANRFTGRGFRLGSTIDAADEVVEDNTSQSQRRPEKVTREITFWKEGFQVADGPLYRYDDPANSFYLSELNQGRAPLKLLDVQFGQEVEVNVYKKLDESYKAPTRKLGGFSGQGQRLGSPIPGESSPAEVPKNETPAAQEQPMPDNEPKQGDTSIQIRYANGKREVLHCNSTDTVKFLYEHVTSNANTDPSRNFTLNYAFPIKPISNDETTLKDADLLNSVVVQRWA</Seq>
+      <cvParam name="protein description" value="P0CE92|PAU8_YEAST" cvRef="PSI-MS" accession="MS:1001088" />
+    </DBSequence>
+    <Peptide id="P_0">
+      <PeptideSequence>EGFQVADGPLYR</PeptideSequence>
+      <Modification location="10" residues="P" monoisotopicMassDelta="31.989829">
+        <cvParam name="unknown modification" value="(3R,4R)-3,4-dihydroxyproline" cvRef="PSI-MS" accession="MS:1001460" />
+      </Modification>
+    </Peptide>
+	  <Peptide id="P_1">
+      <PeptideSequence>EGFQVADGPLYR</PeptideSequence>
+    </Peptide>
+	    <Peptide id="P_2">
+      <PeptideSequence>EGFQVADGPLYR</PeptideSequence>
+      <Modification location="10" residues="P" monoisotopicMassDelta="0.5">
+        <cvParam name="unknown modification" value="PTM not in database" cvRef="PSI-MS" accession="MS:1001460" />
+      </Modification>
+    </Peptide>
+    <PeptideEvidence id="PE_0" dBSequence_ref="DBS_P0CE92" peptide_ref="P_0" start="242" end="253" pre="K" post="Y" />
+	 <PeptideEvidence id="PE_1" dBSequence_ref="DBS_P0CE92" peptide_ref="P_1" start="242" end="253" pre="K" post="Y" />
+	 <PeptideEvidence id="PE_2" dBSequence_ref="DBS_P0CE92" peptide_ref="P_2" start="242" end="253" pre="K" post="Y" />
+  </SequenceCollection>
+  <AnalysisCollection>
+    <SpectrumIdentification id="SI" spectrumIdentificationProtocol_ref="SIP" spectrumIdentificationList_ref="SIL">
+      <InputSpectra spectraData_ref="SD_0" />
+      <SearchDatabaseRef searchDatabase_ref="SDB_1" />
+    </SpectrumIdentification>
+  </AnalysisCollection>
+  <AnalysisProtocolCollection>
+    <SpectrumIdentificationProtocol id="SIP" analysisSoftware_ref="AS_MetaMorpheus">
+      <SearchType>
+        <cvParam name="ms-ms search" cvRef="PSI-MS" accession="MS:1001083" />
+      </SearchType>
+      <AdditionalSearchParams>
+        <cvParam name="parent mass type mono" cvRef="PSI-MS" accession="MS:1001211" />
+        <cvParam name="fragment mass type mono" cvRef="PSI-MS" accession="MS:1001255" />
+      </AdditionalSearchParams>
+      <ModificationParams>
+        <SearchModification fixedMod="true" massDelta="57.02146373" residues="C" />
+        <SearchModification fixedMod="false" massDelta="15.994915" residues="M" />
+      </ModificationParams>
+      <Enzymes>
+        <Enzyme id="E_0" name="trypsin">
+          <SiteRegexp>(?&lt;=[KR])</SiteRegexp>
+          <EnzymeName>
+            <cvParam name="Trypsin/P" cvRef="PSI-MS" accession="MS:1001313" />
+          </EnzymeName>
+        </Enzyme>
+      </Enzymes>
+      <FragmentTolerance>
+        <cvParam name="search tolerance plus value" value="0.01" unitCvRef="UO" cvRef="PSI-MS" accession="MS:1001412" />
+        <cvParam name="search tolerance minus value" value="0.01" unitAccession="UO:0000221" unitName="dalton" unitCvRef="UO" cvRef="PSI-MS" accession="MS:1001413" />
+      </FragmentTolerance>
+      <ParentTolerance>
+        <cvParam name="search tolerance specification" value="5ppmAroundZero" cvRef="PSI-MS" accession="MS1001411" />
+      </ParentTolerance>
+      <Threshold>
+        <cvParam name="pep:FDR threshold" value="0.01" cvRef="PSI-MS" accession="MS:1001448" />
+      </Threshold>
+    </SpectrumIdentificationProtocol>
+    <ProteinDetectionProtocol id="PDP" analysisSoftware_ref="AS_MetaMorpheus">
+      <Threshold>
+        <cvParam name="pep:FDR threshold" value="0.01" cvRef="PSI-MS" accession="MS:1001448" />
+      </Threshold>
+    </ProteinDetectionProtocol>
+  </AnalysisProtocolCollection>
+  <DataCollection>
+    <Inputs>
+      <SearchDatabase id="SDB_1">
+        <FileFormat>
+          <cvParam name="UniProtKB XML sequence format" cvRef="PSI-MS" accession="MS:1002660" />
+        </FileFormat>
+        <DatabaseName>
+          <cvParam name="database type amino acid" cvRef="PSI-MS" accession="MS:1001073" />
+        </DatabaseName>
+      </SearchDatabase>
+      <SpectraData id="SD_0" name="sliced-raw" location="C:\">
+        <FileFormat>
+          <cvParam name="Thermo RAW format" cvRef="PSI-MS" accession="MS:1000563" />
+        </FileFormat>
+        <SpectrumIDFormat>
+          <cvParam name="Thermo nativeID format" cvRef="PSI-MS" accession="MS:1000768" />
+        </SpectrumIDFormat>
+      </SpectraData>
+    </Inputs>
+    <AnalysisData>
+      <SpectrumIdentificationList id="SIL">
+        <SpectrumIdentificationResult id="SIR_0" spectrumID="36" spectraData_ref="SD_0">
+          <SpectrumIdentificationItem id="SII_0_0" chargeState="2" experimentalMassToCharge="676.3348388671875" calculatedMassToCharge="676.335683838584" peptide_ref="P_0" rank="1" passThreshold="true">
+            <PeptideEvidenceRef peptideEvidence_ref="PE_0" />
+            <cvParam name="Morpheus:Morpheus score" value="1.09777827774305" cvRef="PSI-MS" accession="MS:1002662" />
+            <cvParam name="PSM-level q-value" value="0" cvRef="PSI-MS" accession="MS:1002354" />
+          </SpectrumIdentificationItem>
+        </SpectrumIdentificationResult>
+        <SpectrumIdentificationResult id="SIR_1" spectrumID="25" spectraData_ref="SD_0">
+          <SpectrumIdentificationItem id="SII_1_0" chargeState="2" experimentalMassToCharge="676.335205078125" calculatedMassToCharge="676.335683838584" peptide_ref="P_0" rank="1" passThreshold="true">
+            <PeptideEvidenceRef peptideEvidence_ref="PE_1" />
+            <cvParam name="Morpheus:Morpheus score" value="1.09433305676347" cvRef="PSI-MS" accession="MS:1002662" />
+            <cvParam name="PSM-level q-value" value="0" cvRef="PSI-MS" accession="MS:1002354" />
+          </SpectrumIdentificationItem>
+		  <SpectrumIdentificationItem id="SII_1_1" chargeState="2" experimentalMassToCharge="676.335205078125" calculatedMassToCharge="676.335683838584" peptide_ref="P_0" rank="1" passThreshold="true">
+            <PeptideEvidenceRef peptideEvidence_ref="PE_2" />
+            <cvParam name="Morpheus:Morpheus score" value="1.09433305676347" cvRef="PSI-MS" accession="MS:1002662" />
+            <cvParam name="PSM-level q-value" value="0" cvRef="PSI-MS" accession="MS:1002354" />
+          </SpectrumIdentificationItem>
+        </SpectrumIdentificationResult>
+      </SpectrumIdentificationList>
+      <ProteinDetectionList id="PDL">
+        <ProteinAmbiguityGroup id="PAG_0">
+          <ProteinDetectionHypothesis id="PDH_0" dBSequence_ref="DBS_P34223" passThreshold="true">
+            <PeptideHypothesis peptideEvidence_ref="PE_1">
+              <SpectrumIdentificationItemRef spectrumIdentificationItem_ref="SII_0_0" />
+              <SpectrumIdentificationItemRef spectrumIdentificationItem_ref="SII_1_0" />
+			  <SpectrumIdentificationItemRef spectrumIdentificationItem_ref="SII_1_1" />
+            </PeptideHypothesis>
+            <cvParam name="Morpheus:summed Morpheus score" value="1.09777827774305" cvRef="PSI-MS" accession="MS:1002663" />
+            <cvParam name="protein group-level q-value" value="0" accession="MS1002373" />
+            <cvParam name="sequence coverage" value="System.Collections.Generic.List`1[System.Double]" cvRef="PSI-MS" accession="MS:1001093" />
+            <cvParam name="distinct peptide sequences" value="1" cvRef="PSI-MS" accession="MS:1001097" />
+          </ProteinDetectionHypothesis>
+        </ProteinAmbiguityGroup>
+      </ProteinDetectionList>
+    </AnalysisData>
+  </DataCollection>
+</MzIdentML>

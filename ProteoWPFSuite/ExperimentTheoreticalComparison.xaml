@@ -1,0 +1,259 @@
+﻿<UserControl x:Class="ProteoWPFSuite.ExperimentTheoreticalComparison"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ProteoWPFSuite"
+             xmlns:winform="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:winformchart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <Grid>
+        <!--<WindowsFormsHost>
+            <winformchart:Chart x:Name="ct_ET_Histogram"></winformchart:Chart>
+        </WindowsFormsHost>-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="480" ></ColumnDefinition>
+            <ColumnDefinition Width="3"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"></RowDefinition>
+                    <RowDefinition Height="2"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Identified Proteoforms" Margin="0 2 0 0"></Label>
+                        <TextBox x:Name="tb_IdentifiedProteoforms" MinWidth="60" Height="25"></TextBox>
+                        <Label Content="Total Peaks" Margin="0 2 0 0"></Label>
+                        <TextBox x:Name="tb_TotalPeaks" MinWidth="65" Height="25"></TextBox>
+                    </StackPanel>
+                </Grid>
+                <Border Grid.Row="1" Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="2"></Border>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                        <ColumnDefinition Width="3"></ColumnDefinition>
+                        <ColumnDefinition Width="4*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <WindowsFormsHost>
+                        <winform:DataGridView x:Name="dgv_ET_Peak_List" MouseClick="dgv_ET_Peak_List_CellClick" CurrentCellDirtyStateChanged="ET_Peak_List_DirtyStateChanged"></winform:DataGridView>
+                    </WindowsFormsHost>
+                    <GridSplitter ResizeDirection="Columns" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <WindowsFormsHost Grid.Column="2">
+                        <winformchart:Chart x:Name="ct_ET_peakList" Dock="Fill" Text="chart1" MouseClick="ct_ET_peakList_MouseClick">
+                            <winformchart:Chart.Series>
+                                <winformchart:Series Name="Peak Count" ChartType="Point" ChartArea="chartarea1" Legend="legend1" MarkerSize="10" YValuesPerPoint="2"/>
+                                <winformchart:Series Name="Median Decoy Count" ChartType="Point" ChartArea="chartarea1" MarkerSize="10"/>
+                                <winformchart:Series Name="Nearby Relations" ChartType="Line" ChartArea="chartarea1" Legend="legend1"/>
+                            </winformchart:Chart.Series>
+                            <winformchart:Chart.Legends>
+                                <winformchart:Legend Docking="Top" Name="legend1"/>
+                            </winformchart:Chart.Legends>
+                            <winformchart:Chart.ChartAreas>
+                                <winformchart:ChartArea Name="chartarea1"/>
+                            </winformchart:Chart.ChartAreas>
+                        </winformchart:Chart>
+                    </WindowsFormsHost>
+                </Grid>
+            </Grid>
+            <GridSplitter ResizeDirection="Rows" Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto" MinHeight="110"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <GroupBox Header="ET Peak List Parameters">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <CheckBox x:Name="cb_add_topdown_theoreticals" IsChecked="{Binding Path=CBADDTOPDOWNTHEORETICALS,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Add top-down theoreticals</CheckBox>
+                        <CheckBox x:Name="cb_use_ppm_notch" IsChecked="{Binding Path=CBUSENOTCH,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Grid.Row="1">Notch Search</CheckBox>
+                        <CheckBox x:Name="cb_bestETPairOnly" IsChecked="{Binding Path=CBBESTETPAIRONLY,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Grid.Row="1" Grid.Column="1"> Report Best ET Pair Only</CheckBox>
+                        <Label DockPanel.Dock="Left" FontSize="9" Padding="0.5" Grid.Row="2">
+                            <TextBlock>Peak Width<LineBreak/>Base (Da)</TextBlock></Label>
+                        <WindowsFormsHost Grid.Column="1" Grid.Row="2" Margin="1 0 0 1">
+                            <winform:NumericUpDown Maximum="0.5" Increment="0.005" DecimalPlaces="4" Value="0.03" Minimum="0"  x:Name="nUD_PeakWidthBase" Height="25" Dock="Fill" ValueChanged="nUD_PeakWidthBase_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <Label Grid.Column="0" Grid.Row="3" DockPanel.Dock="Left" FontSize="9" Padding="0.5">
+                            <TextBlock>Peak Threshold<LineBreak/>(cts)</TextBlock>
+                        </Label>
+                        <WindowsFormsHost Grid.Column="1" Grid.Row="3" Margin="1 1 0 0">
+                            <winform:NumericUpDown x:Name="nUD_PeakCountMinThreshold" Maximum="100" Increment="1" Minimum="0" DecimalPlaces="0" Value="0" Height="25" Dock="Fill" ValueChanged="nUD_PeakCountMinThreshold_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <Label Grid.Column="0" Grid.Row="4" DockPanel.Dock="Left" FontSize="9" Padding="0.5">
+                            <TextBlock><LineBreak/>Min. Bottom-Up Peptides</TextBlock>
+                        </Label>
+                        <WindowsFormsHost Grid.Column="1" Grid.Row="4" Margin="1 1 0 0">
+                            <winform:NumericUpDown x:Name="nUD_minBottomUpPeptides" Maximum="100" Increment="1" Minimum="0" DecimalPlaces="0" Value="0" Height="25" Dock="Fill" ValueChanged="nUD_minBottomUpPeptides_ValueChanged"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <StackPanel Grid.Row="5" x:Name="NotchStack">
+                            <Label x:Name="label10">Notch Tolerance</Label>
+                            <RadioButton x:Name="rb_daltons" IsChecked="{Binding Path=RBDALTONS,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Daltons</RadioButton>
+                            <RadioButton x:Name="rb_ppm" IsChecked="{Binding Path=RBPPM,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">ppm</RadioButton>
+                        </StackPanel>
+                        <WindowsFormsHost Grid.Row="5" Grid.Column="1" x:Name="NotchNUD">
+                            <winform:NumericUpDown Dock="Left" Height="20" x:Name="nUD_notch_tolerance" Value="1" Increment="0.01" Maximum="15" DecimalPlaces="2" ValueChanged="nUD_ppm_tolerance_ValueChanged">
+                                
+                            </winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <Label Grid.Row="6">
+                            Max Accepted Peak FDR
+                        </Label>
+                        <TextBox Grid.Row="6" Grid.Column="1" x:Name="tb_max_accepted_fdr" ></TextBox>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="0" Grid.Column="1" Header="ET Histogram Boundaries">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label VerticalAlignment="Center" Height="auto" FontSize="9">Lower (Da)</Label>
+                        <Label Grid.Row="1" VerticalAlignment="Center" Height="auto" FontSize="9">Upper (Da)</Label>
+                        <WindowsFormsHost Grid.Column="1" Height="30">
+                            <winform:NumericUpDown Height="25" ValueChanged="nUD_ET_Lower_Bound_ValueChanged" x:Name="nUD_ET_Lower_Bound" DecimalPlaces="1" Minimum="-500" Maximum="0" ></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Column="1" Grid.Row="1" Height="30">
+                            <winform:NumericUpDown Height="25" ValueChanged="nUD_ET_Upper_Bound_ValueChanged" x:Name="nUD_ET_Upper_Bound" DecimalPlaces="1" Minimum="-500" Maximum="0" ></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Column="2" Header="Table Control">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Height="25" x:Name="tb_peakTableFilter" TextChanged="tb_peakTableFilter_TextChanged"></TextBox>
+                        <Label Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock FontSize="9.5">ET Peak<LineBreak/>Table Filter</TextBlock>
+                        </Label>
+                        <TextBox Height="25" Grid.Row="1" x:Name="tb_relationTableFilter" TextChanged="tb_relationTableFilter_TextChanged"></TextBox>
+                        <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock FontSize="9.5">ET Relation<LineBreak/>Table Filter</TextBlock>
+                        </Label>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Header="No Man's Land">
+                    <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Label FontSize="9.5">Lower Bound Model Fomula</Label>
+                        <TextBox x:Name="tb_noMansLowerBound" FontSize="9.5" IsReadOnly="True" Text="HPO3" TextAlignment="Center"></TextBox>
+                        <Label FontSize="9.5">Upper Bound Model Formula</Label>
+                        <TextBox x:Name="tb_noMansUpperBound" FontSize="9.5" IsReadOnly="True" Text="CH2" TextAlignment="Center"></TextBox>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Grid.Column="1" Header="ET Histogram Scaling">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <WindowsFormsHost Grid.Column="1" Grid.ColumnSpan="2" Margin="1">
+                            <winform:NumericUpDown x:Name="yMaxET" ValueChanged="yMaxET_ValueChanged" DecimalPlaces="0" Minimum="-100" Maximum="100" Increment="1" Dock="Fill"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="2" Margin="1">
+                            <winform:NumericUpDown x:Name="xMinET" ValueChanged="xMinET_ValueChanged" DecimalPlaces="1" Increment="0.1" Maximum="100" Minimum="-100"  Dock="Fill"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Row="1"  Grid.Column="2" Grid.ColumnSpan="2" Margin="1">
+                            <winform:NumericUpDown x:Name="xMaxET" ValueChanged="xMaxET_ValueChanged"  DecimalPlaces="1" Increment="0.1" Minimum="-100" Maximum="100" Dock="Fill"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                        <WindowsFormsHost Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="1">
+                            <winform:NumericUpDown x:Name="yMinET" ValueChanged="yMinET_ValueChanged" DecimalPlaces="0" Increment="1" Maximum="100" Minimum="-100" Dock="Fill"></winform:NumericUpDown>
+                        </WindowsFormsHost>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Grid.Column="2" Header="ET Histogram Selection">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <CheckBox x:Name="cb_view_decoy_histogram" FontSize="9.5" VerticalAlignment="Center" IsEnabled="False" IsChecked="{Binding Path=CBVIEWDECOYHISTOGRAM,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">View Experimental-Decoy Histogram</CheckBox>
+                        <!--Binding Here-->
+                        <CheckBox x:Name="cb_discoveryHistogram" FontSize="9.5" VerticalAlignment="Center" Grid.Row="1" IsChecked="{Binding Path=CBDISCOVERYHISTOGRAM,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Raw ET Histogram with Unmodified</CheckBox>
+                        <!--Binding Here-->
+                        <CheckBox x:Name="cb_Graph_lowerThreshold" FontSize="9.5" VerticalAlignment="Center" Grid.Row="2" IsChecked="{Binding Path=CBGRAPHLOWERTHRESHOLD,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">Show Threshold</CheckBox>
+                        <!--Binding Here-->
+                    </Grid>
+                </GroupBox>
+                <!--<Button x:Name="bt_compare_ET" Grid.Row="4" Grid.ColumnSpan="3"  Click="bt_compare_et_Click" Content="Compare Theoretical Proteoforms with Experimental Proteoforms"></Button>-->
+            </Grid>
+            
+        </Grid>
+        
+        
+        
+        <GridSplitter ResizeDirection="Columns" Grid.Column="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Grid Grid.Column="2" Margin="3,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"></RowDefinition>
+                <RowDefinition Height="3"></RowDefinition>
+                <RowDefinition Height="3.5*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <WindowsFormsHost Grid.Row="0">
+                <winform:DataGridView x:Name="dgv_ET_Relations" AllowUserToAddRows="False" AllowUserToDeleteRows="False" AllowUserToOrderColumns="True" ColumnHeadersHeightSizeMode="AutoSize" ReadOnly="True">
+                    <winform:DataGridView.RowTemplate>
+                        <winform:DataGridViewRow Height="28"/>
+                    </winform:DataGridView.RowTemplate>
+
+                </winform:DataGridView>
+            </WindowsFormsHost>
+            <GridSplitter ResizeDirection="Rows" Grid.Row="1" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <WindowsFormsHost Grid.Row="2">
+                <winformchart:Chart x:Name="ct_ET_Histogram" Text="chart1" MouseClick="ct_ET_Histogram_MouseClick">
+                    <winformchart:Chart.Series>
+                        <winformchart:Series Name="relations" ChartType="Line" ChartArea="chartarea1"/>
+                        <winformchart:Series Name="decoys" ChartType="Line" ChartArea="chartarea1"/>
+                    </winformchart:Chart.Series>
+                    <winformchart:Chart.ChartAreas>
+                        <winformchart:ChartArea Name="chartarea1"/>
+                    </winformchart:Chart.ChartAreas>
+
+                </winformchart:Chart>
+            </WindowsFormsHost>
+        </Grid>
+            
+    </Grid>
+</UserControl>

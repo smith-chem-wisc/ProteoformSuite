@@ -1,0 +1,59 @@
+\include{docs/preamble} % \include:\include ; pagebreak:none
+
+%---------------------------------------------------------------------
+%	TITLE SECTION 
+%---------------------------------------------------------------------
+
+\title{Proteoform Suite Manual 0.2.0}
+\author{Anthony J. Cesnik, Michael R. Shortreed, Leah V. Schaffer \\[2ex]
+	Lloyd M. Smith Research Group \\[2ex]
+	\href{mailto:cesnik@wisc.edu}{cesnik@wisc.edu}, \href{mailto:mshort@chem.wisc.edu}{mshort@chem.wisc.edu}, \href{mailto:lschaffer2@wisc.edu}{lschaffer2@wisc.edu}}
+\date{\today}
+
+%---------------------------------------------------------------------
+
+\begin{document}
+%\onehalfspacing
+% Project overview  -----------------------------------
+\maketitle
+\input{docs/project_overview}
+\pagebreak
+
+% Table of contents ------------------------------------------------
+% \maketitle 
+\addcontentsline{toc}{section}{Table of Contents}
+\tableofcontents
+\pagebreak
+
+% Main document ------------------------------------------------------
+\input{docs/getting_started}
+\pagebreak
+\input{docs/load_decon_results}
+\pagebreak
+\input{docs/raw_experimental_components}
+\pagebreak
+\input{docs/neucode_pairs}
+\pagebreak
+\input{docs/aggregated_proteoforms}
+\pagebreak
+\input{docs/theoreticals}
+\pagebreak
+\input{docs/comparisons}
+\pagebreak
+\input{docs/families}
+\pagebreak
+\input{docs/quant}
+\pagebreak
+\input{docs/cytoscape}
+\pagebreak
+\input{docs/results_summary}
+\pagebreak
+
+\input{docs/glossary}
+
+% References ------------------------------------------------------
+\pagebreak
+\addcontentsline{toc}{section}{References}
+\printbibliography
+
+\end{document}
