@@ -117,6 +117,7 @@ namespace ProteoformSuiteInternal
                 ncRoot.intensity_sum = temp.agg_intensity;
                 ncRoot.rt_apex = temp.agg_rt;
                 ncRoot.cysteine_count = temp.cysteine_count;
+                ncRoot.exact_cysteine_count = temp.exact_cysteine_count;
 
                 this.root = ncRoot;
                 this.aggregated.AddRange(candidate_observations.Where(p => includes(p, this.root)));
@@ -139,7 +140,7 @@ namespace ProteoformSuiteInternal
 
         // COPYING CONSTRUCTOR
         public ExperimentalProteoform(ExperimentalProteoform eP)
-            : base(eP.accession, eP.modified_mass, eP.lysine_count, eP.cysteine_count, eP.is_target)
+            : base(eP.accession, eP.modified_mass, eP.lysine_count, eP.cysteine_count, eP.exact_cysteine_count, eP.is_target)
         {
             copy_aggregate(eP);
             quant = new QuantitativeProteoformValues(this);
@@ -159,6 +160,7 @@ namespace ProteoformSuiteInternal
             agg_rt = e.agg_rt;
             lysine_count = e.lysine_count;
             cysteine_count = e.cysteine_count;
+            exact_cysteine_count = e.exact_cysteine_count;
             is_target = e.is_target;
             family = e.family;
             aggregated = new List<IAggregatable>(e.aggregated);
@@ -258,6 +260,7 @@ namespace ProteoformSuiteInternal
             agg_rt = aggregated.Sum(c => c.rt_apex * c.intensity_sum / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             cysteine_count = root as NeuCodePair != null ? (root as NeuCodePair).cysteine_count : cysteine_count;
+            exact_cysteine_count = root as NeuCodePair != null ? (root as NeuCodePair).exact_cysteine_count : exact_cysteine_count;
             modified_mass = agg_mass;
         }
 

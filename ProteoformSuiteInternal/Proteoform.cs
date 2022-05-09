@@ -18,6 +18,7 @@ namespace ProteoformSuiteInternal
         public double modified_mass { get; set; }
         public int lysine_count { get; set; } = -1;
         public int cysteine_count { get; set; } = -1;
+        public double exact_cysteine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
         public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }
@@ -58,12 +59,13 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructors
 
-        public Proteoform(string accession, double modified_mass, int lysine_count, int cysteine_count, bool is_target)
+        public Proteoform(string accession, double modified_mass, int lysine_count, int cysteine_count,  double exact_cysteine_count, bool is_target)
         {
             this.accession = accession;
             this.modified_mass = modified_mass;
             this.lysine_count = lysine_count;
             this.cysteine_count = cysteine_count;
+            this.exact_cysteine_count = exact_cysteine_count;
             this.is_target = is_target;
         }
 

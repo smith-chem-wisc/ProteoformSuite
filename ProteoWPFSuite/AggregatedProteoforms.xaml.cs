@@ -238,6 +238,7 @@ namespace ProteoWPFSuite
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.maximum_missed_lysines = Convert.ToInt32(nUD_Missed_Ks.Value);
+            Sweet.lollipop.maximum_missed_cysteines = Convert.ToInt32(nUD_Missed_Ks.Value);
         }
         
         private void bt_aggregate_Click(object sender, RoutedEventArgs e)

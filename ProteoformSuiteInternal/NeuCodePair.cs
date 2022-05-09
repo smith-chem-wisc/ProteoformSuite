@@ -20,6 +20,7 @@ namespace ProteoformSuiteInternal
         public List<ChargeState> charge_states { get; set; } // light charge states that had charge counts also observed for the heavy component
         public int lysine_count { get; set; }
         public int cysteine_count { get; set; }
+        public double exact_cysteine_count { get; set; }
         public List<Component> mislabeled_components { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
 
@@ -65,7 +66,9 @@ namespace ProteoformSuiteInternal
             //Some empirical corrections for deconvolution issues will need to be made here.. @JGP
             else if(Sweet.lollipop.cystag_labeled)
             {
+                this.exact_cysteine_count = Math.Abs(neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.CYSTAG_MASS_SHIFT;
                 this.cysteine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.CYSTAG_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
+
                 this.weighted_monoisotopic_mass = neuCodeLight.weighted_monoisotopic_mass;
             }
             this.intensity_ratio = light_intensity_sum_olcs / heavy_intensity_sum_olcs; //ratio of overlapping charge states
@@ -89,7 +92,8 @@ namespace ProteoformSuiteInternal
 
         public void set_accepted()
         {
-            accepted = ((lysine_count >= Sweet.lollipop.min_lysine_ct && lysine_count <= Sweet.lollipop.max_lysine_ct) || (cysteine_count >= Sweet.lollipop.min_cysteine_ct && cysteine_count <= Sweet.lollipop.max_cysteine_ct)
+            accepted = (((lysine_count >= Sweet.lollipop.min_lysine_ct && lysine_count <= Sweet.lollipop.max_lysine_ct) && Sweet.lollipop.neucode_labeled) || 
+                ((cysteine_count >= Sweet.lollipop.min_cysteine_ct && cysteine_count <= Sweet.lollipop.max_cysteine_ct) && Sweet.lollipop.cystag_labeled)
                 && intensity_ratio >= Convert.ToDouble(Sweet.lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(Sweet.lollipop.max_intensity_ratio));
         }
 

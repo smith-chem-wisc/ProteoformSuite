@@ -48,7 +48,7 @@
                         <!--Part of this control coded in backend .cs-->
                         <winformchart:Chart x:Name="ct_LysineCount" Palette="BrightPastel" Text="chart1" Dock="Fill" MouseClick="ct_LysineCount_MouseClick" Visible="True">
                             <winformchart:Chart.Series>
-                                <winformchart:Series Name="lysineCount" ChartType="Line" ChartArea="ChartArea1" Legend="Legend1" MarkerBorderWidth="1" MarkerSize="5">
+                                <winformchart:Series Name="lysineCount" ChartType="Line" MarkerBorderWidth="1" MarkerSize="5">
                                     <winformchart:Series.SmartLabelStyle>
                                         <winformchart:SmartLabelStyle/>
                                     </winformchart:Series.SmartLabelStyle>
@@ -93,8 +93,8 @@
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                                 <ColumnDefinition Width="1.5*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Label Margin="0 0 0 0" Height="23" Grid.Column="0" Grid.Row="0" FontSize="11">K-Min</Label>
-                            <Label Margin="0,0,0,0" Height="23" Grid.Column="0" Grid.Row="1" FontSize="11">K-Max</Label>
+                            <TextBlock x:Name="AA_min_textblock" Text="K-Min" Margin="0 0 0 0" Height="23" Grid.Column="0" Grid.Row="0" FontSize="11" />
+                            <TextBlock x:Name="AA_max_textblock" Text="K-Min" Margin="0 0 0 0" Height="23" Grid.Column="0" Grid.Row="1" FontSize="11" />
                             <WindowsFormsHost Grid.Column="1" Height="20">
                                 <winform:NumericUpDown x:Name="KMinAcceptable" Dock="Fill" Maximum="100" Minimum="-100" DecimalPlaces="2" Enabled="True" Visible="True" TabIndex="12" ValueChanged="KMinAcceptable_ValueChanged"/>
                             </WindowsFormsHost>
@@ -151,7 +151,7 @@
                     <WindowsFormsHost>
                         <winformchart:Chart x:Name="ct_IntensityRatio" Dock="Fill" MouseClick="ct_IntensityRatio_MouseClick" Margin="2, 2, 2, 2" TabIndex="1" Text="chart1">
                             <winformchart:Chart.Series>
-                                <winformchart:Series ChartType="Line" ChartArea="ChartArea1" Name="intensityRatio" Legend="Legend1"/>
+                                <winformchart:Series ChartType="Line"  Name="intensityRatio"/>
                             </winformchart:Chart.Series>
                             <winformchart:Chart.Legends>
                                 <winformchart:Legend Name="Legend1" Enabled="False"/>

@@ -177,7 +177,7 @@ namespace ProteoformSuiteInternal
         }
 
         /* This currently only pairs components that have the same scan range, however I feel like it would be more robust to require that the components are within some retention time tolerance, especially considering
-         that FLASHDeconv does not provide scan numbers for the components. -@JGP*/
+         that FLASHDeconv does not provide scan numbers for the components. -@JGP */
         public void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
         {
             foreach (InputFile inputFile in get_files(input_files, Purpose.Identification).ToList())
@@ -189,7 +189,7 @@ namespace ProteoformSuiteInternal
                     foreach(Component c2 in inputFile.reader.final_components)
                     {
                         double rt_diff = Math.Abs(c1.rt_apex - c2.rt_apex);
-                        if(rt_diff < 1.9 && !c1.previously_compared_components.Contains(c2) && !c2.previously_compared_components.Contains(c1))
+                        if(rt_diff < 0.1 && !c1.previously_compared_components.Contains(c2) && !c2.previously_compared_components.Contains(c1))
                         {
                             components_in_rt_range.Add(c2);
                             c1.previously_compared_components.Add(c2);
@@ -346,8 +346,8 @@ namespace ProteoformSuiteInternal
         public decimal min_intensity_ratio = 1.4m;
         public decimal max_lysine_ct = 26.2m;
         public decimal min_lysine_ct = 1.5m;
-        public decimal max_cysteine_ct = 22;
-        public decimal min_cysteine_ct = 1.5m;
+        public decimal max_cysteine_ct = 20;
+        public decimal min_cysteine_ct = 1m;
 
         #endregion NEUCODE PAIRS Public Fields
 
@@ -368,7 +368,7 @@ namespace ProteoformSuiteInternal
                         lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
                         {
                             double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                            if (mass_difference < 2)
+                            if (mass_difference < 6)
                             {
                                 List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
                                 List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
@@ -401,6 +401,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             });
+
             pairsInScanRange = findMissing_ExtraLabels(pairsInScanRange).ToList();
 
             foreach (NeuCodePair pair in pairsInScanRange

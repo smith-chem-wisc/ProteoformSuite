@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         #region Public Constructor
 
         public TheoreticalProteoform(string accession, string description, string sequence, IEnumerable<ProteinWithGoTerms> expanded_protein_list, double unmodified_mass, int lysine_count, int cysteine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins)
-            : base(accession, unmodified_mass + ptm_set.mass, lysine_count, cysteine_count, is_target)
+            : base(accession, unmodified_mass + ptm_set.mass, lysine_count, cysteine_count, cysteine_count, is_target)
         {
             this.linked_proteoform_references = new List<Proteoform>();
             this.ExpandedProteinList = expanded_protein_list.ToList();

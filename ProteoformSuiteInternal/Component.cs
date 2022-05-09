@@ -200,6 +200,26 @@ namespace ProteoformSuiteInternal
             return this;
         }
 
+        public Component mergeArtifacts(Component cpToMerge)
+        {
+            foreach(ChargeState cs1 in cpToMerge.charge_states)
+            {
+                bool matched = false;
+                foreach(ChargeState cs2 in this.charge_states)
+                {
+                    if(cs1.charge_count == cs2.charge_count)
+                    {
+                        cs2.mergeTheseChargeStates(cs1);
+                        matched = true;
+                    }
+                }
+                if (!matched)
+                    this.charge_states.Add(cs1);
+            }
+            this.calculate_properties();
+            return this;
+        }
+
         #endregion Public Methods
     }
 }
