@@ -182,24 +182,12 @@ namespace ProteoformSuiteInternal
         {
             foreach (InputFile inputFile in get_files(input_files, Purpose.Identification).ToList())
             {
-                foreach(Component c1 in inputFile.reader.final_components)
+                foreach(string scan_range in inputFile.reader.scan_ranges)
                 {
-                    List<Component> components_in_rt_range = new List<Component>();
-                    components_in_rt_range.Add(c1);
-                    foreach(Component c2 in inputFile.reader.final_components)
-                    {
-                        double rt_diff = Math.Abs(c1.rt_apex - c2.rt_apex);
-                        if(rt_diff < 0.1 && !c1.previously_compared_components.Contains(c2) && !c2.previously_compared_components.Contains(c1))
-                        {
-                            components_in_rt_range.Add(c2);
-                            c1.previously_compared_components.Add(c2);
-                            c2.previously_compared_components.Add(c1);
-                        }
-                    }
-                    find_neucode_pairs(components_in_rt_range, raw_neucode_pairs, heavy_hashed_pairs);
+                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.min_scan + "-" + c.max_scan == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
             }
-            raw_neucode_pairs = findMissing_ExtraLabels(raw_neucode_pairs).ToList();
+            //raw_neucode_pairs = findMissing_ExtraLabels(raw_neucode_pairs).ToList();
         }
 
         #endregion RAW EXPERIMENTAL COMPONENTS

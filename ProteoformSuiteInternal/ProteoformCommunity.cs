@@ -87,16 +87,10 @@ namespace ProteoformSuiteInternal
                          relation_type == ProteoformComparison.ExperimentalDecoy ||
                          relation_type == ProteoformComparison.ExperimentalExperimental))
                     {
-                        double cysteine_count_tolerance = 0.75;
-                        List<Proteoform> pfs2_acceptable_cysteine_count = pfs2_cysteine_lookup
-                            .Where(kv => Math.Abs(pf1.exact_cysteine_count - kv.Key) <= cysteine_count_tolerance)
-                            .SelectMany(kv => kv.Value).ToList();
-
-                        pf1.candidate_relatives = pfs2_acceptable_cysteine_count != null
-                            ? pfs2_acceptable_cysteine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList()
+                        pfs2_cysteine_lookup.TryGetValue(pf1.lysine_count, out List<Proteoform> pfs2_same_cysteine_count);
+                        pf1.candidate_relatives = pfs2_same_cysteine_count != null
+                            ? pfs2_same_cysteine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList()
                             : new List<Proteoform>();
-
-                        pf1.candidate_relatives.OrderByDescending(c => c.cysteine_count).ToList();
                     }
                     else if(Sweet.lollipop.cystag_labeled && relation_type == ProteoformComparison.ExperimentalFalse)
                     {
@@ -107,7 +101,7 @@ namespace ProteoformSuiteInternal
                             .Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }
                     //Unlabeled
-                    else if (!Sweet.lollipop.neucode_labeled)
+                    else if (!Sweet.lollipop.neucode_labeled && ! Sweet.lollipop.cystag_labeled)
                     {
                         pf1.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }

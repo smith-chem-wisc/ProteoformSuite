@@ -271,7 +271,8 @@ namespace ProteoformSuiteInternal
         public bool includes(IAggregatable candidate, IAggregatable root)
         {
             return tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate.weighted_monoisotopic_mass, root.weighted_monoisotopic_mass)
-                && (candidate as NeuCodePair == null || (tolerable_lysCt(candidate as NeuCodePair, (root as NeuCodePair).lysine_count) || tolerable_cysCt(candidate as NeuCodePair, (root as NeuCodePair).cysteine_count)));
+                && (candidate as NeuCodePair == null || ((Sweet.lollipop.neucode_labeled && tolerable_lysCt(candidate as NeuCodePair, (root as NeuCodePair).lysine_count))
+                || (Sweet.lollipop.cystag_labeled &&tolerable_cysCt(candidate as NeuCodePair, (root as NeuCodePair).cysteine_count))));
         }
 
         public bool includes_neucode_component(Component candidate, ExperimentalProteoform root, bool light)
