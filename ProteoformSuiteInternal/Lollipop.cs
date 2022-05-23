@@ -377,7 +377,9 @@ namespace ProteoformSuiteInternal
                                 }
                                 else if (cystag_labeled && lower_intensity > 0 && higher_intensity > 0)
                                 {
-                                    NeuCodePair pair = new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower);
+                                    NeuCodePair pair = lower_intensity > higher_intensity ?
+                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
                                     if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.
                                     {

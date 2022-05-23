@@ -81,13 +81,14 @@ namespace ProteoformSuiteInternal
                         pf1.candidate_relatives = pfs2_lysines_outside_tolerance
                             .Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }
+
                     //Cystag code:
                     else if(Sweet.lollipop.cystag_labeled &&
                         (relation_type == ProteoformComparison.ExperimentalTheoretical ||
                          relation_type == ProteoformComparison.ExperimentalDecoy ||
                          relation_type == ProteoformComparison.ExperimentalExperimental))
                     {
-                        pfs2_cysteine_lookup.TryGetValue(pf1.lysine_count, out List<Proteoform> pfs2_same_cysteine_count);
+                        pfs2_cysteine_lookup.TryGetValue(pf1.cysteine_count, out List<Proteoform> pfs2_same_cysteine_count);
                         pf1.candidate_relatives = pfs2_same_cysteine_count != null
                             ? pfs2_same_cysteine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList()
                             : new List<Proteoform>();
