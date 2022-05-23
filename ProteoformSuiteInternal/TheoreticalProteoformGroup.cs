@@ -15,6 +15,7 @@ namespace ProteoformSuiteInternal
                 theoreticals_with_contaminants_first.SelectMany(p => p.ExpandedProteinList),
                 theoreticals_with_contaminants_first.FirstOrDefault().unmodified_mass,
                 theoreticals_with_contaminants_first.FirstOrDefault().lysine_count,
+                theoreticals_with_contaminants_first.FirstOrDefault().cysteine_count,
                 theoreticals_with_contaminants_first.FirstOrDefault().ptm_set,
                 theoreticals_with_contaminants_first.FirstOrDefault().is_target,
                 false,

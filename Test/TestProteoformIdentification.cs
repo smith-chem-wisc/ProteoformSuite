@@ -14,7 +14,7 @@ namespace Test
         public void assign_missing_aa_identity()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false, false, false).AA_Masses;
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 886.45, 0); // sequence with all serines
             t.sequence = "AAAAAAAAAAAS";
             t.gene_name = new GeneName(new List<Tuple<string, string>>() { new Tuple<string, string>("Gene", "Gene") });
@@ -105,7 +105,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false,false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false,false,false).AA_Masses;
 
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1232.43, 0, true);
@@ -189,7 +189,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false,false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(false,false,false).AA_Masses;
 
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("", 1106.40, 0); // sequence with all serines
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 1106.42, 0, true);
@@ -226,7 +226,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
 
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false,false).AA_Masses;
             ModificationMotif.TryGetMotif("S", out ModificationMotif motif);
             PtmSet set = new PtmSet(new List<Ptm> { new Ptm(0, new Modification("Sulfate Adduct", _modificationType : "Common", _target : motif, _locationRestriction : "Anywhere.", _monoisotopicMass : 97.97)) });
             PtmSet set_unmodified = new PtmSet(new List<Ptm> { new Ptm() });
@@ -306,7 +306,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -431,7 +431,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false,false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -528,7 +528,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
 
 
@@ -608,7 +608,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
 
 
@@ -710,7 +710,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
@@ -802,7 +802,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
 
             Assert.AreEqual(0, e1.ambiguous_identifications.Count);
@@ -850,7 +850,7 @@ namespace Test
             fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
 
             Assert.IsFalse(t2.relationships.First().Accepted);
@@ -911,7 +911,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
 
             Assert.AreEqual("gene1", e1.gene_name.get_prefered_name(Lollipop.preferred_gene_label));
@@ -965,7 +965,7 @@ namespace Test
             fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
 
             Assert.IsFalse(t2.relationships.First().Accepted);
@@ -1050,7 +1050,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(3, fam.theoretical_proteoforms.Count);
@@ -1185,7 +1185,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(3, fam.theoretical_proteoforms.Count);
@@ -1310,7 +1310,7 @@ namespace Test
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
             Sweet.lollipop.theoretical_database.aaIsotopeMassList =
-                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+                new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(0, e3.ambiguous_identifications.Count);
             Assert.IsFalse(t3.relationships.First().Accepted);
@@ -1380,7 +1380,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -1491,7 +1491,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -1588,7 +1588,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -1692,7 +1692,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -1790,7 +1790,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -1899,7 +1899,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(5, fam.experimental_proteoforms.Count);
             Assert.AreEqual(3, fam.theoretical_proteoforms.Count);
@@ -1990,7 +1990,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -2086,7 +2086,7 @@ namespace Test
 
             ProteoformFamily fam = new ProteoformFamily(e1);
             fam.construct_family();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             fam.identify_experimentals();
             Assert.AreEqual(4, fam.experimental_proteoforms.Count);
             Assert.AreEqual(2, fam.theoretical_proteoforms.Count);
@@ -2121,7 +2121,7 @@ namespace Test
         {
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.mod_rank_sum_threshold = 1;
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, false, false).AA_Masses;
             Sweet.lollipop.only_assign_common_or_known_mods = true;
             Lollipop.preferred_gene_label = "primary";
             TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("T1", 100000, 0); // sequence with all serines

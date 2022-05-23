@@ -362,6 +362,7 @@ namespace ProteoformSuiteInternal
 
 
             int lysine_count = seq.Split('K').Length - 1;
+            int cysteine_count = seq.Split('C').Length - 1;
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
             //Figure out the possible ptm sets
@@ -397,6 +398,7 @@ namespace ProteoformSuiteInternal
                             (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
                             unmodified_mass,
                             lysine_count,
+                            cysteine_count,
                             ptm_set,
                             decoy_number < 0,
                             check_contaminants,
@@ -405,7 +407,7 @@ namespace ProteoformSuiteInternal
                     ptm_set_counter++;
                 }
             }
-            add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);
+            add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, cysteine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);
             lock (theoretical_proteoforms) theoretical_proteoforms.AddRange(new_theoreticals);
         }
 
@@ -462,7 +464,7 @@ namespace ProteoformSuiteInternal
             expanded_proteins = expanded_proteins.Concat(new_proteins).ToArray();
         }
 
-        public void add_topdown_theoreticals(ProteinWithGoTerms prot, string seq, string accession, double unmodified_mass, int decoy_number, int lysine_count, List<TheoreticalProteoform> new_theoreticals, int ptm_set_counter, Dictionary<double, int> mod_ranks, int added_ptm_penalty)
+        public void add_topdown_theoreticals(ProteinWithGoTerms prot, string seq, string accession, double unmodified_mass, int decoy_number, int lysine_count, int cysteine_count, List<TheoreticalProteoform> new_theoreticals, int ptm_set_counter, Dictionary<double, int> mod_ranks, int added_ptm_penalty)
         {
             foreach (TopDownProteoform topdown in Sweet.lollipop.topdown_proteoforms.Where(p => p.ambiguous_topdown_hits.Count == 0 && prot.AccessionList.Select(a => a.Split('_')[0]).Contains(p.accession.Split('_')[0])
                 && p.sequence == seq).OrderBy(t => t.accession).ThenByDescending(t => t.sequence.Length)) //order by gene name then descending sequence length --> order matters for creating theoreticals.
@@ -481,6 +483,7 @@ namespace ProteoformSuiteInternal
                         (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
                         unmodified_mass,
                         lysine_count,
+                        cysteine_count,
                         ptm_set,
                         decoy_number < 0,
                         false,
@@ -495,7 +498,7 @@ namespace ProteoformSuiteInternal
 
         public void populate_aa_mass_dictionary()
         {
-            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
+            aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled).AA_Masses;
         }
 
         #endregion Public Methods
@@ -631,7 +634,7 @@ namespace ProteoformSuiteInternal
                     prevLength += p.sequence.Length;
                     var unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(hunk, new List<Ptm>());
                     TheoreticalProteoform t = new TheoreticalProteoform(p.accession + "_DECOY_" + decoyNumber,
-                        p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'),
+                        p.description, hunk, p.ExpandedProteinList, unmodified_mass, hunk.Count(s => s == 'K'), hunk.Count(s=>s == 'C'),
                         p.ptm_set, false, p.contaminant, theoretical_proteins);
                     t.topdown_theoretical = p.topdown_theoretical;
                     t.new_topdown_proteoform = p.new_topdown_proteoform;

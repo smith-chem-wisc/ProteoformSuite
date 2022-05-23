@@ -95,7 +95,7 @@ namespace ProteoformSuiteInternal
                     {
                         TheoreticalProteoform theoretical =
                             new TheoreticalProteoform(topdown.accession, topdown.name, topdown.sequence,
-                                t.First().ExpandedProteinList, topdown.modified_mass, topdown.lysine_count,
+                                t.First().ExpandedProteinList, topdown.modified_mass, topdown.lysine_count, topdown.cysteine_count,
                                 topdown.topdown_ptm_set, true, false, null);
                         theoretical.topdown_theoretical = true;
                         theoretical.new_topdown_proteoform = true;

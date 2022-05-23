@@ -57,6 +57,10 @@ namespace ProteoWPFSuite
         {
             get { return e.lysine_count; }
         }
+        public double cysteine_count
+        {
+            get { return e.cysteine_count; }
+        }
 
         public bool mass_shifted
         {
@@ -347,6 +351,7 @@ namespace ProteoWPFSuite
             if (property_name == nameof(agg_rt)) return "Aggregated RT";
             if (property_name == nameof(observation_count)) return "Aggregated Component Count for Identification";
             if (property_name == nameof(lysine_count)) return "Lysine Count";
+            if (property_name == nameof(cysteine_count)) return "Cysteine Count";
             if (property_name == nameof(mass_shifted)) return "Manually Shifted Mass";
             if (property_name == nameof(ptm_description)) return "PTM Description";
             if (property_name == nameof(gene_name)) return "Gene Name";
@@ -369,6 +374,7 @@ namespace ProteoWPFSuite
         private static bool visible(string property_name, bool current)
         {
             if (property_name == nameof(lysine_count)) { return Sweet.lollipop.neucode_labeled; }
+            if(property_name == nameof(cysteine_count)) { return Sweet.lollipop.cystag_labeled; }
             else return current;
         }
 

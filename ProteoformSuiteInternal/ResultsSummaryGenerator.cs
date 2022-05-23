@@ -1064,7 +1064,7 @@ namespace ProteoformSuiteInternal
                                     {
                                         var t = theoreticals.Where(x => x.fragment == "full-met-cleaved").First();
                                         TheoreticalProteoform theoretical_with_M = new TheoreticalProteoform("", "", "M" + t.sequence,
-                                        theoreticals.First().ExpandedProteinList, 0, 0, new PtmSet(new List<Ptm>()), false, false, null);
+                                        theoreticals.First().ExpandedProteinList, 0, 0, 0, new PtmSet(new List<Ptm>()), false, false, null);
                                         theoretical_with_M.fragment = "full";
                                         theoretical_with_M.begin = 1;
                                         theoretical_with_M.end = t.end;

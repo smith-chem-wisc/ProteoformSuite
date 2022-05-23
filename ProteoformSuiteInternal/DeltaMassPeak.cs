@@ -212,7 +212,7 @@ namespace ProteoformSuiteInternal
             peak_group_fdr = median_false_peak_count / (double)peak_relation_group_count;
         }
 
-        public bool shift_experimental_masses(int shift, bool neucode_labeled)
+        public bool shift_experimental_masses(int shift, bool neucode_labeled, bool cystag_labeled)
         {
             if (RelationType != ProteoformComparison.ExperimentalTheoretical)
             {
@@ -224,7 +224,7 @@ namespace ProteoformSuiteInternal
                 Proteoform p = r.connected_proteoforms[0];
                 if (p is ExperimentalProteoform && Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Contains(p))
                 {
-                    (p as ExperimentalProteoform).shift_masses(shift, neucode_labeled);
+                    (p as ExperimentalProteoform).shift_masses(shift, neucode_labeled, cystag_labeled);
                 }
             }
 

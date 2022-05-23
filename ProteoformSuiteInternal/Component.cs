@@ -32,6 +32,7 @@ namespace ProteoformSuiteInternal
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public List<Component> incorporated_missed_monoisotopics = new List<Component>();
+        public List<Component> previously_compared_components = new List<Component>();
         public bool calculating_properties { get; set; } = false;
         private int num_detected_intervals { get; set; }
         public bool accepted { get; set; }
@@ -196,6 +197,26 @@ namespace ProteoformSuiteInternal
                     this.calculate_properties();
                 }
             }
+            return this;
+        }
+
+        public Component mergeArtifacts(Component cpToMerge)
+        {
+            foreach(ChargeState cs1 in cpToMerge.charge_states)
+            {
+                bool matched = false;
+                foreach(ChargeState cs2 in this.charge_states)
+                {
+                    if(cs1.charge_count == cs2.charge_count)
+                    {
+                        cs2.mergeTheseChargeStates(cs1);
+                        matched = true;
+                    }
+                }
+                if (!matched)
+                    this.charge_states.Add(cs1);
+            }
+            this.calculate_properties();
             return this;
         }
 

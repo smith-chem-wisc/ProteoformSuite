@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
 using System.Text;
 using Proteomics;
+using MzLibUtil;
 
 namespace ProteoformSuiteInternal
 {
@@ -23,6 +24,7 @@ namespace ProteoformSuiteInternal
 
         public static double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
         public static double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public static double CYSTAG_MASS_SHIFT = 0.045258;
         public static double PROTON_MASS = 1.007276474;
 
         #endregion Constants
@@ -111,7 +113,13 @@ namespace ProteoformSuiteInternal
 
                 string filename = Path.GetFileNameWithoutExtension(complete_path);
                 string extension = Path.GetExtension(complete_path);
-                Labeling label = neucode_labeled ? Labeling.NeuCode : Labeling.Unlabeled;
+                Labeling label;
+                if (neucode_labeled)
+                    label = Labeling.NeuCode;
+                else if (cystag_labeled)
+                    label = Labeling.Cystag;
+                else
+                    label = Labeling.Unlabeled;
 
                 if (acceptable_extensions.Contains(extension) && !destination.Where(f => purposes.Contains(f.purpose)).Any(f => f.filename == filename))
                 {
@@ -143,6 +151,7 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
+        public bool cystag_labeled = false;
         public double raw_component_mass_tolerance = 5;
         public double minIC = 0.7;
         public double minCC = 0.7;
@@ -161,21 +170,24 @@ namespace ProteoformSuiteInternal
                 lock (destination) destination.AddRange(someComponents);
             });
 
-            if (neucode_labeled && purpose == Purpose.Identification)
+            if ((neucode_labeled || cystag_labeled) && purpose == Purpose.Identification)
             {
                 process_neucode_components(raw_neucode_pairs);
             }
         }
 
+        /* This currently only pairs components that have the same scan range, however I feel like it would be more robust to require that the components are within some retention time tolerance, especially considering
+         that FLASHDeconv does not provide scan numbers for the components. -@JGP */
         public void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
         {
             foreach (InputFile inputFile in get_files(input_files, Purpose.Identification).ToList())
             {
-                foreach (string scan_range in inputFile.reader.scan_ranges)
+                foreach(string scan_range in inputFile.reader.scan_ranges)
                 {
                     find_neucode_pairs(inputFile.reader.final_components.Where(c => c.min_scan + "-" + c.max_scan == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
             }
+            //raw_neucode_pairs = findMissing_ExtraLabels(raw_neucode_pairs).ToList();
         }
 
         #endregion RAW EXPERIMENTAL COMPONENTS
@@ -322,6 +334,8 @@ namespace ProteoformSuiteInternal
         public decimal min_intensity_ratio = 1.4m;
         public decimal max_lysine_ct = 26.2m;
         public decimal min_lysine_ct = 1.5m;
+        public decimal max_cysteine_ct = 20;
+        public decimal min_cysteine_ct = 1m;
 
         #endregion NEUCODE PAIRS Public Fields
 
@@ -350,7 +364,18 @@ namespace ProteoformSuiteInternal
                                 double lower_intensity = NeuCodePair.calculate_sum_intensity_olcs(lower_component.charge_states, overlapping_charge_states);
                                 double higher_intensity = NeuCodePair.calculate_sum_intensity_olcs(higher_component.charge_states, overlapping_charge_states);
                                 bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                                if (lower_intensity > 0 && higher_intensity > 0)
+                                if (neucode_labeled && lower_intensity > 0 && higher_intensity > 0)
+                                {
+                                    NeuCodePair pair = lower_intensity > higher_intensity ?
+                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+
+                                    if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.
+                                    {
+                                        lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                    }
+                                }
+                                else if (cystag_labeled && lower_intensity > 0 && higher_intensity > 0)
                                 {
                                     NeuCodePair pair = lower_intensity > higher_intensity ?
                                         new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
@@ -367,6 +392,8 @@ namespace ProteoformSuiteInternal
                 }
             });
 
+            pairsInScanRange = findMissing_ExtraLabels(pairsInScanRange).ToList();
+
             foreach (NeuCodePair pair in pairsInScanRange
                 .OrderBy(p => Math.Min(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //lower_component
                 .ThenBy(p => Math.Max(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //higher_component
@@ -378,6 +405,7 @@ namespace ProteoformSuiteInternal
                         || !these_pairs.Any(p => p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
                     {
                         lock (destination)
+                            if(!checkForDups_Mislabeled(destination.ToHashSet(),pair))
                             destination.Add(pair);
                         if (heavy_hashed_pairs.TryGetValue(pair.neuCodeHeavy, out List<NeuCodePair> paired))
                         {
@@ -397,6 +425,63 @@ namespace ProteoformSuiteInternal
                 }
             }
             return pairsInScanRange;
+        }
+ 
+        public static HashSet<NeuCodePair> findMissing_ExtraLabels(List<NeuCodePair> pairs)
+        {
+            //Assumes that the highest intensity 
+            List<NeuCodePair> dupRemovedPairs = new List<NeuCodePair>();
+            foreach(NeuCodePair pair in pairs)
+            {
+                if (!checkForDups_Mislabeled(dupRemovedPairs.ToHashSet(), pair))
+                    dupRemovedPairs.Add(pair);
+            }
+            dupRemovedPairs = dupRemovedPairs.OrderByDescending(p => p.intensity_sum).ToList();
+            HashSet<NeuCodePair> vetted_pairs = new HashSet<NeuCodePair>();
+
+            foreach(NeuCodePair pair1 in dupRemovedPairs)
+            {
+                if(!pair1.mislabeled)
+                {
+                    bool foundMislabeled = false;
+                    foreach (NeuCodePair pair2 in dupRemovedPairs)
+                    {
+                        if (!pair2.mislabeled)
+                        {
+                            //Find the cysteine count difference, then check if the mass difference is explained by a missing or extra label.
+                            int cysteine_count_difference = pair1.cysteine_count - pair2.cysteine_count;
+                            double expected_mass_difference = cysteine_count_difference * 222.158975;
+                            double predicted_mass = pair2.neuCodeLight.weighted_monoisotopic_mass + expected_mass_difference;
+                            double experimental_mass_difference = pair1.neuCodeLight.weighted_monoisotopic_mass - pair2.neuCodeLight.weighted_monoisotopic_mass;
+                            PpmTolerance merging_tol = new PpmTolerance(10);
+                            if (cysteine_count_difference != 0 && merging_tol.Within(pair1.neuCodeLight.weighted_monoisotopic_mass, predicted_mass))
+                            {
+                                pair1.mislabeled_components.Add(pair2.neuCodeLight);
+                                pair1.mislabeled_components.Add(pair2.neuCodeHeavy);
+                                vetted_pairs.Add(pair1);
+                                pair2.mislabeled = true;
+                                foundMislabeled = true;
+                            }
+                        }
+                    }
+                    if (!foundMislabeled && !checkForDups_Mislabeled(vetted_pairs,pair1))
+                        vetted_pairs.Add(pair1);
+                }
+            }
+
+            return vetted_pairs;
+        }
+
+        public static bool checkForDups_Mislabeled(HashSet<NeuCodePair> vetted, NeuCodePair current)
+        {
+            bool contains = false;
+            foreach(NeuCodePair pair in vetted)
+            {
+                double light_diff = Math.Abs(pair.weighted_monoisotopic_mass - current.weighted_monoisotopic_mass);
+                if ((pair.cysteine_count == current.cysteine_count && light_diff < 0.5) || (pair.mislabeled_components.Contains(current.neuCodeLight) || pair.mislabeled_components.Contains(current.neuCodeHeavy)))
+                    contains = true;
+            }
+            return contains;
         }
 
         #endregion NEUCODE PAIRS
@@ -497,9 +582,16 @@ namespace ProteoformSuiteInternal
         }
 
         //convert unlabeled mass to neucode light mass based on lysine count (used for topdown identifications)
-        public double get_neucode_mass(double unlabeled_mass, int lysine_count)
+        public double get_neucode_mass(double unlabeled_mass, int lysine_count, int cysteine_count)
         {
-            return unlabeled_mass - lysine_count * 128.094963 + lysine_count * 136.109162;
+            if(neucode_labeled)
+            {
+                return unlabeled_mass - lysine_count * 128.094963 + lysine_count * 136.109162;
+            }
+            else
+            {
+                return unlabeled_mass - cysteine_count * 128.094963 + cysteine_count * 136.109162; //Update this eventually @JGP
+            }
         }
 
         #endregion TOPDOWN
@@ -518,6 +610,7 @@ namespace ProteoformSuiteInternal
         public int maximum_missed_monos = 3;
         public List<int> missed_monoisotopics_range = new List<int>();
         public int maximum_missed_lysines = 2;
+        public int maximum_missed_cysteines = 2;
         public int min_num_CS = 1;
         public string agg_observation_requirement = observation_requirement_possibilities[0];
         public int agg_minBiorepsWithObservations = -1;
@@ -620,7 +713,7 @@ namespace ProteoformSuiteInternal
                     double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
                     double low = mass + shift - mass_tol;
                     double high = mass + shift + mass_tol;
-                    potential_matches.AddRange(vetted_proteoforms.Where(ep => !ep.topdown_id && ep.modified_mass >= low && ep.modified_mass <= high && (!neucode_labeled || ep.lysine_count == topdown.lysine_count)
+                    potential_matches.AddRange(vetted_proteoforms.Where(ep => !ep.topdown_id && ep.modified_mass >= low && ep.modified_mass <= high && ((!neucode_labeled || ep.lysine_count == topdown.lysine_count) || (!cystag_labeled || ep.cysteine_count == topdown.cysteine_count))
                         && Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)));
                 }
                 if (potential_matches.Count > 0)
@@ -644,7 +737,8 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
-            ordered_to_aggregate = (neucode_labeled ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && consecutive_charge_states(min_num_CS, p.charge_states)).ToArray();
+
+            ordered_to_aggregate = ((neucode_labeled || cystag_labeled) ? raw_neucode_pairs.OfType<IAggregatable>() : raw_experimental_components.OfType<IAggregatable>()).OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && consecutive_charge_states(min_num_CS, p.charge_states)).ToArray();
             remaining_to_aggregate = new List<IAggregatable>(ordered_to_aggregate);
 
             IAggregatable root = ordered_to_aggregate.FirstOrDefault();
@@ -744,7 +838,7 @@ namespace ProteoformSuiteInternal
 
                 foreach (ExperimentalProteoform e in running)
                 {
-                    if (e.lt_verification_components.Count > 0 || neucode_labeled && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
+                    if (e.lt_verification_components.Count > 0 || (neucode_labeled || cystag_labeled) && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
                     {
                         vetted_proteoforms.Add(e);
                     }
@@ -1017,12 +1111,12 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION SETUP
 
-        public void getConditionBiorepFractionLabels(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+        public void getConditionBiorepFractionLabels(bool neucode_labeled, bool cystag_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
         {
             if (!input_files.Any(f => f.purpose == Purpose.Quantification))
                 return;
             List<string> ltConditions = get_files(input_files, Purpose.Quantification).Select(f => f.lt_condition).Distinct().ToList();
-            List<string> hvConditions = neucode_labeled ?
+            List<string> hvConditions = (neucode_labeled || cystag_labeled) ?
                 get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() :
                 new List<string>();
             conditionsBioReps.Clear();
@@ -1358,7 +1452,7 @@ namespace ProteoformSuiteInternal
                         process_raw_components(
                             input_files.Where(f =>
                                 f.purpose == Purpose.CalibrationIdentification &&
-                                (Sweet.lollipop.neucode_labeled ||
+                                ((Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled) ||
                                  f.biological_replicate == biological_replicate) && f.fraction == fraction &&
                                 f.lt_condition == condition).ToList(), calibration_components,
                             Purpose.CalibrationIdentification, false);
@@ -1388,7 +1482,7 @@ namespace ProteoformSuiteInternal
 
                             bool calibrated = calibration.Run_TdMzCal(raw_file,
                                 td_hits_calibration.Where(h =>
-                                        (Sweet.lollipop.neucode_labeled ||
+                                        ((Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled) ||
                                          h.biological_replicate == raw_file.biological_replicate) &&
                                         h.fraction == raw_file.fraction && h.condition == raw_file.lt_condition)
                                     .ToList());

@@ -32,11 +32,11 @@ namespace ProteoformSuiteInternal
         public List<Component> read_components_from_xlsx(InputFile file, bool remove_missed_monos_and_harmonics)
         {
             this.raw_components_in_file.Clear();
-
             Component new_component = new Component();
             int charge_row_index = 0;
             string scan_range = "";
             List<List<string>> cells = ExcelReader.get_cell_strings(file, false);
+
             for (int i = 0; i < cells.Count; i++)
             {
                 if (i == 0)
@@ -84,9 +84,12 @@ namespace ProteoformSuiteInternal
                 Clear();
                 return new List<Component>();
             }
+
             unprocessed_components += raw_components_in_file.Count;
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             scan_ranges = new HashSet<string>(final_components.Select(c => c.min_scan + "-" + c.max_scan)).ToList();
+            //List<Component> finalComponents = removeArtifacts(raw_components_in_file, 5, 2.5);
+            //this.final_components = finalComponents;
             return final_components;
         }
 
@@ -189,6 +192,7 @@ namespace ProteoformSuiteInternal
             return true;
         }
 
+
         public void Clear()
         {
             final_components.Clear();
@@ -244,8 +248,9 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
-
-                if (Sweet.lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
+                
+                //Something likely has to be done here with cystag as well..
+                if ((Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled) && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
                 {
                     ncPairsInScan = Sweet.lollipop.find_neucode_pairs(scanComps.Except(removeThese), neucodePairs_in_file, heavy_hashed_pairs_in_file); // these are not the final neucode pairs, just a temp list
                 }
@@ -331,6 +336,49 @@ namespace ProteoformSuiteInternal
                 }
             }
             return raw_components.Except(removeThese).ToList();
+        }
+
+        public List<Component> removeArtifacts(List<Component> rawComponents, double massTolerance, double rtTolerance)
+        {
+            HashSet<Component> removeThese = new HashSet<Component>();
+            List<Component> mergedComponents = new List<Component>();
+
+            List<Component> intensitySorted = rawComponents.OrderByDescending(c => c.intensity_sum).ToList();
+
+            int checkedComponents = 0;
+
+            foreach(Component c1 in intensitySorted)
+            {
+                bool merged = false;
+                if(!removeThese.Contains(c1))
+                {
+                    foreach (Component c2 in intensitySorted)
+                    {
+                        if (c1.Equals(c2) || removeThese.Contains(c2))
+                            continue;
+                        else
+                        {
+                            double ppmMassDifference = ((c1.weighted_monoisotopic_mass - c2.weighted_monoisotopic_mass) / c1.weighted_monoisotopic_mass) * (1e6);
+                            double rtDiff = Math.Abs(c1.rt_apex - c2.rt_apex);
+                            if (ppmMassDifference < massTolerance && rtDiff < rtTolerance)
+                            {
+                                c1.mergeArtifacts(c2);
+                                removeThese.Add(c2);
+                                merged = true;
+                            }
+                        }
+                    }
+                }
+                if(merged)
+                {
+                    Component mergedComponent = c1;
+                    if(acceptable_component(c1))
+                    {
+                        mergedComponents.Add(mergedComponent);
+                    }
+                }
+            }
+            return mergedComponents;
         }
 
         #endregion Private Methods

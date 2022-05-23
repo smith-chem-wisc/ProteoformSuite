@@ -416,12 +416,12 @@ namespace ProteoWPFSuite
                 foreach (DeltaMassPeak peak in peaks_to_shift)
                 {
                     int int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
-                    peak.shift_experimental_masses(int_mass_shifter, Sweet.lollipop.neucode_labeled);
+                    peak.shift_experimental_masses(int_mass_shifter, Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled);
                     Sweet.shift_peak_action(peak);
                 }
 
                 ((ProteoformSweet)this.MDIParent).rawExperimentalComponents.FillTablesAndCharts();
-                if (Sweet.lollipop.neucode_labeled)
+                if (Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled)
                 {
                     Sweet.lollipop.raw_neucode_pairs.Clear();
                     Sweet.lollipop.process_neucode_components(Sweet.lollipop.raw_neucode_pairs);

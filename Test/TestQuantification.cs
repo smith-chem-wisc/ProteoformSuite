@@ -92,7 +92,7 @@ namespace Test
         public void getobsparameters_doesnt_crash_when_no_quant_files()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.getConditionBiorepFractionLabels(true, new List<InputFile>());
+            Sweet.lollipop.getConditionBiorepFractionLabels(true, false, new List<InputFile>());
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace Test
             Assert.AreEqual(2, e1.hv_quant_components.Count);
 
             Sweet.lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
-            Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(true, false, Sweet.lollipop.input_files);
 
             e1.make_biorepIntensityList(e1.lt_quant_components, e1.hv_quant_components, Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
             Assert.AreEqual(4, e1.biorepIntensityList.Count);
@@ -121,7 +121,7 @@ namespace Test
             //Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == true));
             //Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == false));
 
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled, Sweet.lollipop.input_files);
             string numerator_condition = Sweet.lollipop.ltConditionsBioReps.Keys.First();
             string denominator_condition = Sweet.lollipop.hvConditionsBioReps.Keys.First();
             string induced_condition = Sweet.lollipop.hvConditionsBioReps.Keys.First();
@@ -156,7 +156,7 @@ namespace Test
             Assert.AreEqual(4, e2.hv_quant_components.Count);
 
             Sweet.lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
-            Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(true, false, Sweet.lollipop.input_files);
             e2.make_biorepIntensityList(e2.lt_quant_components, e2.hv_quant_components, Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
             Assert.AreEqual(4 * 2, e2.biorepIntensityList.Count);
             Assert.AreEqual(2, e2.biorepIntensityList.Count(b => b.biorep == "1"));
@@ -166,7 +166,7 @@ namespace Test
             //Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => b.light));
             //Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => !b.light));
 
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             string numerator_condition = "light";
             string denominator_condition = "heavy";
             string induced_condition = "heavy";
@@ -288,7 +288,7 @@ namespace Test
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2.ToString(), lysineCount));//these are for quantification
             List<IAggregatable> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
             Sweet.lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
-            Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(true, false, Sweet.lollipop.input_files);
             ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", components[0], components, quant_components_list.Concat(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3.ToString(), lysineCount)).ToList(), true);
             Sweet.lollipop.computeBiorepIntensities(new List<ExperimentalProteoform> { e1, e2 }, Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
@@ -307,7 +307,7 @@ namespace Test
             i1.lt_condition = "light";
             i1.hv_condition = "heavy";
             Sweet.lollipop.input_files.Add(i1);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(1, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             InputFile i2 = new InputFile("fake.txt", Purpose.Quantification);
@@ -315,7 +315,7 @@ namespace Test
             i2.lt_condition = "light";
             i2.hv_condition = "heavy";
             Sweet.lollipop.input_files.Add(i2);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(2, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             //unlabelled
@@ -325,42 +325,42 @@ namespace Test
             i3.biological_replicate = "1";
             i3.lt_condition = "A";
             Sweet.lollipop.input_files.Add(i3);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(1, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             InputFile i4 = new InputFile("fake.txt", Purpose.Quantification);
             i4.biological_replicate = "1";
             i4.lt_condition = "B";
             Sweet.lollipop.input_files.Add(i4);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(1, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             InputFile i5 = new InputFile("fake.txt", Purpose.Quantification);
             i5.biological_replicate = "1";
             i5.lt_condition = "C";
             Sweet.lollipop.input_files.Add(i5);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(1, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             InputFile i6 = new InputFile("fake.txt", Purpose.Quantification);
             i6.biological_replicate = "2";
             i6.lt_condition = "A";
             Sweet.lollipop.input_files.Add(i6);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(1, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             InputFile i7 = new InputFile("fake.txt", Purpose.Quantification);
             i7.biological_replicate = "2";
             i7.lt_condition = "B";
             Sweet.lollipop.input_files.Add(i7);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(1, Sweet.lollipop.countOfBioRepsInOneCondition);
 
             InputFile i8 = new InputFile("fake.txt", Purpose.Quantification);
             i8.biological_replicate = "2";
             i8.lt_condition = "C";
             Sweet.lollipop.input_files.Add(i8);
-            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files);
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, false, Sweet.lollipop.input_files);
             Assert.AreEqual(2, Sweet.lollipop.countOfBioRepsInOneCondition);
         }
 
@@ -980,7 +980,7 @@ namespace Test
         public void test_get_repressed_or_induced_proteins()
         {
             Sweet.lollipop = new Lollipop();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled).AA_Masses;
             Sweet.lollipop.significance_by_log2FC = false;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.minProteoformFoldChange = 10;
             Sweet.lollipop.TusherAnalysis1.GoAnalysis.maxGoTermFDR = 0.5m;
@@ -1234,7 +1234,7 @@ namespace Test
                 {
                     condition_bioreps = Enumerable.Range(1, line.Length - 1).Select(x => line[x].Split('_')).Select(duple => new Tuple<string, string>(duple[0], duple[1])).ToList();
                     Sweet.lollipop.input_files = condition_bioreps.Select(kv => ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, kv.Item1, "", kv.Item2, (-1).ToString(), (-1).ToString())).ToList();
-                    Sweet.lollipop.getConditionBiorepFractionLabels(false, Sweet.lollipop.input_files);
+                    Sweet.lollipop.getConditionBiorepFractionLabels(false, false, Sweet.lollipop.input_files);
                     Sweet.lollipop.numerator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("n"));
                     Sweet.lollipop.denominator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("s"));
                     Sweet.lollipop.induced_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("s"));
@@ -1306,7 +1306,7 @@ namespace Test
                     condition_bioreps = Enumerable.Range(1, line.Length - 1).Select(x => line[x].Split('_')).Select(duple => new Tuple<string, string, string, string>(duple[0], duple[1], duple[2], duple[3])).ToList();
                     conditions = condition_bioreps.Select(x => x.Item1).Distinct().ToList();
                     Sweet.lollipop.input_files = condition_bioreps.DistinctBy(x => x.Item2 + x.Item3 + x.Item4).Select(kv => ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, conditions[0], conditions[1], kv.Item2, kv.Item3, kv.Item4)).ToList();
-                    Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
+                    Sweet.lollipop.getConditionBiorepFractionLabels(true, false, Sweet.lollipop.input_files);
                     Sweet.lollipop.numerator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("Stress"));
                     Sweet.lollipop.denominator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("Normal"));
                     Sweet.lollipop.induced_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("Stress"));

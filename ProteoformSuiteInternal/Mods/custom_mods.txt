@@ -55,3 +55,25 @@ MA   100.07
 DR   RESID; AA0130.
 DR   PSI-MOD; MOD:00139.
 //
+ID   MMTS on C
+MT   Common Fixed
+TG   C
+PP   Anywhere.
+CF   C1 H2 S1
+MM   45.987722
+//
+
+ID   Missed MMTS on C
+MT   Common Variable
+TG   C
+PP   Anywhere.
+CF   C1 H2 S1
+MM   -45.987722
+//
+
+ID   MMTS Instead of Carbamidomethyl
+MT   Common Variable
+TG   C
+PP   Anywhere.
+MM   -11.033742
+//

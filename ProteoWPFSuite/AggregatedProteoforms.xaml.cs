@@ -189,7 +189,7 @@ namespace ProteoWPFSuite
                     selected_pf.lt_quant_components.ToList<IAggregatable>() :
                     selected_pf.hv_quant_components.ToList<IAggregatable>()));
 
-            if (Sweet.lollipop.neucode_labeled && (bool)ra)
+            if ((Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled) && (bool)ra)
             {
                 DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)));
             }
@@ -202,7 +202,7 @@ namespace ProteoWPFSuite
                 DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, components.Select(c => new DisplayComponent(c as ProteoformSuiteInternal.Component)));
             }
 
-            if (Sweet.lollipop.neucode_labeled && (bool)ra)
+            if ((Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled) && (bool)ra)
             {
                 DisplayNeuCodePair.FormatNeuCodeTable(dgv_AcceptNeuCdLtProteoforms);
             }
@@ -238,6 +238,7 @@ namespace ProteoWPFSuite
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.maximum_missed_lysines = Convert.ToInt32(nUD_Missed_Ks.Value);
+            Sweet.lollipop.maximum_missed_cysteines = Convert.ToInt32(nUD_Missed_Ks.Value);
         }
         
         private void bt_aggregate_Click(object sender, RoutedEventArgs e)
@@ -272,7 +273,7 @@ namespace ProteoWPFSuite
         {
             List<string> conditions = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(f => f.lt_condition).Distinct().ToList();
 
-            if (Sweet.lollipop.neucode_labeled)
+            if (Sweet.lollipop.neucode_labeled || Sweet.lollipop.cystag_labeled)
             {
                 conditions.AddRange(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Identification).Select(f => f.hv_condition).Distinct());
             }
@@ -304,7 +305,7 @@ namespace ProteoWPFSuite
         #region Public Methods
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.topdown_proteoforms.Count > 0 || (Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0);
+            return Sweet.lollipop.topdown_proteoforms.Count > 0 || (Sweet.lollipop.neucode_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.cystag_labeled && Sweet.lollipop.raw_neucode_pairs.Count > 0 || Sweet.lollipop.raw_experimental_components.Count > 0);
         }
 
         public void RunTheGamut(bool full_run)

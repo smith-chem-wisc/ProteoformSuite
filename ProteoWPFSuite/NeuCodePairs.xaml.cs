@@ -106,7 +106,18 @@ namespace ProteoWPFSuite
         {
             DisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Sweet.lollipop.raw_neucode_pairs.Select(n => new DisplayNeuCodePair(n)));
             DisplayNeuCodePair.FormatNeuCodeTable(dgv_RawExpNeuCodePairs);
+            UpdateLabels();
         }
+
+        private void UpdateLabels()
+        {
+            if (Sweet.lollipop.cystag_labeled)
+            {
+                AA_min_textblock.Text = "C-Min";
+                AA_max_textblock.Text = "C-Max";
+            }
+        }
+
         private void GraphIntensityRatio()
         {
             DataTable intensityRatioHistogram = new DataTable();
@@ -202,6 +213,7 @@ namespace ProteoWPFSuite
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.min_lysine_ct = KMinAcceptable.Value;
+            Sweet.lollipop.min_cysteine_ct = KMinAcceptable.Value;
             Parallel.ForEach(Sweet.lollipop.raw_neucode_pairs, p => p.set_accepted());
             dgv_RawExpNeuCodePairs.Refresh();
             this.MDIParent.aggregatedProteoforms.ClearListsTablesFigures(true);
@@ -209,6 +221,7 @@ namespace ProteoWPFSuite
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.max_lysine_ct = KMaxAcceptable.Value;
+            Sweet.lollipop.max_cysteine_ct = KMaxAcceptable.Value;
             Parallel.ForEach(Sweet.lollipop.raw_neucode_pairs, p => p.set_accepted());
             dgv_RawExpNeuCodePairs.Refresh();
             this.MDIParent.aggregatedProteoforms.ClearListsTablesFigures(true);

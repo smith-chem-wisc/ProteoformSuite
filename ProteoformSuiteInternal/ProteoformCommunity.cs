@@ -39,6 +39,8 @@ namespace ProteoformSuiteInternal
                 pfs2 = pfs2.OfType<ExperimentalProteoform>().ToArray();
 
             Dictionary<int, List<Proteoform>> pfs2_lysine_lookup = new Dictionary<int, List<Proteoform>>();
+            Dictionary<int, List<Proteoform>> pfs2_cysteine_lookup = new Dictionary<int, List<Proteoform>>();
+
             if (Sweet.lollipop.neucode_labeled)
             {
                 foreach (Proteoform pf2 in pfs2)
@@ -47,11 +49,20 @@ namespace ProteoformSuiteInternal
                     else { same_lysine_ct.Add(pf2); }
                 }
             }
-            
+            else if (Sweet.lollipop.cystag_labeled)
+            {
+                foreach (Proteoform pf2 in pfs2)
+                {
+                    if (!pfs2_cysteine_lookup.TryGetValue(pf2.cysteine_count, out List<Proteoform> same_cysteine_ct)) { pfs2_cysteine_lookup.Add(pf2.cysteine_count, new List<Proteoform> { pf2 }); }
+                    else { same_cysteine_ct.Add(pf2); }
+                }
+            }
+
             Parallel.ForEach(pfs1, pf1 =>
             {
                 lock (pf1)
                 {
+                    //Neucode lysine code:
                     if (Sweet.lollipop.neucode_labeled &&
                         (relation_type == ProteoformComparison.ExperimentalTheoretical ||
                          relation_type == ProteoformComparison.ExperimentalDecoy ||
@@ -70,10 +81,32 @@ namespace ProteoformSuiteInternal
                         pf1.candidate_relatives = pfs2_lysines_outside_tolerance
                             .Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }
-                    else if (!Sweet.lollipop.neucode_labeled)
+
+                    //Cystag code:
+                    else if(Sweet.lollipop.cystag_labeled &&
+                        (relation_type == ProteoformComparison.ExperimentalTheoretical ||
+                         relation_type == ProteoformComparison.ExperimentalDecoy ||
+                         relation_type == ProteoformComparison.ExperimentalExperimental))
+                    {
+                        pfs2_cysteine_lookup.TryGetValue(pf1.cysteine_count, out List<Proteoform> pfs2_same_cysteine_count);
+                        pf1.candidate_relatives = pfs2_same_cysteine_count != null
+                            ? pfs2_same_cysteine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList()
+                            : new List<Proteoform>();
+                    }
+                    else if(Sweet.lollipop.cystag_labeled && relation_type == ProteoformComparison.ExperimentalFalse)
+                    {
+                        List<Proteoform> pfs2_cysteines_outside_tolerance = pfs2_cysteine_lookup
+                            .Where(kv => Math.Abs(pf1.cysteine_count - kv.Key) > Sweet.lollipop.maximum_missed_cysteines)
+                            .SelectMany(kv => kv.Value).ToList();
+                        pf1.candidate_relatives = pfs2_cysteines_outside_tolerance
+                            .Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
+                    }
+                    //Unlabeled
+                    else if (!Sweet.lollipop.neucode_labeled && ! Sweet.lollipop.cystag_labeled)
                     {
                         pf1.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
                     }
+
 
                     if (relation_type == ProteoformComparison.ExperimentalExperimental)
                     {
@@ -151,36 +184,36 @@ namespace ProteoformSuiteInternal
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }
 
-        public bool allowed_relation(Proteoform pf1, Proteoform pf2_with_allowed_lysines, ProteoformComparison relation_type)
+        public bool allowed_relation(Proteoform pf1, Proteoform pf2_with_allowed_AA_count, ProteoformComparison relation_type)
         {
             if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
             {
                 return
 
-                    (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) >=
+                    (pf1.modified_mass - pf2_with_allowed_AA_count.modified_mass) >=
                     Sweet.lollipop.et_low_mass_difference
-                    && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass) <=
+                    && (pf1.modified_mass - pf2_with_allowed_AA_count.modified_mass) <=
                     Sweet.lollipop.et_high_mass_difference
-                    && (Sweet.lollipop.add_td_theoreticals || !(pf2_with_allowed_lysines as TheoreticalProteoform).new_topdown_proteoform);
+                    && (Sweet.lollipop.add_td_theoreticals || !(pf2_with_allowed_AA_count as TheoreticalProteoform).new_topdown_proteoform);
             }
             else if (relation_type == ProteoformComparison.ExperimentalExperimental)
             {
                 return
-                    pf1 != pf2_with_allowed_lysines
-                    && pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
-                    && pf1 != pf2_with_allowed_lysines
-                    && pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference
-                    && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;
+                    pf1 != pf2_with_allowed_AA_count
+                    && pf1.modified_mass >= pf2_with_allowed_AA_count.modified_mass
+                    && pf1 != pf2_with_allowed_AA_count
+                    && pf1.modified_mass - pf2_with_allowed_AA_count.modified_mass <= Sweet.lollipop.ee_max_mass_difference
+                    && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_AA_count as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;
             }
             else if (relation_type == ProteoformComparison.ExperimentalFalse)
             {
                 //going to hard code in 10 minutes as min RT for 2 to not be related.
                 return
-                    pf1.modified_mass >= pf2_with_allowed_lysines.modified_mass
-                    && pf1 != pf2_with_allowed_lysines
-                    && (pf1.modified_mass - pf2_with_allowed_lysines.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
-                    && (Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) > 10)
-                    && (!Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_lysines as ExperimentalProteoform).agg_rt) < Sweet.lollipop.ee_max_RetentionTime_difference);
+                    pf1.modified_mass >= pf2_with_allowed_AA_count.modified_mass
+                    && pf1 != pf2_with_allowed_AA_count
+                    && (pf1.modified_mass - pf2_with_allowed_AA_count.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
+                    && (Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_AA_count as ExperimentalProteoform).agg_rt) > 10)
+                    && (!Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2_with_allowed_AA_count as ExperimentalProteoform).agg_rt) < Sweet.lollipop.ee_max_RetentionTime_difference);
             }
             else
             {
@@ -361,7 +394,7 @@ namespace ProteoformSuiteInternal
                 active.Clear();
             }
             if (Sweet.lollipop.gene_centric_families) families = combine_gene_families(families).ToList();
-            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled).AA_Masses;
+            Sweet.lollipop.theoretical_database.aaIsotopeMassList = new AminoAcidMasses(Sweet.lollipop.carbamidomethylation, Sweet.lollipop.neucode_labeled, Sweet.lollipop.cystag_labeled).AA_Masses;
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }
