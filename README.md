@@ -2,7 +2,7 @@
 Software for constructing, quantifying, and visualizing proteoform families.
 [![Build status](https://ci.appveyor.com/api/projects/status/0r09noqpa7j3687h/branch/master?svg=true)](https://ci.appveyor.com/project/smith-chem-wisc/proteoformsuite/branch/master)
 [![codecov](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite/branch/master/graph/badge.svg)](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/932cdbf7f3694271bb03abb5dbba036c)](https://www.codacy.com/app/acesnik/ProteoformSuite?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=smith-chem-wisc/ProteoformSuite&amp;utm_campaign=Badge_Grade)
+[![Github All Releases](https://img.shields.io/github/downloads/smith-chem-wisc/ProteoformSuite/total.svg)]()
 
 ## Papers and Software Releases
 The most current release can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases).
