@@ -1,5 +1,6 @@
 # Proteoform Suite
 Software for constructing, quantifying, and visualizing proteoform families.
+
 [![Build status](https://ci.appveyor.com/api/projects/status/0r09noqpa7j3687h/branch/master?svg=true)](https://ci.appveyor.com/project/smith-chem-wisc/proteoformsuite/branch/master)
 [![codecov](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite/branch/master/graph/badge.svg)](https://codecov.io/gh/smith-chem-wisc/ProteoformSuite)
 [![Github All Releases](https://img.shields.io/github/downloads/smith-chem-wisc/ProteoformSuite/total.svg)]()
@@ -7,21 +8,24 @@ Software for constructing, quantifying, and visualizing proteoform families.
 ## Papers and Software Releases
 The most current release can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases).
 
-Proteoform Suite: Software for Constructing, Quantifying, and Visualizing Proteoform Families. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/10.1021/acs.jproteome.7b00685)
-* The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.2.8).
+* Proteoform Suite: Software for Constructing, Quantifying, and Visualizing Proteoform Families. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/10.1021/acs.jproteome.7b00685)
+  * The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.2.8).
 
-Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Constructing Proteoform Families [(2017, _Anal. Chem._)](http://pubs.acs.org/doi/abs/10.1021/acs.analchem.7b04221)
-* The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.0).
+* Expanding Proteoform Identifications in Top-Down Proteomic Analyses by Constructing Proteoform Families [(2017, _Anal. Chem._)](http://pubs.acs.org/doi/abs/10.1021/acs.analchem.7b04221)
+  * The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.0).
 
-Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
-* The release for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.1.12).
+* Elucidating _Escherichia coli_ Proteoform Families Using Intact-Mass Proteomics and a Global PTM Discovery Database. [(2017, _J. Proteome Res._)](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.7b00516)
+  * The release for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.1.12).
 
-Identification and Quantification of Murine Mitochondrial Proteoforms Using an Integrated Top-Down and Intact-Mass Strategy. [(2018, _J. Proteome Res._)](https://pubs.acs.org/doi/abs/10.1021/acs.jproteome.8b00469)
-* The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.3).
+* Identification and Quantification of Murine Mitochondrial Proteoforms Using an Integrated Top-Down and Intact-Mass Strategy. [(2018, _J. Proteome Res._)](https://pubs.acs.org/doi/abs/10.1021/acs.jproteome.8b00469)
+  * The release and vignette for this analysis can be found [here](https://github.com/smith-chem-wisc/ProteoformSuite/releases/tag/0.3.3).
 
 Vignettes are housed in releases and also at [this repository](https://github.com/smith-chem-wisc/ProteoformSuiteVignettes).
 
-Video tutorial on how to use Proteoform Suite:
+## Proteoform Suite Manual [(PDF)](https://github.com/smith-chem-wisc/ProteoformSuite/tree/master/ProteoformSuiteManual/proteoform_suite_manual.pdf)
+
+## Video tutorial on how to use Proteoform Suite
+
 [![Proteoform Suite Tutorial](https://img.youtube.com/vi/P17Y_aNYbAM/0.jpg)](https://youtu.be/P17Y_aNYbAM)
 
 ## Functionality
@@ -60,13 +64,13 @@ The following files must be obtained and installed:
 
 ### References
 
-* [Elucidating Proteoform Families from Proteoform Intact-Mass and Lysine-Count Measurements--J. Proteome Res., 2016, 15 (4), pp 1213–1221](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.5b01090)
+* [Elucidating Proteoform Families from Proteoform Intact-Mass and Lysine-Count Measurements: _J Proteome Res_, **2016**, 15 (4), pp 1213–1221.](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.5b01090)
 
-* [Global Post-translational Modification Discovery--J. Proteome Res., 2016 Just Accepted](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.6b00034)
+* [Global Post-translational Modification Discovery: _J Proteome Res_, **2016**, 16 (4), pp 1383–1390.](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.6b00034)
 
-* [Global Identification of Protein Post-translational Modifications in a Single-Pass Database Search--J. Proteome Res., 2015, 14 (11), pp 4714–4720](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.5b00599)
+* [Global Identification of Protein Post-translational Modifications in a Single-Pass Database Search: _J Proteome Res_, **2015**, 14 (11), pp 4714–4720.](http://pubs.acs.org/doi/abs/10.1021/acs.jproteome.5b00599)
 
-* [A Proteomics Search Algorithm Specifically Designed for High-Resolution Tandem Mass Spectra--J. Proteome Res., 2013, 12 (3), pp 1377–1386](http://pubs.acs.org/doi/abs/10.1021/pr301024c)
+* [A Proteomics Search Algorithm Specifically Designed for High-Resolution Tandem Mass Spectra: _J Proteome Res_, **2013**, 12 (3), pp 1377–1386.](http://pubs.acs.org/doi/abs/10.1021/pr301024c)
 
 ## License
 
