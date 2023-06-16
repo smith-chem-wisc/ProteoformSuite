@@ -58,6 +58,9 @@ namespace ProteoformSuiteInternal
                 }
             }
 
+            int multipleMatchesSameGeneCount_ET = 0;
+            int multipleMatchesSameGeneCount_ED = 0;
+
             Parallel.ForEach(pfs1, pf1 =>
             {
                 lock (pf1)
@@ -88,10 +91,11 @@ namespace ProteoformSuiteInternal
                          relation_type == ProteoformComparison.ExperimentalDecoy ||
                          relation_type == ProteoformComparison.ExperimentalExperimental))
                     {
-                        pfs2_cysteine_lookup.TryGetValue(pf1.cysteine_count, out List<Proteoform> pfs2_same_cysteine_count);
-                        pf1.candidate_relatives = pfs2_same_cysteine_count != null
-                            ? pfs2_same_cysteine_count.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList()
-                            : new List<Proteoform>();
+                        List<Proteoform> pfs2_acceptable_cysteine_count = pfs2_cysteine_lookup.Where(kv => Math.Abs(pf1.cysteine_count - kv.Key) <= Sweet.lollipop.maximum_missed_cysteines)
+                        .SelectMany(kv => kv.Value).ToList();
+
+                        pf1.candidate_relatives = pfs2_acceptable_cysteine_count != null ? pfs2_acceptable_cysteine_count
+                            .Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList() : new List<Proteoform>();
                     }
                     else if(Sweet.lollipop.cystag_labeled && relation_type == ProteoformComparison.ExperimentalFalse)
                     {
@@ -144,6 +148,8 @@ namespace ProteoformSuiteInternal
                                     (r as TheoreticalProteoform).gene_name.get_prefered_name(Lollipop
                                         .preferred_gene_label))
                                 .Distinct();
+
+                            List<Proteoform> ofInteterest = pf1.candidate_relatives.Where(p => p.gene_name.primary == "ATP5F1E").ToList();
                             foreach (var gene_name in gene_names)
                             {
                                 best_relatives_for_each_gene_name.Add(pf1.candidate_relatives

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chemistry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,8 +17,8 @@ namespace ProteoformSuiteInternal
         public Component neuCodeHeavy { get; set; }
         public double intensity_ratio { get; set; }
         public double intensity_sum { get; set; } //intensity sum for overlapping charge states -> determined when grouped into neucode pairs.
-
         public List<ChargeState> charge_states { get; set; } // light charge states that had charge counts also observed for the heavy component
+        public List<int> overlappingChargeStates { get; set; }
         public int lysine_count { get; set; }
         public int cysteine_count { get; set; }
         public double exact_cysteine_count { get; set; }
@@ -32,7 +33,8 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructors
 
-        public NeuCodePair(Component neuCodeLight, double light_intensity_sum_olcs, Component neuCodeHeavy, double heavy_intensity_sum_olcs, double mass_difference, HashSet<int> overlapping_charge_states, bool light_is_lower)
+        public NeuCodePair(Component neuCodeLight, double light_intensity_sum_olcs, Component neuCodeHeavy, double heavy_intensity_sum_olcs, double mass_difference, 
+            HashSet<int> overlapping_charge_states, bool light_is_lower, bool neuCodeLightIsMoreAbundant)
         {
             this.min_scan = neuCodeLight.min_scan;
             this.max_scan = neuCodeLight.max_scan;
@@ -40,6 +42,9 @@ namespace ProteoformSuiteInternal
             this.input_file = neuCodeLight.input_file;
             this.intensity_sum = light_intensity_sum_olcs;
             this.charge_states = neuCodeLight.charge_states.Where(x => overlapping_charge_states.Contains(x.charge_count)).ToList();
+            overlappingChargeStates = new List<int>();
+            foreach (ChargeState c in charge_states)
+                overlappingChargeStates.Add(c.charge_count);
             mislabeled_components = new List<Component>();
 
             this.neuCodeLight = neuCodeLight;
@@ -69,12 +74,56 @@ namespace ProteoformSuiteInternal
                 this.exact_cysteine_count = Math.Abs(neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.CYSTAG_MASS_SHIFT;
                 this.cysteine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.CYSTAG_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
 
-                this.weighted_monoisotopic_mass = neuCodeLight.weighted_monoisotopic_mass;
+                double neuCodeCorrection = Math.Round((this.cysteine_count * 0.2 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                this.weighted_monoisotopic_mass = neuCodeLight.weighted_monoisotopic_mass + neuCodeCorrection;
+                double adjustedMono = weighted_monoisotopic_mass - ((weighted_monoisotopic_mass / 1000000) * 5);
+                this.weighted_monoisotopic_mass = adjustedMono;
             }
-            this.intensity_ratio = light_intensity_sum_olcs / heavy_intensity_sum_olcs; //ratio of overlapping charge states
+            this.intensity_ratio = neuCodeLightIsMoreAbundant ? light_intensity_sum_olcs / heavy_intensity_sum_olcs : heavy_intensity_sum_olcs/light_intensity_sum_olcs; //ratio of overlapping charge states
             
 
             //marking pair as accepted or not when it's created
+            set_accepted();
+        }
+
+        //Used for reading NeuCode Pairs in directly.
+        public NeuCodePair(InputFile inputFile, Component neuCodeLight, Component neuCodeHeavy, double weightedMonoisotopic, int cysteineCount, int lysineCount, double intensityRatio, double apexRt, int minScan, int maxScan, double sumIntensityOlcs,
+            int lightId, int heavyId, string overlappingChargeStates)
+        {
+            this.input_file = inputFile;
+            this.neuCodeLight = neuCodeLight;
+            this.neuCodeHeavy = neuCodeHeavy;
+            
+
+            if (cysteineCount != -1)
+                this.cysteine_count = cysteineCount;
+            if(lysineCount != -1)
+                this.lysine_count = lysineCount;
+
+            //Performing manual calibration here -JGP
+            double ppmCalibration = -5;
+            double massCalibration = (ppmCalibration / 1000000) * neuCodeLight.weighted_monoisotopic_mass;
+            double neuCodeCorrection = Math.Round((this.cysteine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+            this.weighted_monoisotopic_mass = neuCodeLight.weighted_monoisotopic_mass + neuCodeCorrection + massCalibration;
+
+            this.intensity_ratio = intensityRatio;
+            this.rt_apex = apexRt;
+            this.min_scan = minScan;
+            this.max_scan = maxScan;
+            this.intensity_sum = sumIntensityOlcs;
+            charge_states = new List<ChargeState>();
+
+            this.overlappingChargeStates = new List<int>();
+            string[] chargeStates = overlappingChargeStates.Split(',');
+            foreach (string charge in chargeStates)
+            {
+                this.overlappingChargeStates.Add(Convert.ToInt32(charge));
+                ChargeState c = new ChargeState(Convert.ToInt32(charge), 100, this.weighted_monoisotopic_mass.ToMz(Convert.ToInt32(charge)));
+                charge_states.Add(c);
+            }
+            mislabeled_components = new List<Component>();
+            mislabeled = false;
             set_accepted();
         }
 

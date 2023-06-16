@@ -90,6 +90,7 @@ namespace ProteoformSuiteInternal
         CalibrationIdentification,
         CalibrationTopDown,
         ProteinDatabase,
+        NeuCodePairs
     }
 
     public enum Labeling

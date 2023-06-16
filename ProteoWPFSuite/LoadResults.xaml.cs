@@ -264,16 +264,23 @@ namespace ProteoWPFSuite
             {
                 // In "2. Set Parameters"
                 panel_neucode_labeled_unlabled.Visibility   = Visibility.Visible;
+                panel_neucode_ratio.Visibility              = ck_rbcystag ? Visibility.Visible : Visibility.Collapsed;
                 panel_fullrun.Visibility                    = Visibility.Visible;
                 panel_calibrate.Visibility                  = Visibility.Collapsed;
                 panel_minmaxcharge.Visibility               = Visibility.Collapsed;
                 panel_topdown_search.Visibility             = Visibility.Collapsed;
 
+                //Set NeuCode light/heavy abundance ratio
+                if ((bool)lightIsMoreAbundant_checkbox.IsChecked == true && heavyIsMoreAbundant_checkbox.IsChecked == false)
+                    Sweet.lollipop.neuCodeLightIsMoreAbundant = true;
+                else if ((bool)lightIsMoreAbundant_checkbox.IsChecked == false && heavyIsMoreAbundant_checkbox.IsChecked == true)
+                    Sweet.lollipop.neuCodeLightIsMoreAbundant = false;
+
                 // In "3. Load Data Using Drop Down Menu"
                 cmb_loadTable1.IsEnabled = true;
                 for (int i = 0; i < 4; i++)
                     cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                cmb_loadTable1.Items.Add(Lollipop.file_lists[7]);
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[8]);
                 cmb_loadTable1.SelectedIndex = 0;
 
                 // In "4. Start Analysis"
@@ -281,13 +288,15 @@ namespace ProteoWPFSuite
                 btn_fullRun.Visibility         = Visibility.Visible;
                 btn_calibrate.Visibility           = Visibility.Collapsed;
                 btn_deconvolute.Visibility          = Visibility.Collapsed;
-                btn_topdown_search.Visibility  = Visibility.Collapsed;            
+                btn_topdown_search.Visibility  = Visibility.Collapsed;
+               
             }
 
             else if (rb_chemicalCalibration.IsChecked == true)
             {
                 // In "2. Set Parameters"
                 panel_neucode_labeled_unlabled.Visibility   = Visibility.Visible;
+                panel_calibrate.Visibility                  = Visibility.Visible;
                 panel_calibrate.Visibility                  = Visibility.Visible;
                 panel_fullrun.Visibility                    = Visibility.Collapsed;
                 panel_minmaxcharge.Visibility               = Visibility.Collapsed;
@@ -333,6 +342,7 @@ namespace ProteoWPFSuite
             {
                 // In "2. Set Parameters"
                 panel_topdown_search.Visibility             = Visibility.Visible;
+                panel_neucode_ratio.Visibility              = Visibility.Collapsed;
                 panel_minmaxcharge.Visibility               = Visibility.Collapsed;
                 panel_neucode_labeled_unlabled.Visibility   = Visibility.Collapsed;
                 panel_calibrate.Visibility                  = Visibility.Collapsed;
@@ -685,5 +695,15 @@ namespace ProteoWPFSuite
             Sweet.lollipop.cali_rt_tolerance = Convert.ToDouble(nud_cali_rt_tolerance.Value);
         }
         #endregion Chemical Calibration Private Methods
+
+        private void heavyIsMoreAbundant_checkbox_Click(object sender, RoutedEventArgs e)
+        {
+            populate_file_lists();
+        }
+
+        private void lightIsMoreAbundant_checkbox_Click(object sender, RoutedEventArgs e)
+        {
+            populate_file_lists();
+        }
     }
 }

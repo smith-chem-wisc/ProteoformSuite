@@ -34,11 +34,12 @@ namespace ProteoWPFSuite
         #region Public Methods
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.raw_neucode_pairs.Count > 0;
+            return true;
         }
         public void RunTheGamut(bool full_run)
         {
             //ClearListsTablesFigures(true); No need to clear tables for graphing and filling tables
+            Sweet.lollipop.read_NeuRatio_File(Sweet.lollipop.input_files, Sweet.lollipop.raw_neucode_pairs);
             GraphLysineCount();
             GraphIntensityRatio();
             FillNeuCodePairsDGV();
@@ -150,33 +151,66 @@ namespace ProteoWPFSuite
         }
         private void GraphLysineCount()
         {
-            DataTable lysCtHistogram = new DataTable();
-            lysCtHistogram.Columns.Add("numLysines", typeof(int));
-            lysCtHistogram.Columns.Add("numPairsAtThisLysCt", typeof(int));
-
-            int ymax = 0;
-            for (int i = 0; i <= 28; i++)
+            if(Sweet.lollipop.neucode_labeled)
             {
-                List<NeuCodePair> pf_by_lysCt = Sweet.lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
-                if (pf_by_lysCt.Count > ymax)
+                DataTable lysCtHistogram = new DataTable();
+                lysCtHistogram.Columns.Add("numLysines", typeof(int));
+                lysCtHistogram.Columns.Add("numPairsAtThisLysCt", typeof(int));
+
+                int ymax = 0;
+                for (int i = 0; i <= 28; i++)
                 {
-                    ymax = pf_by_lysCt.Count;
+                    List<NeuCodePair> pf_by_lysCt = Sweet.lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
+                    if (pf_by_lysCt.Count > ymax)
+                    {
+                        ymax = pf_by_lysCt.Count;
+                    }
+                    lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
                 }
-                lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
+                ct_LysineCount.DataSource = lysCtHistogram;
+                ct_LysineCount.DataBind();
+
+                ct_LysineCount.Series["lysineCount"].XValueMember = "numLysines";
+                ct_LysineCount.Series["lysineCount"].YValueMembers = "numPairsAtThisLysCt";
+
+                yMaxKCt.Minimum = -ymax; yMaxKCt.Maximum = ymax; yMaxKCt.Value = ymax;
+                yMinKCt.Minimum = -ymax; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
+                xMaxKCt.Minimum = -28; xMaxKCt.Value = 28;
+                xMinKCt.Minimum = -28; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
+
+                ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
+                ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
             }
-            ct_LysineCount.DataSource = lysCtHistogram;
-            ct_LysineCount.DataBind();
+            else if(Sweet.lollipop.cystag_labeled)
+            {
+                DataTable cysCtHistogram = new DataTable();
+                cysCtHistogram.Columns.Add("numCysteines", typeof(int));
+                cysCtHistogram.Columns.Add("numPairsAtThisCysCt", typeof(int));
 
-            ct_LysineCount.Series["lysineCount"].XValueMember = "numLysines";
-            ct_LysineCount.Series["lysineCount"].YValueMembers = "numPairsAtThisLysCt";
+                int ymax = 0;
+                for (int i = 0; i <= 28; i++)
+                {
+                    List<NeuCodePair> pf_by_cysCt = Sweet.lollipop.raw_neucode_pairs.Where(p => p.cysteine_count == i).ToList();
+                    if (pf_by_cysCt.Count > ymax)
+                    {
+                        ymax = pf_by_cysCt.Count;
+                    }
+                    cysCtHistogram.Rows.Add(i, pf_by_cysCt.Count);
+                }
+                ct_LysineCount.DataSource = cysCtHistogram;
+                ct_LysineCount.DataBind();
 
-            yMaxKCt.Minimum = -ymax; yMaxKCt.Maximum = ymax; yMaxKCt.Value = ymax;
-            yMinKCt.Minimum = -ymax; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
-            xMaxKCt.Minimum = -28; xMaxKCt.Value = 28;
-            xMinKCt.Minimum = -28; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
+                ct_LysineCount.Series["lysineCount"].XValueMember = "numCysteines";
+                ct_LysineCount.Series["lysineCount"].YValueMembers = "numPairsAtThisCysCt";
 
-            ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
-            ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
+                yMaxKCt.Minimum = -ymax; yMaxKCt.Maximum = ymax; yMaxKCt.Value = ymax;
+                yMinKCt.Minimum = -ymax; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
+                xMaxKCt.Minimum = -28; xMaxKCt.Value = 28;
+                xMinKCt.Minimum = -28; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
+
+                ct_LysineCount.ChartAreas[0].AxisX.Title = "Cysteine Count";
+                ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
+            }
         }
         private void yMaxKCt_ValueChanged(object sender, EventArgs e)
         {

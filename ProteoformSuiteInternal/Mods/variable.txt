@@ -6,3 +6,10 @@ MM   15.994915
 MT   Common Variable
 CF   O1
 //
+ID   Missing Methionine (M)
+PP   Anywhere.
+TG   M
+MT   Missing
+MM   -131.04048508847
+CF   C-5 H-9 O-1 N-1 S-1
+//

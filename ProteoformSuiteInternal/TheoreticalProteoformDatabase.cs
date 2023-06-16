@@ -72,6 +72,10 @@ namespace ProteoformSuiteInternal
                         theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinFasta(database.complete_path, true, DecoyType.None, database.ContaminantDB, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                    ProteinDbLoader.UniprotOrganismRegex, out var dbErrors).ToArray());
                 }
+                else if (database.extension == ".psmtsv")
+                {
+
+                }
             }
 
 
@@ -349,6 +353,7 @@ namespace ProteoformSuiteInternal
 
         public void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, IDictionary<int, List<Modification>> modifications, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<Modification> variableModifications)
         {
+            bool proteoformPruned = false;
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
 
             if (//seq.Length > 3000 || 
@@ -364,6 +369,7 @@ namespace ProteoformSuiteInternal
             int lysine_count = seq.Split('K').Length - 1;
             int cysteine_count = seq.Split('C').Length - 1;
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
+
 
             //Figure out the possible ptm sets
             Dictionary<int, List<Modification>> possibleLocalizedMods = modifications.Where(m => m.Key >= prot.ProteolysisProducts.First().OneBasedBeginPosition && m.Key <= prot.ProteolysisProducts.First().OneBasedEndPosition)
@@ -385,26 +391,93 @@ namespace ProteoformSuiteInternal
             //if top-down protein sequence, only add PTMs from that top-down proteoforms (will happen in add_topdown_theoreticals method)
             if (!prot.topdown_protein)
             {
-                List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, Sweet.lollipop.limit_triples_and_greater);
-
-                //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
-                foreach (PtmSet ptm_set in unique_ptm_groups)
+                if(!proteoformPruned)
                 {
-                    TheoreticalProteoform t =
-                        new TheoreticalProteoform(
-                            accession + "_P" + ptm_set_counter.ToString(),
-                            prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
-                            seq,
-                            (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
-                            unmodified_mass,
-                            lysine_count,
-                            cysteine_count,
-                            ptm_set,
-                            decoy_number < 0,
-                            check_contaminants,
-                            theoretical_proteins);
-                    new_theoreticals.Add(t);
-                    ptm_set_counter++;
+                    List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, Sweet.lollipop.max_ptms, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2, Sweet.lollipop.limit_triples_and_greater);
+
+                    //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
+                    foreach (PtmSet ptm_set in unique_ptm_groups)
+                    {
+                        TheoreticalProteoform t =
+                            new TheoreticalProteoform(
+                                accession + "_P" + ptm_set_counter.ToString(),
+                                prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                                seq,
+                                (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
+                                unmodified_mass,
+                                lysine_count,
+                                cysteine_count,
+                                ptm_set,
+                                decoy_number < 0,
+                                check_contaminants,
+                                theoretical_proteins);
+                        new_theoreticals.Add(t);
+                        ptm_set_counter++;
+                    }
+                }
+                else
+                {
+                    Modification oxidation = new Modification();
+                    foreach(Modification m in all_mods_with_mass)
+                    {
+                        if (m.IdWithMotif == "Oxidation on M")
+                        {
+                            oxidation = m;
+                            break;
+                        }
+                            
+                    }
+                    if(modifications.Count > 0)
+                    {
+                        List<Ptm> ptmSet = new List<Ptm>();
+                        foreach (KeyValuePair<int, List<Modification>> m in modifications)
+                        {
+                            foreach(Modification mod in m.Value)
+                            {
+                                if(mod.OriginalId.Contains("Hydrox"))
+                                {
+                                    Ptm p = new Ptm(m.Key, oxidation);
+                                    ptmSet.Add(p);
+                                }
+                                else
+                                {
+                                    Ptm p = new Ptm(m.Key, mod);
+                                    ptmSet.Add(p);
+                                }
+                                
+                            }
+                        }
+                        PtmSet ptms = new PtmSet(ptmSet);
+                    TheoreticalProteoform t = new TheoreticalProteoform(
+                                accession + "_P" + ptm_set_counter.ToString(),
+                                prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                                seq,
+                                (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
+                                unmodified_mass,
+                                lysine_count,
+                                cysteine_count,
+                                ptms,
+                                decoy_number < 0,
+                                check_contaminants,
+                                theoretical_proteins);
+                        new_theoreticals.Add(t);
+                    }
+                    else
+                    {
+                        TheoreticalProteoform t = new TheoreticalProteoform(
+                                accession + "_P" + ptm_set_counter.ToString(),
+                                prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                                seq,
+                                (prot as ProteinSequenceGroup != null ? (prot as ProteinSequenceGroup).proteinWithGoTermList.ToArray() : new ProteinWithGoTerms[] { prot }),
+                                unmodified_mass,
+                                lysine_count,
+                                cysteine_count,
+                                new PtmSet(new List<Ptm>()),
+                                decoy_number < 0,
+                                check_contaminants,
+                                theoretical_proteins);
+                        new_theoreticals.Add(t);
+                    }
                 }
             }
             add_topdown_theoreticals(prot, seq, accession, unmodified_mass, decoy_number, lysine_count, cysteine_count, new_theoreticals, ptm_set_counter, Sweet.lollipop.modification_ranks, Sweet.lollipop.mod_rank_first_quartile / 2);

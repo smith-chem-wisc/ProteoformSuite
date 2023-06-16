@@ -122,6 +122,16 @@ namespace ProteoformSuiteInternal
             this.charge_states = new List<ChargeState>();
         }
 
+        //Used to make heavy and light components for reading NeuRatio files directly in
+        public Component(int id, double weightedMonoisotopic, int minScan, int maxScan, double rtApex)
+        {
+            this.id = id.ToString();
+            this.weighted_monoisotopic_mass = weightedMonoisotopic;
+            this.min_scan = minScan;
+            this.max_scan = maxScan;
+            this.rt_apex = rtApex;
+        }
+
         #endregion Constructors
 
         #region Public Methods

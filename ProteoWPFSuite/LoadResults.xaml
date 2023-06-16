@@ -92,6 +92,7 @@
                         IsChecked="{Binding Path=CK_rbcystag,UpdateSourceTrigger=PropertyChanged}" 
                         HorizontalAlignment="Left" 
                         Content="Cystag" />
+                    
                 </StackPanel>
 
                 <StackPanel x:Name="panel_fullrun" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -143,6 +144,11 @@
                     </Grid>
                 </StackPanel>
 
+                <StackPanel x:Name="panel_neucode_ratio" Grid.Column="1">
+                    <CheckBox Content="Light Is More Abundant" x:Name="lightIsMoreAbundant_checkbox" Click="lightIsMoreAbundant_checkbox_Click"/>
+                    <CheckBox Content="Heavy Is More Abundant" x:Name="heavyIsMoreAbundant_checkbox" Click="heavyIsMoreAbundant_checkbox_Click"/>
+                </StackPanel>
+                
                 <StackPanel x:Name="panel_calibrate" Grid.Column="1">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type CheckBox}">

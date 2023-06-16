@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
             }
             else if (cBn)
             {
-                aaMasses.Add('C', 160.030649);
+                aaMasses.Add('C', 316.156885);
             }
             else
             {

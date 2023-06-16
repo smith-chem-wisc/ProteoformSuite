@@ -57,7 +57,8 @@ namespace ProteoformSuiteInternal
             "Spectra Files (.raw, .mzML)",
             "Uncalibrated Deconvolution Results (.xlsx, .tsv)",
             "Uncalibrated TDPortal Top-Down Hit Results (Unlabeled) (.xlsx)",
-            "MetaMorpheus Bottom-Up Unique Peptides (.psmtsv)"
+            "MetaMorpheus Bottom-Up Unique Peptides (.psmtsv)",
+            "NeuCode Pairs from NeuRatio (.xlsx)"
 
         };
 
@@ -70,7 +71,8 @@ namespace ProteoformSuiteInternal
             new List<string> {".raw", ".mzML", ".mzml", ".MZML"},
             new List<string> { ".xlsx", ".tsv" },
             new List<string> { ".xlsx", ".psmtsv" },
-            new List<string> { ".psmtsv"}
+            new List<string> { ".psmtsv"},
+            new List<string> {".xlsx"}
 
         };
 
@@ -84,6 +86,7 @@ namespace ProteoformSuiteInternal
             "Deconvolution Files (*.xlsx, *.tsv) | *.xlsx;*.tsv",
             "Top-Down Hit Files (*.xlsx, *.psmtsv) | *.xlsx;*.psmtsv",
             "MetaMorpheus Bottom-Up Unique Peptides (*.psmtsv) | *.psmtsv",
+            "NeuCode Pairs from NeuRatio (*.xlsx) | *.xlsx"
         };
 
         public static readonly List<Purpose>[] file_types = new[]
@@ -95,8 +98,8 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.SpectraFile },
             new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> { Purpose.CalibrationTopDown },
-            new List<Purpose> { Purpose.BottomUp }
-
+            new List<Purpose> { Purpose.BottomUp },
+            new List<Purpose> {Purpose.NeuCodePairs}
         };
 
         public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination, bool user_directed)
@@ -152,6 +155,7 @@ namespace ProteoformSuiteInternal
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = false;
         public bool cystag_labeled = false;
+        public bool neuCodeLightIsMoreAbundant = true;
         public double raw_component_mass_tolerance = 5;
         public double minIC = 0.7;
         public double minCC = 0.7;
@@ -180,12 +184,43 @@ namespace ProteoformSuiteInternal
          that FLASHDeconv does not provide scan numbers for the components. -@JGP */
         public void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
         {
+            double windowWidth = 1;
+            double windowShift = 0.5;
+
+            bool findingNeuCodePairs = true;
+
+            double maxRt = 200;
             foreach (InputFile inputFile in get_files(input_files, Purpose.Identification).ToList())
             {
+                findingNeuCodePairs = true;
+                double currentMinRt = 0;
+
+                while (findingNeuCodePairs)
+                {
+                    double currentMaxRt = currentMinRt + windowWidth;
+                    List<Component> componentsInRtWindow = new List<Component>();
+                    foreach(Component c in inputFile.reader.final_components)
+                    {
+                        if(c.rt_apex <= currentMaxRt && c.rt_apex >= currentMinRt)
+                        {
+                            componentsInRtWindow.Add(c);
+                        }
+                    }
+                    if(componentsInRtWindow.Count > 0)
+                    {
+                        find_neucode_pairs(componentsInRtWindow, raw_neucode_pairs, heavy_hashed_pairs);
+                    }
+                    currentMinRt += windowShift;
+                    if (currentMinRt >= maxRt)
+                        findingNeuCodePairs = false;
+                    componentsInRtWindow.Clear();
+                }
+                /*
                 foreach(string scan_range in inputFile.reader.scan_ranges)
                 {
                     find_neucode_pairs(inputFile.reader.final_components.Where(c => c.min_scan + "-" + c.max_scan == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
+                */
             }
             //raw_neucode_pairs = findMissing_ExtraLabels(raw_neucode_pairs).ToList();
         }
@@ -361,29 +396,31 @@ namespace ProteoformSuiteInternal
                                 List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
                                 List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
                                 HashSet<int> overlapping_charge_states = new HashSet<int>(lower_charges.Intersect(higher_charges));
-                                double lower_intensity = NeuCodePair.calculate_sum_intensity_olcs(lower_component.charge_states, overlapping_charge_states);
-                                double higher_intensity = NeuCodePair.calculate_sum_intensity_olcs(higher_component.charge_states, overlapping_charge_states);
+                                double lower_intensity = NeuCodePair.calculate_sum_intensity_olcs(lower_component.charge_states, overlapping_charge_states); //lower intensity refers to intensity of lower mass species
+                                double higher_intensity = NeuCodePair.calculate_sum_intensity_olcs(higher_component.charge_states, overlapping_charge_states); //higher intensity refers to intensity of higher mass species
                                 bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                                if (neucode_labeled && lower_intensity > 0 && higher_intensity > 0)
+                                if ((neucode_labeled || cystag_labeled) && lower_intensity > 0 && higher_intensity > 0)
                                 {
-                                    NeuCodePair pair = lower_intensity > higher_intensity ?
-                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
-
-                                    if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.
+                                    //If NeuCode light is more abundant, then the higher intensity species should be 
+                                    if(neuCodeLightIsMoreAbundant)
                                     {
-                                        lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                        NeuCodePair pair = lower_intensity > higher_intensity ?
+                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower, neuCodeLightIsMoreAbundant) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower, neuCodeLightIsMoreAbundant); //higher mass is neucode light
+                                        if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.
+                                        {
+                                            lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                        }
                                     }
-                                }
-                                else if (cystag_labeled && lower_intensity > 0 && higher_intensity > 0)
-                                {
-                                    NeuCodePair pair = lower_intensity > higher_intensity ?
-                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
-
-                                    if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.
+                                    else
                                     {
-                                        lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                        NeuCodePair pair = lower_intensity < higher_intensity ?
+                                        new NeuCodePair(lower_component, lower_intensity, higher_component, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower, neuCodeLightIsMoreAbundant) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, higher_intensity, lower_component, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower, neuCodeLightIsMoreAbundant); //higher mass is neucode light
+                                        if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.
+                                        {
+                                            lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                        }
                                     }
                                 }
                             }
@@ -482,6 +519,68 @@ namespace ProteoformSuiteInternal
                     contains = true;
             }
             return contains;
+        }
+        public void read_NeuRatio_File(List<InputFile> inputFiles, List<NeuCodePair> destination)
+        {
+            foreach(InputFile inputFile in inputFiles)
+            {
+                if(inputFile.purpose == Purpose.NeuCodePairs)
+                {
+                    List<List<string>> cellStrings = ExcelReader.get_cell_strings(inputFile, false);
+                    //Get indices
+                    List<string> header = cellStrings[0];
+                    int lightNcComponentIdIndex = header.IndexOf("Light NeuCode Component ID");
+                    int heavyNcComponentIdIndex = header.IndexOf("Heavy NeuCode Component ID");
+                    int olcsIndex = header.IndexOf("overlapping_charge_states");
+                    int intensityRatioIndex = header.IndexOf("Intensity Ratio");
+                    int intensitySumOlcsIndex = header.IndexOf("Intensity Sum Overlapping Charge States");
+                    int cysteineCountIndex = header.IndexOf("Cysteine Count");
+                    int lysineCountIndex = header.IndexOf("Lysine Count");
+                    int correctedNcLightMonoIndex = header.IndexOf("Corrected NeuCode Light Weighted Monoisotopic Mass");
+                    int lightWeightedMonoIndex = header.IndexOf("Light Weighted Monoisotopic Mass");
+                    int heavyWeightedMonoIndex = header.IndexOf("Heavy Weighted Monoisotopic Mass");
+                    int lightApexRtIndex = header.IndexOf("Light Apex RT");
+                    int heavyApexRtIndex = header.IndexOf("Heavy Apex RT");
+                    int scanRangeIndex = header.IndexOf("Scan Range");
+                    int inputFileIdIndex = header.IndexOf("Input File Unique ID");
+                    int inputFileNameIndex = header.IndexOf("Input Filename");
+                    int inputFilePurposeIndex = header.IndexOf("Input File Purpose");
+                    int acceptedIndex = header.IndexOf("Accepted");
+
+                    int idNum = 0;
+                    for(int i = 0;i< cellStrings.Count-1;i++)
+                    {
+                        if (i == 0)
+                            continue; //Skip the header
+                        else
+                        {
+                            var line = cellStrings[i];
+                            int cysteineCount = -1;
+                            int lysineCount = -1;
+
+                            if (cysteineCountIndex != -1)
+                                cysteineCount = Convert.ToInt32(line[cysteineCountIndex]);
+                            if (lysineCountIndex != -1)
+                                lysineCount = Convert.ToInt32(line[lysineCountIndex]);
+                            string[] split = line[scanRangeIndex].Split('-');
+
+                            int lightId = idNum;
+                            idNum++;
+                            int heavyId = idNum;
+                            idNum++;
+
+                            Component neuCodeLight = new Component(lightId, Convert.ToDouble(line[lightWeightedMonoIndex]), Convert.ToInt32(split[0]), Convert.ToInt32(split[1]), Convert.ToDouble(line[lightApexRtIndex]));
+                            Component neuCodeHeavy = new Component(heavyId, Convert.ToDouble(line[heavyWeightedMonoIndex]), Convert.ToInt32(split[0]), Convert.ToInt32(split[1]), Convert.ToDouble(line[heavyApexRtIndex]));
+
+
+                            NeuCodePair pair = new NeuCodePair(inputFile, neuCodeLight, neuCodeHeavy, Convert.ToDouble(line[correctedNcLightMonoIndex]), cysteineCount, lysineCount, Convert.ToDouble(line[intensityRatioIndex]),
+                                Convert.ToDouble(line[lightApexRtIndex]), Convert.ToInt32(split[0]), Convert.ToInt32(split[1]), Convert.ToDouble(line[intensitySumOlcsIndex]), lightId, heavyId, line[olcsIndex]);
+                            destination.Add(pair);
+                        }
+                    }
+                }
+            }
+            destination = findMissing_ExtraLabels(destination).ToList();
         }
 
         #endregion NEUCODE PAIRS
